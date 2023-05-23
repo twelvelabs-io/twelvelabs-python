@@ -22,7 +22,7 @@ async def main():
         print(f"Created an index: {index.name}({index.id})")
 
         print("Uploading an example video(example.mp4)")
-        video_path = os.path.join(os.path.dirname(__file__), "example.mp4")
+        video_path = os.path.join(os.path.dirname(__file__), "resources/example.mp4")
         task = await index.upload_video(file=video_path, language="en")
 
         def on_task_update(task: Task):
