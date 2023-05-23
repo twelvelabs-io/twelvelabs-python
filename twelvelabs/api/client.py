@@ -61,8 +61,8 @@ class APIClient:
         name: str,
         *,
         engine_id: str = "marengo2",
-        options: List[str] = ["visual", "conversation", "text_in_video"],
-        addons: Optional[List[str]] = ["thumbnail", "logo"],
+        options: List[str] = ["visual", "conversation", "text_in_video", "logo"],
+        addons: Optional[List[str]] = ["thumbnail"],
         **kwargs,
     ) -> Index:
         json = {
