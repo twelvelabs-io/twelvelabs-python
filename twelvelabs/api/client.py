@@ -60,7 +60,7 @@ class APIClient:
         self,
         name: str,
         *,
-        engine_id: str = "marengo2",
+        engine_id: str = "marengo2.5",
         options: List[str] = ["visual", "conversation", "text_in_video", "logo"],
         addons: Optional[List[str]] = ["thumbnail"],
         **kwargs,
