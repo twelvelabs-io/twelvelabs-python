@@ -1,5 +1,5 @@
 
-Twelve Labs appreciates your interest in contributing to this repository. By participating, you can help us improve the SDK and make it even better. 
+Twelve Labs appreciates your interest in contributing to this repository. By participating, you can help us improve the SDK and make it even better.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ git clone https://github.com/your-username/twelvelabs-python.git
 git checkout -b feature/your-feature
 ```
 
-4. Make  the changes or additions to the codebase.
+4. Make your changes or additions to the codebase.
 
 5. Commit your changes, ensuring you use a descriptive commit message:
 
@@ -48,17 +48,17 @@ To contribute your changes, please follow these guidelines for submitting a pull
 
 - Ensure that your branch is up to date with the latest changes from the main repository.
 
-```shell
-git fetch upstream
-git merge upstream/main
-```
+	```shell
+	git fetch upstream
+	git merge upstream/main
+	```
 
 - Resolve any conflicts that arise during the merge process.
 - Run the necessary tests to ensure that your changes do not introduce any new issues.
 - Provide a clear and descriptive title for your pull request.
 - Include a detailed description of the changes you made and why they are necessary.
 - Reference any related issues in your pull request using the appropriate GitHub syntax.
-- Request reviewers for your pull request, and be open to feedback and suggestions
+- Request reviewers for your pull request, and be open to feedback and suggestions.
 
 ## Reporting Issues
 
