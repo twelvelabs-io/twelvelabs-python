@@ -21,24 +21,24 @@ TODO
 
 1. Import the SDK and the `asyncio`  library into your project:
 
-```Python
-import asyncio
-from twelvelabs import APIClient
-``` 
+	```Python
+	import asyncio
+	from twelvelabs import APIClient
+	``` 
 
 2. Instantiate the SDK client with your API key. This example code assumes that your API key is stored in an environment variable named `API_KEY`:
 
-```Python
-async def main():
-	API_KEY = os.getenv("API_KEY")
-	assert API_KEY, "Your API key should be stored in an environment variable named API_KEY."
-	async with APIClient(API_KEY) as client:
-		# Perform desired actions using the `client` object
+	```Python
+	async def main():
+		API_KEY = os.getenv("API_KEY")
+		assert API_KEY, "Your API key should be stored in an environment variable named API_KEY."
+		async with APIClient(API_KEY) as client:
+			# Perform desired actions using the `client` object
 
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-```
+	if __name__ == "__main__":
+			loop = asyncio.get_event_loop()
+			loop.run_until_complete(main())
+	```
 
 ## Usage
 

@@ -9,29 +9,29 @@ To begin contributing, follow the steps below:
 
 2. Clone the forked repository to your local machine.
 
-```shell
-git clone https://github.com/your-username/twelvelabs-python.git
-```
+	```shell
+	git clone https://github.com/your-username/twelvelabs-python.git
+	```
 
 3. Create a new branch for your changes:
 
-```shell
-git checkout -b feature/your-feature
-```
+	```shell
+	git checkout -b feature/your-feature
+	```
 
 4. Make your changes or additions to the codebase.
 
 5. Commit your changes, ensuring you use a descriptive commit message:
 
-```shell
-git commit -m "Your commit message"
-```
+	```shell
+	git commit -m "Your commit message"
+	```
 
 6. Push the changes to your forked repository:
 
-```shell
-git push origin feature/your-feature
-```
+	```shell
+	git push origin feature/your-feature
+	```
 
 7. Open a pull request from your forked repository to the main repository.
 
