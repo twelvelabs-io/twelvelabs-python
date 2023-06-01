@@ -8,7 +8,6 @@ Before using the SDK, ensure that you have the following prerequisites:
 
 -  [Python](https://www.python.org) version TODO or newer.
 -  An active API key. If you don't have one, please [sign up](https://api.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [Dashboard](https://api.twelvelabs.io/dashboard) page, and select the **Copy** button under the **API** Key section.
--  Your API key is stored in an environment variable named `API_KEY`.
 
 ## Installation
 
@@ -20,17 +19,21 @@ TODO
 
 ## Initialization
 
-You must initialize the SDK using your API key:
+1. Import the SDK and the `asyncio`  library into your project:
 
 ```Python
 import asyncio
 from twelvelabs import APIClient
+``` 
 
+2. Instantiate the SDK client with your API key. This example code assumes that your API key is stored in an environment variable named `API_KEY`:
+
+```Python
 async def main():
 	API_KEY = os.getenv("API_KEY")
 	assert API_KEY, "Your API key should be stored in an environment variable named API_KEY."
 	async with APIClient(API_KEY) as client:
-		#
+		# Perform desired actions using the `client` object
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
@@ -42,7 +45,7 @@ if __name__ == "__main__":
 This section provides a guide on how to use the SDK to create an index, upload a video, and perform a search request.
 ### Create an Index
 
-To create an index using the SDK, use the example code below, replacing `example_index` with the desired name for your index:
+To create an index, use the example code below, replacing `example_index` with the desired name for your index:
 
 ```Python
 print("Creating a new index named 'example_index' with default options")
@@ -81,7 +84,7 @@ print(f"Successfully indexed a video: {video.id}")
 
 ### Perform a Search Request
 
-To perform a search request using the SDK, use the example code below:
+To perform a search request, use the example code below:
 
 ```Python
 def print_search_result(res):
