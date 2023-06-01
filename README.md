@@ -8,7 +8,7 @@ Before using the SDK, ensure that you have the following prerequisites:
 
 -  [Python](https://www.python.org) version TODO or newer.
 -  An active API key. If you don't have one, please [sign up](https://api.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [Dashboard](https://api.twelvelabs.io/dashboard) page, and select the **Copy** button under the **API** Key section.
--  Your API key is stored in a variable named `API_KEY`.
+-  Your API key is stored in an environment variable named `API_KEY`.
 
 ## Installation
 
