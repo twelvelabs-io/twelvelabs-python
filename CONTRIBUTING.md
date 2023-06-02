@@ -94,7 +94,7 @@ If you have a question about using the SDK or need support, we are here to assis
 1. On the [Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page, check that a similar issue does not already exist, and select the **New Issue** button.
 2. Provide a clear and concise title that summarizes your question or support request.
 3. In the issue description, ask your question or describe the support you require.
-4. Assign the question label to the issue.
+4. Assign the `question` label to the issue.
 5. Submit the issue.
 
 ## Other Issues
