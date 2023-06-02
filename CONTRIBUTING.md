@@ -60,13 +60,44 @@ To contribute your changes, please follow these guidelines for submitting a pull
 - Reference any related issues in your pull request using the appropriate GitHub syntax.
 - Request reviewers for your pull request, and be open to feedback and suggestions.
 
-## Reporting Issues
 
-If you encounter any issues while using the SDK, please help us by reporting them. Follow these steps to submit an issue:
+## Contributing and Issue Tracking
 
-1. Go to the [Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page on GitHub.
-2. Please check that an issue reporting the same problem does not already exist.
-3. Select the **New Issue** button and provide a descriptive title and detailed description of the issue.
-4. Include the steps to reproduce the issue if possible.
-5. Attach any relevant screenshots or error messages.
-6. When you've finished, select the **Submit New Issue** button.
+We welcome your contributions and value your feedback for our SDK. If you encounter any issues, have feature requests, questions, or suggestions, we encourage you to use the [GitHub Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page to communicate with us. Please follow the guidelines below when filing different types of issues.
+
+### Bug Reports
+
+If you discover a bug, an error, or any unexpected behavior while using the SDK, please help us by submitting a bug report. To file a bug report, follow these steps:
+
+1. On the [Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page, check that a similar issue does not already exist, and select the **New Issue** button.
+2. Provide a descriptive title for the issue that summarizes the problem.
+3. In the issue description, include the following details:
+	- Steps to reproduce the issue.
+	- Expected behavior.
+	- Actual behavior experienced.
+	- Any relevant screenshots, error messages or stack traces.
+5. Assign the `bug` label to the issue.
+6. Submit the issue.
+
+## Feature Requests
+If you have a feature or enhancement suggestion for the SDK, please submit a feature request. To file a feature request, follow these steps:
+
+1. On the [Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page, check that a similar issue does not already exist, and select the **New Issue** button.
+2. Provide a concise and clear title that describes the requested feature.
+3. In the issue description, explain the rationale behind the feature request and any additional details that can help us understand your needs better.
+4. Assign the `enhancement` label to the issue.
+5. Submit the issue.
+
+## Questions and Support
+If you have a question about using the SDK or need support, we are here to assist you. To ask a question or request support, follow these steps:
+
+1. On the [Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page, check that a similar issue does not already exist, and select the **New Issue** button.
+2. Provide a clear and concise title that summarizes your question or support request.
+3. In the issue description, ask your question or describe the support you require.
+4. Assign the question label to the issue.
+5. Submit the issue.
+
+## Other Issues
+If you have any other types of issues, such as documentation improvements, suggestions, or general feedback, please feel free to submit them as well. Please review the available tags in our issue tracker and choose the most appropriate tag that matches your issue.
+
+We appreciate your collaboration in properly tagging and categorizing issues. By doing so, we can effectively manage and address them, leading to a better experience for everyone. Thank you for your contribution!
