@@ -7,7 +7,9 @@ from twelvelabs.api.task import Task
 
 async def main():
     API_KEY = os.getenv("API_KEY")
-    assert API_KEY, "Your API key should be stored in an environment variable named API_KEY."
+    assert (
+        API_KEY
+    ), "Your API key should be stored in an environment variable named API_KEY."
 
     async with APIClient(API_KEY) as client:
         print("Available engines:")

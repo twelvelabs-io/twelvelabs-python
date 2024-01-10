@@ -11,7 +11,7 @@ class ModelMixin:
 class Object(ModelMixin, BaseModel):
     id: str = Field(alias="_id")
     created_at: str
-    updated_at: str
+    updated_at: Optional[str] = None
 
 
 class Engine(Object):
