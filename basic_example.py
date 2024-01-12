@@ -1,8 +1,8 @@
 import asyncio
 import os
 
-from twelvelabs import APIClient
-from twelvelabs.api.task import Task
+from old_twelvelabs import APIClient
+from old_twelvelabs.api.task import Task
 
 
 async def main():

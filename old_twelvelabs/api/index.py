@@ -3,7 +3,7 @@ from typing import Any, BinaryIO, Dict, List, Optional, Tuple, Union
 
 from pydantic import Field, PrivateAttr
 
-from twelvelabs.api.classify import BulkClassifyResult
+from old_twelvelabs.api.classify import BulkClassifyResult
 
 from .models import ClassifyLabel, Object, VideoFile
 from .search import SearchResult

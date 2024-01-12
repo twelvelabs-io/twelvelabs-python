@@ -1,4 +1,3 @@
-from .api.client import APIClient
-from .api.models import ClassifyLabel, VideoFile
+from .client import TwelveLabs
 
-__all__ = ("APIClient", "ClassifyLabel", "VideoFile")
+__all__ = ["TwelveLabs"]
