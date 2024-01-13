@@ -3,6 +3,7 @@ from typing import List, Optional, Union, Literal, Dict, Any, Tuple
 from ..resource import APIResource
 from .. import models
 from .. import types
+from ..util import remove_none_values
 
 
 class Index(APIResource):
@@ -35,7 +36,7 @@ class Index(APIResource):
             "sort_by": sort_by,
             "sort_option": sort_option,
         }
-        res = self._get("indexes", params=params, **kwargs)
+        res = self._get("indexes", params=remove_none_values(params), **kwargs)
         # res["page_info"] # TODO what is the best way to provide this data?
         return [models.Index(self, **index) for index in res["data"]]
 

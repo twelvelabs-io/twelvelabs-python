@@ -1,5 +1,6 @@
 import httpx
 from .constants import DEFAULT_TIMEOUT, API_KEY_HEADER
+from .errors import APIError
 from typing import Optional, Dict, Any
 
 
@@ -28,7 +29,7 @@ class APIClient:
                 return response.json()
             return response.text
         except httpx.HTTPError as e:
-            return {"error": str(e)}
+            raise APIError(e)
 
     def get(self, url: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> Any:
         return self._request("GET", url, params=params, **kwargs)
