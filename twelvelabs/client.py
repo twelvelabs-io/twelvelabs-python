@@ -9,6 +9,7 @@ from . import resources
 class TwelveLabs(APIClient):
     engine: resources.Engine
     index: resources.Index
+    task: resources.Task
 
     base_url: str
     api_key: str
@@ -33,6 +34,7 @@ class TwelveLabs(APIClient):
         self.engine = resources.Engine(self)
         self.index = resources.Index(self)
         self.search = resources.Search(self)
+        self.task = resources.Task(self)
 
     def __enter__(self):
         return self

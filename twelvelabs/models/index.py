@@ -1,8 +1,12 @@
-from typing import List, Optional
+from __future__ import annotations
+
+from typing import List, Optional, TYPE_CHECKING
 from pydantic import Field, PrivateAttr
 
 from ._base import BaseModel, ObjectWithTimestamp
-from ..resource import APIResource
+
+if TYPE_CHECKING:
+    from ..resources import Index as IndexResource
 
 
 class Engine(BaseModel):
@@ -12,7 +16,7 @@ class Engine(BaseModel):
 
 
 class Index(ObjectWithTimestamp):
-    _client = PrivateAttr()
+    _resource: IndexResource = PrivateAttr()
     name: str = Field(alias="index_name")
     # engine_id: str # v1.1
     engines: List[Engine]
@@ -22,8 +26,8 @@ class Index(ObjectWithTimestamp):
     total_duration: float
     expires_at: Optional[str] = None
 
-    def __init__(self, client: APIResource, **data):
+    def __init__(self, resource: IndexResource, **data):
         super().__init__(**data)
-        self._client = client
+        self._resource = resource
 
     # index related apis

@@ -67,12 +67,13 @@ class Task(APIResource):
             "language": language,
         }
 
+        files = {}
         opened_files: List[BinaryIO] = []
         if file is not None:
             if isinstance(file, str):
                 file = open(file, "rb")
                 opened_files.append(file)
-            data["video_file"] = file
+            files["video_file"] = file
         if transcription_file is not None:
             if isinstance(transcription_file, str):
                 transcription_file = open(transcription_file, "rb")
@@ -83,7 +84,9 @@ class Task(APIResource):
             data["provide_transcription"] = True
 
         try:
-            res = self._post("tasks", data=remove_none_values(data), **kwargs)
+            res = self._post(
+                "tasks", data=remove_none_values(data), files=files, **kwargs
+            )
             return self.retrieve(res["_id"])
         finally:
             for file in opened_files:

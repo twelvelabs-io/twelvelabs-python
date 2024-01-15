@@ -13,7 +13,6 @@ from .exceptions import (
     InternalServerError,
     PermissionDeniedError,
     UnprocessableEntityError,
-    APIResponseValidationError,
 )
 
 __all__ = [
@@ -23,7 +22,6 @@ __all__ = [
     "APIStatusError",
     "APITimeoutError",
     "APIConnectionError",
-    "APIResponseValidationError",
     "BadRequestError",
     "AuthenticationError",
     "PermissionDeniedError",
