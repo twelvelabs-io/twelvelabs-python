@@ -1,4 +1,35 @@
 from .client import TwelveLabs
-from .errors import APIError
+from .exceptions import (
+    APIError,
+    TwelveLabsError,
+    ConflictError,
+    NotFoundError,
+    APIStatusError,
+    RateLimitError,
+    APITimeoutError,
+    BadRequestError,
+    APIConnectionError,
+    AuthenticationError,
+    InternalServerError,
+    PermissionDeniedError,
+    UnprocessableEntityError,
+    APIResponseValidationError,
+)
 
-__all__ = ["TwelveLabs", "APIError"]
+__all__ = [
+    "TwelveLabs",
+    "APIError",
+    "TwelveLabsError",
+    "APIStatusError",
+    "APITimeoutError",
+    "APIConnectionError",
+    "APIResponseValidationError",
+    "BadRequestError",
+    "AuthenticationError",
+    "PermissionDeniedError",
+    "NotFoundError",
+    "ConflictError",
+    "UnprocessableEntityError",
+    "RateLimitError",
+    "InternalServerError",
+]

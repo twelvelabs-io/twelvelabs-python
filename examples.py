@@ -11,6 +11,7 @@ def main():
     ), "Your API key should be stored in an environment variable named API_KEY."
 
     with TwelveLabs(API_KEY) as client:
+        print(f"Client: base_url={client.base_url} api_key={client.api_key}")
         print("Available engines:")
         engines = client.engine.list()
 

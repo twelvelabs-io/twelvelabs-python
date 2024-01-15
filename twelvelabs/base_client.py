@@ -1,6 +1,9 @@
 import httpx
+import json
+
+from . import exceptions
 from .constants import DEFAULT_TIMEOUT, API_KEY_HEADER
-from .errors import APIError
+from .exceptions import APIStatusError, APITimeoutError
 from typing import Optional, Dict, Any
 
 
@@ -24,12 +27,62 @@ class APIClient:
     def _request(self, method: str, url: str, **kwargs) -> Any:
         try:
             response = self._client.request(method, url, **kwargs)
+        except httpx.TimeoutException as e:
+            raise APITimeoutError(request=response._request)
+        except Exception as e:
+            raise exceptions.APIConnectionError(request=response._request)
+
+        try:
             response.raise_for_status()
-            if "application/json" in response.headers.get("Content-Type", ""):
-                return response.json()
-            return response.text
-        except httpx.HTTPError as e:
-            raise APIError(e)
+        except httpx.HTTPStatusError as e:
+            raise self._make_status_error(e.response)
+
+        if "application/json" in response.headers.get("Content-Type", ""):
+            return response.json()
+        return response.text
+
+    def _make_status_error(self, response: httpx.Response) -> APIStatusError:
+        if response.is_closed and not response.is_stream_consumed:
+            body = None
+            err_msg = f"Error code: {response.status_code}"
+        else:
+            err_text = response.text.strip()
+            body = err_text
+
+            try:
+                body = json.loads(err_text)
+                err_msg = f"Error code: {response.status_code} - {body}"
+            except Exception:
+                err_msg = err_text or f"Error code: {response.status_code}"
+
+        if response.status_code == 400:
+            return exceptions.BadRequestError(err_msg, response=response, body=body)
+
+        if response.status_code == 401:
+            return exceptions.AuthenticationError(err_msg, response=response, body=body)
+
+        if response.status_code == 403:
+            return exceptions.PermissionDeniedError(
+                err_msg, response=response, body=body
+            )
+
+        if response.status_code == 404:
+            return exceptions.NotFoundError(err_msg, response=response, body=body)
+
+        if response.status_code == 409:
+            return exceptions.ConflictError(err_msg, response=response, body=body)
+
+        if response.status_code == 422:
+            return exceptions.UnprocessableEntityError(
+                err_msg, response=response, body=body
+            )
+
+        if response.status_code == 429:
+            return exceptions.RateLimitError(err_msg, response=response, body=body)
+
+        if response.status_code >= 500:
+            return exceptions.InternalServerError(err_msg, response=response, body=body)
+        return APIStatusError(err_msg, response=response, body=body)
 
     def get(self, url: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> Any:
         return self._request("GET", url, params=params, **kwargs)
