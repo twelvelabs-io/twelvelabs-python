@@ -1,12 +1,21 @@
 from typing import List, Optional, Union, Literal
 
+from ..client import TwelveLabs
+
 from ..resource import APIResource
 from .. import models
 from .. import types
 from ..util import remove_none_values
+from .video import Video
 
 
 class Index(APIResource):
+    video: Video
+
+    def __init__(self, client: TwelveLabs) -> None:
+        super().__init__(client)
+        self.video = Video(client)
+
     def retrieve(self, id: str, **kwargs) -> models.Index:
         res = self._get(f"indexes/{id}", **kwargs)
         return models.Index(self, **res)

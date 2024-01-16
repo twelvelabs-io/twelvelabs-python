@@ -1,6 +1,8 @@
 from .engine import Engine
 from .index import Index
-from .search import Search
 from .task import Task
+from .video import Video
+from .search import Search
+from .generate import Generate
 
-__all__ = ["Engine", "Index", "Search", "Task"]
+__all__ = ["Engine", "Index", "Task", "Video", "Search", "Generate"]

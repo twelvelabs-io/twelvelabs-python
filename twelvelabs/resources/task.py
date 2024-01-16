@@ -97,7 +97,8 @@ class Task(APIResource):
 
     def status(self, index_id: str, **kwargs) -> models.TaskStatus:
         params = {"index_id": index_id}
-        return self._get("tasks/status", params=params, **kwargs)
+        res = self._get("tasks/status", params=params, **kwargs)
+        return models.TaskStatus(**res)
 
     def transfer(self, file: BinaryIO, **kwargs) -> None:
         files = {"file": file}

@@ -17,7 +17,7 @@ class ObjectWithTimestamp(ModelMixin, BaseModel):
     updated_at: Optional[str] = None
 
 
-class PageInfo:
+class PageInfo(BaseModel):
     limit_per_page: int
     page: int
     total_page: int

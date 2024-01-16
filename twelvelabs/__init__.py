@@ -1,4 +1,5 @@
 from .client import TwelveLabs
+from . import types
 from .exceptions import (
     APIError,
     TwelveLabsError,
@@ -17,6 +18,7 @@ from .exceptions import (
 
 __all__ = [
     "TwelveLabs",
+    "types",
     "APIError",
     "TwelveLabsError",
     "APIStatusError",
