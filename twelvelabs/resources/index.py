@@ -1,12 +1,15 @@
-from typing import List, Optional, Union, Literal
-
-from ..client import TwelveLabs
+from __future__ import annotations
+from typing import List, Optional, Union, Literal, TYPE_CHECKING
 
 from ..resource import APIResource
 from .. import models
 from .. import types
 from ..util import remove_none_values
 from .video import Video
+
+
+if TYPE_CHECKING:
+    from ..client import TwelveLabs
 
 
 class Index(APIResource):

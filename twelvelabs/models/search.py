@@ -9,14 +9,20 @@ if TYPE_CHECKING:
     from ..resources import Search as SearchResource
 
 
+class SearchPool(BaseModel):
+    total_count: int
+    total_duration: float
+    index_id: str
+
+
 class SearchData(BaseModel):
     score: float
     start: float
     end: float
     video_id: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[List[Dict[str, Any]]] = None
     confidence: str
-    thumbnail_url: str
+    thumbnail_url: Optional[str] = None
     module_confidence: Optional[Dict[str, Any]] = None
 
 
@@ -24,16 +30,13 @@ class SearchPageInfo(BaseModel):
     limit_per_page: int
     total_results: int
     page_expired_at: str
-    next_page_token: str
+    next_page_token: Optional[str] = None
     prev_page_token: Optional[str] = None
 
 
 class SearchResult(ModelMixin, BaseModel):
     _resource: SearchResource = PrivateAttr()
-    query: Optional[str] = None
-    pool: Dict[str, Any] = Field(alias="search_pool")
-    options: Optional[List[str]] = Field(alias="search_options")
-    conversation_option: Optional[Union[str, Literal["semantic", "exact_match"]]] = None
+    pool: SearchPool = Field(alias="search_pool")
     data: List[SearchData]
     page_info: SearchPageInfo
 

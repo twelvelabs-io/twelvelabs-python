@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any, Union, Literal
+from typing import List, Optional
 
 from ._base import BaseModel
 
@@ -31,6 +31,6 @@ class GenerateSummarizeResult(BaseModel):
 
 class GenerateGistResult(BaseModel):
     id: str
-    title: str
-    topics: List[str]
-    hashtags: List[str]
+    title: Optional[str] = None
+    topics: Optional[List[str]] = None
+    hashtags: Optional[List[str]] = None

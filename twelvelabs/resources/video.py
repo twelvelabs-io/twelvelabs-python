@@ -2,7 +2,7 @@ from typing import Optional, List, Dict, Any
 
 from ..resource import APIResource
 from .. import models
-from ..util import remove_none_values
+from ..util import remove_none_values, get_data_with_default
 
 
 class Video(APIResource):
@@ -92,7 +92,10 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return [models.VideoValue(self, **value) for value in res["data"]]
+        return [
+            models.VideoValue(**value)
+            for value in get_data_with_default(res, "data", [])
+        ]
 
     def text_in_video(
         self,
@@ -112,7 +115,10 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return [models.VideoValue(self, **value) for value in res["data"]]
+        return [
+            models.VideoValue(**value)
+            for value in get_data_with_default(res, "data", [])
+        ]
 
     def logo(
         self,
@@ -132,7 +138,10 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return [models.VideoValue(self, **value) for value in res["data"]]
+        return [
+            models.VideoValue(**value)
+            for value in get_data_with_default(res, "data", [])
+        ]
 
     def thumbnail(
         self,

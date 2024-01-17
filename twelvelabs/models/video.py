@@ -9,11 +9,20 @@ if TYPE_CHECKING:
     from ..resources import Video as VideoResource
 
 
+class VideoMetadata(BaseModel):
+    filename: str
+    duration: float
+    fps: float
+    width: int
+    height: int
+    size: int
+
+
 class Video(ObjectWithTimestamp):
     _resource: VideoResource = PrivateAttr()
     # index_id: str
-    indexed_at: Optional[str]
-    metadata: Dict[str, Any]
+    indexed_at: Optional[str] = None
+    metadata: VideoMetadata
 
     def __init__(self, resource: VideoResource, **data):
         super().__init__(**data)
