@@ -26,20 +26,3 @@ with TwelveLabs(API_KEY) as client:
         except StopIteration:
             print("There is no next page in search result")
             break
-
-    print("Combined Search:")
-    result = client.search.combined_query(
-        index.id, {"text": "A man talking"}, ["visual", "conversation"]
-    )
-    for clip in result.data:
-        print(
-            f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
-        )
-
-    while True:
-        try:
-            next_page_data = next(result)
-            print(f"Next page's data: {next_page_data}")
-        except StopIteration:
-            print("There is no next page in search result")
-            break

@@ -8,7 +8,7 @@ from ..util import remove_none_values, get_data_with_default
 class Video(APIResource):
     def retrieve(self, index_id: str, id: str, **kwargs) -> models.Video:
         res = self._get(f"indexes/{index_id}/videos/{id}", **kwargs)
-        return models.Video(self, **res)
+        return models.Video(self, index_id, **res)
 
     def list(
         self,
@@ -52,7 +52,7 @@ class Video(APIResource):
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
         # res["page_info"] # TODO what is the best way to provide this data?
-        return [models.Video(self, **video) for video in res["data"]]
+        return [models.Video(self, index_id, **video) for video in res["data"]]
 
     def update(
         self,

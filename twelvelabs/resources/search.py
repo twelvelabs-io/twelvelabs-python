@@ -9,7 +9,7 @@ class Search(APIResource):
     def query(
         self,
         index_id: str,
-        query: str,
+        query: Union[str, Dict[str, Any]],
         options: List[
             Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]
         ],
@@ -43,37 +43,3 @@ class Search(APIResource):
     def by_page_token(self, page_token: str, **kwargs) -> models.SearchResult:
         res = self._get(f"search/{page_token}", **kwargs)
         return models.SearchResult(self, **res)
-
-    def combined_query(
-        self,
-        index_id: str,
-        query: Dict[str, Any],
-        options: List[
-            Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]
-        ],
-        *,
-        conversation_option: Optional[
-            Union[str, Literal["semantic", "exact_match"]]
-        ] = None,
-        filter: Optional[Dict[str, Any]] = None,
-        page_limit: Optional[int] = None,
-        threshold: Optional[Union[str, Literal["high", "medium", "low"]]] = None,
-        **kwargs,
-    ) -> models.CombinedSearchResult:
-        json = {
-            "index_id": index_id,
-            "query": query,
-            "search_options": options,
-            "conversation_option": conversation_option,
-            "threshold": threshold,
-            "filter": filter,
-            "page_limit": page_limit,
-        }
-        res = self._post("search/combined", json=remove_none_values(json), **kwargs)
-        return models.CombinedSearchResult(self, **res)
-
-    def combined_by_page_token(
-        self, page_token: str, **kwargs
-    ) -> models.CombinedSearchResult:
-        res = self._get(f"search/combined/{page_token}", **kwargs)
-        return models.CombinedSearchResult(self, **res)

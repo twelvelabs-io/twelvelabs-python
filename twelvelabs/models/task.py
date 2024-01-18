@@ -21,12 +21,17 @@ class Task(ObjectWithTimestamp):
         super().__init__(**data)
         self._resource = resource
 
+    # Task related methods
+
     @property
     def done(self) -> bool:
         return self.status in ("ready", "failed")
 
     def retrieve(self, **kwargs) -> Task:
         return self._resource.retrieve(self.id, **kwargs)
+
+    def delete(self, **kwargs) -> None:
+        return self._resource.delete(self.id, **kwargs)
 
     def wait_for_done(
         self,
@@ -35,6 +40,8 @@ class Task(ObjectWithTimestamp):
         callback: Optional[Callable[[Task], None]],
         **kwargs,
     ) -> Task:
+        if sleep_interval <= 0:
+            raise ValueError("sleep_interval must be greater than 0")
         while not self.done:
             self._resource._sleep(sleep_interval)
             task = self.retrieve(**kwargs)

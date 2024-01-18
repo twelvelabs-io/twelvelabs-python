@@ -69,6 +69,7 @@ class Task(APIResource):
 
         files = {}
         opened_files: List[BinaryIO] = []
+        # TODO validate video supported (ffmpeg)
         if file is not None:
             if isinstance(file, str):
                 file = open(file, "rb")

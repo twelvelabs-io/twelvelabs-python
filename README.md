@@ -53,3 +53,8 @@ except twelvelabs.APIStatusError as e:
     print(f"Status code {e.status_code} received")
     print(e.response)
 ```
+
+## TODO
+
+- cli
+- validate video before upload
