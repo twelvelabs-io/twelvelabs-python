@@ -2,7 +2,30 @@
 
 The TwelveLabs SDK has been developed to be compatible with the v1.2 API. The most significant change is the ability to use the multi-engine option when creating an index; please refer to the API Docs for more information.
 
+## For Internal Test
+
+Since it's before uploading to PyPI, you will install the package in editable mode after cloning the git repository.
+
+```sh
+git clone https://github.com/twelvelabs-io/twelvelabs-python
+cd twelvelabs-python
+pip install -e .
+```
+
+Afterward, you can import and use the package from your repository.
+
+```python
+from twelvelabs import TwelveLabs
+client = TwelveLabs("<YOUR_API_KEY>")
+
+engines = client.engine.list()
+```
+
+If you want to use development environment, set `TWELVELABS_BASE_URL` to enviroment variables. It'll automatically applied to your client.
+
 ## Installation
+
+> Not supported yet
 
 ```sh
 pip install twelvelabs
