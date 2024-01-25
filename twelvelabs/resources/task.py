@@ -106,6 +106,6 @@ class Task(APIResource):
         self._post("tasks/transfers", files=files, **kwargs)
 
     def external_provider(self, index_id: str, url: str, **kwargs) -> models.Task:
-        json = {"index_id": index_id, "video_url": url}
+        json = {"index_id": index_id, "url": url}
         res = self._post("tasks/external-provider", json=json, **kwargs)
         return self.retrieve(res["_id"])
