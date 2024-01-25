@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional, TYPE_CHECKING, Dict, Any, List, Union, Literal
-from pydantic import PrivateAttr
+from pydantic import PrivateAttr, Extra
 
 from ._base import ObjectWithTimestamp, BaseModel
 
@@ -21,6 +21,9 @@ class VideoMetadata(BaseModel):
     width: int
     height: int
     size: int
+
+    class Config:
+        extra = Extra.allow  # This allows extra fields
 
 
 class VideoValue(BaseModel):
