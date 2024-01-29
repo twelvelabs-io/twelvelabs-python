@@ -39,9 +39,9 @@ class Video(ObjectWithTimestamp):
     metadata: VideoMetadata
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
+        super().__init__(**data)
         self._resource = resource
         self._index_id = index_id
-        super().__init__(**data)
 
     # Video related methods
 

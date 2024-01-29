@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Union, BinaryIO, Literal, Dict, Any
 from pydantic import Field, PrivateAttr
 
-from ._base import BaseModel, ObjectWithTimestamp
+from ._base import ModelMixin, BaseModel, ObjectWithTimestamp, PageInfo
 
 if TYPE_CHECKING:
     from ..resources import Index as IndexResource
@@ -91,7 +91,7 @@ class Index(ObjectWithTimestamp):
         sort_option: Optional[str] = None,
         **kwargs,
     ) -> Video:
-        return self._resource._client.index.video.list(
+        return self._resource.video.list(
             self.id,
             id=id,
             filename=filename,
@@ -144,3 +144,27 @@ class Index(ObjectWithTimestamp):
             sort_option=sort_option,
             **kwargs,
         )
+
+
+class IndexListWithPagination(ModelMixin, BaseModel):
+    _resource: IndexResource = PrivateAttr()
+    _origin_params: Dict[str, Any] = {}
+    data: List[Index] = []
+    page_info: PageInfo
+
+    def __init__(self, resource: IndexResource, origin_params: Dict[str, Any], **data):
+        super().__init__(**data)
+        self._resource = resource
+        self._origin_params = origin_params
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> List[Index]:
+        if self.page_info.page >= self.page_info.total_page:
+            raise StopIteration
+        params = self._origin_params
+        params["page"] = self.page_info.page + 1
+        res = self._resource.list_pagination(**params)
+        self.page_info = res.page_info
+        return res.data
