@@ -10,7 +10,7 @@ from typing import (
 from ..resource import APIResource
 from .. import models
 from .. import types
-from ..util import remove_none_values
+from ..util import remove_none_values, get_local_params
 from .video import Video
 
 if TYPE_CHECKING:
@@ -89,7 +89,9 @@ class Index(APIResource):
         page_info = models.PageInfo(**res["page_info"])
 
         return models.IndexListWithPagination(
-            self, params, **{"data": data, "page_info": page_info}
+            self,
+            get_local_params(locals().items()),
+            **{"data": data, "page_info": page_info},
         )
 
     def create(

@@ -7,7 +7,7 @@ from ._base import ModelMixin, BaseModel, ObjectWithTimestamp, PageInfo
 
 if TYPE_CHECKING:
     from ..resources import Index as IndexResource
-    from . import Task, TaskStatus, SearchResult, Video
+    from . import Task, TaskStatus, SearchResult, Video, VideoListWithPagination
 
 
 class Engine(BaseModel):
@@ -111,6 +111,46 @@ class Index(ObjectWithTimestamp):
             **kwargs,
         )
 
+    def list_video_pagination(
+        self,
+        *,
+        id: Optional[str] = None,
+        filename: Optional[str] = None,
+        size: Optional[int] = None,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        duration: Optional[float] = None,
+        fps: Optional[int] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        created_at: Optional[str] = None,
+        updated_at: Optional[str] = None,
+        indexed_at: Optional[str] = None,
+        page: Optional[int] = None,
+        page_limit: Optional[int] = None,
+        sort_by: Optional[str] = None,
+        sort_option: Optional[str] = None,
+        **kwargs,
+    ) -> VideoListWithPagination:
+        return self._resource.video.list_pagination(
+            self.id,
+            id=id,
+            filename=filename,
+            size=size,
+            width=width,
+            height=height,
+            duration=duration,
+            fps=fps,
+            metadata=metadata,
+            created_at=created_at,
+            updated_at=updated_at,
+            indexed_at=indexed_at,
+            page=page,
+            page_limit=page_limit,
+            sort_by=sort_by,
+            sort_option=sort_option,
+            **kwargs,
+        )
+
     # Search related methods
 
     def query(
@@ -148,7 +188,7 @@ class Index(ObjectWithTimestamp):
 
 class IndexListWithPagination(ModelMixin, BaseModel):
     _resource: IndexResource = PrivateAttr()
-    _origin_params: Dict[str, Any] = {}
+    _origin_params: Dict[str, Any] = PrivateAttr()
     data: List[Index] = []
     page_info: PageInfo
 

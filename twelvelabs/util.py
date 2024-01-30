@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, Any
 
 
 def remove_none_values(data: Union[list, dict]):
@@ -8,6 +8,10 @@ def remove_none_values(data: Union[list, dict]):
         return [remove_none_values(item) for item in data]
     else:
         return data
+
+
+def get_local_params(local_items: Dict[str, Any]):
+    return {k: v for k, v in local_items if k not in ["self", "kwargs"]}
 
 
 def get_data_with_default(dictionary: Dict, key: str, default=[]):

@@ -2,7 +2,7 @@ from typing import Optional, List, Dict, Any
 
 from ..resource import APIResource
 from .. import models
-from ..util import remove_none_values, get_data_with_default
+from ..util import remove_none_values, get_data_with_default, get_local_params
 
 
 class Video(APIResource):
@@ -51,8 +51,58 @@ class Video(APIResource):
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
-        # res["page_info"] # TODO what is the best way to provide this data?
         return [models.Video(self, index_id, **video) for video in res["data"]]
+
+    def list_pagination(
+        self,
+        index_id: str,
+        *,
+        id: Optional[str] = None,
+        filename: Optional[str] = None,
+        size: Optional[int] = None,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        duration: Optional[float] = None,
+        fps: Optional[int] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        created_at: Optional[str] = None,
+        updated_at: Optional[str] = None,
+        indexed_at: Optional[str] = None,
+        page: Optional[int] = None,
+        page_limit: Optional[int] = None,
+        sort_by: Optional[str] = None,
+        sort_option: Optional[str] = None,
+        **kwargs,
+    ) -> models.VideoListWithPagination:
+        params = {
+            "_id": id,
+            "filename": filename,
+            "size": size,
+            "width": width,
+            "height": height,
+            "duration": duration,
+            "fps": fps,
+            "metadata": metadata,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "indexed_at": indexed_at,
+            "page": page,
+            "page_limit": page_limit,
+            "sort_by": sort_by,
+            "sort_option": sort_option,
+        }
+        res = self._get(
+            f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
+        )
+
+        data = [models.Video(self, index_id, **video) for video in res["data"]]
+        page_info = models.PageInfo(**res["page_info"])
+
+        return models.VideoListWithPagination(
+            self,
+            get_local_params(locals().items()),
+            **{"data": data, "page_info": page_info},
+        )
 
     def update(
         self,

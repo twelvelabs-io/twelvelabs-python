@@ -22,7 +22,3 @@ class PageInfo(BaseModel):
     page: int
     total_page: int
     total_results: int
-
-
-class PageEnd(Exception):
-    pass

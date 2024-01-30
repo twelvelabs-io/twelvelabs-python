@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional, Dict, Any, Callable, TYPE_CHECKING
+from typing import Optional, Dict, Any, Callable, List, TYPE_CHECKING
 from pydantic import PrivateAttr
 
-from ._base import ObjectWithTimestamp, BaseModel
+from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo
 
 if TYPE_CHECKING:
     from ..resources import Task as TaskResource
@@ -52,6 +52,30 @@ class Task(ObjectWithTimestamp):
             if callback is not None:
                 callback(self)
         return self
+
+
+class TaskListWithPagination(ModelMixin, BaseModel):
+    _resource: TaskResource = PrivateAttr()
+    _origin_params: Dict[str, Any] = PrivateAttr()
+    data: List[Task] = []
+    page_info: PageInfo
+
+    def __init__(self, resource: TaskResource, origin_params: Dict[str, Any], **data):
+        super().__init__(**data)
+        self._resource = resource
+        self._origin_params = origin_params
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> List[Task]:
+        if self.page_info.page >= self.page_info.total_page:
+            raise StopIteration
+        params = self._origin_params
+        params["page"] = self.page_info.page + 1
+        res = self._resource.list_pagination(**params)
+        self.page_info = res.page_info
+        return res.data
 
 
 class TaskStatus(BaseModel):

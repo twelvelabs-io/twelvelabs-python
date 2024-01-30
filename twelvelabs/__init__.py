@@ -1,6 +1,6 @@
 from .client import TwelveLabs
 from . import types
-from .models import PageEnd, PageInfo
+from .models import PageInfo
 from .exceptions import (
     APIError,
     TwelveLabsError,
@@ -20,7 +20,6 @@ from .exceptions import (
 __all__ = [
     "TwelveLabs",
     "types",
-    "PageEnd",
     "PageInfo",
     "APIError",
     "TwelveLabsError",
