@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 class Task(ObjectWithTimestamp):
     _resource: TaskResource = PrivateAttr()
     index_id: str
+    video_id: Optional[str] = None
     estimated_time: Optional[str] = None
     status: str
     metadata: Dict[str, Any]
