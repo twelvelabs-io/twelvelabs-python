@@ -35,7 +35,6 @@ class VideoValue(BaseModel):
 class Video(ObjectWithTimestamp):
     _resource: VideoResource = PrivateAttr()
     _index_id: str = PrivateAttr()
-    indexed_at: Optional[str] = None
     metadata: VideoMetadata
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
