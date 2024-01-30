@@ -2,7 +2,7 @@ from typing import Optional, Union, BinaryIO, List
 
 from ..resource import APIResource
 from .. import models
-from ..util import remove_none_values
+from ..util import remove_none_values, get_local_params
 
 
 class Task(APIResource):
@@ -44,8 +44,51 @@ class Task(APIResource):
             "sort_option": sort_option,
         }
         res = self._get("tasks", params=remove_none_values(params), **kwargs)
-        # res["page_info"] # TODO what is the best way to provide this data?
         return [models.Task(self, **task) for task in res["data"]]
+
+    def list_pagination(
+        self,
+        *,
+        id: Optional[str] = None,
+        index_id: Optional[str] = None,
+        filename: Optional[str] = None,
+        duration: Optional[float] = None,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        created_at: Optional[str] = None,
+        updated_at: Optional[str] = None,
+        estimated_time: Optional[str] = None,
+        page: Optional[int] = None,
+        page_limit: Optional[int] = None,
+        sort_by: Optional[str] = None,
+        sort_option: Optional[str] = None,
+        **kwargs,
+    ) -> models.TaskListWithPagination:
+        params = {
+            "_id": id,
+            "index_id": index_id,
+            "filename": filename,
+            "duration": duration,
+            "width": width,
+            "height": height,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "estimated_time": estimated_time,
+            "page": page,
+            "page_limit": page_limit,
+            "sort_by": sort_by,
+            "sort_option": sort_option,
+        }
+        res = self._get("tasks", params=remove_none_values(params), **kwargs)
+
+        data = [models.Task(self, **task) for task in res["data"]]
+        page_info = models.PageInfo(**res["page_info"])
+
+        return models.TaskListWithPagination(
+            self,
+            get_local_params(locals().items()),
+            **{"data": data, "page_info": page_info},
+        )
 
     def create(
         self,
@@ -92,6 +135,39 @@ class Task(APIResource):
         finally:
             for file in opened_files:
                 file.close()
+
+    def create_bulk(
+        self,
+        index_id: str,
+        *,
+        files: Optional[List[Union[str, BinaryIO, None]]] = None,
+        urls: Optional[List[str]] = None,
+        language: Optional[str] = None,
+        **kwargs,
+    ) -> List[models.Task]:
+        if not files and not urls:
+            raise ValueError("Either files or urls must be provided")
+
+        tasks = []
+        if files:
+            for file in files:
+                try:
+                    task = self.create(index_id, file=file, language=language, **kwargs)
+                    tasks.append(task)
+                except Exception as e:
+                    print(f"Error processing file {file}: {e}")
+                    continue
+
+        if urls:
+            for url in urls:
+                try:
+                    task = self.create(index_id, url=url, language=language, **kwargs)
+                    tasks.append(task)
+                except Exception as e:
+                    print(f"Error processing url {url}: {e}")
+                    continue
+
+        return tasks
 
     def delete(self, id: str, **kwargs) -> None:
         self._delete(f"tasks/{id}", **kwargs)

@@ -33,6 +33,20 @@ with TwelveLabs(API_KEY) as client:
     for task in tasks:
         print(f"  id={task.id} status={task.status}")
 
+    print(f"With pagigation: ")
+    result = client.task.list_pagination()
+
+    for task in result.data:
+        print(f"  id={task.id} status={task.status}")
+
+    while True:
+        try:
+            next_page_data = next(result)
+            print(f"Next page's data: {next_page_data}")
+        except StopIteration:
+            print("There is no next page in search result")
+            break
+
     status = client.task.status(index.id)
     print(
         f"Tasks by status: ready={status.ready} validating={status.validating} pending={status.pending} failed={status.failed} total_result={status.total_result}"

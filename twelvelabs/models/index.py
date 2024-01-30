@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Union, BinaryIO, Literal, Dict, Any
 from pydantic import Field, PrivateAttr
 
-from ._base import BaseModel, ObjectWithTimestamp
+from ._base import ModelMixin, BaseModel, ObjectWithTimestamp, PageInfo
 
 if TYPE_CHECKING:
     from ..resources import Index as IndexResource
-    from . import Task, TaskStatus, SearchResult, Video
+    from . import Task, TaskStatus, SearchResult, Video, VideoListWithPagination
 
 
 class Engine(BaseModel):
@@ -91,7 +91,47 @@ class Index(ObjectWithTimestamp):
         sort_option: Optional[str] = None,
         **kwargs,
     ) -> Video:
-        return self._resource._client.index.video.list(
+        return self._resource.video.list(
+            self.id,
+            id=id,
+            filename=filename,
+            size=size,
+            width=width,
+            height=height,
+            duration=duration,
+            fps=fps,
+            metadata=metadata,
+            created_at=created_at,
+            updated_at=updated_at,
+            indexed_at=indexed_at,
+            page=page,
+            page_limit=page_limit,
+            sort_by=sort_by,
+            sort_option=sort_option,
+            **kwargs,
+        )
+
+    def list_video_pagination(
+        self,
+        *,
+        id: Optional[str] = None,
+        filename: Optional[str] = None,
+        size: Optional[int] = None,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        duration: Optional[float] = None,
+        fps: Optional[int] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        created_at: Optional[str] = None,
+        updated_at: Optional[str] = None,
+        indexed_at: Optional[str] = None,
+        page: Optional[int] = None,
+        page_limit: Optional[int] = None,
+        sort_by: Optional[str] = None,
+        sort_option: Optional[str] = None,
+        **kwargs,
+    ) -> VideoListWithPagination:
+        return self._resource.video.list_pagination(
             self.id,
             id=id,
             filename=filename,
@@ -144,3 +184,27 @@ class Index(ObjectWithTimestamp):
             sort_option=sort_option,
             **kwargs,
         )
+
+
+class IndexListWithPagination(ModelMixin, BaseModel):
+    _resource: IndexResource = PrivateAttr()
+    _origin_params: Dict[str, Any] = PrivateAttr()
+    data: List[Index] = []
+    page_info: PageInfo
+
+    def __init__(self, resource: IndexResource, origin_params: Dict[str, Any], **data):
+        super().__init__(**data)
+        self._resource = resource
+        self._origin_params = origin_params
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> List[Index]:
+        if self.page_info.page >= self.page_info.total_page:
+            raise StopIteration
+        params = self._origin_params
+        params["page"] = self.page_info.page + 1
+        res = self._resource.list_pagination(**params)
+        self.page_info = res.page_info
+        return res.data

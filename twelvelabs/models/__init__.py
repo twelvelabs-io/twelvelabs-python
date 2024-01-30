@@ -1,8 +1,8 @@
 from ._base import Object, ObjectWithTimestamp, PageInfo
 from .engine import Engine
-from .index import Index
-from .task import Task, TaskStatus
-from .video import Video, VideoValue
+from .index import Index, IndexListWithPagination
+from .task import Task, TaskStatus, TaskListWithPagination
+from .video import Video, VideoValue, VideoListWithPagination
 from .search import SearchData, SearchPageInfo, SearchResult, CombinedSearchResult
 from .generate import (
     GenerateOpenEndedTextResult,
@@ -18,10 +18,13 @@ __all__ = [
     "PageInfo",
     "Engine",
     "Index",
+    "IndexListWithPagination",
     "Task",
+    "TaskListWithPagination",
     "TaskStatus",
     "Video",
     "VideoValue",
+    "VideoListWithPagination",
     "SearchData",
     "SearchPageInfo",
     "SearchResult",

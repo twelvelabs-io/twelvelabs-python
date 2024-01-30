@@ -1,12 +1,17 @@
 from __future__ import annotations
-from typing import List, Optional, Union, Literal, TYPE_CHECKING
+from typing import (
+    List,
+    Optional,
+    Union,
+    Literal,
+    TYPE_CHECKING,
+)
 
 from ..resource import APIResource
 from .. import models
 from .. import types
-from ..util import remove_none_values
+from ..util import remove_none_values, get_local_params
 from .video import Video
-
 
 if TYPE_CHECKING:
     from ..client import TwelveLabs
@@ -49,8 +54,45 @@ class Index(APIResource):
             "sort_option": sort_option,
         }
         res = self._get("indexes", params=remove_none_values(params), **kwargs)
-        # res["page_info"] # TODO what is the best way to provide this data?
+        page_info = models.PageInfo(**res["page_info"])
+
         return [models.Index(self, **index) for index in res["data"]]
+
+    def list_pagination(
+        self,
+        *,
+        id: Optional[str] = None,
+        name: Optional[str] = None,
+        engine_options: Optional[
+            List[Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]]
+        ] = None,
+        engine_family: Optional[Union[str, Literal["marengo", "pegasus"]]] = None,
+        page: Optional[int] = 1,
+        page_limit: Optional[int] = 10,
+        sort_by: Optional[str] = "created_at",
+        sort_option: Optional[str] = "desc",
+        **kwargs,
+    ) -> models.IndexListWithPagination:
+        params = {
+            "_id": id,
+            "index_name": name,
+            "engine_options": engine_options,
+            "engine_family": engine_family,
+            "page": page,
+            "page_limit": page_limit,
+            "sort_by": sort_by,
+            "sort_option": sort_option,
+        }
+        res = self._get("indexes", params=remove_none_values(params), **kwargs)
+
+        data = [models.Index(self, **index) for index in res["data"]]
+        page_info = models.PageInfo(**res["page_info"])
+
+        return models.IndexListWithPagination(
+            self,
+            get_local_params(locals().items()),
+            **{"data": data, "page_info": page_info},
+        )
 
     def create(
         self,

@@ -19,6 +19,22 @@ with TwelveLabs(API_KEY) as client:
             f"  filename={video.metadata.filename} duration={video.metadata.duration}"
         )
 
+    print(f"With pagigation: ")
+    result = client.index.video.list_pagination(index.id)
+
+    for task in result.data:
+        print(
+            f"  filename={video.metadata.filename} duration={video.metadata.duration}"
+        )
+
+    while True:
+        try:
+            next_page_data = next(result)
+            print(f"Next page's data: {next_page_data}")
+        except StopIteration:
+            print("There is no next page in search result")
+            break
+
     video = client.index.video.retrieve(index.id, videos[0].id)
     client.index.video.update(
         index.id, video.id, title="updated_test_video", metadata={"from_sdk": True}

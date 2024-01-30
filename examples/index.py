@@ -32,8 +32,24 @@ with TwelveLabs(API_KEY) as client:
     print(f"Updated index name to {index.name}")
 
     print("All Indexes: ")
-    indexes = client.index.list()
+    indexes = client.index.list(page=1)
     for index in indexes:
         print(
             f"  id={index.id} name={index.name} engines={index.engines} created_at={index.created_at}"
         )
+
+    print("With pagination: ")
+    result = client.index.list_pagination()
+
+    for index in result.data:
+        print(
+            f"  id={index.id} name={index.name} engines={index.engines} created_at={index.created_at}"
+        )
+
+    while True:
+        try:
+            next_page_data = next(result)
+            print(f"Next page's data: {next_page_data}")
+        except StopIteration:
+            print("There is no next page in search result")
+            break

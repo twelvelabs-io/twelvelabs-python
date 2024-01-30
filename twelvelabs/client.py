@@ -24,6 +24,10 @@ class TwelveLabs(APIClient):
             Literal["v1.1", "v1.2"],
         ] = DEFAULT_API_VERSION,
     ) -> None:
+        assert (
+            api_key,
+            "Provide `api_key` to initialize a client. You can see the API Key in the Dashboard page: https://dashboard.playground.io",
+        )
         base_url = f"{BASE_URL}/{version}/"
         custom_base_url = os.environ.get("TWELVELABS_BASE_URL")
         if custom_base_url is not None:

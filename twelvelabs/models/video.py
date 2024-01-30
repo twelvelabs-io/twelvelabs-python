@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING, Dict, Any, List, Union, Literal
 from pydantic import PrivateAttr, Extra
 
-from ._base import ObjectWithTimestamp, BaseModel
+from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo
 
 if TYPE_CHECKING:
     from ..resources import Video as VideoResource
@@ -35,13 +35,12 @@ class VideoValue(BaseModel):
 class Video(ObjectWithTimestamp):
     _resource: VideoResource = PrivateAttr()
     _index_id: str = PrivateAttr()
-    indexed_at: Optional[str] = None
     metadata: VideoMetadata
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
+        super().__init__(**data)
         self._resource = resource
         self._index_id = index_id
-        super().__init__(**data)
 
     # Video related methods
 
@@ -116,3 +115,27 @@ class Video(ObjectWithTimestamp):
         return self._resource._client.generate.text(
             self.id, type, prompt=prompt, **kwargs
         )
+
+
+class VideoListWithPagination(ModelMixin, BaseModel):
+    _resource: VideoResource = PrivateAttr()
+    _origin_params: Dict[str, Any] = PrivateAttr()
+    data: List[Video] = []
+    page_info: PageInfo
+
+    def __init__(self, resource: VideoResource, origin_params: Dict[str, Any], **data):
+        super().__init__(**data)
+        self._resource = resource
+        self._origin_params = origin_params
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> List[Video]:
+        if self.page_info.page >= self.page_info.total_page:
+            raise StopIteration
+        params = self._origin_params
+        params["page"] = self.page_info.page + 1
+        res = self._resource.list_pagination(**params)
+        self.page_info = res.page_info
+        return res.data
