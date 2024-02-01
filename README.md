@@ -117,8 +117,8 @@ See the [Create a video indexing task](https://docs.twelvelabs.io/reference/crea
 
 To perform a search request, use the example code below, replacing the following:
 
-- "<YOUR_QUERY>": A string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle", and "sun shining on water", and "an officer holding a child's hand."
-- "<YOUR_SEARCH_OPTIONS>": An array string that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **"<YOUR_QUERY>"**: A string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle", and "sun shining on water", and "an officer holding a child's hand."
+- **"<YOUR_SEARCH_OPTIONS>"**: An array string that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
 result = client.search.query(index_obj.id, "<YOUR_QUERY>", "<YOUR_SEARCH_OPTIONS>")
