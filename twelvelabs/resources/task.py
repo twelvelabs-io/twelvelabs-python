@@ -64,6 +64,7 @@ class Task(APIResource):
         sort_option: Optional[str] = None,
         **kwargs,
     ) -> models.TaskListWithPagination:
+        local_params = get_local_params(locals().items())
         params = {
             "_id": id,
             "index_id": index_id,
@@ -86,7 +87,7 @@ class Task(APIResource):
 
         return models.TaskListWithPagination(
             self,
-            get_local_params(locals().items()),
+            local_params,
             **{"data": data, "page_info": page_info},
         )
 

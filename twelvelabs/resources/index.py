@@ -73,6 +73,7 @@ class Index(APIResource):
         sort_option: Optional[str] = "desc",
         **kwargs,
     ) -> models.IndexListWithPagination:
+        local_params = get_local_params(locals().items())
         params = {
             "_id": id,
             "index_name": name,
@@ -90,7 +91,7 @@ class Index(APIResource):
 
         return models.IndexListWithPagination(
             self,
-            get_local_params(locals().items()),
+            local_params,
             **{"data": data, "page_info": page_info},
         )
 

@@ -74,6 +74,7 @@ class Video(APIResource):
         sort_option: Optional[str] = None,
         **kwargs,
     ) -> models.VideoListWithPagination:
+        local_params = get_local_params(locals().items())
         params = {
             "_id": id,
             "filename": filename,
@@ -91,6 +92,7 @@ class Video(APIResource):
             "sort_by": sort_by,
             "sort_option": sort_option,
         }
+
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
@@ -100,7 +102,7 @@ class Video(APIResource):
 
         return models.VideoListWithPagination(
             self,
-            get_local_params(locals().items()),
+            local_params,
             **{"data": data, "page_info": page_info},
         )
 
