@@ -12,25 +12,46 @@ Ensure that the following prerequisites are met before using the SDK:
 
 ## Install the SDK
 
-To install the SDK enter the following command in a terminal window:
+1. Clone the `twelvelabs-io/twelvelabs-python` GitHub repository:
 
-```sh
-pip install twelvelabs
-```
+    ```sh
+    git clone https://github.com/twelvelabs-io/twelvelabs-python && cd twelvelabs-python
+    ```
+
+2. Install the `twelvelabs` package in editable mode:
+
+    ```sh
+    pip install -e .
+    ```
+
+3. _(Optional)_ By default, the SDK connects to the production environment. To use a different environment, set the `TWELVELABS_BASE_URL` environment variable by entering the following command and replacing `<YOUR_DEVELOPMENT_BASE_URL>` with the desired base URL:
+
+    ```sh
+    export TWELVELABS_BASE_URL=<YOUR_DEVELOPMENT_BASE_URL>
+    ```
+
+    The following example connects the SDK to the development environment:
+
+
+    ```sh
+    export TWELVELABS_BASE_URL=https://api.twelvelabs.space
+    ```
+
+
 
 ## Initialize the SDK
 
 1. Import the SDK into your application:
 
-```py
-from twelvelabs import TwelveLabs
-```
+   ```py
+   from twelvelabs import TwelveLabs
+   ```
 
 2.  Instantiate the SDK client with your API key. This example code assumes that your API key is stored in an environment variable named `TL_API_KEY`:
 
-```py
-client = TwelveLabs(os.getenv('TL_API_KEY'))
-```
+    ```py
+    client = TwelveLabs(api_key=os.getenv('TL_API_KEY'))
+    ```
 
 ## Use the SDK
 
@@ -38,14 +59,13 @@ To get started with the SDK, follow these basic steps:
 
 1. Create an index.
 2. Upload videos.
-3. Perform downstream tasks, such as search.
+3. Perform downstream tasks, such as searching or generating text from video.
 
 ## Create an index
 
-To create an index, use the example code below, replacing `<YOUR_INDEX_NAME` with the desired name for your index:
+To create an index, use the example code below, replacing "<YOUR_INDEX_NAME>" with the desired name for your index:
 
 ```py
-from twelvelabs import APIStatusError
 from twelvelabs import APIStatusError
 index_obj = None
 try:
@@ -70,6 +90,13 @@ except Exception as e:
     print(e)
 ```
 
+Note the following about this example:
+- The plaform provides two distinct engine types - embedding and generative, each serving unique purposes in multimodal video understanding.
+  - **Embedding engines (Marengo)** : These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
+  - **Generative engines (Pegasus)**: These engines generate text based on your videos.
+  For your index, both Marengo and Pegasus are be enabled.
+- The `engines.options` fields specifiy the types of information each video understanding engine will process. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
+
 The output should look similar to the following:
 
 ```
@@ -78,50 +105,58 @@ Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', upda
 
 Note that the API returns, among other information, a field named `id` representing the unique identifier of your new index.
 
-See the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page for more details about creating indexes.
+See the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page for more details.
 
 
 ## Upload videos
 
-To upload a video to your index, use the example code below, replacing `./assets/*.mp4` with the actual file path of your videos and ensuring that the each video file meets the following requirements:
+Before you upload a video to the platform, ensure that it meets the following requirements:
+
 - **Video resolution**: Must be greater or equal than 360p and less or equal than 4K. For consistent search results, Twelve Labs recommends you upload 360p videos.
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 5 seconds and 30 minutes (1800s).
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
 - **Audio track**: If the `conversation` [engine option](https://docs.twelvelabs.io/v1.2/docs/engine-options) is selected, the video you're uploading must contain an audio track.
 
+To upload a video, use the example code below, replacing the following:
+
+- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
+- **<YOUR_VIDEO_PATH>**: with a string representing the path to your video file.
+
 
 ```py
-from glob import glob
-video_paths = glob("./assets/*.mp4")
-for video_path in video_paths[:1]:
-    print(video_path)
-    task = client.task.create(index_obj.id, file=video_path, language="en")
+task = client.task.create(index_id="<YOUR_INDEX_ID>", file="<YOUR_VIDEO_PATH>", language="en")
 
-    print(f"Uploading {video_path} and waiting for the indexing process to be completed.")
-    print(f"Created task: id={task.id}, status={task.status}")
+print(f"Uploading {video_path} and waiting for the indexing process to be completed.")
+print(f"Created task: id={task.id}, status={task.status}")
 
-    def on_task_update(task):
-        print(f"  Status={task.status}")
+def on_task_update(task):
+    print(f"  Status={task.status}")
 
-    task.wait_for_done(callback=on_task_update)
+task.wait_for_done(callback=on_task_update)
 
-    if task.status != "ready":
-        raise RuntimeError(f"Indexing failed with status {task.status}")
-    print(f"Uploaded {video_path}")
+if task.status != "ready":
+    raise RuntimeError(f"Indexing failed with status {task.status}")
+print(f"Uploaded {video_path}")
 ```
+
+Note that once the video has been successfully uploaded and indexed, the response `task` object will contain a field named `video_id` representing the unique identifier of your video.
+
 See the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page for more details.
 
 ## Perform downstream tasks
+
+The sections below show how you can perform the most common downstream tasks. For a complete list of all the features the Twelve Labs Understanding Platform provides, see [our documentation](https://docs.twelvelabs.io/docs).
 
 ### Search
 
 To perform a search request, use the example code below, replacing the following:
 
-- **"<YOUR_QUERY>"**: A string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle", and "sun shining on water", and "an officer holding a child's hand."
-- **"<YOUR_SEARCH_OPTIONS>"**: An array string that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
+- **<YOUR_QUERY>**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
+- **<YOUR_SEARCH_OPTIONS>"**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
-result = client.search.query(index_obj.id, "<YOUR_QUERY>", "<YOUR_SEARCH_OPTIONS>")
+result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", "<YOUR_SEARCH_OPTIONS>")
 for clip in result.data:
     print(
         f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
@@ -136,70 +171,66 @@ while True:
         break
 ```
 
-See the [Make a search request](/reference/make-search-request) page for more details.
+See the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page for more details.
 
----
+### Generate text from video
 
-## For Internal Test
+The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
-Since it's before uploading to PyPI, you will install the package in editable mode after cloning the git repository.
+Note the following about using these endpoints:
+- The Pegasus video understanding engine is enabled for the index to which your video has been uploaded.
+- Your prompts must be instructive or descriptive, and you should not phrase them as questions.
+- The maximum length of a prompt is 300 characters.
 
-```sh
-git clone https://github.com/twelvelabs-io/twelvelabs-python
-cd twelvelabs-python
-pip install -e .
+#### Topics, titles, and hashtags
+
+To generate topics, titles, and hashtags, use the example code below, replacing the following:
+
+- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
+- **<TYPES>**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
+
+```py
+gist = client.generate.gist("<YOUR_VIDEO_ID>", types="<TYPES>")
+print(f"Title = {gist.title}\nTopics = {gist.topics}\nHashtags = {gist.hashtags}")
 ```
 
-Afterward, you can import and use the package from your repository.
+See the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/generate-gist) page for more details.
 
-```python
-from twelvelabs import TwelveLabs
-client = TwelveLabs("<YOUR_API_KEY>")
+##### Summaries, chapters, and highlights
 
-engines = client.engine.list()
+To generate summaries, chapters, and highlights, use the example code below, replacing the following:
+
+- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
+- **<TYPE>**: with a string representing the type of text the platform should generate. This parameter can take one of the following values: "summary", "chapter", or "highlight".
+- _(Optional)_ **<YOUR_PROMPT>**: with an string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example:  "Generate a summary in no more than 5 bullet points."
+
+
+```py
+res = client.generate.summarize("<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_PROMPT>")
+print(f"{res.summary}")
 ```
 
-If you want to use development environment, set `TWELVELABS_BASE_URL` to enviroment variables. It'll automatically applied to your client.
+See the [Summaries, chapters, or highlights]([/reference/make-search-request](https://docs.twelvelabs.io/v1.2/docs/generate-summaries-chapters-highlights)) page for more details.
 
-## Installation
+##### Open-ended texts
 
-> Not supported yet
+To generate open-ended texts, use the example code below, replacing the following:
+- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
+- **<YOUR_PROMPT>**: with string that guides the model on the desired format or content. The maximum length of the prompt is 500 tokens or roughly 350 words. Example:  "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
 
-```sh
-pip install twelvelabs
+```py
+res = client.generate.text(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
+print(f"{res.data}")
 ```
-
-## Usage
-
-All APIs of this library can be found in the `API.md` file. Additionally, the `examples` folder contains sample files categorized by their functionality.
-
-```python
-import os
-
-from twelvelabs import TwelveLabs
-
-client = TwelveLabs(os.getenv("TWELVELABS_API_KEY"))
-client.index.create(
-        f"my_index",
-        [
-            {
-                "name": "pegasus1",
-                "options": ["visual", "conversation"],
-            },
-        ],
-        addons=["thumbnail"],
-    )
-```
-
-When initializing the client, you must provide the API Key issued from the TwelveLabs Dashboard. Be cautious not to store the API Key in source control when using it. Currently, only synchronous usage is supported, and API communications are handled through httpx. (Support for an Async Client is planned for the future.)
 
 ## Error Handling
 
-All errors are included in the twelvelabs package. If there is an issue connecting to the API, a twelvelabs.APIConnectionError will be raised. Errors like 4xx and 5xx status codes can be imported and handled according to the specific status code that occurs.
+The SDK includes a comprehensive error-handling system. For example, if it encounters an issue connecting to the API, it raises a `twelvelabs.APIConnectionError`. Additionally, you can manage HTTP errors, such as client-side errors (`4xx` status codes) and server-side errors (`5xx` status codes), by importing the corresponding error classes in your application and handling them.
+
+Example:
 
 ```python
 import os
-
 from twelvelabs import TwelveLabs
 
 client = TwelveLabs(os.getenv("TWELVELABS_API_KEY"))
@@ -209,7 +240,7 @@ try:
 except twelvelabs.APIConnectionError as e:
     print("Cannot connect to API server")
 except twelvelabs.BadRequestError as e:
-    print("Bad request, please refer to api docs")
+    print("Bad request.")
 except twelvelabs.APIStatusError as e:
     print(f"Status code {e.status_code} received")
     print(e.response)
