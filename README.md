@@ -119,8 +119,8 @@ Before you upload a video to the platform, ensure that it meets the following re
 
 To upload a video, use the example code below, replacing the following:
 
-- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
-- **<YOUR_VIDEO_PATH>**: with a string representing the path to your video file.
+- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`<YOUR_VIDEO_PATH>`**: with a string representing the path to your video file.
 
 
 ```py
@@ -151,9 +151,9 @@ The sections below show how you can perform the most common downstream tasks. Fo
 
 To perform a search request, use the example code below, replacing the following:
 
-- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
-- **<YOUR_QUERY>**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **[<YOUR_SEARCH_OPTIONS>]**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
 result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
@@ -186,8 +186,8 @@ Note the following about using these endpoints:
 
 To generate topics, titles, and hashtags, use the example code below, replacing the following:
 
-- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
-- **[<TYPES>]**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
+- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`[<TYPES>]`**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
 
 ```py
 gist = client.generate.gist("<YOUR_VIDEO_ID>", types=["<TYPES>"])
@@ -200,9 +200,9 @@ See the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/
 
 To generate summaries, chapters, and highlights, use the example code below, replacing the following:
 
-- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
-- **<TYPE>**: with a string representing the type of text the platform should generate. This parameter can take one of the following values: "summary", "chapter", or "highlight".
-- _(Optional)_ **<YOUR_PROMPT>**: with an string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example:  "Generate a summary in no more than 5 bullet points."
+- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`<TYPE>`**: with a string representing the type of text the platform should generate. This parameter can take one of the following values: "summary", "chapter", or "highlight".
+- _(Optional)_ **`<YOUR_PROMPT>`**: with an string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example:  "Generate a summary in no more than 5 bullet points."
 
 
 ```py
@@ -215,8 +215,8 @@ See the [Summaries, chapters, or highlights]([/reference/make-search-request](ht
 ##### Open-ended texts
 
 To generate open-ended texts, use the example code below, replacing the following:
-- **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
-- **<YOUR_PROMPT>**: with string that guides the model on the desired format or content. The maximum length of the prompt is 500 tokens or roughly 350 words. Example:  "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
+- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`<YOUR_PROMPT>`**: with string that guides the model on the desired format or content. The maximum length of the prompt is 500 tokens or roughly 350 words. Example:  "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
 
 ```py
 res = client.generate.text(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
