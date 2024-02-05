@@ -153,7 +153,7 @@ To perform a search request, use the example code below, replacing the following
 
 - **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
 - **<YOUR_QUERY>**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **[<YOUR_SEARCH_OPTIONS>]"**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **[<YOUR_SEARCH_OPTIONS>]**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
 result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
