@@ -153,10 +153,10 @@ To perform a search request, use the example code below, replacing the following
 
 - **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
 - **<YOUR_QUERY>**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **<YOUR_SEARCH_OPTIONS>"**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **[<YOUR_SEARCH_OPTIONS>]"**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
-result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", "<YOUR_SEARCH_OPTIONS>")
+result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
 for clip in result.data:
     print(
         f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
@@ -187,10 +187,10 @@ Note the following about using these endpoints:
 To generate topics, titles, and hashtags, use the example code below, replacing the following:
 
 - **<YOUR_VIDEO_ID>**: with a string representing the unique identifier of your video.
-- **<TYPES>**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
+- **[<TYPES>]**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
 
 ```py
-gist = client.generate.gist("<YOUR_VIDEO_ID>", types="<TYPES>")
+gist = client.generate.gist("<YOUR_VIDEO_ID>", types=["<TYPES>"])
 print(f"Title = {gist.title}\nTopics = {gist.topics}\nHashtags = {gist.hashtags}")
 ```
 
@@ -225,9 +225,20 @@ print(f"{res.data}")
 
 ## Error Handling
 
-The SDK includes a comprehensive error-handling system. For example, if it encounters an issue connecting to the API, it raises a `twelvelabs.APIConnectionError`. Additionally, you can manage HTTP errors, such as client-side errors (`4xx` status codes) and server-side errors (`5xx` status codes), by importing the corresponding error classes in your application and handling them.
+The SDK includes a set of exceptions that are mapped to specific HTTP status codes, as shown in the table below:
 
-Example:
+| Exception | HTTP Status Code |
+|----------|----------|
+| BadRequestError| 400 |
+| AuthenticationError | 401 |
+| PermissionDeniedError  | 403 |
+| NotFoundError | 404 |
+| ConflictError | 409 |
+| UnprocessableEntityError | 422 |
+| RateLimitError | 429 |
+| InternalServerError | 5xx |
+
+The following example shows how you can handle specific HTTP errors in your application:
 
 ```python
 import os
