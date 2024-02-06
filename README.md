@@ -105,7 +105,7 @@ Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', upda
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
 
-See the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page for more details.
+For a description of each field in the request and response, eee the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page.
 
 
 ## Upload videos
@@ -141,7 +141,7 @@ print(f"Uploaded {video_path}")
 
 Note that once the video has been successfully uploaded and indexed, the response `task` object will contain a field named `video_id`, representing the unique identifier of your video.
 
-See the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page for more details.
+For a description of each field in the request and response, see the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page.
 
 ## Perform downstream tasks
 
@@ -171,7 +171,7 @@ while True:
         break
 ```
 
-See the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page for more details.
+For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page.
 
 ### Generate text from video
 
@@ -194,7 +194,7 @@ gist = client.generate.gist("<YOUR_VIDEO_ID>", types=["<TYPES>"])
 print(f"Title = {gist.title}\nTopics = {gist.topics}\nHashtags = {gist.hashtags}")
 ```
 
-See the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/generate-gist) page for more details.
+For a description of each field in the request and response, see the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/generate-gist) page.
 
 #### Summaries, chapters, and highlights
 
@@ -210,7 +210,7 @@ res = client.generate.summarize("<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_
 print(f"{res.summary}")
 ```
 
-See the [Summaries, chapters, or highlights]([/reference/make-search-request](https://docs.twelvelabs.io/v1.2/docs/generate-summaries-chapters-highlights)) page for more details.
+For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.2/docs/generate-summaries-chapters-highlights) page.
 
 #### Open-ended texts
 
