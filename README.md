@@ -91,7 +91,7 @@ except Exception as e:
 ```
 
 Note the following about this example:
-- The plaform provides two distinct engine types - embedding and generative, each serving unique purposes in multimodal video understanding.
+- The platform provides two distinct engine types - embedding and generative, each serving unique purposes in multimodal video understanding.
   - **Embedding engines (Marengo)** : These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
   - **Generative engines (Pegasus)**: These engines generate text based on your videos.
   For your index, both Marengo and Pegasus are be enabled.
@@ -103,7 +103,7 @@ The output should look similar to the following:
 Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', engines=[Engine(name='marengo2.5', options=['visual', 'conversation', 'text_in_video'], addons=None), Engine(name='pegasus1', options=['visual', 'conversation'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
 ```
 
-Note that the API returns, among other information, a field named `id` representing the unique identifier of your new index.
+Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
 
 See the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page for more details.
 
@@ -139,13 +139,13 @@ if task.status != "ready":
 print(f"Uploaded {video_path}")
 ```
 
-Note that once the video has been successfully uploaded and indexed, the response `task` object will contain a field named `video_id` representing the unique identifier of your video.
+Note that once the video has been successfully uploaded and indexed, the response `task` object will contain a field named `video_id`, representing the unique identifier of your video.
 
 See the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page for more details.
 
 ## Perform downstream tasks
 
-The sections below show how you can perform the most common downstream tasks. For a complete list of all the features the Twelve Labs Understanding Platform provides, see [our documentation](https://docs.twelvelabs.io/docs).
+The sections below show how you can perform the most common downstream tasks. See [our documentation](https://docs.twelvelabs.io/docs) for a complete list of all the features the Twelve Labs Understanding Platform provides.
 
 ### Search
 
@@ -178,7 +178,7 @@ See the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-s
 The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
 Note the following about using these endpoints:
-- The Pegasus video understanding engine is enabled for the index to which your video has been uploaded.
+- The Pegasus video understanding engine must be enabled for the index to which your video has been uploaded.
 - Your prompts must be instructive or descriptive, and you should not phrase them as questions.
 - The maximum length of a prompt is 300 characters.
 
@@ -196,7 +196,7 @@ print(f"Title = {gist.title}\nTopics = {gist.topics}\nHashtags = {gist.hashtags}
 
 See the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/generate-gist) page for more details.
 
-##### Summaries, chapters, and highlights
+#### Summaries, chapters, and highlights
 
 To generate summaries, chapters, and highlights, use the example code below, replacing the following:
 
@@ -212,11 +212,11 @@ print(f"{res.summary}")
 
 See the [Summaries, chapters, or highlights]([/reference/make-search-request](https://docs.twelvelabs.io/v1.2/docs/generate-summaries-chapters-highlights)) page for more details.
 
-##### Open-ended texts
+#### Open-ended texts
 
 To generate open-ended texts, use the example code below, replacing the following:
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
-- **`<YOUR_PROMPT>`**: with string that guides the model on the desired format or content. The maximum length of the prompt is 500 tokens or roughly 350 words. Example:  "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
+- **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 500 tokens or roughly 350 words. Example:  "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
 
 ```py
 res = client.generate.text(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
