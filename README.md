@@ -105,7 +105,7 @@ Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', upda
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
 
-For a description of each field in the request and response, eee the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page.
+For a description of each field in the request and response, see the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page.
 
 
 ## Upload videos
