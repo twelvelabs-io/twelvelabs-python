@@ -95,7 +95,7 @@ Note the following about this example:
   - **Embedding engines (Marengo)** : These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
   - **Generative engines (Pegasus)**: These engines generate text based on your videos.
   For your index, both Marengo and Pegasus are enabled.
-- The `engines.options` fields specifiy the types of information each video understanding engine will process. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
+- The `engines.options` fields specify the types of information each video understanding engine will process. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
 
 The output should look similar to the following:
 
