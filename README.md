@@ -94,7 +94,7 @@ Note the following about this example:
 - The platform provides two distinct engine types - embedding and generative, each serving unique purposes in multimodal video understanding.
   - **Embedding engines (Marengo)** : These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
   - **Generative engines (Pegasus)**: These engines generate text based on your videos.
-  For your index, both Marengo and Pegasus are be enabled.
+  For your index, both Marengo and Pegasus are enabled.
 - The `engines.options` fields specifiy the types of information each video understanding engine will process. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
 
 The output should look similar to the following:
@@ -153,7 +153,7 @@ To perform a search request, use the example code below, replacing the following
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
 - **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
 result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
@@ -202,7 +202,7 @@ To generate summaries, chapters, and highlights, use the example code below, rep
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
 - **`<TYPE>`**: with a string representing the type of text the platform should generate. This parameter can take one of the following values: "summary", "chapter", or "highlight".
-- _(Optional)_ **`<YOUR_PROMPT>`**: with an string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example:  "Generate a summary in no more than 5 bullet points."
+- _(Optional)_ **`<YOUR_PROMPT>`**: with a string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example:  "Generate a summary in no more than 5 bullet points."
 
 
 ```py
