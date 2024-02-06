@@ -139,7 +139,7 @@ if task.status != "ready":
 print(f"Uploaded {video_path}")
 ```
 
-Note that once the video has been successfully uploaded and indexed, the response `task` object will contain a field named `video_id`, representing the unique identifier of your video.
+Note that once the video has been successfully uploaded and indexed, the response will contain a field named `video_id`, representing the unique identifier of your video.
 
 For a description of each field in the request and response, see the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page.
 
