@@ -119,7 +119,7 @@ Before you upload a video to the platform, ensure that it meets the following re
 
 To upload a video, use the example code below, replacing the following:
 
-- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of the index to which you want to upload your video.
 - **`<YOUR_VIDEO_PATH>`**: with a string representing the path to your video file.
 
 
