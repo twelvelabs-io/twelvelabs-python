@@ -161,22 +161,25 @@ To perform a search request, use the example code below, replacing the following
 - **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
-result = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
-for clip in result.data:
+search_results = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
+
+# Utility function to print a specific page
+def print_page(page):
+  for clip in page:
     print(
         f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
     )
 
+print_page(search_results.data)
+
 while True:
     try:
-        next_page_data = next(result)
-        print(f"Next page's data: {next_page_data}")
+        print_page(next(search_results))
     except StopIteration:
-        print("You've reached the end of the data set.")
         break
 ```
 
-For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page.
+In the example above, note that the results are returned one page at a time, with a default limit of 10 results on each page. The `next ` method returns the next page of results. When you've reached the end of the dataset, a `StopIteration` exception is raised. For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page.
 
 ### Generate text from video
 
