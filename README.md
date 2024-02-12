@@ -67,6 +67,7 @@ To create an index, use the example code below, replacing "<YOUR_INDEX_NAME>" wi
 
 ```py
 from twelvelabs import APIStatusError
+
 index_obj = None
 try:
     index_obj = client.index.create(
@@ -117,26 +118,30 @@ Before you upload a video to the platform, ensure that it meets the following re
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
 - **Audio track**: If the `conversation` [engine option](https://docs.twelvelabs.io/v1.2/docs/engine-options) is selected, the video you're uploading must contain an audio track.
 
-To upload a video, use the example code below, replacing the following:
+To upload videos, use the example code below, replacing the following:
 
+- **`<YOUR_VIDEO_PATH>`**: with a string representing the path to the directory containing the video files you wish to upload.
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of the index to which you want to upload your video.
-- **`<YOUR_VIDEO_PATH>`**: with a string representing the path to your video file.
 
 
 ```py
-task = client.task.create(index_id="<YOUR_INDEX_ID>", file="<YOUR_VIDEO_PATH>", language="en")
+from glob import glob
+from twelvelabs.models.task import Task
 
-print(f"Uploading {video_path} and waiting for the indexing process to be completed.")
-print(f"Created task: id={task.id}, status={task.status}")
+video_files = glob("<YOUR_VIDEO_PATH>")
+for video_file in video_files:
+  print(f"Uploading {video_file}")
+  task = client.task.create(index_id="<YOUR_INDEX_ID>", file=video_file, language="en")
+  print(f"Created task: id={task.id}")
 
-def on_task_update(task):
-    print(f"  Status={task.status}")
-
-task.wait_for_done(callback=on_task_update)
-
-if task.status != "ready":
-    raise RuntimeError(f"Indexing failed with status {task.status}")
-print(f"Uploaded {video_path}")
+  # (Optional) Monitor the video indexing process
+  # Utility function to print the status of a video indexing task
+  def on_task_update(task: Task):
+          print(f"  Status={task.status}")
+  task.wait_for_done(callback=on_task_update)
+  if task.status != "ready":
+      raise RuntimeError(f"Indexing failed with status {task.status}")
+  print(f"Uploaded {video_file}. The unique identifer of your video is {task.video_id}.")
 ```
 
 Note that once the video has been successfully uploaded and indexed, the response will contain a field named `video_id`, representing the unique identifier of your video.
