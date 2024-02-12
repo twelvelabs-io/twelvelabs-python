@@ -167,7 +167,7 @@ search_results = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_
 def print_page(page):
   for clip in page:
     print(
-        f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
+        f" video_id={clip.video_id} score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
     )
 
 print_page(search_results.data)
@@ -179,7 +179,28 @@ while True:
         break
 ```
 
-In the example above, note that the results are returned one page at a time, with a default limit of 10 results on each page. The `next ` method returns the next page of results. When you've reached the end of the dataset, a `StopIteration` exception is raised. For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page.
+The results are returned one page at a time, with a default limit of 10 results on each page. The `next ` method returns the next page of results. When you've reached the end of the dataset, a `StopIteration` exception is raised.
+
+```
+ video_id=65ca2bce48db9fa780cb3fa4 score=84.9 start=104.9375 end=111.90625 confidence=high
+ video_id=65ca2bce48db9fa780cb3fa4 score=84.82 start=160.46875 end=172.75 confidence=high
+ video_id=65ca2bce48db9fa780cb3fa4 score=84.77 start=55.375 end=72.46875 confidence=high
+```
+
+
+Note that the response contains, among other information, the following fields:
+- `video_id`: The unique identifier of the video that matched your search terms.
+- `score`: A quantitative value determined by the AI engine representing the level of confidence that the results match your search terms.
+- `start`: The start time of the matching video clip, expressed in seconds.
+- `end`: The end time of the matching video clip, expressed in seconds.
+- `confidence`: A qualitative indicator based on the value of the score field. This field can take one of the following values:
+  - `high`
+  - `medium`
+  - `low`
+  - `extremely low`
+
+
+For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page.
 
 ### Generate text from video
 
@@ -198,8 +219,8 @@ To generate topics, titles, and hashtags, use the example code below, replacing 
 - **`[<TYPES>]`**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
 
 ```py
-gist = client.generate.gist("<YOUR_VIDEO_ID>", types=["<TYPES>"])
-print(f"Title = {gist.title}\nTopics = {gist.topics}\nHashtags = {gist.hashtags}")
+res = client.generate.gist("<YOUR_VIDEO_ID>", types=["<TYPES>"])
+print(f"Title = {res.title}\nTopics = {res.topics}\nHashtags = {res.hashtags}")
 ```
 
 For a description of each field in the request and response, see the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/generate-gist) page.
