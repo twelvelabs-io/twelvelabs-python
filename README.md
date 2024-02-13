@@ -156,12 +156,12 @@ The sections below show how you can perform the most common downstream tasks. Se
 
 To perform a search request, use the example code below, replacing the following:
 
-- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+- **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
 - **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
-search_results = client.search.query("<YOUR_VIDEO_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
+search_results = client.search.query("<YOUR_INDEX_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
 
 # Utility function to print a specific page
 def print_page(page):
