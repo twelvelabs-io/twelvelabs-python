@@ -1,9 +1,9 @@
 from typing import List
 
-from ._base import ObjectWithTimestamp
+from ._base import Object
 
 
-class Engine(ObjectWithTimestamp):
+class Engine(Object):
     author: str
     allowed_index_options: List[str]
     ready: bool
