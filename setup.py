@@ -5,9 +5,9 @@ with open("requirements.txt") as f:
 
 setup(
     name="twelvelabs",
-    version="0.0.0",
-    packages=find_packages(),
-    install_requires=required,
+    version="0.1",
     author="Twelve Labs",
     description="SDK for Twelve Labs API",
+    packages=find_packages(),
+    install_requires=required,
 )
