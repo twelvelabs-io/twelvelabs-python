@@ -12,6 +12,13 @@ assert (
 with TwelveLabs(API_KEY) as client:
     index = client.index.retrieve("65a75560efa0814ef2edc77a")
 
+    print("Search (group by video):")
+    result = client.search.query(
+        index.id, "A man talking", ["visual", "conversation"], group_by="video"
+    )
+    for group in result.data:
+        print(f"  {group.id} {group.clips}")
+
     print("Search:")
     result = client.search.query(index.id, "A man talking", ["visual", "conversation"])
     for clip in result.data:

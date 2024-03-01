@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional, TYPE_CHECKING, Dict, Any
+from typing import List, Optional, TYPE_CHECKING, Dict, Any, Union
 from pydantic import Field, PrivateAttr
 
 from ._base import BaseModel, ModelMixin
@@ -26,6 +26,11 @@ class SearchData(BaseModel):
     module_confidence: Optional[Dict[str, Any]] = None
 
 
+class GroupByVideoSearchData(BaseModel):
+    clips: Optional[List[SearchData]] = None
+    id: str
+
+
 class SearchPageInfo(BaseModel):
     limit_per_page: int
     total_results: int
@@ -37,7 +42,7 @@ class SearchPageInfo(BaseModel):
 class SearchResult(ModelMixin, BaseModel):
     _resource: SearchResource = PrivateAttr()
     pool: SearchPool = Field(alias="search_pool")
-    data: List[SearchData]
+    data: List[Union[SearchData, GroupByVideoSearchData]]
     page_info: SearchPageInfo
 
     def __init__(self, resource: SearchResource, **data):
