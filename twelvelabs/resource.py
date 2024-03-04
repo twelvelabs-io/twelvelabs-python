@@ -11,7 +11,7 @@ class APIResource:
     _client: TwelveLabs
 
     def __init__(self, client: TwelveLabs) -> None:
-        self._client = client._client
+        self._client = client
         self._get = client.get
         self._post = client.post
         self._patch = client.patch
