@@ -3,14 +3,14 @@
 This SDK provides a convenient way to interact with the Twelve Labs Video Understanding Platform from an application written in the Python language. The SDK equips you with a set of intuitive classes and methods that streamline the process of interacting with the platform, minimizing the need for boilerplate code.
 
 
-## Prerequisites
+# Prerequisites
 
 Ensure that the following prerequisites are met before using the SDK:
 
 -  [Python](https://www.python.org) 3.7 or newer must be installed on your machine.
 -  You have an API key. If you don't have an account, please [sign up](https://api.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [Dashboard](https://api.twelvelabs.io/dashboard) page, and select the **Copy** icon to the right of the key to copy it to your clipboard.
 
-## Install the SDK
+# Install the SDK
 
 1. Clone the `twelvelabs-io/twelvelabs-python` GitHub repository:
 
@@ -39,7 +39,7 @@ Ensure that the following prerequisites are met before using the SDK:
 
 
 
-## Initialize the SDK
+# Initialize the SDK
 
 1. Import the SDK into your application:
 
@@ -53,7 +53,7 @@ Ensure that the following prerequisites are met before using the SDK:
     client = TwelveLabs(api_key=os.getenv('TL_API_KEY'))
     ```
 
-## Use the SDK
+# Use the SDK
 
 To get started with the SDK, follow these basic steps:
 
@@ -74,7 +74,7 @@ try:
         name = "<YOUR_INDEX_NAME>",
         engines =[
             {
-                "name": "marengo2.5",
+                "name": "marengo2.6",
                 "options": ["visual", "conversation", "text_in_video"],
             },
             {
@@ -96,12 +96,13 @@ Note the following about this example:
   - **Embedding engines (Marengo)** : These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
   - **Generative engines (Pegasus)**: These engines generate text based on your videos.
   For your index, both Marengo and Pegasus are enabled.
-- The `engines.options` fields specify the types of information each video understanding engine will process. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
+- The `engines.options` fields specify the types of information each video understanding engine will process.
+- The engines and the engine options specified when you create an index apply to all the videos you upload to that index and cannot be changed. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
 
 The output should look similar to the following:
 
 ```
-Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', engines=[Engine(name='marengo2.5', options=['visual', 'conversation', 'text_in_video'], addons=None), Engine(name='pegasus1', options=['visual', 'conversation'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
+Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', engines=[Engine(name='marengo2.6', options=['visual', 'conversation', 'text_in_video'], addons=None), Engine(name='pegasus1', options=['visual', 'conversation'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
 ```
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
@@ -128,7 +129,7 @@ To upload videos, use the example code below, replacing the following:
 from glob import glob
 from twelvelabs.models.task import Task
 
-video_files = glob("<YOUR_VIDEO_PATH>")
+video_files = glob("<YOUR_VIDEO_PATH>") # Example: "/videos/*.mp4
 for video_file in video_files:
   print(f"Uploading {video_file}")
   task = client.task.create(index_id="<YOUR_INDEX_ID>", file=video_file, language="en")
@@ -158,7 +159,7 @@ To perform a search request, use the example code below, replacing the following
 
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. For details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. Note that the search options you specify must be a subset of the engine options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page. 
 
 ```py
 search_results = client.search.query("<YOUR_INDEX_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
@@ -285,8 +286,3 @@ except twelvelabs.APIStatusError as e:
     print(f"Status code {e.status_code} received")
     print(e.response)
 ```
-
-## TODO
-
-- cli
-- validate video before upload
