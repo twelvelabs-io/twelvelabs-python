@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional, TYPE_CHECKING, Dict, Any, Union
+from typing import List, Optional, TYPE_CHECKING, Dict, Any, Union, Literal
 from pydantic import Field, PrivateAttr
 
 from ._base import BaseModel, ModelMixin
@@ -15,6 +15,11 @@ class SearchPool(BaseModel):
     index_id: str
 
 
+class SearchModule(BaseModel):
+    type: Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]
+    confidence: Union[str, Literal["high", "medium", "low"]]
+
+
 class SearchData(BaseModel):
     score: float
     start: float
@@ -24,6 +29,7 @@ class SearchData(BaseModel):
     confidence: str
     thumbnail_url: Optional[str] = None
     module_confidence: Optional[Dict[str, Any]] = None
+    modules: Optional[List[SearchModule]] = None
 
 
 class GroupByVideoSearchData(BaseModel):
