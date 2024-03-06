@@ -100,6 +100,7 @@ class Task(APIResource):
         transcription_file: Union[str, BinaryIO, None] = None,
         transcription_url: Optional[str] = None,
         language: Optional[str] = None,
+        disable_video_stream: Optional[bool] = None,
         **kwargs,
     ) -> models.Task:
         if not file and not url:
@@ -109,6 +110,7 @@ class Task(APIResource):
             "video_url": url,
             "transcription_url": transcription_url,
             "language": language,
+            "disable_video_tream": disable_video_stream,
         }
 
         files = {}
@@ -144,6 +146,7 @@ class Task(APIResource):
         files: Optional[List[Union[str, BinaryIO, None]]] = None,
         urls: Optional[List[str]] = None,
         language: Optional[str] = None,
+        disable_video_stream: Optional[bool] = None,
         **kwargs,
     ) -> List[models.Task]:
         if not files and not urls:
@@ -153,7 +156,13 @@ class Task(APIResource):
         if files:
             for file in files:
                 try:
-                    task = self.create(index_id, file=file, language=language, **kwargs)
+                    task = self.create(
+                        index_id,
+                        file=file,
+                        language=language,
+                        disable_video_stream=disable_video_stream,
+                        **kwargs,
+                    )
                     tasks.append(task)
                 except Exception as e:
                     print(f"Error processing file {file}: {e}")
@@ -162,7 +171,13 @@ class Task(APIResource):
         if urls:
             for url in urls:
                 try:
-                    task = self.create(index_id, url=url, language=language, **kwargs)
+                    task = self.create(
+                        index_id,
+                        url=url,
+                        language=language,
+                        disable_video_stream=disable_video_stream,
+                        **kwargs,
+                    )
                     tasks.append(task)
                 except Exception as e:
                     print(f"Error processing url {url}: {e}")
