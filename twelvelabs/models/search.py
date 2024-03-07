@@ -16,8 +16,8 @@ class SearchPool(BaseModel):
 
 
 class SearchModule(BaseModel):
-    type: Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]
-    confidence: Union[str, Literal["high", "medium", "low"]]
+    type: str
+    confidence: str
 
 
 class SearchData(BaseModel):
