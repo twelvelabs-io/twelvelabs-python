@@ -12,31 +12,11 @@ Ensure that the following prerequisites are met before using the SDK:
 
 # Install the SDK
 
-1. Clone the `twelvelabs-io/twelvelabs-python` GitHub repository:
+Install the `twelvelabs` package:
 
-    ```sh
-    git clone https://github.com/twelvelabs-io/twelvelabs-python && cd twelvelabs-python
-    ```
-
-2. Install the `twelvelabs` package in editable mode:
-
-    ```sh
-    pip install -e .
-    ```
-
-3. _(Optional)_ By default, the SDK connects to the production environment. To use a different environment, set the `TWELVELABS_BASE_URL` environment variable by entering the following command and replacing `<YOUR_DEVELOPMENT_BASE_URL>` with the desired base URL:
-
-    ```sh
-    export TWELVELABS_BASE_URL=<YOUR_DEVELOPMENT_BASE_URL>
-    ```
-
-    The following example connects the SDK to the development environment:
-
-
-    ```sh
-    export TWELVELABS_BASE_URL=https://api.twelvelabs.space
-    ```
-
+ ```sh
+ pip install twelvelabs
+ ```
 
 
 # Initialize the SDK
@@ -133,7 +113,7 @@ video_files = glob("<YOUR_VIDEO_PATH>") # Example: "/videos/*.mp4
 for video_file in video_files:
   print(f"Uploading {video_file}")
   task = client.task.create(index_id="<YOUR_INDEX_ID>", file=video_file, language="en")
-  print(f"Created task: id={task.id}")
+  print(f"Task id={task.id}")
 
   # (Optional) Monitor the video indexing process
   # Utility function to print the status of a video indexing task
@@ -145,7 +125,7 @@ for video_file in video_files:
   print(f"Uploaded {video_file}. The unique identifer of your video is {task.video_id}.")
 ```
 
-Note that once the video has been successfully uploaded and indexed, the response will contain a field named `video_id`, representing the unique identifier of your video.
+Note that once a video has been successfully uploaded and indexed, the response will contain a field named `video_id`, representing the unique identifier of your video.
 
 For a description of each field in the request and response, see the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page.
 
