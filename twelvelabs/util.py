@@ -23,5 +23,6 @@ def handle_comparison_params(params, key, value):
         for op, date in value.items():
             param_name = f"{key}[{op}]"
             params[param_name] = date
+        params[key] = None
     else:
         params[key] = value
