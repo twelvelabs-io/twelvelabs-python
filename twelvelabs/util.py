@@ -18,7 +18,7 @@ def get_data_with_default(dictionary: Dict, key: str, default=[]):
     return dictionary.get(key, default) if dictionary.get(key) is not None else default
 
 
-def handle_comparison_params(params, key, value):
+def handle_comparison_params(params: Dict, key: str, value: Any):
     if isinstance(value, dict):
         for op, date in value.items():
             param_name = f"{key}[{op}]"
