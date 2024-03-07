@@ -1,8 +1,13 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 from ..resource import APIResource
 from .. import models
-from ..util import remove_none_values, get_data_with_default, get_local_params
+from ..util import (
+    remove_none_values,
+    get_data_with_default,
+    get_local_params,
+    handle_comparison_params,
+)
 
 
 class Video(APIResource):
@@ -16,15 +21,15 @@ class Video(APIResource):
         *,
         id: Optional[str] = None,
         filename: Optional[str] = None,
-        size: Optional[int] = None,
-        width: Optional[int] = None,
-        height: Optional[int] = None,
-        duration: Optional[float] = None,
-        fps: Optional[int] = None,
+        size: Optional[Union[str, Dict[str, str]]] = None,
+        width: Optional[Union[str, Dict[str, str]]] = None,
+        height: Optional[Union[str, Dict[str, str]]] = None,
+        duration: Optional[Union[str, Dict[str, str]]] = None,
+        fps: Optional[Union[str, Dict[str, str]]] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        created_at: Optional[str] = None,
-        updated_at: Optional[str] = None,
-        indexed_at: Optional[str] = None,
+        created_at: Optional[Union[str, Dict[str, str]]] = None,
+        updated_at: Optional[Union[str, Dict[str, str]]] = None,
+        indexed_at: Optional[Union[str, Dict[str, str]]] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -48,6 +53,14 @@ class Video(APIResource):
             "sort_by": sort_by,
             "sort_option": sort_option,
         }
+        handle_comparison_params(params, "fps", fps)
+        handle_comparison_params(params, "width", width)
+        handle_comparison_params(params, "height", height)
+        handle_comparison_params(params, "size", size)
+        handle_comparison_params(params, "duration", duration)
+        handle_comparison_params(params, "created_at", created_at)
+        handle_comparison_params(params, "updated_at", updated_at)
+        handle_comparison_params(params, "indexed_at", indexed_at)
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
@@ -59,15 +72,15 @@ class Video(APIResource):
         *,
         id: Optional[str] = None,
         filename: Optional[str] = None,
-        size: Optional[int] = None,
-        width: Optional[int] = None,
-        height: Optional[int] = None,
-        duration: Optional[float] = None,
-        fps: Optional[int] = None,
+        size: Optional[Union[str, Dict[str, str]]] = None,
+        width: Optional[Union[str, Dict[str, str]]] = None,
+        height: Optional[Union[str, Dict[str, str]]] = None,
+        duration: Optional[Union[str, Dict[str, str]]] = None,
+        fps: Optional[Union[str, Dict[str, str]]] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        created_at: Optional[str] = None,
-        updated_at: Optional[str] = None,
-        indexed_at: Optional[str] = None,
+        created_at: Optional[Union[str, Dict[str, str]]] = None,
+        updated_at: Optional[Union[str, Dict[str, str]]] = None,
+        indexed_at: Optional[Union[str, Dict[str, str]]] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -92,6 +105,14 @@ class Video(APIResource):
             "sort_by": sort_by,
             "sort_option": sort_option,
         }
+        handle_comparison_params(params, "fps", fps)
+        handle_comparison_params(params, "width", width)
+        handle_comparison_params(params, "height", height)
+        handle_comparison_params(params, "size", size)
+        handle_comparison_params(params, "duration", duration)
+        handle_comparison_params(params, "created_at", created_at)
+        handle_comparison_params(params, "updated_at", updated_at)
+        handle_comparison_params(params, "indexed_at", indexed_at)
 
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs

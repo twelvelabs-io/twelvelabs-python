@@ -4,13 +4,14 @@ from typing import (
     Optional,
     Union,
     Literal,
+    Dict,
     TYPE_CHECKING,
 )
 
 from ..resource import APIResource
 from .. import models
 from .. import types
-from ..util import remove_none_values, get_local_params
+from ..util import remove_none_values, get_local_params, handle_comparison_params
 from .video import Video
 
 if TYPE_CHECKING:
@@ -41,6 +42,8 @@ class Index(APIResource):
         page_limit: Optional[int] = 10,
         sort_by: Optional[str] = "created_at",
         sort_option: Optional[str] = "desc",
+        created_at: Optional[Union[str, Dict[str, str]]] = None,
+        updated_at: Optional[Union[str, Dict[str, str]]] = None,
         **kwargs,
     ) -> List[models.Index]:
         params = {
@@ -52,9 +55,12 @@ class Index(APIResource):
             "page_limit": page_limit,
             "sort_by": sort_by,
             "sort_option": sort_option,
+            "created_at": created_at,
+            "updated_at": updated_at,
         }
+        handle_comparison_params(params, "created_at", created_at)
+        handle_comparison_params(params, "updated_at", updated_at)
         res = self._get("indexes", params=remove_none_values(params), **kwargs)
-        page_info = models.PageInfo(**res["page_info"])
 
         return [models.Index(self, **index) for index in res["data"]]
 
@@ -71,6 +77,8 @@ class Index(APIResource):
         page_limit: Optional[int] = 10,
         sort_by: Optional[str] = "created_at",
         sort_option: Optional[str] = "desc",
+        created_at: Optional[Union[str, Dict[str, str]]] = None,
+        updated_at: Optional[Union[str, Dict[str, str]]] = None,
         **kwargs,
     ) -> models.IndexListWithPagination:
         local_params = get_local_params(locals().items())
@@ -83,7 +91,12 @@ class Index(APIResource):
             "page_limit": page_limit,
             "sort_by": sort_by,
             "sort_option": sort_option,
+            "created_at": created_at,
+            "updated_at": updated_at,
         }
+        handle_comparison_params(params, "created_at", created_at)
+        handle_comparison_params(params, "updated_at", updated_at)
+
         res = self._get("indexes", params=remove_none_values(params), **kwargs)
 
         data = [models.Index(self, **index) for index in res["data"]]

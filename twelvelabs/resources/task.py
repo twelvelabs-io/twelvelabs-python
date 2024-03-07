@@ -1,8 +1,8 @@
-from typing import Optional, Union, BinaryIO, List
+from typing import Optional, Union, BinaryIO, List, Dict
 
 from ..resource import APIResource
 from .. import models
-from ..util import remove_none_values, get_local_params
+from ..util import remove_none_values, get_local_params, handle_comparison_params
 
 
 class Task(APIResource):
@@ -19,8 +19,8 @@ class Task(APIResource):
         duration: Optional[float] = None,
         width: Optional[int] = None,
         height: Optional[int] = None,
-        created_at: Optional[str] = None,
-        updated_at: Optional[str] = None,
+        created_at: Optional[Union[str, Dict[str, str]]] = None,
+        updated_at: Optional[Union[str, Dict[str, str]]] = None,
         estimated_time: Optional[str] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
@@ -43,6 +43,8 @@ class Task(APIResource):
             "sort_by": sort_by,
             "sort_option": sort_option,
         }
+        handle_comparison_params(params, "created_at", created_at)
+        handle_comparison_params(params, "updated_at", updated_at)
         res = self._get("tasks", params=remove_none_values(params), **kwargs)
         return [models.Task(self, **task) for task in res["data"]]
 
@@ -55,8 +57,8 @@ class Task(APIResource):
         duration: Optional[float] = None,
         width: Optional[int] = None,
         height: Optional[int] = None,
-        created_at: Optional[str] = None,
-        updated_at: Optional[str] = None,
+        created_at: Optional[Union[str, Dict[str, str]]] = None,
+        updated_at: Optional[Union[str, Dict[str, str]]] = None,
         estimated_time: Optional[str] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
@@ -80,6 +82,8 @@ class Task(APIResource):
             "sort_by": sort_by,
             "sort_option": sort_option,
         }
+        handle_comparison_params(params, "created_at", created_at)
+        handle_comparison_params(params, "updated_at", updated_at)
         res = self._get("tasks", params=remove_none_values(params), **kwargs)
 
         data = [models.Task(self, **task) for task in res["data"]]
