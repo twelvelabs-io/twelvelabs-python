@@ -2,7 +2,6 @@
 
 This SDK provides a convenient way to interact with the Twelve Labs Video Understanding Platform from an application written in the Python language. The SDK equips you with a set of intuitive classes and methods that streamline the process of interacting with the platform, minimizing the need for boilerplate code.
 
-
 # Prerequisites
 
 Ensure that the following prerequisites are met before using the SDK:
@@ -266,3 +265,16 @@ except twelvelabs.APIStatusError as e:
     print(f"Status code {e.status_code} received")
     print(e.response)
 ```
+
+# License
+
+We use the Developer Certificate of Origin (DCO) in lieu of a Contributor License Agreement for all contributions to Twelve Labs' open-source projects. We request that contributors agree to the terms of the DCO and indicate that agreement by signing all commits made to Twelve Labs' projects by adding a line with your name and email address to every Git commit message contributed, as shown in the example below:
+
+```
+Signed-off-by: Jane Doe <jane.doe@example.com>
+```
+
+You can sign your commit automatically with Git by using `git commit -s` if you have your `user.name` and `user.email` set as part of your Git configuration.
+We ask that you use your real name (please, no anonymous contributions or pseudonyms). By signing your commitment, you are certifying that you have the right have the right to submit it under the open-source license used by that particular project. You must use your real name (no pseudonyms or anonymous contributions are allowed.)
+We use the Probot DCO GitHub app to check for DCO signoffs of every commit.
+If you forget to sign your commits, the DCO bot will remind you and give you detailed instructions for how to amend your commits to add a signature.
