@@ -9,6 +9,18 @@ if TYPE_CHECKING:
     from ..resources import Task as TaskResource
 
 
+class TaskHLS(BaseModel):
+    video_url: Optional[str] = None
+    thumbnail_urls: Optional[List[str]] = None
+    status: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+class TaskProcess(BaseModel):
+    percentage: Optional[float] = None
+    remain_seconds: Optional[int] = None
+
+
 class Task(ObjectWithTimestamp):
     _resource: TaskResource = PrivateAttr()
     index_id: str
@@ -16,7 +28,8 @@ class Task(ObjectWithTimestamp):
     estimated_time: Optional[str] = None
     status: str
     metadata: Dict[str, Any]
-    process: Optional[Dict[str, Any]] = None
+    hls: Optional[TaskHLS] = None
+    process: Optional[TaskProcess] = None
 
     def __init__(self, resource: TaskResource, **data):
         super().__init__(**data)

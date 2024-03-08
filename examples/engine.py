@@ -16,7 +16,9 @@ with TwelveLabs(API_KEY) as client:
     engines = client.engine.list()
 
     for engine in engines:
-        print(f"  id={engine.id} allowed_index_options={engine.allowed_index_options}")
+        print(
+            f"  id={engine.id} allowed_engine_options={engine.allowed_engine_options}"
+        )
 
     pegasus = client.engine.retrieve("pegasus1")
     print(f"Pegasus: {pegasus}")
