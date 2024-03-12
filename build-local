@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+rm -rf dist; mkdir dist
+rm -rf build; mkdir build
+python3 setup.py sdist
+python3 setup.py bdist_wheel
+python3 -m twine upload dist/*
