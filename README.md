@@ -72,7 +72,7 @@ except Exception as e:
 
 Note the following about this example:
 - The platform provides two distinct engine types - embedding and generative, each serving unique purposes in multimodal video understanding.
-  - **Embedding engines (Marengo)** : These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
+  - **Embedding engines (Marengo)**: These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
   - **Generative engines (Pegasus)**: These engines generate text based on your videos.
   For your index, both Marengo and Pegasus are enabled.
 - The `engines.options` fields specify the types of information each video understanding engine will process.
@@ -94,6 +94,7 @@ For a description of each field in the request and response, see the [Create an 
 Before you upload a video to the platform, ensure that it meets the following requirements:
 
 - **Video resolution**: Must be greater or equal than 360p and less or equal than 4K. For consistent search results, Twelve Labs recommends you upload 360p videos.
+- **Video and audio formats**:  The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 20 minutes (1200s).
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
 - **Audio track**: If the `conversation` [engine option](https://docs.twelvelabs.io/v1.2/docs/engine-options) is selected, the video you're uploading must contain an audio track.
