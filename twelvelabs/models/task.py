@@ -18,7 +18,7 @@ class TaskHLS(BaseModel):
 
 class TaskProcess(BaseModel):
     percentage: Optional[float] = None
-    remain_seconds: Optional[int] = None
+    remain_seconds: Optional[float] = None
 
 
 class Task(ObjectWithTimestamp):
