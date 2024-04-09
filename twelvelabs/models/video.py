@@ -26,6 +26,13 @@ class VideoMetadata(BaseModel):
         extra = Extra.allow  # This allows extra fields
 
 
+class VideoHLS(BaseModel):
+    video_url: Optional[str] = None
+    thumbnail_urls: Optional[List[str]] = None
+    status: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
 class VideoValue(BaseModel):
     start: float
     end: float
@@ -36,6 +43,7 @@ class Video(ObjectWithTimestamp):
     _resource: VideoResource = PrivateAttr()
     _index_id: str = PrivateAttr()
     metadata: VideoMetadata
+    hls: Optional[VideoHLS] = None
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
         super().__init__(**data)
