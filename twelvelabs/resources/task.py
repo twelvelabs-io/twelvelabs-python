@@ -114,7 +114,7 @@ class Task(APIResource):
             "video_url": url,
             "transcription_url": transcription_url,
             "language": language,
-            "disable_video_tream": disable_video_stream,
+            "disable_video_stream": disable_video_stream,
         }
 
         files = {}
