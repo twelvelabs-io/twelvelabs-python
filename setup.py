@@ -9,7 +9,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="twelvelabs",
-    version="0.1.21",
+    version="0.1.22",
     author="Twelve Labs",
     description="SDK for Twelve Labs API",
     url="https://github.com/twelvelabs-io/twelvelabs-python",
