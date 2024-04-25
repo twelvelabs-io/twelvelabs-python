@@ -37,7 +37,7 @@ class APIClient:
         except httpx.HTTPStatusError as e:
             raise self._make_status_error(e.response)
 
-        if "application/json" in response.headers.get("Content-Type", ""):
+        if len(response.content) > 0 and "application/json" in response.headers.get("Content-Type", ""):
             return response.json()
         return response.text
 
