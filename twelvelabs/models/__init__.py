@@ -1,9 +1,9 @@
-from ._base import Object, ObjectWithTimestamp, PageInfo
+from ._base import Object, ObjectWithTimestamp, PageInfo, RootModelList
 from .engine import Engine
 from .index import Index, IndexListWithPagination
 from .task import Task, TaskStatus, TaskListWithPagination
 from .video import Video, VideoValue, VideoListWithPagination
-from .search import SearchData, SearchPageInfo, SearchResult, CombinedSearchResult
+from .search import SearchData, SearchPageInfo, SearchResult, CombinedSearchResult, GroupByVideoSearchData
 from .generate import (
     GenerateOpenEndedTextResult,
     GenerateSummarizeChapterResult,
@@ -34,4 +34,5 @@ __all__ = [
     "GenerateSummarizeHighlightResult",
     "GenerateSummarizeResult",
     "GenerateGistResult",
+    "RootModelList",
 ]

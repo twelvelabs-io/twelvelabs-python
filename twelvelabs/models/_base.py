@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, RootModel
+from typing import List, Optional, TypeVar
 
 
 class ModelMixin:
@@ -22,3 +22,24 @@ class PageInfo(BaseModel):
     page: int
     total_page: int
     total_results: int
+
+
+T = TypeVar("T")
+
+
+class RootModelList(RootModel[List[T]]):
+    """
+    See https://docs.pydantic.dev/latest/concepts/models/#rootmodel-and-custom-root-types
+    """
+
+    def __init__(self, _list: List):
+        super().__init__(_list)
+
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
+
+    def __len__(self):
+        return len(self.root)

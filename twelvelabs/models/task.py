@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, Dict, Any, Callable, List, TYPE_CHECKING
 from pydantic import PrivateAttr
 
-from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo
+from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo, RootModelList
 
 if TYPE_CHECKING:
     from ..resources import Task as TaskResource
@@ -71,7 +71,7 @@ class Task(ObjectWithTimestamp):
 class TaskListWithPagination(ModelMixin, BaseModel):
     _resource: TaskResource = PrivateAttr()
     _origin_params: Dict[str, Any] = PrivateAttr()
-    data: List[Task] = []
+    data: RootModelList[Task] = []
     page_info: PageInfo
 
     def __init__(self, resource: TaskResource, origin_params: Dict[str, Any], **data):
@@ -82,7 +82,7 @@ class TaskListWithPagination(ModelMixin, BaseModel):
     def __iter__(self):
         return self
 
-    def __next__(self) -> List[Task]:
+    def __next__(self) -> RootModelList[Task]:
         if self.page_info.page >= self.page_info.total_page:
             raise StopIteration
         params = self._origin_params

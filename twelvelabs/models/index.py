@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Union, BinaryIO, Literal, Dict, Any
 from pydantic import Field, PrivateAttr
 
-from ._base import ModelMixin, BaseModel, ObjectWithTimestamp, PageInfo
+from ._base import ModelMixin, BaseModel, ObjectWithTimestamp, PageInfo, RootModelList
 
 if TYPE_CHECKING:
     from ..resources import Index as IndexResource
@@ -20,7 +20,7 @@ class Index(ObjectWithTimestamp):
     _resource: IndexResource = PrivateAttr()
     name: str = Field(alias="index_name")
     # engine_id: str # v1.1
-    engines: List[Engine]
+    engines: RootModelList[Engine]
     # options: List[str] = Field(alias="index_options") # v1.1
     # addons: Optional[List[str]] # v1.1
     video_count: int
@@ -90,7 +90,7 @@ class Index(ObjectWithTimestamp):
         sort_by: Optional[str] = None,
         sort_option: Optional[str] = None,
         **kwargs,
-    ) -> Video:
+    ) -> RootModelList[Video]:
         return self._resource.video.list(
             self.id,
             id=id,

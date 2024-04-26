@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Any, Union
 
+from ..models._base import RootModelList
 from ..resource import APIResource
 from .. import models
 from ..util import (
@@ -35,7 +36,7 @@ class Video(APIResource):
         sort_by: Optional[str] = None,
         sort_option: Optional[str] = None,
         **kwargs,
-    ) -> List[models.Video]:
+    ) -> RootModelList[models.Video]:
         params = {
             "_id": id,
             "filename": filename,
@@ -64,7 +65,7 @@ class Video(APIResource):
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
-        return [models.Video(self, index_id, **video) for video in res["data"]]
+        return RootModelList([models.Video(self, index_id, **video) for video in res["data"]])
 
     def list_pagination(
         self,
@@ -155,7 +156,7 @@ class Video(APIResource):
         start: Optional[float] = None,
         end: Optional[float] = None,
         **kwargs,
-    ) -> List[models.VideoValue]:
+    ) -> RootModelList[models.VideoValue]:
         params = {
             "start": start,
             "end": end,
@@ -165,10 +166,10 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return [
+        return RootModelList([
             models.VideoValue(**value)
             for value in get_data_with_default(res, "data", [])
-        ]
+        ])
 
     def text_in_video(
         self,
@@ -178,7 +179,7 @@ class Video(APIResource):
         start: Optional[float] = None,
         end: Optional[float] = None,
         **kwargs,
-    ) -> List[models.VideoValue]:
+    ) -> RootModelList[models.VideoValue]:
         params = {
             "start": start,
             "end": end,
@@ -188,10 +189,10 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return [
+        return RootModelList([
             models.VideoValue(**value)
             for value in get_data_with_default(res, "data", [])
-        ]
+        ])
 
     def logo(
         self,
@@ -201,7 +202,7 @@ class Video(APIResource):
         start: Optional[float] = None,
         end: Optional[float] = None,
         **kwargs,
-    ) -> List[models.VideoValue]:
+    ) -> RootModelList[models.VideoValue]:
         params = {
             "start": start,
             "end": end,
@@ -211,10 +212,10 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return [
+        return RootModelList([
             models.VideoValue(**value)
             for value in get_data_with_default(res, "data", [])
-        ]
+        ])
 
     def thumbnail(
         self,

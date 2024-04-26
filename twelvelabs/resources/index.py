@@ -8,6 +8,7 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from ..models import RootModelList
 from ..resource import APIResource
 from .. import models
 from .. import types
@@ -45,7 +46,7 @@ class Index(APIResource):
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
         **kwargs,
-    ) -> List[models.Index]:
+    ) -> RootModelList[models.Index]:
         params = {
             "_id": id,
             "index_name": name,
@@ -62,7 +63,7 @@ class Index(APIResource):
         handle_comparison_params(params, "updated_at", updated_at)
         res = self._get("indexes", params=remove_none_values(params), **kwargs)
 
-        return [models.Index(self, **index) for index in res["data"]]
+        return RootModelList([models.Index(self, **index) for index in res["data"]])
 
     def list_pagination(
         self,

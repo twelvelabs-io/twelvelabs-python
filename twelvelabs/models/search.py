@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Dict, Any, Union, Literal
 from pydantic import Field, PrivateAttr
 
-from ._base import BaseModel, ModelMixin
+from ._base import BaseModel, ModelMixin, RootModelList
 
 if TYPE_CHECKING:
     from ..resources import Search as SearchResource
@@ -29,11 +29,11 @@ class SearchData(BaseModel):
     confidence: str
     thumbnail_url: Optional[str] = None
     module_confidence: Optional[Dict[str, Any]] = None
-    modules: Optional[List[SearchModule]] = None
+    modules: Optional[RootModelList[SearchModule]] = None
 
 
 class GroupByVideoSearchData(BaseModel):
-    clips: Optional[List[SearchData]] = None
+    clips: Optional[RootModelList[SearchData]] = None
     id: str
 
 
@@ -48,7 +48,7 @@ class SearchPageInfo(BaseModel):
 class SearchResult(ModelMixin, BaseModel):
     _resource: SearchResource = PrivateAttr()
     pool: SearchPool = Field(alias="search_pool")
-    data: List[Union[SearchData, GroupByVideoSearchData]]
+    data: RootModelList[Union[SearchData, GroupByVideoSearchData]]
     page_info: SearchPageInfo
 
     def __init__(self, resource: SearchResource, **data):
@@ -58,7 +58,7 @@ class SearchResult(ModelMixin, BaseModel):
     def __iter__(self):
         return self
 
-    def __next__(self) -> List[SearchData]:
+    def __next__(self) -> RootModelList[Union[SearchData, GroupByVideoSearchData]]:
         next_page_token = self.page_info.next_page_token
         if not next_page_token:
             raise StopIteration
@@ -69,7 +69,7 @@ class SearchResult(ModelMixin, BaseModel):
 
 
 class CombinedSearchResult(SearchResult):
-    def __next__(self) -> List[SearchData]:
+    def __next__(self) -> RootModelList[SearchData]:
         next_page_token = self.page_info.next_page_token
         if not next_page_token:
             raise StopIteration
