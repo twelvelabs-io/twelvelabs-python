@@ -1,4 +1,4 @@
-name: Version Bump and Create PR
+name: Version Management
 
 on:
   workflow_dispatch:
@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository and update to the latest main
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -47,18 +46,17 @@ jobs:
       - name: Bump Version and Create Git Tag
         id: bump-version
         run: |
+          current_version=$(grep 'version=' setup.py | sed -n 's/.*version="\(.*\)"/\1/p')
           bump2version ${{ github.event.inputs.versionType }} --config-file .bumpversion.cfg
-          echo "::set-output name=new_version::$(grep 'version=' setup.py | sed -n 's/.*version=\"\([^\"]*\)\".*/\1/p')"
+          new_version=$(grep 'version=' setup.py | sed -n 's/.*version="\(.*\)"/\1/p')
+          echo "::set-output name=new_version::$new_version"
+          git add .
+          git commit -m "Bump version from $current_version to $new_version"
 
       - name: Show changes
         run: |
           git status
           git diff
-
-      - name: Commit Changes
-        run: |
-          git add .
-          git commit -m "Bump version to ${{ steps.bump-version.outputs.new_version }}" || echo "No changes to commit"
 
       - name: Push Changes
         run: |
