@@ -47,10 +47,14 @@ jobs:
         id: bump-version
         run: |
           current_version=$(grep 'version=' setup.py | sed -n 's/.*version="\(.*\)"/\1/p')
+          echo "Current version: $current_version"
+          cat setup.py
           bump2version ${{ github.event.inputs.versionType }} --config-file .bumpversion.cfg
           new_version=$(grep 'version=' setup.py | sed -n 's/.*version="\(.*\)"/\1/p')
+          echo "New version: $new_version"
+          cat setup.py
           echo "::set-output name=new_version::$new_version"
-          git add .
+          git add setup.py .bumpversion.cfg
           git commit -m "Bump version from $current_version to $new_version"
 
       - name: Show changes
