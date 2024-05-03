@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       versionType:
-        description: "Version type (major, minor, patch)"
-        required: true
+        type: choice
+        description: "Version type"
         default: "patch"
+        options:
+          - major
+          - minor
+          - patch
 
 jobs:
   bump-and-tag:
@@ -25,11 +29,14 @@ jobs:
       - name: Install bump2version
         run: pip install bump2version
 
+      - name: Configure Git
+        run: |
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Bump Version and Create Git Tag
         run: bump2version ${{ github.event.inputs.versionType }} --config-file .bumpversion.cfg
 
       - name: Push Changes
         run: |
-          git config --local user.name "${{ github.actor }}"
-          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
           git push origin main --tags
