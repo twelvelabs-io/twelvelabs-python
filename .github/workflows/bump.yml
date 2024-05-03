@@ -1,4 +1,4 @@
-name: Version Management
+name: Version Bump and Create PR
 
 on:
   workflow_dispatch:
@@ -54,6 +54,7 @@ jobs:
           echo "New version: $new_version"
           cat setup.py
           echo "::set-output name=new_version::$new_version"
+          git checkout -- setup.py  # Discard any cached changes
           git add setup.py .bumpversion.cfg
           git commit -m "Bump version from $current_version to $new_version"
 
