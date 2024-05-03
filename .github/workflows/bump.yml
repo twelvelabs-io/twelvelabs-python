@@ -32,7 +32,7 @@ jobs:
       - name: Configure Git
         run: |
           git config --local user.name "${{ github.actor }}"
-          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --local user.email "${{ github.actor }}@twelvelabs.io"
 
       - name: Bump Version and Create Git Tag
         run: bump2version ${{ github.event.inputs.versionType }} --config-file .bumpversion.cfg
