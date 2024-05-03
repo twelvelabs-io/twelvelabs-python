@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING, Dict, Any, List, Union, Literal
 from pydantic import PrivateAttr, Extra
 
-from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo
+from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo, RootModelList
 
 if TYPE_CHECKING:
     from ..resources import Video as VideoResource
@@ -73,26 +73,26 @@ class Video(ObjectWithTimestamp):
 
     def transcription(
         self, *, start: Optional[float] = None, end: Optional[float] = None, **kwargs
-    ) -> List[VideoValue]:
+    ) -> RootModelList[VideoValue]:
         return self._resource._client.index.video.transcription(
             self._index_id, self.id, start=start, end=end, **kwargs
         )
 
     def text_in_video(
         self, *, start: Optional[float] = None, end: Optional[float] = None, **kwargs
-    ) -> List[VideoValue]:
+    ) -> RootModelList[VideoValue]:
         return self._resource._client.index.video.text_in_video(
             self._index_id, self.id, start=start, end=end, **kwargs
         )
 
     def logo(
         self, *, start: Optional[float] = None, end: Optional[float] = None, **kwargs
-    ) -> List[VideoValue]:
+    ) -> RootModelList[VideoValue]:
         return self._resource._client.index.video.logo(
             self._index_id, self.id, start=start, end=end, **kwargs
         )
 
-    def thumbnail(self, *, time: Optional[float] = None, **kwargs) -> List[VideoValue]:
+    def thumbnail(self, *, time: Optional[float] = None, **kwargs) -> str:
         return self._resource._client.index.video.thumbnail(
             self._index_id, self.id, time=time, **kwargs
         )
@@ -128,7 +128,7 @@ class Video(ObjectWithTimestamp):
 class VideoListWithPagination(ModelMixin, BaseModel):
     _resource: VideoResource = PrivateAttr()
     _origin_params: Dict[str, Any] = PrivateAttr()
-    data: List[Video] = []
+    data: RootModelList[Video] = []
     page_info: PageInfo
 
     def __init__(self, resource: VideoResource, origin_params: Dict[str, Any], **data):
@@ -139,7 +139,7 @@ class VideoListWithPagination(ModelMixin, BaseModel):
     def __iter__(self):
         return self
 
-    def __next__(self) -> List[Video]:
+    def __next__(self) -> RootModelList[Video]:
         if self.page_info.page >= self.page_info.total_page:
             raise StopIteration
         params = self._origin_params

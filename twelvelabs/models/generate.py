@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from ._base import BaseModel
+from ._base import BaseModel, RootModelList
 
 
 class GenerateOpenEndedTextResult(BaseModel):
@@ -25,8 +25,8 @@ class GenerateSummarizeHighlightResult(BaseModel):
 class GenerateSummarizeResult(BaseModel):
     id: str
     summary: Optional[str] = None
-    chapters: Optional[List[GenerateSummarizeChapterResult]] = None
-    highlights: Optional[List[GenerateSummarizeHighlightResult]] = None
+    chapters: Optional[RootModelList[GenerateSummarizeChapterResult]] = None
+    highlights: Optional[RootModelList[GenerateSummarizeHighlightResult]] = None
 
 
 class GenerateGistResult(BaseModel):

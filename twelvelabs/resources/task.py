@@ -1,5 +1,6 @@
 from typing import Optional, Union, BinaryIO, List, Dict
 
+from ..models import RootModelList
 from ..resource import APIResource
 from .. import models
 from ..util import remove_none_values, get_local_params, handle_comparison_params
@@ -27,7 +28,7 @@ class Task(APIResource):
         sort_by: Optional[str] = None,
         sort_option: Optional[str] = None,
         **kwargs,
-    ) -> List[models.Task]:
+    ) -> RootModelList[models.Task]:
         params = {
             "_id": id,
             "index_id": index_id,
@@ -46,7 +47,7 @@ class Task(APIResource):
         handle_comparison_params(params, "created_at", created_at)
         handle_comparison_params(params, "updated_at", updated_at)
         res = self._get("tasks", params=remove_none_values(params), **kwargs)
-        return [models.Task(self, **task) for task in res["data"]]
+        return RootModelList(   [models.Task(self, **task) for task in res["data"]])
 
     def list_pagination(
         self,
@@ -152,7 +153,7 @@ class Task(APIResource):
         language: Optional[str] = None,
         disable_video_stream: Optional[bool] = None,
         **kwargs,
-    ) -> List[models.Task]:
+    ) -> RootModelList[models.Task]:
         if not files and not urls:
             raise ValueError("Either files or urls must be provided")
 
@@ -187,7 +188,7 @@ class Task(APIResource):
                     print(f"Error processing url {url}: {e}")
                     continue
 
-        return tasks
+        return RootModelList(tasks)
 
     def delete(self, id: str, **kwargs) -> None:
         self._delete(f"tasks/{id}", **kwargs)
