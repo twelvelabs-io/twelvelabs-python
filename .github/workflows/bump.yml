@@ -42,13 +42,9 @@ jobs:
       - name: Bump Version and Create Git Tag
         run: bump2version ${{ github.event.inputs.versionType }} --config-file .bumpversion.cfg
 
-      - name: Commit Changes
-        run: |
-          git commit -am "Bump version via GitHub Actions"
-
       - name: Push Changes
         run: |
-          git push --set-upstream origin version-bump-${{ github.run_id }}
+          git push --set-upstream origin version-bump-${{ github.run_id }} --tags
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
