@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository and update to the latest main
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -54,9 +55,11 @@ jobs:
           echo "New version: $new_version"
           cat setup.py
           echo "::set-output name=new_version::$new_version"
-          git checkout -- setup.py  # Discard any cached changes
+          git config --list
+          git rm --cached setup.py
+          git rm --cached .bumpversion.cfg
           git add setup.py .bumpversion.cfg
-          git commit -m "Bump version from $current_version to $new_version"
+          git commit -am "Bump version from $current_version to $new_version" || echo "No changes to commit"
 
       - name: Show changes
         run: |
