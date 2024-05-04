@@ -44,7 +44,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump Version and Create Git Tag
+      - name: Bump Version
         id: bump-version
         run: |
           current_version=$(cat VERSION)
@@ -53,6 +53,7 @@ jobs:
           new_version=$(cat VERSION)
           echo "New version: $new_version"
           echo "::set-output name=new_version::$new_version"
+          git add -A
 
       - name: Show changes
         run: |
