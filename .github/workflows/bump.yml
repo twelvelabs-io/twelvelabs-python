@@ -53,10 +53,11 @@ jobs:
           new_version=$(cat VERSION)
           echo "New version: $new_version"
           echo "::set-output name=new_version::$new_version"
-          git add VERSION .bumpversion.cfg
+          git add VERSION
 
       - name: Show changes
         run: |
+          echo "Current version: $(cat VERSION)"
           git status
           git diff
 
