@@ -53,8 +53,8 @@ jobs:
 
       - name: Push Changes to Bump Branch
         run: |
-          git status
-          git push --set-upstream origin version-bump-${{ github.run_id }}
+          git push
+          # git push --set-upstream origin version-bump-${{ github.run_id }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
