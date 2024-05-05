@@ -49,11 +49,11 @@ jobs:
         run: |
           current_version=$(cat VERSION)
           echo "Current version: $current_version"
-          bump2version ${{ github.event.inputs.versionType }} --config-file .bumpversion.cfg --commit
+          bump2version --current-version "$current_version" "${{ github.event.inputs.versionType }}" VERSION
           new_version=$(cat VERSION)
           echo "New version: $new_version"
           echo "::set-output name=new_version::$new_version"
-          git add -A
+          git add VERSION .bumpversion.cfg
 
       - name: Show changes
         run: |
@@ -62,6 +62,7 @@ jobs:
 
       - name: Push Changes
         run: |
+          git commit -m "Bump version from ${{ steps.bump-version.outputs.current_version }} to ${{ steps.bump-version.outputs.new_version }}"
           git push --set-upstream origin version-bump-${{ github.run_id }}
 
       - name: Create Pull Request
