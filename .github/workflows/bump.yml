@@ -40,19 +40,15 @@ jobs:
       - name: Bump Version and Push Changes
         id: bump-version
         run: |
-          git fetch --all
-          git checkout main
-          git pull
           git checkout -b version-bump-${{ github.run_id }}
           current_version=$(cat VERSION)
           echo "Current version: $current_version"
-          bump2version --current-version "$current_version" "${{ github.event.inputs.versionType }}" VERSION --commit
+          bump2version --current-version "$current_version" "${{ github.event.inputs.versionType }}" VERSION --commit --allow-dirty --verbose
           new_version=$(cat VERSION)
           echo "New version: $new_version"
           echo "::set-output name=new_version::$new_version"
           git status
           git diff
-          git commit -m "Bump version from ${{ steps.bump-version.outputs.current_version }} to ${{ steps.bump-version.outputs.new_version }}"
           git push --set-upstream origin version-bump-${{ github.run_id }}
 
       - name: Create Pull Request
