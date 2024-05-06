@@ -45,7 +45,10 @@ jobs:
         run: |
           current_version=$(cat VERSION)
           echo "Current version: $current_version"
-          bump2version --current-version "$current_version" ${{ github.event.inputs.versionType }} --commit --allow-dirty --no-tag --verbose VERSION
+          bump2version --current-version "$current_version" ${{ github.event.inputs.versionType }} --no-commit --allow-dirty --no-tag --verbose VERSION
+          # git add .
+          git commit -am "Bump version"
+          git status
           new_version=$(cat VERSION)
           echo "New version: $new_version"
           echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
