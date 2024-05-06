@@ -55,7 +55,7 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git add VERSION
-          git commit -m "Bump version: $current_version → $new_version"
+          git commit -m "Bump version"
           git push --set-upstream origin version-bump-${{ github.run_id }}
 
       - name: Create Pull Request
