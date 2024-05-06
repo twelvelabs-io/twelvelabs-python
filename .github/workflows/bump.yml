@@ -18,11 +18,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository and update to the latest main
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GH_TOKEN" | gh auth login --with-token
 
       - name: Configure Git
         run: |
