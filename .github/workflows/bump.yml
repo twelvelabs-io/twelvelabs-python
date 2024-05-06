@@ -48,6 +48,8 @@ jobs:
           echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
           bump2version --current-version "$current_version" ${{ github.event.inputs.versionType }} VERSION --commit --verbose
           git status
+          git add VERSION
+          git commit -m "Bump version"
           new_version=$(cat VERSION)
           echo "New version: $new_version"
           echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
@@ -55,6 +57,7 @@ jobs:
       - name: Push Changes to Bump Branch
         run: |
           git push --set-upstream origin version-bump-${{ github.run_id }}
+          git log --oneline -5
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
