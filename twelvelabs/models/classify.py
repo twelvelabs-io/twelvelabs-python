@@ -1,4 +1,4 @@
-from typing import List, Optional, Any, Union, Literal, TYPE_CHECKING
+from typing import List, Optional, Union, Literal, TYPE_CHECKING
 from pydantic import PrivateAttr
 
 from ._base import BaseModel, TokenPageInfo, RootModelList
@@ -36,7 +36,7 @@ class ClassifyClass(BaseModel):
     name: str
     score: str
     duration_ratio: str
-    clips: List[Any]
+    clips: List[ClassifyClip]
 
 
 class ClassifyVideoData(BaseModel):
