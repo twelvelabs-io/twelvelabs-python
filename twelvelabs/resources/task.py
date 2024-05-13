@@ -47,7 +47,7 @@ class Task(APIResource):
         handle_comparison_params(params, "created_at", created_at)
         handle_comparison_params(params, "updated_at", updated_at)
         res = self._get("tasks", params=remove_none_values(params), **kwargs)
-        return RootModelList(   [models.Task(self, **task) for task in res["data"]])
+        return RootModelList([models.Task(self, **task) for task in res["data"]])
 
     def list_pagination(
         self,

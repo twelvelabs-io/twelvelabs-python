@@ -24,6 +24,14 @@ class PageInfo(BaseModel):
     total_results: int
 
 
+class TokenPageInfo(BaseModel):
+    limit_per_page: int
+    total_results: int
+    page_expired_at: str
+    next_page_token: Optional[str] = None
+    prev_page_token: Optional[str] = None
+
+
 T = TypeVar("T")
 
 
