@@ -11,7 +11,7 @@ class ClassifyClassParams:
     name: str
     prompts: List[str]
     options: Optional[
-        List[Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]]
+        List[Union[str, Literal["visual", "conversation", "text_in_video"]]]
     ] = None
     conversation_option: Optional[Union[str, Literal["semantic", "exact_match"]]] = None
 
