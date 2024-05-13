@@ -60,7 +60,7 @@ class Classify(APIResource):
             "show_detailed_score": show_detailed_score,
         }
         res = self._post("classify/bulk", json=remove_none_values(json), **kwargs)
-        return models.ClassifyPageResult(**res)
+        return models.ClassifyPageResult(self, **res)
 
     def by_page_token(
         self,
