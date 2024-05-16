@@ -10,7 +10,7 @@ assert (
 ), "Your API key should be stored in an environment variable named API_KEY."
 
 with TwelveLabs(API_KEY) as client:
-    index = client.index.retrieve("65a75560efa0814ef2edc77a")
+    index = client.index.retrieve("<YOUR_INDEX_ID>")
     videos = client.index.video.list(index.id)
     if len(videos) == 0:
         print(f"No videos in index {index.id}, exit")

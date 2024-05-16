@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Dict, Any, Union, Literal
 from pydantic import Field, PrivateAttr
 
-from ._base import BaseModel, ModelMixin, RootModelList
+from ._base import BaseModel, ModelMixin, RootModelList, TokenPageInfo
 
 if TYPE_CHECKING:
     from ..resources import Search as SearchResource
@@ -37,19 +37,11 @@ class GroupByVideoSearchData(BaseModel):
     id: str
 
 
-class SearchPageInfo(BaseModel):
-    limit_per_page: int
-    total_results: int
-    page_expired_at: str
-    next_page_token: Optional[str] = None
-    prev_page_token: Optional[str] = None
-
-
 class SearchResult(ModelMixin, BaseModel):
     _resource: SearchResource = PrivateAttr()
     pool: SearchPool = Field(alias="search_pool")
     data: RootModelList[Union[SearchData, GroupByVideoSearchData]]
-    page_info: SearchPageInfo
+    page_info: TokenPageInfo
 
     def __init__(self, resource: SearchResource, **data):
         super().__init__(**data)

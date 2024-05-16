@@ -3,6 +3,7 @@ from .index import Index
 from .task import Task
 from .video import Video
 from .search import Search
+from .classify import Classify
 from .generate import Generate
 
-__all__ = ["Engine", "Index", "Task", "Video", "Search", "Generate"]
+__all__ = ["Engine", "Index", "Task", "Video", "Search", "Classify", "Generate"]
