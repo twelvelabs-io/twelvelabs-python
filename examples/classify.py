@@ -111,6 +111,7 @@ with TwelveLabs(API_KEY) as client:
         exit()
     video_ids = [video.id for video in videos]
 
+    print("Classify by index: ")
     res = client.classify.index(
         index.id, options=["visual", "conversation"], classes=CLASSES
     )
@@ -130,6 +131,7 @@ with TwelveLabs(API_KEY) as client:
             print("There is no next page in classify result")
             break
 
+    print("Classify by videos: ")
     res = client.classify.videos(
         video_ids, options=["visual", "conversation"], classes=CLASSES
     )
