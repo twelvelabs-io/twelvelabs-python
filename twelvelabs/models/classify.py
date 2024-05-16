@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Optional, Union, Literal, TYPE_CHECKING
 from pydantic import PrivateAttr
 
@@ -17,9 +19,9 @@ class ClassifyClassParams:
 
 
 class ClassifyDetailedScore(BaseModel):
-    max_score: str
-    avg_score: str
-    normalized_score: str
+    max_score: float
+    avg_score: float
+    normalized_score: float
 
 
 class ClassifyClip(BaseModel):
@@ -34,9 +36,9 @@ class ClassifyClip(BaseModel):
 
 class ClassifyClass(BaseModel):
     name: str
-    score: str
-    duration_ratio: str
-    clips: List[ClassifyClip]
+    score: float
+    duration_ratio: float
+    clips: Optional[List[ClassifyClip]] = None
 
 
 class ClassifyVideoData(BaseModel):
