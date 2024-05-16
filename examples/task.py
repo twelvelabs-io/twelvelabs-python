@@ -11,7 +11,7 @@ assert (
 ), "Your API key should be stored in an environment variable named API_KEY."
 
 with TwelveLabs(API_KEY) as client:
-    index = client.index.retrieve("65a75560efa0814ef2edc77a")
+    index = client.index.retrieve("<YOUR_INDEX_ID>")
 
     video_path = os.path.join(os.path.dirname(__file__), "assets/example.mp4")
     task = client.task.create(index.id, file=video_path, language="en")

@@ -104,7 +104,7 @@ CLASSES = [
 ]
 
 with TwelveLabs(API_KEY) as client:
-    index = client.index.retrieve("65eff3ab6dc02a0c600497bd")
+    index = client.index.retrieve("<YOUR_INDEX_ID>")
     videos = client.index.video.list(index.id)
     if len(videos) == 0:
         print(f"No videos in index {index.id}, exit")
