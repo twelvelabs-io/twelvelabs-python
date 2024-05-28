@@ -16,6 +16,7 @@ from .generate import (
     GenerateGistResult,
 )
 from .classify import ClassifyClassParams, ClassifyResult, ClassifyPageResult
+from .embed import CreateEmbeddingsResult, EmbeddingsTask, EmbeddingsTaskStatus
 
 __all__ = [
     "Object",
@@ -42,5 +43,8 @@ __all__ = [
     "GenerateSummarizeHighlightResult",
     "GenerateSummarizeResult",
     "GenerateGistResult",
+    "CreateEmbeddingsResult",
+    "EmbeddingsTask",
+    "EmbeddingsTaskStatus",
     "RootModelList",
 ]
