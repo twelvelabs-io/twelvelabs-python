@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class EmbedTask(APIResource):
-    def retrieve(self, task_id: str, **kwargs) -> models.EmbeddingsTask:
-        res = self._get(f"embed/tasks/{task_id}", **kwargs)
+    def retrieve(self, id: str, **kwargs) -> models.EmbeddingsTask:
+        res = self._get(f"embed/tasks/{id}", **kwargs)
         return models.EmbeddingsTask(**res)
 
     def create(
