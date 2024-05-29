@@ -1,6 +1,15 @@
-from typing import List
+from typing import List, Union, BinaryIO, Optional, Literal
 
 from ._base import BaseModel, Object
+
+
+class CreateEmbeddingsTaskVideoParams:
+    file: Union[str, BinaryIO, None]
+    url: Optional[str]
+    start_offset_sec: Optional[float]
+    end_offset_sec: Optional[float]
+    clip_length: Optional[int]
+    scopes: Optional[List[Literal["clip", "video"]]]
 
 
 class Embedding(BaseModel):
@@ -27,4 +36,4 @@ class VideoEmbedding(BaseModel):
 class EmbeddingsTask(Object):
     engine_name: str
     status: str
-    video_embeddings: List[VideoEmbedding]
+    video_embeddings: Optional[List[VideoEmbedding]] = None

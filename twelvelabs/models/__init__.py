@@ -16,7 +16,12 @@ from .generate import (
     GenerateGistResult,
 )
 from .classify import ClassifyClassParams, ClassifyResult, ClassifyPageResult
-from .embed import CreateEmbeddingsResult, EmbeddingsTask, EmbeddingsTaskStatus
+from .embed import (
+    CreateEmbeddingsResult,
+    EmbeddingsTask,
+    EmbeddingsTaskStatus,
+    CreateEmbeddingsTaskVideoParams,
+)
 
 __all__ = [
     "Object",
@@ -46,5 +51,6 @@ __all__ = [
     "CreateEmbeddingsResult",
     "EmbeddingsTask",
     "EmbeddingsTaskStatus",
+    "CreateEmbeddingsTaskVideoParams",
     "RootModelList",
 ]
