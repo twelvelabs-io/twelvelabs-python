@@ -25,8 +25,8 @@ class ClassifyDetailedScore(BaseModel):
 
 
 class ClassifyClip(BaseModel):
-    start: int
-    end: int
+    start: float
+    end: float
     score: float
     option: str
     prompt: str
