@@ -13,6 +13,7 @@ class TwelveLabs(APIClient):
     search: resources.Search
     generate: resources.Generate
     classify: resources.Classify
+    embed: resources.Embed
 
     base_url: str
     api_key: str
@@ -44,6 +45,7 @@ class TwelveLabs(APIClient):
         self.search = resources.Search(self)
         self.generate = resources.Generate(self)
         self.classify = resources.Classify(self)
+        self.embed = resources.Embed(self)
 
     def __enter__(self):
         return self
