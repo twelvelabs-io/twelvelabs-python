@@ -17,7 +17,9 @@ with TwelveLabs(API_KEY) as client:
         text="man walking across the street",
         text_truncate="start",
     )
-    print(f"Created embedding: engine_name={embedding.engine_name}")
+    print("Created embedding")
+    print(f" Engine: {embedding.engine_name}")
+    print(f" Embedding: {embedding.text_embedding.float}")
 
     video_path = os.path.join(os.path.dirname(__file__), "assets/example.mp4")
     task = client.embed.task.create(engine_name=engine_name, video_file=video_path)
