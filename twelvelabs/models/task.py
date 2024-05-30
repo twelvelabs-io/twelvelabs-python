@@ -51,7 +51,7 @@ class Task(ObjectWithTimestamp):
         self,
         *,
         sleep_interval: float = 5.0,
-        callback: Optional[Callable[[Task], None]],
+        callback: Optional[Callable[[Task], None]] = None,
         **kwargs,
     ) -> Task:
         if sleep_interval <= 0:

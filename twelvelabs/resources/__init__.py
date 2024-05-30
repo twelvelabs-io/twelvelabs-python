@@ -5,7 +5,7 @@ from .video import Video
 from .search import Search
 from .classify import Classify
 from .generate import Generate
-from .embed import Embed
+from .embed import Embed, EmbedTask
 
 __all__ = [
     "Engine",
@@ -16,4 +16,5 @@ __all__ = [
     "Classify",
     "Generate",
     "Embed",
+    "EmbedTask",
 ]

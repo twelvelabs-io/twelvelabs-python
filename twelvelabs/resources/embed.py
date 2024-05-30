@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Union, List, Literal, Optional, BinaryIO, TYPE_CHECKING
 
+from ..models._base import RootModelList
 from ..resource import APIResource
 from .. import models
 from ..util import remove_none_values
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 class EmbedTask(APIResource):
     def retrieve(self, id: str, **kwargs) -> models.EmbeddingsTask:
         res = self._get(f"embed/tasks/{id}", **kwargs)
-        return models.EmbeddingsTask(**res)
+        return models.EmbeddingsTask(self, **res)
 
     def create(
         self,
@@ -26,7 +27,7 @@ class EmbedTask(APIResource):
         video_clip_length: Optional[int] = None,
         scopes: Optional[List[Literal["clip", "video"]]] = None,
         **kwargs,
-    ) -> str:
+    ) -> models.EmbeddingsTask:
         if not video_file and not video_url:
             raise ValueError("Either video_file or video_url must be provided")
         data = {
@@ -52,7 +53,8 @@ class EmbedTask(APIResource):
             res = self._post(
                 "embed/tasks", data=remove_none_values(data), files=files, **kwargs
             )
-            return res["_id"]
+            task_id = res["_id"]
+            return self.retrieve(task_id)
         finally:
             for file in opened_files:
                 file.close()
@@ -62,7 +64,7 @@ class EmbedTask(APIResource):
         engine_name: str,
         videos: models.CreateEmbeddingsTaskVideoParams,
         **kwargs,
-    ) -> List[str]:
+    ) -> RootModelList[models.EmbeddingsTask]:
         task_ids = []
         for video_params in videos:
             try:
@@ -80,7 +82,16 @@ class EmbedTask(APIResource):
             except Exception as e:
                 print(f"Error creating task with video: {e}")
                 continue
-        return task_ids
+
+        tasks = []
+        for task_id in task_ids:
+            try:
+                task = self.retrieve(task_id)
+                tasks.append(task)
+            except Exception as e:
+                print(f"Error retrieving task {task_id}: {e}")
+                continue
+        return tasks
 
     def status(self, task_id: str, **kwargs) -> models.EmbeddingsTaskStatus:
         res = self._get(f"embed/tasks/{task_id}/status", **kwargs)
