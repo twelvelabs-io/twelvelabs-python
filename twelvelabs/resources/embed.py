@@ -65,10 +65,10 @@ class EmbedTask(APIResource):
         videos: models.CreateEmbeddingsTaskVideoParams,
         **kwargs,
     ) -> RootModelList[models.EmbeddingsTask]:
-        task_ids = []
+        tasks = []
         for video_params in videos:
             try:
-                task_id = self.create(
+                task = self.create(
                     engine_name,
                     video_file=video_params.file,
                     video_url=video_params.url,
@@ -78,18 +78,9 @@ class EmbedTask(APIResource):
                     scopes=video_params.scopes,
                     **kwargs,
                 )
-                task_ids.append(task_id)
-            except Exception as e:
-                print(f"Error creating task with video: {e}")
-                continue
-
-        tasks = []
-        for task_id in task_ids:
-            try:
-                task = self.retrieve(task_id)
                 tasks.append(task)
             except Exception as e:
-                print(f"Error retrieving task {task_id}: {e}")
+                print(f"Error creating task with video: {e}")
                 continue
         return tasks
 
