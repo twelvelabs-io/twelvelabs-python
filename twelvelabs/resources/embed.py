@@ -25,14 +25,14 @@ class EmbedTask(APIResource):
         video_start_offset_sec: Optional[float] = None,
         video_end_offset_sec: Optional[float] = None,
         video_clip_length: Optional[int] = None,
-        scopes: Optional[List[Literal["clip", "video"]]] = None,
+        video_embedding_scopes: Optional[List[Literal["clip", "video"]]] = None,
         **kwargs,
     ) -> models.EmbeddingsTask:
         if not video_file and not video_url:
             raise ValueError("Either video_file or video_url must be provided")
         data = {
             "engine_name": engine_name,
-            "video_embedding_scope": scopes,
+            "video_embedding_scope": video_embedding_scopes,
             "video_url": video_url,
             "video_start_offset_sec": video_start_offset_sec,
             "video_end_offset_sec": video_end_offset_sec,
