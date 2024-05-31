@@ -126,11 +126,15 @@ class Task(APIResource):
                 file = open(file, "rb")
                 opened_files.append(file)
             files["video_file"] = file
+        else:
+            # Request should be sent as multipart-form even file not exists
+            files["dummy"] = ("", "")
+
         if transcription_file is not None:
             if isinstance(transcription_file, str):
                 transcription_file = open(transcription_file, "rb")
                 opened_files.append(transcription_file)
-            data["transcription_file"] = transcription_file
+            files["transcription_file"] = transcription_file
             data["provide_transcription"] = True
         if transcription_url is not None:
             data["provide_transcription"] = True
