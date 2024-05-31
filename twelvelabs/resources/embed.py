@@ -48,10 +48,16 @@ class EmbedTask(APIResource):
                 files["video_file"] = file
             else:
                 files["video_file"] = video_file
+        else:
+            # Request should be sent as multipart-form even file not exists
+            files["dummy"] = ("", "")
 
         try:
             res = self._post(
-                "embed/tasks", data=remove_none_values(data), files=files, **kwargs
+                "embed/tasks",
+                data=remove_none_values(data),
+                files=files,
+                **kwargs,
             )
             task_id = res["_id"]
             return self.retrieve(task_id)
