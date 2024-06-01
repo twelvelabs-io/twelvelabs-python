@@ -106,6 +106,7 @@ class Embed(APIResource):
         self,
         engine_name: str,
         text: str,
+        *,
         text_truncate: Literal["none", "start", "end"],
         **kwargs,
     ) -> models.CreateEmbeddingsResult:
