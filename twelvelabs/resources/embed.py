@@ -68,7 +68,7 @@ class EmbedTask(APIResource):
     def create_bulk(
         self,
         engine_name: str,
-        videos: models.CreateEmbeddingsTaskVideoParams,
+        videos: List[models.CreateEmbeddingsTaskVideoParams],
         **kwargs,
     ) -> RootModelList[models.EmbeddingsTask]:
         tasks = []
