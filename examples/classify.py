@@ -142,3 +142,11 @@ with TwelveLabs(API_KEY) as client:
             print(
                 f"  name={cl.name} score={cl.score} duration_ratio={cl.duration_ratio}"
             )
+
+    while True:
+        try:
+            next_page_data = next(res)
+            print(f"Next page's data: {next_page_data}")
+        except StopIteration:
+            print("There is no next page in classify result")
+            break
