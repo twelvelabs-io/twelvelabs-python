@@ -20,7 +20,7 @@ class Classify(APIResource):
         threshold: Optional[Dict[str, Any]] = None,
         show_detailed_score: Optional[bool] = None,
         **kwargs,
-    ) -> models.ClassifyResult:
+    ) -> models.ClassifyPageResult:
         json = {
             "video_ids": video_ids,
             "options": options,
@@ -32,7 +32,7 @@ class Classify(APIResource):
             "show_detailed_score": show_detailed_score,
         }
         res = self._post("classify", json=remove_none_values(json), **kwargs)
-        return models.ClassifyResult(**res)
+        return models.ClassifyPageResult(self, **res)
 
     def index(
         self,

@@ -46,10 +46,6 @@ class ClassifyVideoData(BaseModel):
     classes: List[ClassifyClass]
 
 
-class ClassifyResult(BaseModel):
-    data: List[ClassifyVideoData]
-
-
 class ClassifyPageResult(BaseModel):
     _resource: ClassifyResource = PrivateAttr()
     data: List[ClassifyVideoData]
