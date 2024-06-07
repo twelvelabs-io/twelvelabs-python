@@ -11,14 +11,13 @@ class Search(APIResource):
     def query(
         self,
         index_id: str,
-        options: List[
-            Literal["visual", "conversation", "text_in_video", "logo", "face"]
-        ],
+        options: List[Literal["visual", "conversation", "text_in_video", "logo"]],
         *,
         query: Union[str, Dict[str, Any]] = None,  # deprecated
         query_text: str = None,
-        query_image_file: Union[str, BinaryIO, None] = None,
-        query_image_url: str = None,
+        query_media_type: Literal["image"] = None,
+        query_media_file: Union[str, BinaryIO, None] = None,
+        query_media_url: str = None,
         group_by: Optional[Literal["video", "clip"]] = None,
         threshold: Optional[Literal["high", "medium", "low", "none"]] = None,
         operator: Optional[Literal["or", "and"]] = None,
@@ -29,11 +28,11 @@ class Search(APIResource):
         adjust_confidence_level: Optional[float] = None,
         **kwargs,
     ) -> models.SearchResult:
-        if not query_text and not query_image_file and not query_image_url:
+        if not query_text and not query_media_file and not query_media_url:
             if query is not None:
                 # deprecated; call /search endpoint
                 print(
-                    "Warning: `query` is deprecated. Use `query_text` or `query_image_file` or `query_image_url` instead."
+                    "Warning: `query` is deprecated. Use `query_text`, `query_media_file` or `query_media_url` instead."
                 )
                 json = {
                     "index_id": index_id,
@@ -51,14 +50,21 @@ class Search(APIResource):
                 return models.SearchResult(self, **res)
             else:
                 raise ValueError(
-                    "Either query_text, query_image_file, or query_image_url must be provided"
+                    "Either `query_text`, `query_media_file`, or `query_media_url` must be provided"
                 )
+
+        if (query_media_file or query_media_url) and not query_media_type:
+            raise ValueError(
+                "`query_media_type` must be provided when `query_media_file` or `query_media_url` is provided."
+            )
+
         if filter is not None:
             filter = jsonutil.dumps(filter)
         data = {
             "index_id": index_id,
             "query_text": query_text,
-            "query_image_url": query_image_url,
+            "query_media_type": query_media_type,
+            "query_media_url": query_media_url,
             "search_options": options,
             "group_by": group_by,
             "threshold": threshold,
@@ -72,14 +78,13 @@ class Search(APIResource):
 
         files = {}
         opened_files: List[BinaryIO] = []
-        if query_image_file is not None:
-            data["query_media_type"] = "image"
-            if isinstance(query_image_file, str):
-                file = open(query_image_file, "rb")
+        if query_media_file is not None:
+            if isinstance(query_media_file, str):
+                file = open(query_media_file, "rb")
                 opened_files.append(file)
                 files["query_media_file"] = file
             else:
-                files["query_media_file"] = query_image_file
+                files["query_media_file"] = query_media_file
         else:
             # Request should be sent as multipart-form even file not exists
             files["dummy"] = ("", "")

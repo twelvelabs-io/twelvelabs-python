@@ -54,7 +54,8 @@ with TwelveLabs(API_KEY) as client:
     result = client.search.query(
         index.id,
         ["visual", "conversation"],
-        query_image_file=image_path,
+        query_media_type="image",
+        query_media_file=image_path,
     )
     for clip in result.data:
         print(
