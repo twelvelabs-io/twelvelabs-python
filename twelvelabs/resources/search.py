@@ -30,10 +30,6 @@ class Search(APIResource):
     ) -> models.SearchResult:
         if not query_text and not query_media_file and not query_media_url:
             if query is not None:
-                # deprecated; call /search endpoint
-                print(
-                    "Warning: `query` is deprecated. Use `query_text`, `query_media_file` or `query_media_url` instead."
-                )
                 json = {
                     "index_id": index_id,
                     "query": query,
@@ -50,7 +46,7 @@ class Search(APIResource):
                 return models.SearchResult(self, **res)
             else:
                 raise ValueError(
-                    "Either `query_text`, `query_media_file`, or `query_media_url` must be provided"
+                    "`query` must be provided"
                 )
 
         if (query_media_file or query_media_url) and not query_media_type:
