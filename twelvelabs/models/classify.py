@@ -31,7 +31,6 @@ class ClassifyClip(BaseModel):
     option: str
     prompt: str
     thumbnail_url: Optional[str] = None
-    detailed_scores: Optional[ClassifyDetailedScore] = None
 
 
 class ClassifyClass(BaseModel):
@@ -39,6 +38,7 @@ class ClassifyClass(BaseModel):
     score: float
     duration_ratio: float
     clips: Optional[List[ClassifyClip]] = None
+    detailed_scores: Optional[ClassifyDetailedScore] = None
 
 
 class ClassifyVideoData(BaseModel):
