@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Union, BinaryIO, Optional, Literal, Callable, TYPE_CHECKING
 from pydantic import PrivateAttr
 
-from ._base import BaseModel, Object
+from ._base import BaseModel, Object, RootModelList
 
 if TYPE_CHECKING:
     from ..resources import EmbedTask as EmbedTaskResource
@@ -43,7 +43,7 @@ class EmbeddingsTask(Object):
     _resource: EmbedTaskResource = PrivateAttr()
     engine_name: str
     status: str
-    video_embeddings: Optional[List[VideoEmbedding]] = None
+    video_embeddings: Optional[RootModelList[VideoEmbedding]] = None
 
     def __init__(self, resource: EmbedTaskResource, **data):
         super().__init__(**data)
