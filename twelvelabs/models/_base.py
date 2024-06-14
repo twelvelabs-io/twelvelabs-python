@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, RootModel
 from typing import List, Optional, TypeVar
+import json
 
 
 class ModelMixin:
@@ -40,8 +41,8 @@ class RootModelList(RootModel[List[T]]):
     See https://docs.pydantic.dev/latest/concepts/models/#rootmodel-and-custom-root-types
     """
 
-    def __init__(self, _list: List):
-        super().__init__(_list)
+    def __init__(self, _list: List[T]):
+        super().__init__(root=_list)
 
     def __iter__(self):
         return iter(self.root)
@@ -51,3 +52,12 @@ class RootModelList(RootModel[List[T]]):
 
     def __len__(self):
         return len(self.root)
+
+    def to_dict(self):
+        return [
+            item.model_dump() if isinstance(item, BaseModel) else item
+            for item in self.root
+        ]
+
+    def json(self, *args, **kwargs):
+        return json.dumps(self.to_dict(), *args, **kwargs)

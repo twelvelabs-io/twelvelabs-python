@@ -38,17 +38,17 @@ class ClassifyClass(BaseModel):
     name: str
     score: float
     duration_ratio: float
-    clips: Optional[List[ClassifyClip]] = None
+    clips: Optional[RootModelList[ClassifyClip]] = None
 
 
 class ClassifyVideoData(BaseModel):
     video_id: str
-    classes: List[ClassifyClass]
+    classes: RootModelList[ClassifyClass]
 
 
 class ClassifyPageResult(BaseModel):
     _resource: ClassifyResource = PrivateAttr()
-    data: List[ClassifyVideoData]
+    data: RootModelList[ClassifyVideoData]
     page_info: TokenPageInfo
 
     def __init__(self, resource: ClassifyResource, **data):
