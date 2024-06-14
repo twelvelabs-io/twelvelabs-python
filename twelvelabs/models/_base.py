@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field, RootModel
 from typing import List, Optional, TypeVar
-import json
 
 
 class ModelMixin:
@@ -52,12 +51,3 @@ class RootModelList(RootModel[List[T]]):
 
     def __len__(self):
         return len(self.root)
-
-    def to_dict(self):
-        return [
-            item.model_dump() if isinstance(item, BaseModel) else item
-            for item in self.root
-        ]
-
-    def json(self, *args, **kwargs):
-        return json.dumps(self.to_dict(), *args, **kwargs)
