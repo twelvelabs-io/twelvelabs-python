@@ -14,13 +14,24 @@ with TwelveLabs(API_KEY) as client:
 
     print("Search (group by video):")
     result = client.search.query(
-        index.id, "A man talking", ["visual", "conversation"], group_by="video"
+        index.id,
+        ["visual", "conversation"],
+        query_text="A man talking",
+        group_by="video",
     )
     for group in result.data:
-        print(f"  {group.id} {group.clips}")
+        print(f"  group.id={group.id}")
+        for clip in group.clips:
+            print(
+                f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
+            )
 
     print("Search:")
-    result = client.search.query(index.id, "A man talking", ["visual", "conversation"])
+    result = client.search.query(
+        index.id,
+        ["visual", "conversation"],
+        query_text="A man talking",
+    )
     for clip in result.data:
         print(
             f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
@@ -29,7 +40,36 @@ with TwelveLabs(API_KEY) as client:
     while True:
         try:
             next_page_data = next(result)
-            print(f"Next page's data: {next_page_data}")
+            print(f"Next page's data")
+            for clip in next_page_data:
+                print(
+                    f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
+                )
+        except StopIteration:
+            print("There is no next page in search result")
+            break
+
+    print("Search by image:")
+    image_path = os.path.join(os.path.dirname(__file__), "assets/search_sample.png")
+    result = client.search.query(
+        index.id,
+        ["visual", "conversation"],
+        query_media_type="image",
+        query_media_file=image_path,
+    )
+    for clip in result.data:
+        print(
+            f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
+        )
+
+    while True:
+        try:
+            next_page_data = next(result)
+            print(f"Next page's data")
+            for clip in next_page_data:
+                print(
+                    f"  score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
+                )
         except StopIteration:
             print("There is no next page in search result")
             break
