@@ -40,8 +40,8 @@ class RootModelList(RootModel[List[T]]):
     See https://docs.pydantic.dev/latest/concepts/models/#rootmodel-and-custom-root-types
     """
 
-    def __init__(self, _list: List):
-        super().__init__(_list)
+    def __init__(self, _list: List[T]):
+        super().__init__(root=_list)
 
     def __iter__(self):
         return iter(self.root)

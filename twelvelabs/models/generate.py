@@ -32,5 +32,5 @@ class GenerateSummarizeResult(BaseModel):
 class GenerateGistResult(BaseModel):
     id: str
     title: Optional[str] = None
-    topics: Optional[List[str]] = None
-    hashtags: Optional[List[str]] = None
+    topics: Optional[RootModelList[str]] = None
+    hashtags: Optional[RootModelList[str]] = None
