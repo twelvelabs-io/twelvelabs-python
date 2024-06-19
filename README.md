@@ -136,14 +136,25 @@ The sections below show how you can perform the most common downstream tasks. Se
 
 ### Search
 
-To perform a search request, use the example code below, replacing the following:
+To search for relevant video content, you can use either text or images as queries:
+
+- **Text queries**: Use natural language to find video segments matching specific keywords or phrases.
+- **Image queries**: Use images to find video segments that are semantically similar to the provided images.
+
+**Search using text queries**
+
+To perform a search request using text queries, use the example code below, replacing the following:
 
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
 - **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. Note that the search options you specify must be a subset of the engine options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page. 
 
 ```py
-search_results = client.search.query("<YOUR_INDEX_ID>", "<YOUR_QUERY>", ["<YOUR_SEARCH_OPTIONS>"])
+search_results = client.search.query(
+  index_id="<YOUR_INDEX_ID>", 
+  query_text="<YOUR_QUERY>", 
+  options=["<YOUR_SEARCH_OPTIONS>"]
+)
 
 # Utility function to print a specific page
 def print_page(page):
@@ -161,14 +172,13 @@ while True:
         break
 ```
 
-The results are returned one page at a time, with a default limit of 10 results on each page. The `next ` method returns the next page of results. When you've reached the end of the dataset, a `StopIteration` exception is raised.
+The results are returned one page at a time, with a default limit of 10 results on each page. The `next` method returns the next page of results. When you've reached the end of the dataset, a `StopIteration` exception is raised.
 
 ```
  video_id=65ca2bce48db9fa780cb3fa4 score=84.9 start=104.9375 end=111.90625 confidence=high
  video_id=65ca2bce48db9fa780cb3fa4 score=84.82 start=160.46875 end=172.75 confidence=high
  video_id=65ca2bce48db9fa780cb3fa4 score=84.77 start=55.375 end=72.46875 confidence=high
 ```
-
 
 Note that the response contains, among other information, the following fields:
 - `video_id`: The unique identifier of the video that matched your search terms.
@@ -182,7 +192,28 @@ Note that the response contains, among other information, the following fields:
   - `extremely low`
 
 
-For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.2/reference/make-search-request) page.
+For a description of each field in the request and response, see the [Make any-to-video search requests](/reference/any-to-video-search) page.
+
+**Search using image queries**
+
+You can provide images as local files or publicly accessible URLs. Use the `query_media_file` parameter for local image files and the `query_media_url` parameter for publicly accessible URLs.
+
+To perform a search request using image queries, use the example code below, replacing the following:
+
+- **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
+- **`<YOUR_FILE_PATH>`**: with a string representing the path of the image file you wish to provide.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual cues, use `["visual"]`. Note that the search options you specify must be a subset of the engine options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page. 
+
+```python
+search_results = client.search.query(
+    index_id="<YOUR_INDEX_ID>",
+    query_media_type="image",
+    query_media_file="<YOUR_FILE_PATH>", # Use query_media_url instead to provide a file from a publicly accessible URL.
+    options=["<YOUR_SEARCH_OPTIONS>"]
+)
+```
+
+The response is similar to that received when using text queries.
 
 ### Generate text from video
 
