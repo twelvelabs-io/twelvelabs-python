@@ -94,7 +94,7 @@ For a description of each field in the request and response, see the [Create an 
 
 Before you upload a video to the platform, ensure that it meets the following requirements:
 
-- **Video resolution**: Must be greater or equal than 360p and less or equal than 4K. For consistent search results, Twelve Labs recommends you upload 360p videos.
+- **Video resolution**: Must be greater or equal than 360p and less or equal than 4K.
 - **Video and audio formats**:  The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 20 minutes (1200s).
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
