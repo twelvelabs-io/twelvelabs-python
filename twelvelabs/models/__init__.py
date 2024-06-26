@@ -14,6 +14,7 @@ from .generate import (
     GenerateSummarizeHighlightResult,
     GenerateSummarizeResult,
     GenerateGistResult,
+    GenerateOpenEndedTextStreamResult,
 )
 from .classify import ClassifyClassParams, ClassifyPageResult
 from .embed import (
@@ -47,6 +48,7 @@ __all__ = [
     "GenerateSummarizeHighlightResult",
     "GenerateSummarizeResult",
     "GenerateGistResult",
+    "GenerateOpenEndedTextStreamResult",
     "CreateEmbeddingsResult",
     "EmbeddingsTask",
     "EmbeddingsTaskStatus",

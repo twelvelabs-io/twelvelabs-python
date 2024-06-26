@@ -37,9 +37,17 @@ class APIClient:
         except httpx.HTTPStatusError as e:
             raise self._make_status_error(e.response)
 
-        if len(response.content) > 0 and "application/json" in response.headers.get("Content-Type", ""):
+        if "chunked" in response.headers.get("Transfer-Encoding", ""):
+            return response
+
+        if len(response.content) > 0 and "application/json" in response.headers.get(
+            "Content-Type", ""
+        ):
             return response.json()
         return response.text
+
+    def _request_stream(self, method: str, url: str, **kwargs):
+        return self._client.stream(method, url, **kwargs)
 
     def _make_status_error(self, response: httpx.Response) -> APIStatusError:
         if response.is_closed and not response.is_stream_consumed:
@@ -92,8 +100,12 @@ class APIClient:
         url: str,
         data: Optional[Dict[str, Any]] = None,
         json: Optional[Dict[str, Any]] = None,
+        *,
+        stream: bool = False,
         **kwargs,
     ) -> Any:
+        if stream:
+            return self._request_stream("POST", url, data=data, json=json, **kwargs)
         return self._request("POST", url, data=data, json=json, **kwargs)
 
     def patch(
