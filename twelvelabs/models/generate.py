@@ -63,7 +63,9 @@ class GenerateOpenEndedTextStreamResult(BaseModel):
                 buffer += line
                 while True:
                     try:
+                        # Try to decode a JSON object from the buffer
                         event, index = json.JSONDecoder().raw_decode(buffer)
+                        # Update the buffer to remove the decoded JSON object
                         buffer = buffer[index:].lstrip()
                     except json.JSONDecodeError:
                         break
@@ -82,6 +84,7 @@ class GenerateOpenEndedTextStreamResult(BaseModel):
                         return
 
             if buffer:
+                # If there's any remaining data in the buffer, process it
                 event = json.loads(buffer)
                 if event["event_type"] == "text_generation":
                     self.add_text(event["text"])

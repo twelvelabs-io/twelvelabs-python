@@ -37,9 +37,6 @@ class APIClient:
         except httpx.HTTPStatusError as e:
             raise self._make_status_error(e.response)
 
-        if "chunked" in response.headers.get("Transfer-Encoding", ""):
-            return response
-
         if len(response.content) > 0 and "application/json" in response.headers.get(
             "Content-Type", ""
         ):
