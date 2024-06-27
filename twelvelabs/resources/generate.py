@@ -52,3 +52,20 @@ class Generate(APIResource):
         }
         res = self._post("generate", json=json, **kwargs)
         return models.GenerateOpenEndedTextResult(**res)
+
+    def text_stream(
+        self,
+        video_id: str,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        **kwargs,
+    ) -> models.GenerateOpenEndedTextStreamResult:
+        json = {
+            "video_id": video_id,
+            "prompt": prompt,
+            "temperature": temperature,
+            "stream": True,
+        }
+        res = self._post("generate", json=json, stream=True, **kwargs)
+        return models.GenerateOpenEndedTextStreamResult(stream=res)
