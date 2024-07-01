@@ -70,9 +70,16 @@ class EmbeddingsTask(Object):
     ) -> str:
         if sleep_interval <= 0:
             raise ValueError("sleep_interval must be greater than 0")
+        headers = kwargs.get("headers", {})
+        headers.update({"Cache-Control": "no-cache"})
+        kwargs["headers"] = headers
         while not self.done:
             self._resource._sleep(sleep_interval)
-            self.update_status(**kwargs)
+            try:
+                self.update_status(**kwargs)
+            except Exception as e:
+                print(f"Retrieving status failed: {e}. Retrying..")
+                continue
             if callback is not None:
                 callback(self)
         return self.status

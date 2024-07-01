@@ -56,13 +56,20 @@ class Task(ObjectWithTimestamp):
     ) -> Task:
         if sleep_interval <= 0:
             raise ValueError("sleep_interval must be greater than 0")
+        headers = kwargs.get("headers", {})
+        headers.update({"Cache-Control": "no-cache"})
+        kwargs["headers"] = headers
         while not self.done:
             self._resource._sleep(sleep_interval)
-            task = self.retrieve(**kwargs)
-            self.estimated_time = task.estimated_time
-            self.status = task.status
-            self.metadata = task.metadata
-            self.process = task.process
+            try:
+                task = self.retrieve(**kwargs)
+                self.estimated_time = task.estimated_time
+                self.status = task.status
+                self.metadata = task.metadata
+                self.process = task.process
+            except Exception as e:
+                print(f"Retrieving task failed: {e}. Retrying..")
+                continue
             if callback is not None:
                 callback(self)
         return self
