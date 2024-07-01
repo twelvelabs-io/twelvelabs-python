@@ -56,7 +56,7 @@ class APIConnectionError(APIError):
 
 
 class APITimeoutError(APIConnectionError):
-    def __init__(self, request: httpx.Request) -> None:
+    def __init__(self, *, request: httpx.Request) -> None:
         super().__init__(message="Request timed out", request=request)
 
 
