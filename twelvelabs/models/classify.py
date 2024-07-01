@@ -17,6 +17,23 @@ class ClassifyClassParams:
     ] = None
     conversation_option: Optional[Union[str, Literal["semantic", "exact_match"]]] = None
 
+    def __init__(
+        self,
+        name: str,
+        prompts: List[str],
+        *,
+        options: Optional[
+            List[Union[str, Literal["visual", "conversation", "text_in_video"]]]
+        ] = None,
+        conversation_option: Optional[
+            Union[str, Literal["semantic", "exact_match"]]
+        ] = None,
+    ):
+        self.name = name
+        self.prompts = prompts
+        self.options = options
+        self.conversation_option = conversation_option
+
 
 class ClassifyDetailedScore(BaseModel):
     max_score: float

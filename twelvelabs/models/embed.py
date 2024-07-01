@@ -17,6 +17,23 @@ class CreateEmbeddingsTaskVideoParams:
     clip_length: Optional[int]
     scopes: Optional[List[Literal["clip", "video"]]]
 
+    def __init__(
+        self,
+        file: Union[str, BinaryIO, None] = None,
+        *,
+        url: Optional[str] = None,
+        start_offset_sec: Optional[float] = None,
+        end_offset_sec: Optional[float] = None,
+        clip_length: Optional[int] = None,
+        scopes: Optional[List[Literal["clip", "video"]]] = None,
+    ):
+        self.file = file
+        self.url = url
+        self.start_offset_sec = start_offset_sec
+        self.end_offset_sec = end_offset_sec
+        self.clip_length = clip_length
+        self.scopes = scopes
+
 
 class Embedding(BaseModel):
     float: List[float]
