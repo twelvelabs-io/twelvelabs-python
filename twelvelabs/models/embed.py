@@ -89,7 +89,11 @@ class EmbeddingsTask(Object):
             raise ValueError("sleep_interval must be greater than 0")
         while not self.done:
             self._resource._sleep(sleep_interval)
-            self.update_status(**kwargs)
+            try:
+                self.update_status(**kwargs)
+            except Exception as e:
+                print(f"Retrieving status failed: {e}. Retrying..")
+                continue
             if callback is not None:
                 callback(self)
         return self.status
