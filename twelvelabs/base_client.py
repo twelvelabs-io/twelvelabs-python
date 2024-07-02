@@ -25,17 +25,18 @@ class APIClient:
         self._client = httpClient
 
     def _request(self, method: str, url: str, **kwargs) -> Any:
+        response = None
         try:
             response = self._client.request(method, url, **kwargs)
-        except httpx.TimeoutException as e:
-            raise APITimeoutError(request=response._request)
-        except Exception as e:
-            raise exceptions.APIConnectionError(request=response._request)
-
-        try:
             response.raise_for_status()
+        except httpx.TimeoutException as e:
+            raise APITimeoutError(request=getattr(response, "_request", None))
         except httpx.HTTPStatusError as e:
             raise self._make_status_error(e.response)
+        except Exception as e:
+            raise exceptions.APIConnectionError(
+                request=getattr(response, "_request", None)
+            )
 
         if len(response.content) > 0 and "application/json" in response.headers.get(
             "Content-Type", ""
