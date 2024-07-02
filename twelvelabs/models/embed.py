@@ -70,9 +70,6 @@ class EmbeddingsTask(Object):
     ) -> str:
         if sleep_interval <= 0:
             raise ValueError("sleep_interval must be greater than 0")
-        headers = kwargs.get("headers", {})
-        headers.update({"Cache-Control": "no-cache"})
-        kwargs["headers"] = headers
         while not self.done:
             self._resource._sleep(sleep_interval)
             try:
