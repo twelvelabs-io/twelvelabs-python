@@ -15,11 +15,11 @@ with TwelveLabs(API_KEY) as client:
         f"idx-{uuid.uuid4()}",
         [
             {
-                "name": "marengo2.5",
+                "name": "marengo2.6",
                 "options": ["visual", "conversation", "text_in_video"],
             },
             {
-                "name": "pegasus1",
+                "name": "pegasus1.1",
                 "options": ["visual", "conversation"],
             },
         ],

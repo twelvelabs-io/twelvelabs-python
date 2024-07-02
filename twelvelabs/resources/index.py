@@ -114,8 +114,6 @@ class Index(APIResource):
         name: str,
         engines: List[types.IndexEngine],
         *,
-        # engine_id: str = "marengo2.5", # v1.1
-        # options: List[str] = ["visual", "conversation", "text_in_video", "logo"], # v1.1
         addons: Optional[List[str]] = None,
         **kwargs,
     ) -> models.Index:
