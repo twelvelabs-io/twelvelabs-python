@@ -20,5 +20,5 @@ with TwelveLabs(API_KEY) as client:
             f"  id={engine.id} allowed_engine_options={engine.allowed_engine_options}"
         )
 
-    pegasus = client.engine.retrieve("pegasus1")
+    pegasus = client.engine.retrieve("pegasus1.1")
     print(f"Pegasus: {pegasus}")
