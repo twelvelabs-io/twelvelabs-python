@@ -39,11 +39,18 @@ class VideoValue(BaseModel):
     value: str
 
 
+class VideoSource(BaseModel):
+    type: str
+    name: str
+    url: Optional[str] = None
+
+
 class Video(ObjectWithTimestamp):
     _resource: VideoResource = PrivateAttr()
     _index_id: str = PrivateAttr()
     metadata: VideoMetadata
     hls: Optional[VideoHLS] = None
+    source: Optional[VideoSource] = None
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
         super().__init__(**data)
