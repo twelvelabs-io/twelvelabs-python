@@ -51,6 +51,9 @@ class Video(ObjectWithTimestamp):
     metadata: VideoMetadata
     hls: Optional[VideoHLS] = None
     source: Optional[VideoSource] = None
+    indexed_at: Optional[str] = None
+    created_at: str
+    updated_at: Optional[str] = None
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
         super().__init__(**data)
