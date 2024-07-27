@@ -9,8 +9,7 @@ This SDK provides a convenient way to interact with the Twelve Labs Video Unders
 Ensure that the following prerequisites are met before using the SDK:
 
 - [Python](https://www.python.org) 3.7 or newer must be installed on your machine.
-- You have an API key. If you don't have an account, please [sign up](https://api.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [Dashboard](https://playground.twelvelabs.io/dashboard) page, and select the **Copy** icon to the right of the key to copy it to your clipboard.
-
+- You have an API key. If you don't have an account, please [sign up](https://playground.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [API Key](https://playground.twelvelabs.io/dashboard/api-key) page, and select the **Copy** icon to the right of the key to copy it to your clipboard.
 # Install the SDK
 
 Install the `twelvelabs` package:
