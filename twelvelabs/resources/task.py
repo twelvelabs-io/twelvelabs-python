@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Optional, Union, BinaryIO, List, Dict
 
 from ..models import RootModelList
@@ -126,9 +127,6 @@ class Task(APIResource):
                 file = open(file, "rb")
                 opened_files.append(file)
             files["video_file"] = file
-        else:
-            # Request should be sent as multipart-form even file not exists
-            files["dummy"] = ("", "")
 
         if transcription_file is not None:
             if isinstance(transcription_file, str):
@@ -138,6 +136,11 @@ class Task(APIResource):
             data["provide_transcription"] = True
         if transcription_url is not None:
             data["provide_transcription"] = True
+
+        if url is not None:
+            files['video_url'] = BytesIO(url.encode())
+        if transcription_url is not None:
+            files['transcription_url'] = BytesIO(transcription_url.encode())
 
         try:
             res = self._post(
