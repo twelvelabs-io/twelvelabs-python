@@ -287,7 +287,7 @@ from twelvelabs import TwelveLabs
 
 client = TwelveLabs(os.getenv("TWELVELABS_API_KEY"))
 try:
-    engines = client.engines.list()
+    engines = client.engine.list()
     print(engines)
 except twelvelabs.APIConnectionError as e:
     print("Cannot connect to API server")
