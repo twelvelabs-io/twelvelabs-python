@@ -1,10 +1,11 @@
 from __future__ import annotations
+from io import BytesIO
 from typing import Union, List, Literal, Optional, BinaryIO, TYPE_CHECKING
 
 from ..models._base import RootModelList
 from ..resource import APIResource
 from .. import models
-from ..util import remove_none_values
+from ..util import remove_none_values, get_local_params
 
 
 if TYPE_CHECKING:
@@ -15,6 +16,57 @@ class EmbedTask(APIResource):
     def retrieve(self, id: str, **kwargs) -> models.EmbeddingsTask:
         res = self._get(f"embed/tasks/{id}", **kwargs)
         return models.EmbeddingsTask(self, **res)
+
+    def list(
+        self,
+        started_at: str,
+        ended_at: str,
+        *,
+        page: Optional[int] = None,
+        page_limit: Optional[int] = None,
+        status: Optional[str] = None,
+        **kwargs,
+    ) -> RootModelList[models.EmbeddingsTask]:
+        params = {
+            "started_at": started_at,
+            "ended_at": ended_at,
+            "page": page,
+            "page_limit": page_limit,
+            "status": status,
+        }
+        res = self._get("embed/tasks", params=remove_none_values(params), **kwargs)
+        return RootModelList(
+            [models.EmbeddingsTask(self, **task) for task in res["data"]]
+        )
+
+    def list_pagination(
+        self,
+        started_at: str,
+        ended_at: str,
+        *,
+        page: Optional[int] = None,
+        page_limit: Optional[int] = None,
+        status: Optional[str] = None,
+        **kwargs,
+    ) -> models.EmbeddingsTaskListWithPagination:
+        local_params = get_local_params(locals().items())
+        params = {
+            "started_at": started_at,
+            "ended_at": ended_at,
+            "page": page,
+            "page_limit": page_limit,
+            "status": status,
+        }
+        res = self._get("embed/tasks", params=remove_none_values(params), **kwargs)
+
+        data = [models.EmbeddingsTask(self, **task) for task in res["data"]]
+        page_info = models.PageInfo(**res["page_info"])
+
+        return models.EmbeddingsTaskListWithPagination(
+            self,
+            local_params,
+            **{"data": data, "page_info": page_info},
+        )
 
     def create(
         self,
@@ -43,14 +95,11 @@ class EmbedTask(APIResource):
         opened_files: List[BinaryIO] = []
         if video_file is not None:
             if isinstance(video_file, str):
-                file = open(video_file, "rb")
-                opened_files.append(file)
-                files["video_file"] = file
-            else:
-                files["video_file"] = video_file
-        else:
-            # Request should be sent as multipart-form even file not exists
-            files["dummy"] = ("", "")
+                video_file = open(video_file, "rb")
+                opened_files.append(video_file)
+            files["video_file"] = video_file
+        if video_url is not None:
+            files["video_url"] = BytesIO(video_url.encode())
 
         try:
             res = self._post(
@@ -105,15 +154,58 @@ class Embed(APIResource):
     def create(
         self,
         engine_name: str,
-        text: str,
         *,
-        text_truncate: Literal["none", "start", "end"],
+        # text params
+        text: str = None,
+        text_truncate: Literal["none", "start", "end"] = None,
+        # audio params
+        audio_url: str = None,
+        audio_file: Union[str, BinaryIO, None] = None,
+        # image params
+        image_url: str = None,
+        image_file: Union[str, BinaryIO, None] = None,
         **kwargs,
     ) -> models.CreateEmbeddingsResult:
+        if not any([text, audio_url, audio_file, image_url, image_file]):
+            raise ValueError(
+                "At least one of audio_url, audio_file, image_url, image_file must be provided"
+            )
         data = {
             "engine_name": engine_name,
             "text": text,
             "text_truncate": text_truncate,
+            "audio_url": audio_url,
+            "image_url": image_url,
         }
-        res = self._post("embed", data=remove_none_values(data), **kwargs)
-        return models.CreateEmbeddingsResult(**res)
+        files = {}
+        opened_files: List[BinaryIO] = []
+
+        if text is not None:
+            files["text"] = BytesIO(text.encode())
+        if audio_url is not None:
+            files["audio_url"] = BytesIO(audio_url.encode())
+        if image_url is not None:
+            files["image_url"] = BytesIO(image_url.encode())
+
+        if audio_file is not None:
+            if isinstance(audio_file, str):
+                audio_file = open(audio_file, "rb")
+                opened_files.append(audio_file)
+            files["audio_file"] = audio_file
+        if image_file is not None:
+            if isinstance(image_file, str):
+                image_file = open(image_file, "rb")
+                opened_files.append(image_file)
+            files["image_file"] = image_file
+
+        try:
+            res = self._post(
+                "embed",
+                data=remove_none_values(data),
+                files=files,
+                **kwargs,
+            )
+            return models.CreateEmbeddingsResult(**res)
+        finally:
+            for file in opened_files:
+                file.close()
