@@ -10,8 +10,7 @@ from typing import (
     Any,
     TYPE_CHECKING,
 )
-from pydantic import PrivateAttr
-from pydantic.main import TupleGenerator
+from pydantic import PrivateAttr, Field
 
 from ._base import BaseModel, Object, RootModelList, PageInfo
 
@@ -46,7 +45,7 @@ class CreateEmbeddingsTaskVideoParams:
 
 
 class Embedding(BaseModel):
-    float: Optional[List[float]] = None
+    values: Optional[List[float]] = Field(default=None, alias="float")
     is_success: bool
     error_message: Optional[str] = None
 
@@ -58,7 +57,7 @@ class CreateEmbeddingsResult(BaseModel):
     video_embedding: Optional[Embedding] = None
 
 
-class EmbeddingVideoMetadata(Object):
+class EmbeddingVideoMetadata(BaseModel):
     video_url: Optional[str] = None
     video_filename: Optional[str] = None
     video_clip_length: int
