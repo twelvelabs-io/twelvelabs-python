@@ -12,8 +12,17 @@ from ..util import (
 
 
 class Video(APIResource):
-    def retrieve(self, index_id: str, id: str, **kwargs) -> models.Video:
-        res = self._get(f"indexes/{index_id}/videos/{id}", **kwargs)
+    def retrieve(
+        self, index_id: str, id: str, *, embed: Optional[bool] = None, **kwargs
+    ) -> models.Video:
+        params = {
+            "embed": embed,
+        }
+        res = self._get(
+            f"indexes/{index_id}/videos/{id}",
+            params=remove_none_values(params),
+            **kwargs,
+        )
         return models.Video(self, index_id, **res)
 
     def list(
@@ -65,7 +74,9 @@ class Video(APIResource):
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
-        return RootModelList([models.Video(self, index_id, **video) for video in res["data"]])
+        return RootModelList(
+            [models.Video(self, index_id, **video) for video in res["data"]]
+        )
 
     def list_pagination(
         self,
@@ -166,10 +177,12 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return RootModelList([
-            models.VideoValue(**value)
-            for value in get_data_with_default(res, "data", [])
-        ])
+        return RootModelList(
+            [
+                models.VideoValue(**value)
+                for value in get_data_with_default(res, "data", [])
+            ]
+        )
 
     def text_in_video(
         self,
@@ -189,10 +202,12 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return RootModelList([
-            models.VideoValue(**value)
-            for value in get_data_with_default(res, "data", [])
-        ])
+        return RootModelList(
+            [
+                models.VideoValue(**value)
+                for value in get_data_with_default(res, "data", [])
+            ]
+        )
 
     def logo(
         self,
@@ -212,10 +227,12 @@ class Video(APIResource):
             params=remove_none_values(params),
             **kwargs,
         )
-        return RootModelList([
-            models.VideoValue(**value)
-            for value in get_data_with_default(res, "data", [])
-        ])
+        return RootModelList(
+            [
+                models.VideoValue(**value)
+                for value in get_data_with_default(res, "data", [])
+            ]
+        )
 
     def thumbnail(
         self,
