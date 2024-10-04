@@ -57,18 +57,18 @@ class CreateEmbeddingsResult(BaseModel):
     video_embedding: Optional[Embedding] = None
 
 
-class EmbeddingVideoMetadata(BaseModel):
-    video_url: Optional[str] = None
-    video_filename: Optional[str] = None
-    video_clip_length: int
-    video_embedding_scope: List[str]
-    duration: float
+class EmbeddingMetadata(BaseModel):
+    url: Optional[str] = None
+    filename: Optional[str] = None
+    video_clip_length: Optional[int] = None
+    video_embedding_scope: Optional[List[str]] = None
+    duration: Optional[float] = None
 
 
 class EmbeddingsTaskStatus(Object):
     engine_name: str
     status: str
-    metadata: Optional[EmbeddingVideoMetadata] = None
+    metadata: Optional[EmbeddingMetadata] = None
 
 
 class VideoEmbedding(BaseModel):
@@ -84,7 +84,7 @@ class EmbeddingsTask(Object):
     status: str
     video_embeddings: Optional[RootModelList[VideoEmbedding]] = None
     created_at: Optional[str] = None
-    metadata: Optional[EmbeddingVideoMetadata] = None
+    metadata: Optional[EmbeddingMetadata] = None
 
     def __init__(self, resource: EmbedTaskResource, **data):
         super().__init__(**data)

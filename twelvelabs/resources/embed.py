@@ -19,12 +19,12 @@ class EmbedTask(APIResource):
 
     def list(
         self,
-        started_at: str,
-        ended_at: str,
         *,
+        started_at: Optional[str] = None,
+        ended_at: Optional[str] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
-        status: Optional[str] = None,
+        status: Optional[Literal["processing", "ready", "failed"]] = None,
         **kwargs,
     ) -> RootModelList[models.EmbeddingsTask]:
         params = {
@@ -41,12 +41,12 @@ class EmbedTask(APIResource):
 
     def list_pagination(
         self,
-        started_at: str,
-        ended_at: str,
         *,
+        started_at: Optional[str] = None,
+        ended_at: Optional[str] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
-        status: Optional[str] = None,
+        status: Optional[Literal["processing", "ready", "failed"]] = None,
         **kwargs,
     ) -> models.EmbeddingsTaskListWithPagination:
         local_params = get_local_params(locals().items())

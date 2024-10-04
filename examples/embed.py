@@ -11,6 +11,13 @@ assert (
 ), "Your API key should be stored in an environment variable named API_KEY."
 
 with TwelveLabs(API_KEY) as client:
+    embed_tasks = client.embed.task.list()
+    for embed in embed_tasks:
+        print(
+            f"Embedding task: id={embed.id} status={embed.status} created_at={embed.created_at}"
+        )
+        if embed.metadata is not None:
+            print(f"  metadata: {embed.metadata}")
 
     def print_video_embeddings(id: str):
         task = client.embed.task.retrieve(id)
@@ -26,12 +33,12 @@ with TwelveLabs(API_KEY) as client:
 
     engine_name = "Marengo-retrieval-2.6"
 
-    embedding_text = client.embed.create(
+    text_embedding = client.embed.create(
         engine_name=engine_name,
         text="man walking across the street",
         text_truncate="start",
     )
-    print(f"Created text embedding: engine_name={embedding_text.engine_name}")
+    print(f"Created text embedding: engine_name={text_embedding.engine_name}")
 
     video_path = os.path.join(os.path.dirname(__file__), "assets/example.mp4")
     task = client.embed.task.create(engine_name=engine_name, video_file=video_path)
@@ -43,13 +50,12 @@ with TwelveLabs(API_KEY) as client:
     print(f"Embedding done: {status}")
     print_video_embeddings(task.id)
 
-    embedding_image = client.embed.create(
+    image_embedding = client.embed.create(
         engine_name=engine_name,
         image_file=os.path.join(os.path.dirname(__file__), "assets/search_sample.png"),
     )
-    print(f"Created image embedding: engine_name={embedding_image.engine_name}")
+    print(f"Created image embedding: engine_name={image_embedding.engine_name}")
 
-    video_path = os.path.join(os.path.dirname(__file__), "assets/example.mp4")
     task = client.embed.task.create(engine_name=engine_name, video_file=video_path)
     print(
         f"Created task of image embedding: id={task.id} engine_name={task.engine_name} status={task.status}"
