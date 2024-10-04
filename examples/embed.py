@@ -12,12 +12,12 @@ assert (
 
 with TwelveLabs(API_KEY) as client:
     embed_tasks = client.embed.task.list()
-    for embed in embed_tasks:
+    for task in embed_tasks:
         print(
-            f"Embedding task: id={embed.id} status={embed.status} created_at={embed.created_at}"
+            f"Embedding task: id={task.id} status={task.status} created_at={task.created_at}"
         )
-        if embed.metadata is not None:
-            print(f"  metadata: {embed.metadata}")
+        if task.metadata is not None:
+            print(f"  metadata: {task.metadata}")
 
     def print_video_embeddings(id: str):
         task = client.embed.task.retrieve(id)
