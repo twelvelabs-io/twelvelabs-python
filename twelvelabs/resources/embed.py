@@ -169,7 +169,7 @@ class Embed(APIResource):
     ) -> models.CreateEmbeddingsResult:
         if not any([text, audio_url, audio_file, image_url, image_file]):
             raise ValueError(
-                "At least one of audio_url, audio_file, image_url, image_file must be provided"
+                "At least one of text, audio_url, audio_file, image_url, image_file must be provided"
             )
         data = {
             "engine_name": engine_name,
