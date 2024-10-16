@@ -75,7 +75,7 @@ class CreateEmbeddingsResult(BaseModel):
     text_embedding: Optional[Embedding] = None
     image_embedding: Optional[Embedding] = None
     video_embedding: Optional[Embedding] = None
-    audio_embedding: Optional[Embedding] = None
+    audio_embedding: Optional[AudioEmbedding] = None
 
 
 class EmbeddingMetadata(BaseModel):
