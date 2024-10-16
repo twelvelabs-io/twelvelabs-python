@@ -44,10 +44,30 @@ class CreateEmbeddingsTaskVideoParams:
         self.scopes = scopes
 
 
+class EmbeddingMediaMetadata(BaseModel):
+    input_url: Optional[str] = None
+    input_filename: Optional[str] = None
+
+
 class Embedding(BaseModel):
     values: Optional[List[float]] = Field(default=None, alias="float")
     is_success: bool
     error_message: Optional[str] = None
+    metadata: Optional[EmbeddingMediaMetadata] = None
+
+
+class SegmentEmbedding(BaseModel):
+    start_offset_sec: float
+    end_offset_sec: Optional[float] = None
+    embedding_scope: Optional[str] = None
+    values: Optional[List[float]] = Field(default=None, alias="float")
+
+
+class AudioEmbedding(BaseModel):
+    segments: Optional[List[SegmentEmbedding]] = None
+    is_success: bool
+    error_message: Optional[str] = None
+    metadata: Optional[EmbeddingMediaMetadata] = None
 
 
 class CreateEmbeddingsResult(BaseModel):
@@ -55,6 +75,7 @@ class CreateEmbeddingsResult(BaseModel):
     text_embedding: Optional[Embedding] = None
     image_embedding: Optional[Embedding] = None
     video_embedding: Optional[Embedding] = None
+    audio_embedding: Optional[Embedding] = None
 
 
 class EmbeddingMetadata(BaseModel):

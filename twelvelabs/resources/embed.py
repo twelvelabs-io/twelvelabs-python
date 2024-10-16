@@ -161,6 +161,7 @@ class Embed(APIResource):
         # audio params
         audio_url: str = None,
         audio_file: Union[str, BinaryIO, None] = None,
+        audio_start_offset_sec: Optional[float] = None,
         # image params
         image_url: str = None,
         image_file: Union[str, BinaryIO, None] = None,
@@ -175,6 +176,7 @@ class Embed(APIResource):
             "text": text,
             "text_truncate": text_truncate,
             "audio_url": audio_url,
+            "audio_start_offset_sec": audio_start_offset_sec,
             "image_url": image_url,
         }
         files = {}
