@@ -96,7 +96,7 @@ class VideoEmbedding(BaseModel):
     start_offset_sec: float
     end_offset_sec: float
     embedding_scope: str
-    embedding: Embedding
+    values: Optional[List[float]] = Field(default=None, alias="float")
 
 
 class EmbeddingsTask(Object):

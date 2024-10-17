@@ -63,4 +63,11 @@ with TwelveLabs(API_KEY) as client:
 
     status = task.wait_for_done(callback=on_task_update)
     print(f"Embedding done: {status}")
-    print_video_embeddings(task.id)
+    
+    task = client.embed.task.retrieve(task.id)
+    if task.video_embeddings is not None:
+        for v in task.video_embeddings:
+            print(
+                f"embedding_scope={v.embedding_scope} start_offset_sec={v.start_offset_sec} end_offset_sec={v.end_offset_sec}"
+            )
+            print(f"embeddings: {", ".join(str(v.values))}")
