@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import List, Union, BinaryIO, Optional, Literal, Callable, TYPE_CHECKING
-from pydantic import PrivateAttr
+from pydantic import PrivateAttr, Field
 
 from ._base import BaseModel, Object, RootModelList
 
@@ -53,7 +53,7 @@ class VideoEmbedding(BaseModel):
     start_offset_sec: float
     end_offset_sec: float
     embedding_scope: str
-    embedding: Embedding
+    values: Optional[List[float]] = Field(default=None, alias="float")
 
 
 class EmbeddingsTask(Object):

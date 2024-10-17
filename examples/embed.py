@@ -37,4 +37,4 @@ with TwelveLabs(API_KEY) as client:
             print(
                 f"embedding_scope={v.embedding_scope} start_offset_sec={v.start_offset_sec} end_offset_sec={v.end_offset_sec}"
             )
-            print(f"embeddings: {", ".join(str(v.embedding.float))}")
+            print(f"embeddings: {", ".join(str(v.values))}")
