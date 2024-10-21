@@ -13,8 +13,8 @@ class GenerateOpenEndedTextResult(BaseModel):
 
 class GenerateSummarizeChapterResult(BaseModel):
     chapter_number: int
-    start: int
-    end: int
+    start: float
+    end: float
     chapter_title: str
     chapter_summary: str
 
