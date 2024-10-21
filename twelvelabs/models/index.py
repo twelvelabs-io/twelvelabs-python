@@ -14,6 +14,7 @@ class Engine(BaseModel):
     name: str = Field(alias="engine_name")
     options: List[str] = Field(alias="engine_options")
     addons: Optional[List[str]] = None
+    finetuned: Optional[bool] = None
 
 
 class Index(ObjectWithTimestamp):
