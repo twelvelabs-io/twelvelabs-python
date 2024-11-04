@@ -50,24 +50,16 @@ class EmbeddingMediaMetadata(BaseModel):
 
 
 class Embedding(BaseModel):
-    values: Optional[List[float]] = Field(default=None, alias="float")
-    is_success: bool
+    segments: Optional[List[SegmentEmbedding]] = None
     error_message: Optional[str] = None
     metadata: Optional[EmbeddingMediaMetadata] = None
 
 
 class SegmentEmbedding(BaseModel):
-    start_offset_sec: float
+    start_offset_sec: Optional[float] = None
     end_offset_sec: Optional[float] = None
     embedding_scope: Optional[str] = None
     values: Optional[List[float]] = Field(default=None, alias="float")
-
-
-class AudioEmbedding(BaseModel):
-    segments: Optional[List[SegmentEmbedding]] = None
-    is_success: bool
-    error_message: Optional[str] = None
-    metadata: Optional[EmbeddingMediaMetadata] = None
 
 
 class CreateEmbeddingsResult(BaseModel):
@@ -75,12 +67,12 @@ class CreateEmbeddingsResult(BaseModel):
     text_embedding: Optional[Embedding] = None
     image_embedding: Optional[Embedding] = None
     video_embedding: Optional[Embedding] = None
-    audio_embedding: Optional[AudioEmbedding] = None
+    audio_embedding: Optional[Embedding] = None
 
 
 class EmbeddingMetadata(BaseModel):
-    url: Optional[str] = None
-    filename: Optional[str] = None
+    input_url: Optional[str] = None
+    input_filename: Optional[str] = None
     video_clip_length: Optional[int] = None
     video_embedding_scope: Optional[List[str]] = None
     duration: Optional[float] = None
@@ -90,22 +82,15 @@ class EmbeddingsTaskStatus(Object):
     engine_name: str
     status: str
     metadata: Optional[EmbeddingMetadata] = None
-
-
-class VideoEmbedding(BaseModel):
-    start_offset_sec: float
-    end_offset_sec: float
-    embedding_scope: str
-    values: Optional[List[float]] = Field(default=None, alias="float")
+    video_embedding: Optional[Embedding] = None
 
 
 class EmbeddingsTask(Object):
     _resource: EmbedTaskResource = PrivateAttr()
     engine_name: str
     status: str
-    video_embeddings: Optional[RootModelList[VideoEmbedding]] = None
+    video_embedding: Optional[Embedding] = None
     created_at: Optional[str] = None
-    metadata: Optional[EmbeddingMetadata] = None
 
     def __init__(self, resource: EmbedTaskResource, **data):
         super().__init__(**data)
