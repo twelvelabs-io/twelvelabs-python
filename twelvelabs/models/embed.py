@@ -59,7 +59,7 @@ class SegmentEmbedding(BaseModel):
     start_offset_sec: Optional[float] = None
     end_offset_sec: Optional[float] = None
     embedding_scope: Optional[str] = None
-    embedding_float: Optional[List[float]] = Field(default=None, alias="float")
+    embeddings_float: Optional[List[float]] = Field(default=None, alias="float")
 
 
 class CreateEmbeddingsResult(BaseModel):

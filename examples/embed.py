@@ -18,7 +18,7 @@ with TwelveLabs(API_KEY) as client:
             print(
                 f"  embedding_scope={segment.embedding_scope} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
             )
-            print(f"  embeddings: {", ".join(str(segment.embedding_float))}")
+            print(f"  embeddings: {", ".join(str(segment.embeddings_float))}")
 
     embed_tasks = client.embed.task.list()
     for task in embed_tasks:
