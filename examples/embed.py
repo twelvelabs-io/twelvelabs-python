@@ -1,8 +1,9 @@
 import os
+from typing import List
 
 import _context
 from twelvelabs import TwelveLabs
-from twelvelabs.models.embed import EmbeddingsTask
+from twelvelabs.models.embed import EmbeddingsTask, SegmentEmbedding
 
 
 API_KEY = os.getenv("API_KEY")
@@ -11,13 +12,24 @@ assert (
 ), "Your API key should be stored in an environment variable named API_KEY."
 
 with TwelveLabs(API_KEY) as client:
+
+    def print_segments(segments: List[SegmentEmbedding]):
+        for segment in segments:
+            print(
+                f"  embedding_scope={segment.embedding_scope} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
+            )
+            print(f"  embeddings: {", ".join(str(segment.embedding_float))}")
+
     embed_tasks = client.embed.task.list()
     for task in embed_tasks:
         print(
             f"Embedding task: id={task.id} status={task.status} created_at={task.created_at}"
         )
-        if task.metadata is not None:
-            print(f"  metadata: {task.metadata}")
+        if (
+            task.video_embedding is not None
+            and task.video_embedding.segments is not None
+        ):
+            print_segments(task.video_embedding.segments)
 
     def on_task_update(task: EmbeddingsTask):
         print(f"  Status={task.status}")
@@ -30,28 +42,24 @@ with TwelveLabs(API_KEY) as client:
         text_truncate="start",
     )
     print(f"Created text embedding: engine_name={res.engine_name}")
-    if res.text_embedding is not None:
-        print(f"  embeddings: {", ".join(str(res.text_embedding.values))}")
+    if res.text_embedding is not None and res.text_embedding.segments is not None:
+        print_segments(res.text_embedding.segments)
 
     res = client.embed.create(
         engine_name=engine_name,
         image_file=os.path.join(os.path.dirname(__file__), "assets/search_sample.png"),
     )
     print(f"Created image embedding: engine_name={res.engine_name}")
-    if res.image_embedding is not None:
-        print(f"  embeddings: {", ".join(str(res.image_embedding.values))}")
+    if res.image_embedding is not None and res.image_embedding.segments is not None:
+        print_segments(res.image_embedding.segments)
 
     res = client.embed.create(
         engine_name=engine_name,
-        audio_file=os.path.join(os.path.dirname(__file__), "assets/audio_sample.png"),
+        audio_file=os.path.join(os.path.dirname(__file__), "assets/audio_sample.mp3"),
     )
     print(f"Created audio embedding: engine_name={res.engine_name}")
     if res.audio_embedding is not None and res.audio_embedding.segments is not None:
-        for segment in res.audio_embedding.segments:
-            print(
-                f"  embedding_scope={segment.embedding_scope} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
-            )
-            print(f"  embeddings: {", ".join(str(segment.values))}")
+        print_segments(res.audio_embedding.segments)
 
     task = client.embed.task.create(
         engine_name=engine_name,
@@ -65,9 +73,5 @@ with TwelveLabs(API_KEY) as client:
     print(f"Embedding done: {status}")
 
     task = task.retrieve()
-    if task.video_embeddings is not None:
-        for v in task.video_embeddings:
-            print(
-                f"embedding_scope={v.embedding_scope} start_offset_sec={v.start_offset_sec} end_offset_sec={v.end_offset_sec}"
-            )
-            print(f"embeddings: {", ".join(str(v.values))}")
+    if task.video_embedding is not None and task.video_embedding.segments is not None:
+        print_segments(task.video_embedding.segments)

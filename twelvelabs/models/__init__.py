@@ -24,6 +24,7 @@ from .embed import (
     CreateEmbeddingsTaskVideoParams,
     EmbeddingsTaskListWithPagination,
     Embedding,
+    SegmentEmbedding,
 )
 
 __all__ = [
@@ -57,5 +58,6 @@ __all__ = [
     "CreateEmbeddingsTaskVideoParams",
     "EmbeddingsTaskListWithPagination",
     "Embedding",
+    "SegmentEmbedding",
     "RootModelList",
 ]
