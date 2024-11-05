@@ -22,6 +22,9 @@ from .embed import (
     EmbeddingsTask,
     EmbeddingsTaskStatus,
     CreateEmbeddingsTaskVideoParams,
+    EmbeddingsTaskListWithPagination,
+    Embedding,
+    SegmentEmbedding,
 )
 
 __all__ = [
@@ -53,5 +56,8 @@ __all__ = [
     "EmbeddingsTask",
     "EmbeddingsTaskStatus",
     "CreateEmbeddingsTaskVideoParams",
+    "EmbeddingsTaskListWithPagination",
+    "Embedding",
+    "SegmentEmbedding",
     "RootModelList",
 ]

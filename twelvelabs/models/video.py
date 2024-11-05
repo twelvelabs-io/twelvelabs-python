@@ -11,6 +11,7 @@ if TYPE_CHECKING:
         GeneratorGistResult,
         GenerateSummarizeResult,
         GenerateOpenEndedTextResult,
+        Embedding,
     )
 
 
@@ -54,6 +55,7 @@ class Video(ObjectWithTimestamp):
     indexed_at: Optional[str] = None
     created_at: str
     updated_at: Optional[str] = None
+    embedding: Optional[Embedding] = None
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
         super().__init__(**data)

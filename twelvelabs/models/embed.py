@@ -1,9 +1,18 @@
 from __future__ import annotations
 
-from typing import List, Union, BinaryIO, Optional, Literal, Callable, TYPE_CHECKING
+from typing import (
+    List,
+    Union,
+    BinaryIO,
+    Optional,
+    Literal,
+    Callable,
+    Any,
+    TYPE_CHECKING,
+)
 from pydantic import PrivateAttr, Field
 
-from ._base import BaseModel, Object, RootModelList
+from ._base import BaseModel, Object, RootModelList, PageInfo
 
 if TYPE_CHECKING:
     from ..resources import EmbedTask as EmbedTaskResource
@@ -35,32 +44,53 @@ class CreateEmbeddingsTaskVideoParams:
         self.scopes = scopes
 
 
+class EmbeddingMediaMetadata(BaseModel):
+    input_url: Optional[str] = None
+    input_filename: Optional[str] = None
+
+
 class Embedding(BaseModel):
-    float: List[float]
+    segments: Optional[List[SegmentEmbedding]] = None
+    error_message: Optional[str] = None
+    metadata: Optional[EmbeddingMediaMetadata] = None
+
+
+class SegmentEmbedding(BaseModel):
+    start_offset_sec: Optional[float] = None
+    end_offset_sec: Optional[float] = None
+    embedding_scope: Optional[str] = None
+    embeddings_float: Optional[List[float]] = Field(default=None, alias="float")
 
 
 class CreateEmbeddingsResult(BaseModel):
     engine_name: str
-    text_embedding: Embedding
+    text_embedding: Optional[Embedding] = None
+    image_embedding: Optional[Embedding] = None
+    video_embedding: Optional[Embedding] = None
+    audio_embedding: Optional[Embedding] = None
+
+
+class EmbeddingMetadata(BaseModel):
+    input_url: Optional[str] = None
+    input_filename: Optional[str] = None
+    video_clip_length: Optional[int] = None
+    video_embedding_scope: Optional[List[str]] = None
+    duration: Optional[float] = None
 
 
 class EmbeddingsTaskStatus(Object):
     engine_name: str
     status: str
-
-
-class VideoEmbedding(BaseModel):
-    start_offset_sec: float
-    end_offset_sec: float
-    embedding_scope: str
-    values: Optional[List[float]] = Field(default=None, alias="float")
+    metadata: Optional[EmbeddingMetadata] = None
+    video_embedding: Optional[Embedding] = None
 
 
 class EmbeddingsTask(Object):
     _resource: EmbedTaskResource = PrivateAttr()
     engine_name: str
     status: str
-    video_embeddings: Optional[RootModelList[VideoEmbedding]] = None
+    video_embedding: Optional[Embedding] = None
+    created_at: Optional[str] = None
 
     def __init__(self, resource: EmbedTaskResource, **data):
         super().__init__(**data)
@@ -97,3 +127,29 @@ class EmbeddingsTask(Object):
             if callback is not None:
                 callback(self)
         return self.status
+
+
+class EmbeddingsTaskListWithPagination(BaseModel):
+    _resource: EmbedTaskResource = PrivateAttr()
+    _origin_params: dict[str, Any] = PrivateAttr()
+    data: RootModelList[EmbeddingsTask] = []
+    page_info: PageInfo
+
+    def __init__(
+        self, resource: EmbedTaskResource, origin_params: dict[str, Any], **data
+    ):
+        super().__init__(**data)
+        self._resource = resource
+        self._origin_params = origin_params
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> RootModelList[EmbeddingsTask]:
+        if self.page_info.page >= self.page_info.total_page:
+            raise StopIteration
+        params = self._origin_params
+        params["page"] = self.page_info.page + 1
+        res = self._resource.list_pagination(**params)
+        self.page_info = res.page_info
+        return res.data
