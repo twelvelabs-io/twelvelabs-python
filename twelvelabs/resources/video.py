@@ -13,7 +13,12 @@ from ..util import (
 
 class Video(APIResource):
     def retrieve(
-        self, index_id: str, id: str, *, embed: Optional[bool] = None, **kwargs
+        self,
+        index_id: str,
+        id: str,
+        *,
+        embed: Optional[bool] = None,
+        **kwargs,
     ) -> models.Video:
         params = {
             "embed": embed,

@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from typing import Optional, TYPE_CHECKING, Dict, Any, List, Union, Literal
-from pydantic import PrivateAttr, Extra
+from pydantic import PrivateAttr
 
 from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo, RootModelList
 
+from .embed import Embedding
+from .generate import (
+    GenerateGistResult,
+    GenerateSummarizeResult,
+    GenerateOpenEndedTextResult,
+)
+
 if TYPE_CHECKING:
     from ..resources import Video as VideoResource
-    from . import (
-        GeneratorGistResult,
-        GenerateSummarizeResult,
-        GenerateOpenEndedTextResult,
-        Embedding,
-    )
 
 
 class VideoMetadata(BaseModel):
@@ -24,7 +25,7 @@ class VideoMetadata(BaseModel):
     size: int
 
     class Config:
-        extra = Extra.allow  # This allows extra fields
+        extra = "allow"  # This allows extra fields
 
 
 class VideoHLS(BaseModel):
@@ -113,7 +114,7 @@ class Video(ObjectWithTimestamp):
 
     def generate_gist(
         self, types: List[Union[str, Literal["topic", "hashtag", "title"]]], **kwargs
-    ) -> GeneratorGistResult:
+    ) -> GenerateGistResult:
         return self._resource._client.generate.gist(self.id, types, **kwargs)
 
     def generate_summarize(
