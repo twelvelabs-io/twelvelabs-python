@@ -24,9 +24,10 @@ with TwelveLabs(API_KEY) as client:
             print(f"failed_file: {failed_file.filename} {failed_file.error_message}")
 
     status = client.task.transfers.import_status(integration_id, index_id)
-    print(status.failed)
     for ready in status.ready:
         print(f"ready: {ready.video_id} {ready.filename} {ready.created_at}")
+    for failed in status.failed:
+        print(f"failed: {failed.filename} {failed.error_message}")
 
     logs = client.task.transfers.import_logs(integration_id)
     for log in logs:
