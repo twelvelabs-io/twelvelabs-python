@@ -2,7 +2,6 @@ import os
 
 import _context
 from twelvelabs import TwelveLabs
-from twelvelabs.models.task import Task
 
 
 API_KEY = os.getenv("API_KEY")
