@@ -103,3 +103,72 @@ class TaskStatus(BaseModel):
     pending: int
     failed: int
     total_result: int
+
+
+# Transfer Import
+
+
+class TransferImportVideo(BaseModel):
+    video_id: str
+    filename: str
+
+
+class TransferImportFailedFile(BaseModel):
+    filename: str
+    error_message: str
+
+
+class TransferImportResponse(BaseModel):
+    videos: List[TransferImportVideo] = []
+    failed_files: Optional[List[TransferImportFailedFile]] = None
+
+
+# Transfer Import Status
+
+
+class TransferImportStatusVideoInfo(BaseModel):
+    video_id: str
+    filename: str
+    created_at: Optional[str] = None
+
+
+class TransferImportStatusFailedVideoInfo(BaseModel):
+    filename: str
+    created_at: Optional[str] = None
+    error_message: str
+
+
+class TransferImportStatusResponse(BaseModel):
+    not_imported: List[str] = []
+    ready: List[TransferImportStatusVideoInfo] = []
+    validating: List[TransferImportStatusVideoInfo] = []
+    pending: List[TransferImportStatusVideoInfo] = []
+    indexing: List[TransferImportStatusVideoInfo] = []
+    failed: List[TransferImportStatusFailedVideoInfo] = []
+    queued: List[TransferImportStatusVideoInfo] = []
+
+
+# Transfer Import Log
+
+
+class TransferImportLogVideoStatus(BaseModel):
+    ready: int
+    validating: int
+    pending: int
+    indexing: int
+    failed: int
+    queued: int
+
+
+class TransferImportLogFailedFile(BaseModel):
+    filename: str
+    error_message: str
+
+
+class TransferImportLog(BaseModel):
+    index_id: str
+    index_name: str
+    created_at: str
+    ended_at: Optional[str] = None
+    video_status: TransferImportLogVideoStatus
+    failed_files: Optional[List[TransferImportLogFailedFile]] = None

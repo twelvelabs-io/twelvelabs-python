@@ -1,7 +1,14 @@
 from ._base import Object, ObjectWithTimestamp, PageInfo, TokenPageInfo, RootModelList
 from .engine import Engine
 from .index import Index, IndexListWithPagination
-from .task import Task, TaskStatus, TaskListWithPagination
+from .task import (
+    Task,
+    TaskStatus,
+    TaskListWithPagination,
+    TransferImportResponse,
+    TransferImportStatusResponse,
+    TransferImportLog,
+)
 from .video import Video, VideoValue, VideoListWithPagination
 from .search import (
     SearchData,
@@ -38,6 +45,9 @@ __all__ = [
     "Task",
     "TaskListWithPagination",
     "TaskStatus",
+    "TransferImportResponse",
+    "TransferImportStatusResponse",
+    "TransferImportLog",
     "Video",
     "VideoValue",
     "VideoListWithPagination",

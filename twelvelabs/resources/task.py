@@ -1,13 +1,60 @@
+from __future__ import annotations
 from io import BytesIO
-from typing import Optional, Union, BinaryIO, List, Dict
+from typing import Optional, Union, BinaryIO, List, Dict, Any, TYPE_CHECKING
 
 from ..models import RootModelList
 from ..resource import APIResource
 from .. import models
 from ..util import remove_none_values, get_local_params, handle_comparison_params
 
+if TYPE_CHECKING:
+    from ..client import TwelveLabs
+
+
+class TaskTransfer(APIResource):
+    def import_videos(
+        self,
+        integration_id: str,
+        index_id: str,
+        user_metadata: Optional[Dict[str, Any]] = None,
+        incremental_import: Optional[bool] = None,
+        retry_failed: Optional[bool] = None,
+        **kwargs,
+    ) -> models.TransferImportResponse:
+        json = {
+            "index_id": index_id,
+            "user_metadata": user_metadata,
+            "incremental_import": incremental_import,
+            "retry_failed": retry_failed,
+        }
+        res = self._post(
+            f"tasks/transfers/import/{integration_id}", json=json, **kwargs
+        )
+        return models.TransferImportResponse(**res)
+
+    def import_status(
+        self, integration_id: str, index_id: str, **kwargs
+    ) -> models.TransferImportStatusResponse:
+        params = {"index_id": index_id}
+        res = self._get(
+            f"tasks/transfers/import/{integration_id}/status", params=params, **kwargs
+        )
+        return models.TransferImportStatusResponse(**res)
+
+    def import_logs(
+        self, integration_id: str, **kwargs
+    ) -> RootModelList[models.TransferImportLog]:
+        res = self._get(f"tasks/transfers/import/{integration_id}/logs", **kwargs)
+        return RootModelList([models.TransferImportLog(**log) for log in res["data"]])
+
 
 class Task(APIResource):
+    transfers: TaskTransfer
+
+    def __init__(self, client: TwelveLabs) -> None:
+        super().__init__(client)
+        self.transfers = TaskTransfer(client)
+
     def retrieve(self, id: str, **kwargs) -> models.Task:
         res = self._get(f"tasks/{id}", **kwargs)
         return models.Task(self, **res)
@@ -138,9 +185,9 @@ class Task(APIResource):
             data["provide_transcription"] = True
 
         if url is not None:
-            files['video_url'] = BytesIO(url.encode())
+            files["video_url"] = BytesIO(url.encode())
         if transcription_url is not None:
-            files['transcription_url'] = BytesIO(transcription_url.encode())
+            files["transcription_url"] = BytesIO(transcription_url.encode())
 
         try:
             res = self._post(
