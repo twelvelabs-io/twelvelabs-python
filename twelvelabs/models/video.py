@@ -5,7 +5,7 @@ from pydantic import PrivateAttr
 
 from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo, RootModelList
 
-from .embed import Embedding
+from .embed import CreateEmbeddingsResult
 from .generate import (
     GenerateGistResult,
     GenerateSummarizeResult,
@@ -43,7 +43,7 @@ class VideoValue(BaseModel):
 
 class VideoSource(BaseModel):
     type: str
-    name: str
+    name: Optional[str] = None
     url: Optional[str] = None
 
 
@@ -56,7 +56,7 @@ class Video(ObjectWithTimestamp):
     indexed_at: Optional[str] = None
     created_at: str
     updated_at: Optional[str] = None
-    embedding: Optional[Embedding] = None
+    embedding: Optional[CreateEmbeddingsResult] = None
 
     def __init__(self, resource: VideoResource, index_id: str, **data):
         super().__init__(**data)
