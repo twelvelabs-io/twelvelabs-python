@@ -14,9 +14,13 @@ with TwelveLabs(API_KEY) as client:
 
     print(f"Videos in index id={index.id}")
     videos = client.index.video.list(index.id)
+    if len(videos) == 0:
+        print("No videos in the index, exiting")
+        exit()
+
     for video in videos:
         print(
-            f"  filename={video.metadata.filename} duration={video.metadata.duration}"
+            f"  filename={video.system_metadata.filename} duration={video.system_metadata.duration}"
         )
 
     print(f"With pagigation: ")
@@ -24,7 +28,7 @@ with TwelveLabs(API_KEY) as client:
 
     for task in result.data:
         print(
-            f"  filename={video.metadata.filename} duration={video.metadata.duration}"
+            f"  filename={video.system_metadata.filename} duration={video.system_metadata.duration}"
         )
 
     while True:
@@ -32,37 +36,13 @@ with TwelveLabs(API_KEY) as client:
             next_page_data = next(result)
             print(f"Next page's data: {next_page_data}")
         except StopIteration:
-            print("There is no next page in search result")
+            print("There is no next page in video list result")
             break
 
-    video = client.index.video.retrieve(index.id, videos[0].id)
     client.index.video.update(
-        index.id, video.id, title="updated_test_video", metadata={"from_sdk": True}
+        index.id,
+        videos[0].id,
+        user_metadata={"from_sdk": True},
     )
-    print(f"Updated first video: id={video.id} metadata={video.metadata}")
-
-    transcriptions = client.index.video.transcription(
-        index.id, video.id, start=0, end=30
-    )
-    print(f"There are {str(len(transcriptions))} transcriptions")
-    for transcription in transcriptions:
-        print(
-            f"  value={transcription.value} start={transcription.start} end={transcription.end}"
-        )
-
-    text_in_videos = client.index.video.text_in_video(
-        index.id, video.id, start=0, end=30
-    )
-    print(f"There are {str(len(text_in_videos))} text_in_videos")
-    for text_in_video in text_in_videos:
-        print(
-            f"  value={text_in_video.value} start={text_in_video.start} end={text_in_video.end}"
-        )
-
-    logos = client.index.video.logo(index.id, video.id)
-    print(f"There are {str(len(logos))} logos")
-    for logo in logos:
-        print(f"  value={logo.value} start={logo.start} end={logo.end}")
-
-    thumbnail = client.index.video.thumbnail(index.id, video.id)
-    print(f"Thumbnail: {thumbnail}")
+    video = client.index.video.retrieve(index.id, videos[0].id)
+    print(f"Updated first video: id={video.id} metadata={video.user_metadata}")

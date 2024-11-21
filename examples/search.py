@@ -11,12 +11,13 @@ assert (
 
 with TwelveLabs(API_KEY) as client:
     index = client.index.retrieve("<YOUR_INDEX_ID>")
+    search_options = ["visual", "audio"]
 
     print("Search (group by video):")
     result = client.search.query(
         index.id,
-        ["visual", "conversation"],
-        query_text="A man talking",
+        search_options,
+        query_text="Train",
         group_by="video",
     )
     for group in result.data:
@@ -29,7 +30,7 @@ with TwelveLabs(API_KEY) as client:
     print("Search:")
     result = client.search.query(
         index.id,
-        ["visual", "conversation"],
+        search_options,
         query_text="A man talking",
     )
     for clip in result.data:
@@ -53,7 +54,7 @@ with TwelveLabs(API_KEY) as client:
     image_path = os.path.join(os.path.dirname(__file__), "assets/search_sample.png")
     result = client.search.query(
         index.id,
-        ["visual", "conversation"],
+        search_options,
         query_media_type="image",
         query_media_file=image_path,
     )

@@ -1,11 +1,10 @@
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, Dict, Any, Union
 
 from ..models._base import RootModelList
 from ..resource import APIResource
 from .. import models
 from ..util import (
     remove_none_values,
-    get_data_with_default,
     get_local_params,
     handle_comparison_params,
 )
@@ -34,14 +33,13 @@ class Video(APIResource):
         self,
         index_id: str,
         *,
-        id: Optional[str] = None,
         filename: Optional[str] = None,
         size: Optional[Union[int, Dict[str, int]]] = None,
         width: Optional[Union[int, Dict[str, int]]] = None,
         height: Optional[Union[int, Dict[str, int]]] = None,
         duration: Optional[Union[int, Dict[str, int]]] = None,
         fps: Optional[Union[int, Dict[str, int]]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
         indexed_at: Optional[Union[str, Dict[str, str]]] = None,
@@ -52,14 +50,13 @@ class Video(APIResource):
         **kwargs,
     ) -> RootModelList[models.Video]:
         params = {
-            "_id": id,
             "filename": filename,
             "size": size,
             "width": width,
             "height": height,
             "duration": duration,
             "fps": fps,
-            "metadata": metadata,
+            "user_metadata": user_metadata,
             "created_at": created_at,
             "updated_at": updated_at,
             "indexed_at": indexed_at,
@@ -87,14 +84,13 @@ class Video(APIResource):
         self,
         index_id: str,
         *,
-        id: Optional[str] = None,
         filename: Optional[str] = None,
         size: Optional[Union[int, Dict[str, int]]] = None,
         width: Optional[Union[int, Dict[str, int]]] = None,
         height: Optional[Union[int, Dict[str, int]]] = None,
         duration: Optional[Union[int, Dict[str, int]]] = None,
         fps: Optional[Union[int, Dict[str, int]]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
         indexed_at: Optional[Union[str, Dict[str, str]]] = None,
@@ -106,14 +102,13 @@ class Video(APIResource):
     ) -> models.VideoListWithPagination:
         local_params = get_local_params(locals().items())
         params = {
-            "_id": id,
             "filename": filename,
             "size": size,
             "width": width,
             "height": height,
             "duration": duration,
             "fps": fps,
-            "metadata": metadata,
+            "user_metadata": user_metadata,
             "created_at": created_at,
             "updated_at": updated_at,
             "indexed_at": indexed_at,
@@ -149,13 +144,11 @@ class Video(APIResource):
         index_id: str,
         id: str,
         *,
-        title: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_metadata: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> None:
         json = {
-            "video_title": title,
-            "metadata": metadata,
+            "user_metadata": user_metadata,
         }
         self._put(
             f"indexes/{index_id}/videos/{id}", json=remove_none_values(json), **kwargs
@@ -163,96 +156,3 @@ class Video(APIResource):
 
     def delete(self, index_id: str, id: str, **kwargs) -> None:
         self._delete(f"indexes/{index_id}/videos/{id}", **kwargs)
-
-    def transcription(
-        self,
-        index_id: str,
-        id: str,
-        *,
-        start: Optional[float] = None,
-        end: Optional[float] = None,
-        **kwargs,
-    ) -> RootModelList[models.VideoValue]:
-        params = {
-            "start": start,
-            "end": end,
-        }
-        res = self._get(
-            f"indexes/{index_id}/videos/{id}/transcription",
-            params=remove_none_values(params),
-            **kwargs,
-        )
-        return RootModelList(
-            [
-                models.VideoValue(**value)
-                for value in get_data_with_default(res, "data", [])
-            ]
-        )
-
-    def text_in_video(
-        self,
-        index_id: str,
-        id: str,
-        *,
-        start: Optional[float] = None,
-        end: Optional[float] = None,
-        **kwargs,
-    ) -> RootModelList[models.VideoValue]:
-        params = {
-            "start": start,
-            "end": end,
-        }
-        res = self._get(
-            f"indexes/{index_id}/videos/{id}/text-in-video",
-            params=remove_none_values(params),
-            **kwargs,
-        )
-        return RootModelList(
-            [
-                models.VideoValue(**value)
-                for value in get_data_with_default(res, "data", [])
-            ]
-        )
-
-    def logo(
-        self,
-        index_id: str,
-        id: str,
-        *,
-        start: Optional[float] = None,
-        end: Optional[float] = None,
-        **kwargs,
-    ) -> RootModelList[models.VideoValue]:
-        params = {
-            "start": start,
-            "end": end,
-        }
-        res = self._get(
-            f"indexes/{index_id}/videos/{id}/logo",
-            params=remove_none_values(params),
-            **kwargs,
-        )
-        return RootModelList(
-            [
-                models.VideoValue(**value)
-                for value in get_data_with_default(res, "data", [])
-            ]
-        )
-
-    def thumbnail(
-        self,
-        index_id: str,
-        id: str,
-        *,
-        time: Optional[float] = None,
-        **kwargs,
-    ) -> str:
-        params = {
-            "time": time,
-        }
-        res = self._get(
-            f"indexes/{index_id}/videos/{id}/thumbnail",
-            params=remove_none_values(params),
-            **kwargs,
-        )
-        return res["thumbnail"]

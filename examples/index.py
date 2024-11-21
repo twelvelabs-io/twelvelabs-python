@@ -15,17 +15,17 @@ with TwelveLabs(API_KEY) as client:
         f"idx-{uuid.uuid4()}",
         [
             {
-                "name": "marengo2.6",
-                "options": ["visual", "conversation", "text_in_video"],
+                "name": "marengo2.7",
+                "options": ["visual", "audio"],
             },
             {
                 "name": "pegasus1.1",
-                "options": ["visual", "conversation"],
+                "options": ["visual", "audio"],
             },
         ],
         addons=["thumbnail"],
     )
-    print(f"Created index: id={index.id} name={index.name} engines={index.engines}")
+    print(f"Created index: id={index.id} name={index.name} models={index.models}")
 
     client.index.update(index.id, f"idx-{uuid.uuid4()}")
     index = client.index.retrieve(index.id)
@@ -35,7 +35,7 @@ with TwelveLabs(API_KEY) as client:
     indexes = client.index.list(page=1)
     for index in indexes:
         print(
-            f"  id={index.id} name={index.name} engines={index.engines} created_at={index.created_at}"
+            f"  id={index.id} name={index.name} models={index.models} created_at={index.created_at}"
         )
 
     print("With pagination: ")
@@ -43,7 +43,7 @@ with TwelveLabs(API_KEY) as client:
 
     for index in result.data:
         print(
-            f"  id={index.id} name={index.name} engines={index.engines} created_at={index.created_at}"
+            f"  id={index.id} name={index.name} models={index.models} created_at={index.created_at}"
         )
 
     while True:

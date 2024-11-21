@@ -9,7 +9,7 @@ class Generate(APIResource):
     def gist(
         self,
         video_id: str,
-        types: List[Union[str, Literal["topic", "hashtag", "title"]]],
+        types: List[Literal["topic", "hashtag", "title"]],
         **kwargs,
     ) -> models.GenerateGistResult:
         json = {
@@ -22,7 +22,7 @@ class Generate(APIResource):
     def summarize(
         self,
         video_id: str,
-        type: Union[str, Literal["summary", "chapter", "highlight"]],
+        type: Literal["summary", "chapter", "highlight"],
         *,
         prompt: Optional[str] = None,
         temperature: Optional[float] = None,

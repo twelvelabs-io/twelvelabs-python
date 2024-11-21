@@ -1,5 +1,4 @@
 from ._base import Object, ObjectWithTimestamp, PageInfo, TokenPageInfo, RootModelList
-from .engine import Engine
 from .index import Index, IndexListWithPagination
 from .task import (
     Task,
@@ -23,7 +22,6 @@ from .generate import (
     GenerateGistResult,
     GenerateOpenEndedTextStreamResult,
 )
-from .classify import ClassifyClassParams, ClassifyPageResult
 from .embed import (
     CreateEmbeddingsResult,
     EmbeddingsTask,
@@ -39,7 +37,6 @@ __all__ = [
     "ObjectWithTimestamp",
     "PageInfo",
     "TokenPageInfo",
-    "Engine",
     "Index",
     "IndexListWithPagination",
     "Task",
@@ -54,8 +51,6 @@ __all__ = [
     "SearchData",
     "SearchResult",
     "CombinedSearchResult",
-    "ClassifyClassParams",
-    "ClassifyPageResult",
     "GenerateOpenEndedTextResult",
     "GenerateSummarizeChapterResult",
     "GenerateSummarizeHighlightResult",

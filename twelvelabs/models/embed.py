@@ -63,11 +63,15 @@ class SegmentEmbedding(BaseModel):
 
 
 class CreateEmbeddingsResult(BaseModel):
-    engine_name: str
+    model_name: str
     text_embedding: Optional[Embedding] = None
     image_embedding: Optional[Embedding] = None
     video_embedding: Optional[Embedding] = None
     audio_embedding: Optional[Embedding] = None
+
+    class Config:
+        # Disable the protected namespace restriction for model_name
+        protected_namespaces = ()
 
 
 class EmbeddingMetadata(BaseModel):
@@ -79,18 +83,26 @@ class EmbeddingMetadata(BaseModel):
 
 
 class EmbeddingsTaskStatus(Object):
-    engine_name: str
+    model_name: str
     status: str
     metadata: Optional[EmbeddingMetadata] = None
     video_embedding: Optional[Embedding] = None
 
+    class Config:
+        # Disable the protected namespace restriction for model_name
+        protected_namespaces = ()
+
 
 class EmbeddingsTask(Object):
     _resource: EmbedTaskResource = PrivateAttr()
-    engine_name: str
+    model_name: str
     status: str
     video_embedding: Optional[Embedding] = None
     created_at: Optional[str] = None
+
+    class Config:
+        # Disable the protected namespace restriction for model_name
+        protected_namespaces = ()
 
     def __init__(self, resource: EmbedTaskResource, **data):
         super().__init__(**data)

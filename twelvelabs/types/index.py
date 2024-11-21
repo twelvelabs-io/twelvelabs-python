@@ -1,6 +1,6 @@
-from typing import List, TypedDict
+from typing import TypedDict, Literal, List
 
 
-class IndexEngine(TypedDict):
-    name: str
-    options: List[str]
+class IndexModel(TypedDict):
+    name: Literal["marengo2.7", "pegasus1.1"]
+    options: List[Literal["visual", "audio"]]

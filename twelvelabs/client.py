@@ -1,18 +1,16 @@
 import os
 from typing import Union, Literal
 
-from .constants import BASE_URL, DEFAULT_API_VERSION
+from .constants import BASE_URL, LATEST_API_VERSION
 from .base_client import APIClient
 from . import resources
 
 
 class TwelveLabs(APIClient):
-    engine: resources.Engine
     index: resources.Index
     task: resources.Task
     search: resources.Search
     generate: resources.Generate
-    classify: resources.Classify
     embed: resources.Embed
 
     base_url: str
@@ -23,9 +21,13 @@ class TwelveLabs(APIClient):
         api_key: str,
         version: Union[
             str,
-            Literal["v1.1", "v1.2"],
-        ] = DEFAULT_API_VERSION,
+            Literal["v1.1", "v1.2", "v1.3"],
+        ] = LATEST_API_VERSION,
     ) -> None:
+        if version != LATEST_API_VERSION:
+            print(
+                f"[Warning] You manually set the API version to {version}, but this SDK version is not fully compatible with current API version, please use corresponding version of SDK."
+            )
         assert (
             api_key,
             "Provide `api_key` to initialize a client. You can see the API Key in the Dashboard page: https://dashboard.playground.io",
@@ -39,12 +41,10 @@ class TwelveLabs(APIClient):
         self.api_key = api_key
         super().__init__(base_url, api_key)
 
-        self.engine = resources.Engine(self)
         self.index = resources.Index(self)
         self.task = resources.Task(self)
         self.search = resources.Search(self)
         self.generate = resources.Generate(self)
-        self.classify = resources.Classify(self)
         self.embed = resources.Embed(self)
 
     def __enter__(self):

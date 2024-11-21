@@ -70,7 +70,7 @@ class EmbedTask(APIResource):
 
     def create(
         self,
-        engine_name: str,
+        model_name: Literal["Marengo-retrieval-2.7"],
         *,
         video_file: Union[str, BinaryIO, None] = None,
         video_url: Optional[str] = None,
@@ -83,7 +83,7 @@ class EmbedTask(APIResource):
         if not video_file and not video_url:
             raise ValueError("Either video_file or video_url must be provided")
         data = {
-            "engine_name": engine_name,
+            "model_name": model_name,
             "video_embedding_scope": video_embedding_scopes,
             "video_url": video_url,
             "video_start_offset_sec": video_start_offset_sec,
@@ -116,7 +116,7 @@ class EmbedTask(APIResource):
 
     def create_bulk(
         self,
-        engine_name: str,
+        model_name: Literal["Marengo-retrieval-2.7"],
         videos: List[models.CreateEmbeddingsTaskVideoParams],
         **kwargs,
     ) -> RootModelList[models.EmbeddingsTask]:
@@ -124,7 +124,7 @@ class EmbedTask(APIResource):
         for video_params in videos:
             try:
                 task = self.create(
-                    engine_name,
+                    model_name,
                     video_file=video_params.file,
                     video_url=video_params.url,
                     video_start_offset_sec=video_params.start_offset_sec,
@@ -153,7 +153,7 @@ class Embed(APIResource):
 
     def create(
         self,
-        engine_name: str,
+        model_name: Literal["Marengo-retrieval-2.7"],
         *,
         # text params
         text: str = None,
@@ -172,7 +172,7 @@ class Embed(APIResource):
                 "At least one of text, audio_url, audio_file, image_url, image_file must be provided"
             )
         data = {
-            "engine_name": engine_name,
+            "model_name": model_name,
             "text": text,
             "text_truncate": text_truncate,
             "audio_url": audio_url,

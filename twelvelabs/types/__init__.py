@@ -1,3 +1,3 @@
-from .index import IndexEngine
+from .index import IndexModel
 
-__all__ = ["IndexEngine"]
+__all__ = ["IndexModel"]

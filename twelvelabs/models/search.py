@@ -25,7 +25,6 @@ class SearchData(BaseModel):
     start: float
     end: float
     video_id: str
-    metadata: Optional[List[Dict[str, Any]]] = None
     confidence: str
     thumbnail_url: Optional[str] = None
     module_confidence: Optional[Dict[str, Any]] = None

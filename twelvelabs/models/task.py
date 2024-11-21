@@ -25,9 +25,8 @@ class Task(ObjectWithTimestamp):
     _resource: TaskResource = PrivateAttr()
     index_id: str
     video_id: Optional[str] = None
-    estimated_time: Optional[str] = None
     status: str
-    metadata: Dict[str, Any]
+    system_metadata: Dict[str, Any]
     hls: Optional[TaskHLS] = None
     process: Optional[TaskProcess] = None
 
@@ -60,7 +59,6 @@ class Task(ObjectWithTimestamp):
             self._resource._sleep(sleep_interval)
             try:
                 task = self.retrieve(**kwargs)
-                self.estimated_time = task.estimated_time
                 self.status = task.status
                 self.metadata = task.metadata
                 self.process = task.process
