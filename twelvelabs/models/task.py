@@ -60,7 +60,7 @@ class Task(ObjectWithTimestamp):
             try:
                 task = self.retrieve(**kwargs)
                 self.status = task.status
-                self.metadata = task.metadata
+                self.system_metadata = task.system_metadata
                 self.process = task.process
             except Exception as e:
                 print(f"Retrieving task failed: {e}. Retrying..")
