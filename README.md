@@ -78,7 +78,7 @@ Note the following about this example:
   - **Generative models (Pegasus)**: These models generate text based on your videos.
     For your index, both Marengo and Pegasus are enabled.
 - The `models.options` fields specify the types of information each video understanding model will process.
-- The models and the model options specified when you create an index apply to all the videos you upload to that index and cannot be changed.
+- The models and the model options specified when you create an index apply to all the videos you upload to that index and cannot be changed. For details, see the [model options](https://docs.twelvelabs.io/v1.3/docs/model-options) page.
 
 The output should look similar to the following:
 
@@ -88,7 +88,7 @@ Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', upda
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
 
-For a description of each field in the request and response, see the [Create an index](https://docs.twelvelabs.io/v1.2/reference/create-index) page.
+For a description of each field in the request and response, see the [Create an index](https://docs.twelvelabs.io/v1.3/reference/create-index) page.
 
 ## Upload videos
 
@@ -98,7 +98,7 @@ Before you upload a video to the platform, ensure that it meets the following re
 - **Video and audio formats**: The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 30 minutes (1,800s).
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
-- **Audio track**: If the `audio` [model option](https://docs.twelvelabs.io/v1.2/docs/model-options) is selected, the video you're uploading must contain an audio track.
+- **Audio track**: If the `audio` [model option](https://docs.twelvelabs.io/v1.3/docs/model-options) is selected, the video you're uploading must contain an audio track.
 
 To upload videos, use the example code below, replacing the following:
 
@@ -236,7 +236,7 @@ res = client.generate.summarize("<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_
 print(f"{res.summary}")
 ```
 
-For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.2/docs/generate-summaries-chapters-highlights) page.
+For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.3/docs/generate-summaries-chapters-highlights) page.
 
 #### Open-ended texts
 
