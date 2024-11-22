@@ -19,7 +19,6 @@ from .generate import (
     GenerateSummarizeChapterResult,
     GenerateSummarizeHighlightResult,
     GenerateSummarizeResult,
-    GenerateGistResult,
     GenerateOpenEndedTextStreamResult,
 )
 from .embed import (
@@ -55,7 +54,6 @@ __all__ = [
     "GenerateSummarizeChapterResult",
     "GenerateSummarizeHighlightResult",
     "GenerateSummarizeResult",
-    "GenerateGistResult",
     "GenerateOpenEndedTextStreamResult",
     "CreateEmbeddingsResult",
     "EmbeddingsTask",

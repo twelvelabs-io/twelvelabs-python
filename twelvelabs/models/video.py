@@ -7,7 +7,6 @@ from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo, RootMod
 
 from .embed import CreateEmbeddingsResult
 from .generate import (
-    GenerateGistResult,
     GenerateSummarizeResult,
     GenerateOpenEndedTextResult,
 )
