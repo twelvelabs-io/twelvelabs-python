@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class Model(BaseModel):
     name: str = Field(alias="model_name")
-    # conversation, text_in_video_, and logo are to keep backward compatibility with the old models
+    # conversation, text_in_video, and logo are to keep backward compatibility with the old models
     options: List[
         Literal["visual", "audio", "conversation", "text_in_video", "logo"]
     ] = Field(alias="model_options")
