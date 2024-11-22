@@ -160,7 +160,7 @@ class Task(APIResource):
 
         files = {}
         opened_files: List[BinaryIO] = []
-        
+
         if file is not None:
             if isinstance(file, str):
                 file = open(file, "rb")
@@ -243,12 +243,3 @@ class Task(APIResource):
         params = {"index_id": index_id}
         res = self._get("tasks/status", params=params, **kwargs)
         return models.TaskStatus(**res)
-
-    def transfer(self, file: BinaryIO, **kwargs) -> None:
-        files = {"file": file}
-        self._post("tasks/transfers", files=files, **kwargs)
-
-    def external_provider(self, index_id: str, url: str, **kwargs) -> models.Task:
-        json = {"index_id": index_id, "url": url}
-        res = self._post("tasks/external-provider", json=json, **kwargs)
-        return self.retrieve(res["_id"])

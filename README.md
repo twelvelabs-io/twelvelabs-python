@@ -10,6 +10,7 @@ Ensure that the following prerequisites are met before using the SDK:
 
 - [Python](https://www.python.org) 3.7 or newer must be installed on your machine.
 - You have an API key. If you don't have an account, please [sign up](https://playground.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [API Key](https://playground.twelvelabs.io/dashboard/api-key) page, and select the **Copy** icon to the right of the key to copy it to your clipboard.
+
 # Install the SDK
 
 Install the `twelvelabs` package:
@@ -51,14 +52,14 @@ index_obj = None
 try:
     index_obj = client.index.create(
         name = "<YOUR_INDEX_NAME>",
-        engines =[
+        models =[
             {
-                "name": "marengo2.6",
-                "options": ["visual", "conversation", "text_in_video"],
+                "name": "marengo2.7",
+                "options": ["visual", "audio"],
             },
             {
                 "name": "pegasus1.1",
-                "options": ["visual", "conversation"],
+                "options": ["visual", "audio"],
             },
         ],
     )
@@ -72,17 +73,17 @@ except Exception as e:
 
 Note the following about this example:
 
-- The platform provides two distinct engine types - embedding and generative, each serving unique purposes in multimodal video understanding.
-  - **Embedding engines (Marengo)**: These engines are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
-  - **Generative engines (Pegasus)**: These engines generate text based on your videos.
+- The platform provides two distinct model types - embedding and generative, each serving unique purposes in multimodal video understanding.
+  - **Embedding models (Marengo)**: These models are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
+  - **Generative models (Pegasus)**: These models generate text based on your videos.
     For your index, both Marengo and Pegasus are enabled.
-- The `engines.options` fields specify the types of information each video understanding engine will process.
-- The engines and the engine options specified when you create an index apply to all the videos you upload to that index and cannot be changed. For details, see the [Engine options](https://docs.twelvelabs.io/v1.2/docs/engine-options) page.
+- The `models.options` fields specify the types of information each video understanding model will process.
+- The models and the model options specified when you create an index apply to all the videos you upload to that index and cannot be changed.
 
 The output should look similar to the following:
 
 ```
-Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', engines=[Engine(name='marengo2.6', options=['visual', 'conversation', 'text_in_video'], addons=None), Engine(name='pegasus1.1', options=['visual', 'conversation'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
+Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', models=[model(name='marengo2.7', options=['visual', 'audio'], addons=None), model(name='pegasus1.1', options=['visual', 'audio'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
 ```
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
@@ -97,7 +98,7 @@ Before you upload a video to the platform, ensure that it meets the following re
 - **Video and audio formats**: The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 30 minutes (1,800s).
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
-- **Audio track**: If the `conversation` [engine option](https://docs.twelvelabs.io/v1.2/docs/engine-options) is selected, the video you're uploading must contain an audio track.
+- **Audio track**: If the `audio` [model option](https://docs.twelvelabs.io/v1.2/docs/model-options) is selected, the video you're uploading must contain an audio track.
 
 To upload videos, use the example code below, replacing the following:
 
@@ -145,7 +146,7 @@ To perform a search request using text queries, use the example code below, repl
 
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and conversation cues, use `["visual", "conversation"]`. Note that the search options you specify must be a subset of the engine options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and audio cues, use `["visual", "audio"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```py
 search_results = client.search.query(
@@ -181,14 +182,13 @@ The results are returned one page at a time, with a default limit of 10 results 
 Note that the response contains, among other information, the following fields:
 
 - `video_id`: The unique identifier of the video that matched your search terms.
-- `score`: A quantitative value determined by the AI engine representing the level of confidence that the results match your search terms.
+- `score`: A quantitative value determined by the AI model representing the level of confidence that the results match your search terms.
 - `start`: The start time of the matching video clip, expressed in seconds.
 - `end`: The end time of the matching video clip, expressed in seconds.
 - `confidence`: A qualitative indicator based on the value of the score field. This field can take one of the following values:
   - `high`
   - `medium`
   - `low`
-  - `extremely low`
 
 For a description of each field in the request and response, see the [Make any-to-video search requests](/reference/any-to-video-search) page.
 
@@ -200,7 +200,7 @@ To perform a search request using image queries, use the example code below, rep
 
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_FILE_PATH>`**: with a string representing the path of the image file you wish to provide.
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual cues, use `["visual"]`. Note that the search options you specify must be a subset of the engine options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual cues, use `["visual"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
 
 ```python
 search_results = client.search.query(
@@ -219,23 +219,9 @@ The Twelve Labs Video Understanding Platform offers three distinct endpoints tai
 
 Note the following about using these endpoints:
 
-- The Pegasus video understanding engine must be enabled for the index to which your video has been uploaded.
+- The Pegasus video understanding model must be enabled for the index to which your video has been uploaded.
 - Your prompts must be instructive or descriptive, and you can also phrase them as questions.
 - The maximum length of a prompt is 1500 characters.
-
-#### Topics, titles, and hashtags
-
-To generate topics, titles, and hashtags, use the example code below, replacing the following:
-
-- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
-- **`[<TYPES>]`**: with an array of strings representing the type of text the platform should generate. Example: `["title", "topic", "hashtag"]`.
-
-```py
-res = client.generate.gist("<YOUR_VIDEO_ID>", types=["<TYPES>"])
-print(f"Title = {res.title}\nTopics = {res.topics}\nHashtags = {res.hashtags}")
-```
-
-For a description of each field in the request and response, see the [Titles, topics, or hashtags](https://docs.twelvelabs.io/v1.2/reference/generate-gist) page.
 
 #### Summaries, chapters, and highlights
 
@@ -257,7 +243,7 @@ For a description of each field in the request and response, see the [Summaries,
 To generate open-ended texts, use the example code below, replacing the following:
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
-- **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 1500 characters. Example:  "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
+- **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 1500 characters. Example: "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
 
 ```py
 res = client.generate.text(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
@@ -287,8 +273,8 @@ from twelvelabs import TwelveLabs
 
 client = TwelveLabs(os.getenv("TWELVELABS_API_KEY"))
 try:
-    engines = client.engine.list()
-    print(engines)
+    models = client.model.list()
+    print(models)
 except twelvelabs.APIConnectionError as e:
     print("Cannot connect to API server")
 except twelvelabs.BadRequestError as e:

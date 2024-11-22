@@ -86,11 +86,6 @@ class Video(ObjectWithTimestamp):
 
     # Generate related methods
 
-    def generate_gist(
-        self, types: List[Literal["topic", "hashtag", "title"]], **kwargs
-    ) -> GenerateGistResult:
-        return self._resource._client.generate.gist(self.id, types, **kwargs)
-
     def generate_summarize(
         self,
         type: Literal["summary", "chapter", "highlight"],

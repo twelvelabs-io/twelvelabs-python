@@ -12,9 +12,10 @@ if TYPE_CHECKING:
 
 class Model(BaseModel):
     name: str = Field(alias="model_name")
-    options: List[Literal["visual", "audio", "conversation", "text_in_video", "logo"]] = Field(
-        alias="model_options"
-    )
+    # conversation, text_in_video_, and logo are to keep backward compatibility with the old models
+    options: List[
+        Literal["visual", "audio", "conversation", "text_in_video", "logo"]
+    ] = Field(alias="model_options")
     addons: Optional[List[str]] = None
     finetuned: Optional[bool] = None
 
@@ -70,9 +71,6 @@ class Index(ObjectWithTimestamp):
 
     def task_status(self, **kwargs) -> TaskStatus:
         return self._resource._client.task.status(self.id, **kwargs)
-
-    def task_external_provider(self, url: str, **kwargs):
-        return self._resource._client.task.external_provider(self.id, url, **kwargs)
 
     # Video related methods
     def list_video(

@@ -6,19 +6,6 @@ from ..util import remove_none_values
 
 
 class Generate(APIResource):
-    def gist(
-        self,
-        video_id: str,
-        types: List[Literal["topic", "hashtag", "title"]],
-        **kwargs,
-    ) -> models.GenerateGistResult:
-        json = {
-            "video_id": video_id,
-            "types": types,
-        }
-        res = self._post("gist", json=json, **kwargs)
-        return models.GenerateGistResult(**res)
-
     def summarize(
         self,
         video_id: str,
