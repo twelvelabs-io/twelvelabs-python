@@ -19,6 +19,25 @@ Install the `twelvelabs` package:
 pip install twelvelabs
 ```
 
+The current SDK version is compatible with API version 1.3. If you wish to use API version 1.2, please use version 0.3.x or earlier of the SDK. Below are the SDK versions and the corresponding supported API versions.
+
+| SDK Version | Supported API Version |
+| ----------- | --------------------- |
+| 0.4.x       | 1.3                   |
+| 0.3.x       | 1.2                   |
+
+How to install the latest 0.3.x version of the SDK:
+
+```sh
+pip install twelvelabs<0.4.0
+```
+
+How to install the SDK with a specific version:
+
+```sh
+pip install twelvelabs==0.3.x # replace 0.3.x with the version you want
+```
+
 # Initialize the SDK
 
 1. Import the SDK into your application:

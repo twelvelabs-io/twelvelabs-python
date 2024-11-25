@@ -26,7 +26,7 @@ class TwelveLabs(APIClient):
     ) -> None:
         if version != LATEST_API_VERSION:
             print(
-                f"[Warning] You manually set the API version to {version}, but this SDK version is not fully compatible with current API version, please use corresponding version of SDK."
+                f"[Warning] You manually set the API version to {version}, but this SDK version is not fully compatible with current API version, please use version 0.3.x or earlier"
             )
         assert (
             api_key,

@@ -16,11 +16,6 @@ class TaskHLS(BaseModel):
     updated_at: Optional[str] = None
 
 
-class TaskProcess(BaseModel):
-    percentage: Optional[float] = None
-    remain_seconds: Optional[float] = None
-
-
 class Task(ObjectWithTimestamp):
     _resource: TaskResource = PrivateAttr()
     index_id: str
@@ -28,7 +23,6 @@ class Task(ObjectWithTimestamp):
     status: str
     system_metadata: Dict[str, Any]
     hls: Optional[TaskHLS] = None
-    process: Optional[TaskProcess] = None
 
     def __init__(self, resource: TaskResource, **data):
         super().__init__(**data)
