@@ -28,7 +28,6 @@ class SearchData(BaseModel):
     confidence: str
     thumbnail_url: Optional[str] = None
     module_confidence: Optional[Dict[str, Any]] = None
-    modules: Optional[RootModelList[SearchModule]] = None
 
 
 class GroupByVideoSearchData(BaseModel):
