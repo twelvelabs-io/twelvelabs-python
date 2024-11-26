@@ -15,11 +15,6 @@ class SearchPool(BaseModel):
     index_id: str
 
 
-class SearchModule(BaseModel):
-    type: str
-    confidence: str
-
-
 class SearchData(BaseModel):
     score: float
     start: float
