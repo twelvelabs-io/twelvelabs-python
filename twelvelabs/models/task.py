@@ -16,20 +16,13 @@ class TaskHLS(BaseModel):
     updated_at: Optional[str] = None
 
 
-class TaskProcess(BaseModel):
-    percentage: Optional[float] = None
-    remain_seconds: Optional[float] = None
-
-
 class Task(ObjectWithTimestamp):
     _resource: TaskResource = PrivateAttr()
     index_id: str
     video_id: Optional[str] = None
-    estimated_time: Optional[str] = None
     status: str
-    metadata: Dict[str, Any]
+    system_metadata: Dict[str, Any]
     hls: Optional[TaskHLS] = None
-    process: Optional[TaskProcess] = None
 
     def __init__(self, resource: TaskResource, **data):
         super().__init__(**data)
@@ -60,10 +53,8 @@ class Task(ObjectWithTimestamp):
             self._resource._sleep(sleep_interval)
             try:
                 task = self.retrieve(**kwargs)
-                self.estimated_time = task.estimated_time
                 self.status = task.status
-                self.metadata = task.metadata
-                self.process = task.process
+                self.system_metadata = task.system_metadata
             except Exception as e:
                 print(f"Retrieving task failed: {e}. Retrying..")
                 continue

@@ -32,13 +32,6 @@ class GenerateSummarizeResult(BaseModel):
     highlights: Optional[RootModelList[GenerateSummarizeHighlightResult]] = None
 
 
-class GenerateGistResult(BaseModel):
-    id: str
-    title: Optional[str] = None
-    topics: Optional[RootModelList[str]] = None
-    hashtags: Optional[RootModelList[str]] = None
-
-
 class GenerateOpenEndedTextStreamResult(BaseModel):
     _stream: httpx.Response = PrivateAttr()
     id: str = ""

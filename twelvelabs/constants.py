@@ -2,7 +2,7 @@ import httpx
 
 BASE_URL = "https://api.twelvelabs.io"
 API_KEY_HEADER = "x-api-key"
-DEFAULT_API_VERSION = "v1.2"
+LATEST_API_VERSION = "v1.3"
 
 # default timeout is 10 minutes
 DEFAULT_TIMEOUT = httpx.Timeout(timeout=10 * 60.0, connect=5.0)

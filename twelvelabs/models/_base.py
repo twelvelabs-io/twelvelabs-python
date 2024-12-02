@@ -27,7 +27,7 @@ class PageInfo(BaseModel):
 class TokenPageInfo(BaseModel):
     limit_per_page: int
     total_results: int
-    page_expired_at: str
+    page_expires_at: str
     next_page_token: Optional[str] = None
     prev_page_token: Optional[str] = None
 

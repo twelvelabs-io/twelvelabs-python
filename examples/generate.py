@@ -11,9 +11,6 @@ assert (
 with TwelveLabs(API_KEY) as client:
     video_id = "<YOUR_VIDEO_ID>"
 
-    gist = client.generate.gist(video_id, ["title"])
-    print(f"Gist: title={gist.title} topics={gist.topics} hashtags={gist.hashtags}")
-
     res = client.generate.summarize(video_id, "summary")
     print(f"Summary: {res.summary}")
 

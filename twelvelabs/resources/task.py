@@ -62,7 +62,6 @@ class Task(APIResource):
     def list(
         self,
         *,
-        id: Optional[str] = None,
         index_id: Optional[str] = None,
         filename: Optional[str] = None,
         duration: Optional[float] = None,
@@ -70,7 +69,6 @@ class Task(APIResource):
         height: Optional[int] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
-        estimated_time: Optional[str] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -78,7 +76,6 @@ class Task(APIResource):
         **kwargs,
     ) -> RootModelList[models.Task]:
         params = {
-            "_id": id,
             "index_id": index_id,
             "filename": filename,
             "duration": duration,
@@ -86,7 +83,6 @@ class Task(APIResource):
             "height": height,
             "created_at": created_at,
             "updated_at": updated_at,
-            "estimated_time": estimated_time,
             "page": page,
             "page_limit": page_limit,
             "sort_by": sort_by,
@@ -100,7 +96,6 @@ class Task(APIResource):
     def list_pagination(
         self,
         *,
-        id: Optional[str] = None,
         index_id: Optional[str] = None,
         filename: Optional[str] = None,
         duration: Optional[float] = None,
@@ -108,7 +103,6 @@ class Task(APIResource):
         height: Optional[int] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
-        estimated_time: Optional[str] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -117,7 +111,6 @@ class Task(APIResource):
     ) -> models.TaskListWithPagination:
         local_params = get_local_params(locals().items())
         params = {
-            "_id": id,
             "index_id": index_id,
             "filename": filename,
             "duration": duration,
@@ -125,7 +118,6 @@ class Task(APIResource):
             "height": height,
             "created_at": created_at,
             "updated_at": updated_at,
-            "estimated_time": estimated_time,
             "page": page,
             "page_limit": page_limit,
             "sort_by": sort_by,
@@ -153,7 +145,7 @@ class Task(APIResource):
         transcription_file: Union[str, BinaryIO, None] = None,
         transcription_url: Optional[str] = None,
         language: Optional[str] = None,
-        disable_video_stream: Optional[bool] = None,
+        enable_video_stream: Optional[bool] = None,
         **kwargs,
     ) -> models.Task:
         if not file and not url:
@@ -163,12 +155,12 @@ class Task(APIResource):
             "video_url": url,
             "transcription_url": transcription_url,
             "language": language,
-            "disable_video_stream": disable_video_stream,
+            "enable_video_stream": enable_video_stream,
         }
 
         files = {}
         opened_files: List[BinaryIO] = []
-        # TODO validate video supported (ffmpeg)
+
         if file is not None:
             if isinstance(file, str):
                 file = open(file, "rb")
@@ -205,7 +197,7 @@ class Task(APIResource):
         files: Optional[List[Union[str, BinaryIO, None]]] = None,
         urls: Optional[List[str]] = None,
         language: Optional[str] = None,
-        disable_video_stream: Optional[bool] = None,
+        enable_video_stream: Optional[bool] = None,
         **kwargs,
     ) -> RootModelList[models.Task]:
         if not files and not urls:
@@ -219,7 +211,7 @@ class Task(APIResource):
                         index_id,
                         file=file,
                         language=language,
-                        disable_video_stream=disable_video_stream,
+                        enable_video_stream=enable_video_stream,
                         **kwargs,
                     )
                     tasks.append(task)
@@ -234,7 +226,7 @@ class Task(APIResource):
                         index_id,
                         url=url,
                         language=language,
-                        disable_video_stream=disable_video_stream,
+                        enable_video_stream=enable_video_stream,
                         **kwargs,
                     )
                     tasks.append(task)
@@ -251,12 +243,3 @@ class Task(APIResource):
         params = {"index_id": index_id}
         res = self._get("tasks/status", params=params, **kwargs)
         return models.TaskStatus(**res)
-
-    def transfer(self, file: BinaryIO, **kwargs) -> None:
-        files = {"file": file}
-        self._post("tasks/transfers", files=files, **kwargs)
-
-    def external_provider(self, index_id: str, url: str, **kwargs) -> models.Task:
-        json = {"index_id": index_id, "url": url}
-        res = self._post("tasks/external-provider", json=json, **kwargs)
-        return self.retrieve(res["_id"])

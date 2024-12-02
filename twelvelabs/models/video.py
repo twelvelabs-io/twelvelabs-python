@@ -7,7 +7,6 @@ from ._base import ObjectWithTimestamp, BaseModel, ModelMixin, PageInfo, RootMod
 
 from .embed import CreateEmbeddingsResult
 from .generate import (
-    GenerateGistResult,
     GenerateSummarizeResult,
     GenerateOpenEndedTextResult,
 )
@@ -50,7 +49,8 @@ class VideoSource(BaseModel):
 class Video(ObjectWithTimestamp):
     _resource: VideoResource = PrivateAttr()
     _index_id: str = PrivateAttr()
-    metadata: VideoMetadata
+    system_metadata: VideoMetadata
+    user_metadata: Optional[Dict[str, Any]] = None
     hls: Optional[VideoHLS] = None
     source: Optional[VideoSource] = None
     indexed_at: Optional[str] = None
@@ -68,12 +68,11 @@ class Video(ObjectWithTimestamp):
     def update(
         self,
         *,
-        title: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_metadata: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> None:
         return self._resource._client.index.video.update(
-            self._index_id, self.id, title=title, metadata=metadata, **kwargs
+            self._index_id, self.id, user_metadata=user_metadata, **kwargs
         )
 
     def delete(
@@ -84,42 +83,11 @@ class Video(ObjectWithTimestamp):
             self._index_id, self.id, **kwargs
         )
 
-    def transcription(
-        self, *, start: Optional[float] = None, end: Optional[float] = None, **kwargs
-    ) -> RootModelList[VideoValue]:
-        return self._resource._client.index.video.transcription(
-            self._index_id, self.id, start=start, end=end, **kwargs
-        )
-
-    def text_in_video(
-        self, *, start: Optional[float] = None, end: Optional[float] = None, **kwargs
-    ) -> RootModelList[VideoValue]:
-        return self._resource._client.index.video.text_in_video(
-            self._index_id, self.id, start=start, end=end, **kwargs
-        )
-
-    def logo(
-        self, *, start: Optional[float] = None, end: Optional[float] = None, **kwargs
-    ) -> RootModelList[VideoValue]:
-        return self._resource._client.index.video.logo(
-            self._index_id, self.id, start=start, end=end, **kwargs
-        )
-
-    def thumbnail(self, *, time: Optional[float] = None, **kwargs) -> str:
-        return self._resource._client.index.video.thumbnail(
-            self._index_id, self.id, time=time, **kwargs
-        )
-
-    # Generate relate methods
-
-    def generate_gist(
-        self, types: List[Union[str, Literal["topic", "hashtag", "title"]]], **kwargs
-    ) -> GenerateGistResult:
-        return self._resource._client.generate.gist(self.id, types, **kwargs)
+    # Generate related methods
 
     def generate_summarize(
         self,
-        type: Union[str, Literal["summary", "chapter", "highlight"]],
+        type: Literal["summary", "chapter", "highlight"],
         *,
         prompt: Optional[str] = None,
         **kwargs,

@@ -10,20 +10,24 @@ if TYPE_CHECKING:
     from . import Task, TaskStatus, SearchResult, Video, VideoListWithPagination
 
 
-class Engine(BaseModel):
-    name: str = Field(alias="engine_name")
-    options: List[str] = Field(alias="engine_options")
+class Model(BaseModel):
+    name: str = Field(alias="model_name")
+    # conversation, text_in_video, and logo are to keep backward compatibility with the old models
+    options: List[
+        Literal["visual", "audio", "conversation", "text_in_video", "logo"]
+    ] = Field(alias="model_options")
     addons: Optional[List[str]] = None
     finetuned: Optional[bool] = None
+
+    class Config:
+        # Disable the protected namespace restriction for options
+        protected_namespaces = ()
 
 
 class Index(ObjectWithTimestamp):
     _resource: IndexResource = PrivateAttr()
     name: str = Field(alias="index_name")
-    # engine_id: str # v1.1
-    engines: RootModelList[Engine]
-    # options: List[str] = Field(alias="index_options") # v1.1
-    # addons: Optional[List[str]] # v1.1
+    models: RootModelList[Model]
     video_count: int
     total_duration: float
     expires_at: Optional[str] = None
@@ -68,21 +72,17 @@ class Index(ObjectWithTimestamp):
     def task_status(self, **kwargs) -> TaskStatus:
         return self._resource._client.task.status(self.id, **kwargs)
 
-    def task_external_provider(self, url: str, **kwargs):
-        return self._resource._client.task.external_provider(self.id, url, **kwargs)
-
     # Video related methods
     def list_video(
         self,
         *,
-        id: Optional[str] = None,
         filename: Optional[str] = None,
-        size: Optional[Union[str, Dict[str, str]]] = None,
-        width: Optional[Union[str, Dict[str, str]]] = None,
-        height: Optional[Union[str, Dict[str, str]]] = None,
-        duration: Optional[Union[str, Dict[str, str]]] = None,
-        fps: Optional[Union[str, Dict[str, str]]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        size: Optional[Union[int, Dict[str, int]]] = None,
+        width: Optional[Union[int, Dict[str, int]]] = None,
+        height: Optional[Union[int, Dict[str, int]]] = None,
+        duration: Optional[Union[int, Dict[str, int]]] = None,
+        fps: Optional[Union[int, Dict[str, int]]] = None,
+        user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
         indexed_at: Optional[Union[str, Dict[str, str]]] = None,
@@ -94,14 +94,13 @@ class Index(ObjectWithTimestamp):
     ) -> RootModelList[Video]:
         return self._resource.video.list(
             self.id,
-            id=id,
             filename=filename,
             size=size,
             width=width,
             height=height,
             duration=duration,
             fps=fps,
-            metadata=metadata,
+            user_metadata=user_metadata,
             created_at=created_at,
             updated_at=updated_at,
             indexed_at=indexed_at,
@@ -115,14 +114,13 @@ class Index(ObjectWithTimestamp):
     def list_video_pagination(
         self,
         *,
-        id: Optional[str] = None,
         filename: Optional[str] = None,
-        size: Optional[Union[str, Dict[str, str]]] = None,
-        width: Optional[Union[str, Dict[str, str]]] = None,
-        height: Optional[Union[str, Dict[str, str]]] = None,
-        duration: Optional[Union[str, Dict[str, str]]] = None,
-        fps: Optional[Union[str, Dict[str, str]]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        size: Optional[Union[int, Dict[str, int]]] = None,
+        width: Optional[Union[int, Dict[str, int]]] = None,
+        height: Optional[Union[int, Dict[str, int]]] = None,
+        duration: Optional[Union[int, Dict[str, int]]] = None,
+        fps: Optional[Union[int, Dict[str, int]]] = None,
+        user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
         indexed_at: Optional[Union[str, Dict[str, str]]] = None,
@@ -134,14 +132,13 @@ class Index(ObjectWithTimestamp):
     ) -> VideoListWithPagination:
         return self._resource.video.list_pagination(
             self.id,
-            id=id,
             filename=filename,
             size=size,
             width=width,
             height=height,
             duration=duration,
             fps=fps,
-            metadata=metadata,
+            user_metadata=user_metadata,
             created_at=created_at,
             updated_at=updated_at,
             indexed_at=indexed_at,
@@ -156,33 +153,35 @@ class Index(ObjectWithTimestamp):
 
     def query(
         self,
-        query: str,
-        options: List[
-            Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]
-        ],
+        options: Literal["visual", "audio"],
         *,
-        group_by: Optional[Union[str, Literal["video", "clip"]]] = None,
-        threshold: Optional[Union[str, Literal["high", "medium", "low"]]] = None,
-        operator: Optional[Union[str, Literal["or", "and"]]] = None,
-        conversation_option: Optional[
-            Union[str, Literal["semantic", "exact_match"]]
-        ] = None,
+        query_text: str = None,
+        query_media_type: Literal["image"] = None,
+        query_media_file: Union[str, BinaryIO, None] = None,
+        query_media_url: str = None,
+        group_by: Optional[Literal["video", "clip"]] = None,
+        threshold: Optional[Literal["high", "medium", "low", "none"]] = None,
+        operator: Optional[Literal["or", "and"]] = None,
         filter: Optional[Dict[str, Any]] = None,
         page_limit: Optional[int] = None,
-        sort_option: Optional[Union[str, Literal["score", "clip_count"]]] = None,
+        sort_option: Optional[Literal["score", "clip_count"]] = None,
+        adjust_confidence_level: Optional[float] = None,
         **kwargs,
     ) -> SearchResult:
         return self._resource._client.search.query(
             self.id,
-            query,
             options,
+            query_text=query_text,
+            query_media_type=query_media_type,
+            query_media_file=query_media_file,
+            query_media_url=query_media_url,
             group_by=group_by,
             threshold=threshold,
             operator=operator,
-            conversation_option=conversation_option,
             filter=filter,
             page_limit=page_limit,
             sort_option=sort_option,
+            adjust_confidence_level=adjust_confidence_level,
             **kwargs,
         )
 

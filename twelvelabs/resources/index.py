@@ -35,10 +35,8 @@ class Index(APIResource):
         *,
         id: Optional[str] = None,
         name: Optional[str] = None,
-        engine_options: Optional[
-            List[Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]]
-        ] = None,
-        engine_family: Optional[Union[str, Literal["marengo", "pegasus"]]] = None,
+        model_options: Optional[Literal["visual", "audio"]] = None,
+        model_family: Optional[Literal["marengo", "pegasus"]] = None,
         page: Optional[int] = 1,
         page_limit: Optional[int] = 10,
         sort_by: Optional[str] = "created_at",
@@ -50,8 +48,8 @@ class Index(APIResource):
         params = {
             "_id": id,
             "index_name": name,
-            "engine_options": engine_options,
-            "engine_family": engine_family,
+            "model_options": model_options,
+            "model_family": model_family,
             "page": page,
             "page_limit": page_limit,
             "sort_by": sort_by,
@@ -70,10 +68,8 @@ class Index(APIResource):
         *,
         id: Optional[str] = None,
         name: Optional[str] = None,
-        engine_options: Optional[
-            List[Union[str, Literal["visual", "conversation", "text_in_video", "logo"]]]
-        ] = None,
-        engine_family: Optional[Union[str, Literal["marengo", "pegasus"]]] = None,
+        model_options: Optional[Literal["visual", "audio"]] = None,
+        model_family: Optional[Literal["marengo", "pegasus"]] = None,
         page: Optional[int] = 1,
         page_limit: Optional[int] = 10,
         sort_by: Optional[str] = "created_at",
@@ -86,8 +82,8 @@ class Index(APIResource):
         params = {
             "_id": id,
             "index_name": name,
-            "engine_options": engine_options,
-            "engine_family": engine_family,
+            "model_options": model_options,
+            "model_family": model_family,
             "page": page,
             "page_limit": page_limit,
             "sort_by": sort_by,
@@ -112,20 +108,20 @@ class Index(APIResource):
     def create(
         self,
         name: str,
-        engines: List[types.IndexEngine],
+        models: List[types.IndexModel],
         *,
         addons: Optional[List[str]] = None,
         **kwargs,
     ) -> models.Index:
         json = {
             "index_name": name,
-            "engines": list(
+            "models": list(
                 map(
-                    lambda engine: {
-                        "engine_name": engine["name"],
-                        "engine_options": engine["options"],
+                    lambda model: {
+                        "model_name": model["name"],
+                        "model_options": model["options"],
                     },
-                    engines,
+                    models,
                 )
             ),
             "addons": addons,

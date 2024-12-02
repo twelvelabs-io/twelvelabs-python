@@ -34,39 +34,39 @@ with TwelveLabs(API_KEY) as client:
     def on_task_update(task: EmbeddingsTask):
         print(f"  Status={task.status}")
 
-    engine_name = "Marengo-retrieval-2.6"
+    model_name = "Marengo-retrieval-2.7"
 
     res = client.embed.create(
-        engine_name=engine_name,
+        model_name=model_name,
         text="man walking across the street",
         text_truncate="start",
     )
-    print(f"Created text embedding: engine_name={res.engine_name}")
+    print(f"Created text embedding: model_name={res.model_name}")
     if res.text_embedding is not None and res.text_embedding.segments is not None:
         print_segments(res.text_embedding.segments)
 
     res = client.embed.create(
-        engine_name=engine_name,
+        model_name=model_name,
         image_file=os.path.join(os.path.dirname(__file__), "assets/search_sample.png"),
     )
-    print(f"Created image embedding: engine_name={res.engine_name}")
+    print(f"Created image embedding: model_name={res.model_name}")
     if res.image_embedding is not None and res.image_embedding.segments is not None:
         print_segments(res.image_embedding.segments)
 
     res = client.embed.create(
-        engine_name=engine_name,
+        model_name=model_name,
         audio_file=os.path.join(os.path.dirname(__file__), "assets/audio_sample.mp3"),
     )
-    print(f"Created audio embedding: engine_name={res.engine_name}")
+    print(f"Created audio embedding: model_name={res.model_name}")
     if res.audio_embedding is not None and res.audio_embedding.segments is not None:
         print_segments(res.audio_embedding.segments)
 
     task = client.embed.task.create(
-        engine_name=engine_name,
+        model_name=model_name,
         video_file=os.path.join(os.path.dirname(__file__), "assets/example.mp4"),
     )
     print(
-        f"Created task: id={task.id} engine_name={task.engine_name} status={task.status}"
+        f"Created task: id={task.id} model_name={task.model_name} status={task.status}"
     )
 
     status = task.wait_for_done(callback=on_task_update)
