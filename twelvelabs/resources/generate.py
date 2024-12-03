@@ -36,6 +36,7 @@ class Generate(APIResource):
             "video_id": video_id,
             "prompt": prompt,
             "temperature": temperature,
+            "stream": False,
         }
         res = self._post("generate", json=json, **kwargs)
         return models.GenerateOpenEndedTextResult(**res)
