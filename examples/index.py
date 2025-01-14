@@ -19,7 +19,7 @@ with TwelveLabs(API_KEY) as client:
                 "options": ["visual", "audio"],
             },
             {
-                "name": "pegasus1.1",
+                "name": "pegasus1.2",
                 "options": ["visual", "audio"],
             },
         ],

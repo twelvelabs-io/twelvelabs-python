@@ -77,7 +77,7 @@ try:
                 "options": ["visual", "audio"],
             },
             {
-                "name": "pegasus1.1",
+                "name": "pegasus1.2",
                 "options": ["visual", "audio"],
             },
         ],
@@ -102,7 +102,7 @@ Note the following about this example:
 The output should look similar to the following:
 
 ```
-Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', models=[model(name='marengo2.7', options=['visual', 'audio'], addons=None), model(name='pegasus1.1', options=['visual', 'audio'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
+Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', models=[model(name='marengo2.7', options=['visual', 'audio'], addons=None), model(name='pegasus1.2', options=['visual', 'audio'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
 ```
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
