@@ -77,7 +77,7 @@ try:
                 "options": ["visual", "audio"],
             },
             {
-                "name": "pegasus1.1",
+                "name": "pegasus1.2",
                 "options": ["visual", "audio"],
             },
         ],
@@ -102,7 +102,7 @@ Note the following about this example:
 The output should look similar to the following:
 
 ```
-Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', models=[model(name='marengo2.7', options=['visual', 'audio'], addons=None), model(name='pegasus1.1', options=['visual', 'audio'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
+Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', models=[model(name='marengo2.7', options=['visual', 'audio'], addons=None), model(name='pegasus1.2', options=['visual', 'audio'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
 ```
 
 Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
@@ -115,7 +115,7 @@ Before you upload a video to the platform, ensure that it meets the following re
 
 - **Video resolution**: Must be at least 480x360 or 360x480, and not exceed 4K (3840x2160).
 - **Video and audio formats**: The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
-- **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 30 minutes (1,800s).
+- **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 1 hour (3,600s).
 - **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
 - **Audio track**: If the `audio` [model option](https://docs.twelvelabs.io/v1.3/docs/model-options) is selected, the video you're uploading must contain an audio track.
 
