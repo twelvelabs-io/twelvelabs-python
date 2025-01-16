@@ -20,8 +20,8 @@ class GenerateSummarizeChapterResult(BaseModel):
 
 
 class GenerateSummarizeHighlightResult(BaseModel):
-    start: int
-    end: int
+    start: float
+    end: float
     highlight: str
 
 
