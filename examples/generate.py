@@ -28,6 +28,9 @@ with TwelveLabs(API_KEY) as client:
             f"  highlight={highlight.highlight} start={highlight.start} end={highlight.end}"
         )
 
+    gist = client.generate.gist(video_id, ["title"])
+    print(f"Gist: title={gist.title} topics={gist.topics} hashtags={gist.hashtags}")
+
     res = client.generate.text(video_id, "What happened?")
     print(f"Open-ended Text: {res.data}")
 
