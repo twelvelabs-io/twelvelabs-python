@@ -1,4 +1,4 @@
-from typing import Union, List, Literal, Optional
+from typing import List, Literal, Optional
 
 from ..resource import APIResource
 from .. import models
@@ -23,6 +23,19 @@ class Generate(APIResource):
         }
         res = self._post("summarize", json=remove_none_values(json), **kwargs)
         return models.GenerateSummarizeResult(**res)
+
+    def gist(
+        self,
+        video_id: str,
+        types: List[Literal["topic", "hashtag", "title"]],
+        **kwargs,
+    ) -> models.GenerateGistResult:
+        json = {
+            "video_id": video_id,
+            "types": types,
+        }
+        res = self._post("gist", json=json, **kwargs)
+        return models.GenerateGistResult(**res)
 
     def text(
         self,

@@ -9,6 +9,7 @@ from .embed import CreateEmbeddingsResult
 from .generate import (
     GenerateSummarizeResult,
     GenerateOpenEndedTextResult,
+    GenerateGistResult,
 )
 
 if TYPE_CHECKING:
@@ -84,6 +85,11 @@ class Video(ObjectWithTimestamp):
         )
 
     # Generate related methods
+
+    def generate_gist(
+        self, types: List[Union[str, Literal["topic", "hashtag", "title"]]], **kwargs
+    ) -> GenerateGistResult:
+        return self._resource._client.generate.gist(self.id, types, **kwargs)
 
     def generate_summarize(
         self,
