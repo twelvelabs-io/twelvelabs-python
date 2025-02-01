@@ -1,4 +1,4 @@
-from typing import Union, List, Literal, Optional
+from typing import List, Literal, Optional
 
 from ..resource import APIResource
 from .. import models
@@ -27,7 +27,7 @@ class Generate(APIResource):
     def gist(
         self,
         video_id: str,
-        types: List[Union[str, Literal["topic", "hashtag", "title"]]],
+        types: List[Literal["topic", "hashtag", "title"]],
         **kwargs,
     ) -> models.GenerateGistResult:
         json = {
