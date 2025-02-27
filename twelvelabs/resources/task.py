@@ -144,7 +144,6 @@ class Task(APIResource):
         url: Optional[str] = None,
         transcription_file: Union[str, BinaryIO, None] = None,
         transcription_url: Optional[str] = None,
-        language: Optional[str] = None,
         enable_video_stream: Optional[bool] = None,
         **kwargs,
     ) -> models.Task:
@@ -154,7 +153,6 @@ class Task(APIResource):
             "index_id": index_id,
             "video_url": url,
             "transcription_url": transcription_url,
-            "language": language,
             "enable_video_stream": enable_video_stream,
         }
 
@@ -196,7 +194,6 @@ class Task(APIResource):
         *,
         files: Optional[List[Union[str, BinaryIO, None]]] = None,
         urls: Optional[List[str]] = None,
-        language: Optional[str] = None,
         enable_video_stream: Optional[bool] = None,
         **kwargs,
     ) -> RootModelList[models.Task]:
@@ -210,7 +207,6 @@ class Task(APIResource):
                     task = self.create(
                         index_id,
                         file=file,
-                        language=language,
                         enable_video_stream=enable_video_stream,
                         **kwargs,
                     )
@@ -225,7 +221,6 @@ class Task(APIResource):
                     task = self.create(
                         index_id,
                         url=url,
-                        language=language,
                         enable_video_stream=enable_video_stream,
                         **kwargs,
                     )

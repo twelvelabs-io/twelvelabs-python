@@ -54,7 +54,6 @@ class Video(ObjectWithTimestamp):
     user_metadata: Optional[Dict[str, Any]] = None
     hls: Optional[VideoHLS] = None
     source: Optional[VideoSource] = None
-    indexed_at: Optional[str] = None
     created_at: str
     updated_at: Optional[str] = None
     embedding: Optional[CreateEmbeddingsResult] = None
