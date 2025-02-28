@@ -56,7 +56,6 @@ class Index(ObjectWithTimestamp):
         url: Optional[str] = None,
         transcription_file: Union[str, BinaryIO, None] = None,
         transcription_url: Optional[str] = None,
-        language: Optional[str] = None,
         **kwargs,
     ) -> Task:
         return self._resource._client.task.create(
@@ -65,7 +64,6 @@ class Index(ObjectWithTimestamp):
             url=url,
             transcript_file=transcription_file,
             transcription_url=transcription_url,
-            language=language,
             **kwargs,
         )
 
@@ -85,7 +83,6 @@ class Index(ObjectWithTimestamp):
         user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
-        indexed_at: Optional[Union[str, Dict[str, str]]] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -103,7 +100,6 @@ class Index(ObjectWithTimestamp):
             user_metadata=user_metadata,
             created_at=created_at,
             updated_at=updated_at,
-            indexed_at=indexed_at,
             page=page,
             page_limit=page_limit,
             sort_by=sort_by,
@@ -123,7 +119,6 @@ class Index(ObjectWithTimestamp):
         user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
-        indexed_at: Optional[Union[str, Dict[str, str]]] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -141,7 +136,6 @@ class Index(ObjectWithTimestamp):
             user_metadata=user_metadata,
             created_at=created_at,
             updated_at=updated_at,
-            indexed_at=indexed_at,
             page=page,
             page_limit=page_limit,
             sort_by=sort_by,

@@ -42,7 +42,6 @@ class Video(APIResource):
         user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
-        indexed_at: Optional[Union[str, Dict[str, str]]] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -59,7 +58,6 @@ class Video(APIResource):
             "user_metadata": user_metadata,
             "created_at": created_at,
             "updated_at": updated_at,
-            "indexed_at": indexed_at,
             "page": page,
             "page_limit": page_limit,
             "sort_by": sort_by,
@@ -72,7 +70,6 @@ class Video(APIResource):
         handle_comparison_params(params, "duration", duration)
         handle_comparison_params(params, "created_at", created_at)
         handle_comparison_params(params, "updated_at", updated_at)
-        handle_comparison_params(params, "indexed_at", indexed_at)
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs
         )
@@ -93,7 +90,6 @@ class Video(APIResource):
         user_metadata: Optional[Dict[str, Any]] = None,
         created_at: Optional[Union[str, Dict[str, str]]] = None,
         updated_at: Optional[Union[str, Dict[str, str]]] = None,
-        indexed_at: Optional[Union[str, Dict[str, str]]] = None,
         page: Optional[int] = None,
         page_limit: Optional[int] = None,
         sort_by: Optional[str] = None,
@@ -111,7 +107,6 @@ class Video(APIResource):
             "user_metadata": user_metadata,
             "created_at": created_at,
             "updated_at": updated_at,
-            "indexed_at": indexed_at,
             "page": page,
             "page_limit": page_limit,
             "sort_by": sort_by,
@@ -124,7 +119,6 @@ class Video(APIResource):
         handle_comparison_params(params, "duration", duration)
         handle_comparison_params(params, "created_at", created_at)
         handle_comparison_params(params, "updated_at", updated_at)
-        handle_comparison_params(params, "indexed_at", indexed_at)
 
         res = self._get(
             f"indexes/{index_id}/videos", params=remove_none_values(params), **kwargs

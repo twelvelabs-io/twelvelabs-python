@@ -14,7 +14,7 @@ with TwelveLabs(API_KEY) as client:
     index = client.index.retrieve("<YOUR_INDEX_ID>")
 
     video_path = os.path.join(os.path.dirname(__file__), "assets/example.mp4")
-    task = client.task.create(index.id, file=video_path, language="en")
+    task = client.task.create(index.id, file=video_path)
     print(f"Created task: id={task.id} status={task.status}")
 
     print("Uploading an example video(example.mp4) and waiting for done")
