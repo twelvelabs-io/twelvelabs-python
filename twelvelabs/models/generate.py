@@ -6,9 +6,14 @@ from pydantic import PrivateAttr
 from ._base import BaseModel, RootModelList
 
 
+class GenerateUsage(BaseModel):
+    output_tokens: Optional[int] = None
+
+
 class GenerateOpenEndedTextResult(BaseModel):
     id: str
     data: str
+    usage: Optional[GenerateUsage] = None
 
 
 class GenerateSummarizeChapterResult(BaseModel):
@@ -23,6 +28,7 @@ class GenerateSummarizeHighlightResult(BaseModel):
     start: float
     end: float
     highlight: str
+    highlight_summary: str
 
 
 class GenerateSummarizeResult(BaseModel):
@@ -30,6 +36,7 @@ class GenerateSummarizeResult(BaseModel):
     summary: Optional[str] = None
     chapters: Optional[RootModelList[GenerateSummarizeChapterResult]] = None
     highlights: Optional[RootModelList[GenerateSummarizeHighlightResult]] = None
+    usage: Optional[GenerateUsage] = None
 
 
 class GenerateGistResult(BaseModel):
@@ -37,6 +44,7 @@ class GenerateGistResult(BaseModel):
     title: Optional[str] = None
     topics: Optional[RootModelList[str]] = None
     hashtags: Optional[RootModelList[str]] = None
+    usage: Optional[GenerateUsage] = None
 
 
 class GenerateOpenEndedTextStreamResult(BaseModel):
