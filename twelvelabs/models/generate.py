@@ -7,7 +7,7 @@ from ._base import BaseModel, RootModelList
 
 
 class GenerateUsage(BaseModel):
-    output_tokens: Optional[int] = None
+    output_tokens: int
 
 
 class GenerateOpenEndedTextResult(BaseModel):
