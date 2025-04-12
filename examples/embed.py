@@ -73,6 +73,8 @@ with TwelveLabs(API_KEY) as client:
     status = task.wait_for_done(callback=on_task_update)
     print(f"Embedding done: {status}")
 
-    task = task.retrieve()
+    # Retrieve the task with the specified embedding option: "visual-text". 
+    # If you don't specify the embedding option, it will return all available multi-vector embeddings.
+    task = task.retrieve(embedding_option=["visual-text"])
     if task.video_embedding is not None and task.video_embedding.segments is not None:
         print_segments(task.video_embedding.segments)
