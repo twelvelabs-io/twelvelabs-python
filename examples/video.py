@@ -46,3 +46,15 @@ with TwelveLabs(API_KEY) as client:
     )
     video = client.index.video.retrieve(index.id, videos[0].id)
     print(f"Updated first video: id={video.id} metadata={video.user_metadata}")
+
+    # Get the first video and print its embeddings
+    video = client.index.video.retrieve(index.id, videos[0].id, embedding_option=["visual-text", "audio"])
+
+    if hasattr(video, 'embedding') and video.embedding and video.embedding.video_embedding:
+        print("\nVideo Embeddings:")
+        for i, segment in enumerate(video.embedding.video_embedding.segments):
+            print(
+                f"  embedding_scope={segment.embedding_scope} embedding_option={segment.embedding_option} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
+            )
+            first_few = segment.embeddings_float[:5]  # Show just first 5 values
+            print(f"  embeddings: [{', '.join(str(x) for x in first_few)}...] (total: {len(segment.embeddings_float)} values)")
