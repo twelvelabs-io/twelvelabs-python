@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 
 
 class EmbedTask(APIResource):
-    def retrieve(self, id: str, embedding_option: Optional[List[str]] = None, **kwargs) -> models.EmbeddingsTask:
-        params = {}
-        if embedding_option:
-            params["embedding_option"] = embedding_option
+    def retrieve(self, id: str, *, embedding_option: Optional[List[str]] = None, **kwargs) -> models.EmbeddingsTask:
+        params = {
+            "embedding_option": embedding_option
+        }
         
-        res = self._get(f"embed/tasks/{id}", params=params, **kwargs)
+        res = self._get(f"embed/tasks/{id}", params=remove_none_values(params), **kwargs)
         return models.EmbeddingsTask(self, **res)
 
     def list(
