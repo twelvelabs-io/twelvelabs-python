@@ -16,9 +16,10 @@ with TwelveLabs(API_KEY) as client:
     def print_segments(segments: List[SegmentEmbedding]):
         for segment in segments:
             print(
-                f"  embedding_scope={segment.embedding_scope} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
+                f"  embedding_scope={segment.embedding_scope} embedding_option={segment.embedding_option} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
             )
-            print(f"  embeddings: {", ".join(str(segment.embeddings_float))}")
+            first_few = segment.embeddings_float[:5]  # Show just first 5 values
+            print(f"  embeddings: [{', '.join(str(x) for x in first_few)}...] (total: {len(segment.embeddings_float)} values)")
 
     embed_tasks = client.embed.task.list()
     for task in embed_tasks:
@@ -72,6 +73,8 @@ with TwelveLabs(API_KEY) as client:
     status = task.wait_for_done(callback=on_task_update)
     print(f"Embedding done: {status}")
 
-    task = task.retrieve()
+    # Retrieve the task with the specified embedding option: "visual-text". 
+    # If you don't specify the embedding option, it will return all available multi-vector embeddings.
+    task = task.retrieve(embedding_option=["visual-text"])
     if task.video_embedding is not None and task.video_embedding.segments is not None:
         print_segments(task.video_embedding.segments)

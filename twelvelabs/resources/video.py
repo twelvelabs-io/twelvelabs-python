@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, List
 
 from ..models._base import RootModelList
 from ..resource import APIResource
@@ -16,11 +16,11 @@ class Video(APIResource):
         index_id: str,
         id: str,
         *,
-        embed: Optional[bool] = None,
+        embedding_option: Optional[List[str]] = None,
         **kwargs,
     ) -> models.Video:
         params = {
-            "embed": embed,
+            "embedding_option": embedding_option,
         }
         res = self._get(
             f"indexes/{index_id}/videos/{id}",
