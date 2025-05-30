@@ -53,4 +53,5 @@ Methods
 
 - <code>client.generate.summarize(video_id, type) -> GenerateSummarizeResult</code>
 - <code>client.generate.gist(video_id, types) -> GenerateGistResult</code>
-- <code>client.generate.text(video_id, prompt) -> GenerateOpenEndedTextResult</code>
+- <code>client.generate.analyze(video_id, prompt) -> GenerateOpenEndedTextResult</code>
+- <code>client.generate.analyze_stream(video_id, prompt) -> GenerateOpenEndedTextResult</code>
