@@ -37,6 +37,40 @@ class Generate(APIResource):
         res = self._post("gist", json=json, **kwargs)
         return models.GenerateGistResult(**res)
 
+    def analyze(
+        self,
+        video_id: str,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        **kwargs,
+    ) -> models.GenerateOpenEndedTextResult:
+        json = {
+            "video_id": video_id,
+            "prompt": prompt,
+            "temperature": temperature,
+            "stream": False,
+        }
+        res = self._post("analyze", json=json, **kwargs)
+        return models.GenerateOpenEndedTextResult(**res)
+
+    def analyze_stream(
+        self,
+        video_id: str,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        **kwargs,
+    ) -> models.GenerateOpenEndedTextStreamResult:
+        json = {
+            "video_id": video_id,
+            "prompt": prompt,
+            "temperature": temperature,
+            "stream": True,
+        }
+        res = self._post("analyze", json=json, stream=True, **kwargs)
+        return models.GenerateOpenEndedTextStreamResult(stream=res)
+
     def text(
         self,
         video_id: str,
@@ -45,6 +79,9 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateOpenEndedTextResult:
+        """
+        This method is deprecated and will not be supported after 2025-07-31. Use `analyze` instead.
+        """
         json = {
             "video_id": video_id,
             "prompt": prompt,
@@ -62,6 +99,9 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateOpenEndedTextStreamResult:
+        """
+        This method is deprecated and will not be supported after 2025-07-31. Use `analyze_stream` instead.
+        """
         json = {
             "video_id": video_id,
             "prompt": prompt,

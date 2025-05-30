@@ -31,14 +31,14 @@ with TwelveLabs(API_KEY) as client:
     gist = client.generate.gist(video_id, ["title", "topic", "hashtag"])
     print(f"Gist: title={gist.title} topics={gist.topics} hashtags={gist.hashtags}")
 
-    res = client.generate.text(video_id, "What happened?")
-    print(f"Open-ended Text: {res.data}")
+    res = client.generate.analyze(video_id, "What happened?")
+    print(f"Open-ended Analysis: {res.data}")
 
-    text_stream = client.generate.text_stream(
+    res_stream = client.generate.analyze_stream(
         video_id=video_id, prompt="What happened?"
     )
 
-    for text in text_stream:
+    for text in res_stream:
         print(text)
 
-    print(f"Aggregated text: {text_stream.aggregated_text}")
+    print(f"Aggregated analysis: {res_stream.aggregated_text}")
