@@ -1,9 +1,11 @@
 import os
-from typing import Union, Literal
+from typing import Union, Literal, List, Optional
 
 from .constants import BASE_URL, LATEST_API_VERSION
 from .base_client import APIClient
 from . import resources
+from . import models
+from .util import remove_none_values
 
 
 class TwelveLabs(APIClient):
@@ -46,6 +48,71 @@ class TwelveLabs(APIClient):
         self.search = resources.Search(self)
         self.generate = resources.Generate(self)
         self.embed = resources.Embed(self)
+
+    def summarize(
+        self,
+        video_id: str,
+        type: Literal["summary", "chapter", "highlight"],
+        *,
+        prompt: Optional[str] = None,
+        temperature: Optional[float] = None,
+        **kwargs,
+    ) -> models.GenerateSummarizeResult:
+        json = {
+            "video_id": video_id,
+            "type": type,
+            "prompt": prompt,
+            "temperature": temperature,
+        }
+        res = self.generate._post("summarize", json=remove_none_values(json), **kwargs)
+        return models.GenerateSummarizeResult(**res)
+
+    def gist(
+        self,
+        video_id: str,
+        types: List[Literal["topic", "hashtag", "title"]],
+        **kwargs,
+    ) -> models.GenerateGistResult:
+        json = {
+            "video_id": video_id,
+            "types": types,
+        }
+        res = self.generate._post("gist", json=json, **kwargs)
+        return models.GenerateGistResult(**res)
+
+    def analyze(
+        self,
+        video_id: str,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        **kwargs,
+    ) -> models.GenerateOpenEndedTextResult:
+        json = {
+            "video_id": video_id,
+            "prompt": prompt,
+            "temperature": temperature,
+            "stream": False,
+        }
+        res = self.generate._post("analyze", json=json, **kwargs)
+        return models.GenerateOpenEndedTextResult(**res)
+
+    def analyze_stream(
+        self,
+        video_id: str,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        **kwargs,
+    ) -> models.GenerateOpenEndedTextStreamResult:
+        json = {
+            "video_id": video_id,
+            "prompt": prompt,
+            "temperature": temperature,
+            "stream": True,
+        }
+        res = self.generate._post("analyze", json=json, stream=True, **kwargs)
+        return models.GenerateOpenEndedTextStreamResult(stream=res)
 
     def __enter__(self):
         return self

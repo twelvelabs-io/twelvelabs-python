@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Literal, Optional
 
 from ..resource import APIResource
@@ -15,6 +16,11 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateSummarizeResult:
+        warnings.warn(
+            "client.generate.summarize() is deprecated. Use client.summarize() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "type": type,
@@ -30,46 +36,17 @@ class Generate(APIResource):
         types: List[Literal["topic", "hashtag", "title"]],
         **kwargs,
     ) -> models.GenerateGistResult:
+        warnings.warn(
+            "client.generate.gist() is deprecated. Use client.gist() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "types": types,
         }
         res = self._post("gist", json=json, **kwargs)
         return models.GenerateGistResult(**res)
-
-    def analyze(
-        self,
-        video_id: str,
-        prompt: str,
-        *,
-        temperature: Optional[float] = None,
-        **kwargs,
-    ) -> models.GenerateOpenEndedTextResult:
-        json = {
-            "video_id": video_id,
-            "prompt": prompt,
-            "temperature": temperature,
-            "stream": False,
-        }
-        res = self._post("analyze", json=json, **kwargs)
-        return models.GenerateOpenEndedTextResult(**res)
-
-    def analyze_stream(
-        self,
-        video_id: str,
-        prompt: str,
-        *,
-        temperature: Optional[float] = None,
-        **kwargs,
-    ) -> models.GenerateOpenEndedTextStreamResult:
-        json = {
-            "video_id": video_id,
-            "prompt": prompt,
-            "temperature": temperature,
-            "stream": True,
-        }
-        res = self._post("analyze", json=json, stream=True, **kwargs)
-        return models.GenerateOpenEndedTextStreamResult(stream=res)
 
     def text(
         self,
@@ -79,9 +56,11 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateOpenEndedTextResult:
-        """
-        This method is deprecated and will not be supported after 2025-07-31. Use `analyze` instead.
-        """
+        warnings.warn(
+            "client.generate.text() is deprecated. Use client.analyze() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "prompt": prompt,
@@ -99,9 +78,11 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateOpenEndedTextStreamResult:
-        """
-        This method is deprecated and will not be supported after 2025-07-31. Use `analyze_stream` instead.
-        """
+        warnings.warn(
+            "client.generate.text_stream() is deprecated. Use client.analyze_stream() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "prompt": prompt,
