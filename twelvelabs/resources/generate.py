@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Literal, Optional
 
 from ..resource import APIResource
@@ -15,6 +16,11 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateSummarizeResult:
+        warnings.warn(
+            "client.generate.summarize() is deprecated. Use client.summarize() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "type": type,
@@ -30,6 +36,11 @@ class Generate(APIResource):
         types: List[Literal["topic", "hashtag", "title"]],
         **kwargs,
     ) -> models.GenerateGistResult:
+        warnings.warn(
+            "client.generate.gist() is deprecated. Use client.gist() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "types": types,
@@ -45,6 +56,11 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateOpenEndedTextResult:
+        warnings.warn(
+            "client.generate.text() is deprecated. Use client.analyze() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "prompt": prompt,
@@ -62,6 +78,11 @@ class Generate(APIResource):
         temperature: Optional[float] = None,
         **kwargs,
     ) -> models.GenerateOpenEndedTextStreamResult:
+        warnings.warn(
+            "client.generate.text_stream() is deprecated. Use client.analyze_stream() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         json = {
             "video_id": video_id,
             "prompt": prompt,

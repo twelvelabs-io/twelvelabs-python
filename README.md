@@ -251,21 +251,21 @@ To generate summaries, chapters, and highlights, use the example code below, rep
 - _(Optional)_ **`<YOUR_PROMPT>`**: with a string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example: "Generate a summary in no more than 5 bullet points."
 
 ```py
-res = client.generate.summarize("<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_PROMPT>")
+res = client.summarize("<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_PROMPT>")
 print(f"{res.summary}")
 ```
 
 For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.3/docs/generate-summaries-chapters-highlights) page.
 
-#### Open-ended texts
+#### Open-ended analysis
 
-To generate open-ended texts, use the example code below, replacing the following:
+To generate open-ended analysis, use the example code below, replacing the following:
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
 - **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 1500 characters. Example: "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
 
 ```py
-res = client.generate.text(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
+res = client.analyze(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
 print(f"{res.data}")
 ```
 
