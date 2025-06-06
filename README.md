@@ -232,7 +232,7 @@ search_results = client.search.query(
 
 The response is similar to that received when using text queries.
 
-### Generate text from video
+### Analyze videos
 
 The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
@@ -240,11 +240,11 @@ Note the following about using these endpoints:
 
 - The Pegasus video understanding model must be enabled for the index to which your video has been uploaded.
 - Your prompts must be instructive or descriptive, and you can also phrase them as questions.
-- The maximum length of a prompt is 1500 characters.
+- The maximum length of a prompt is 2,000 characters.
 
 #### Summaries, chapters, and highlights
 
-To generate summaries, chapters, and highlights, use the example code below, replacing the following:
+To analyze videos and generate summaries, chapters, and highlights, use the example code below, replacing the following:
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
 - **`<TYPE>`**: with a string representing the type of text the platform should generate. This parameter can take one of the following values: "summary", "chapter", or "highlight".
@@ -259,10 +259,10 @@ For a description of each field in the request and response, see the [Summaries,
 
 #### Open-ended analysis
 
-To generate open-ended analysis, use the example code below, replacing the following:
+To perform open-ended analysis and generate tailored text outputs based on your prompts, use the example code below, replacing the following:
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
-- **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 1500 characters. Example: "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
+- **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 2,000 characters. Example: "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
 
 ```py
 res = client.analyze(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
