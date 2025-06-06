@@ -234,6 +234,17 @@ The response is similar to that received when using text queries.
 
 ### Analyze videos
 
+>**NOTE**: The Generate API has been renamed to the Analyze API to more accurately reflect its purpose of analyzing videos to generate text. This update includes changes to specific SDK methods, outlined below. You can continue using the Generate API until July 30, 2025. After this date, the Generate API will be deprecated, and you must transition to the Analyze API.
+>
+>The `generate` prefix has been removed from method names, and the following methods have been renamed as follows:
+>
+>- `generate.gist` is now `gist`
+>- `generate.summarize` is now `summarize`
+>- `generate.text` is now `analyze`
+>- `generate.text_stream` is now `analyze_stream`
+>
+>To maintain compatibility, update your API calls and SDK methods to the new names before July 30, 2025.
+
 The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
 Note the following about using these endpoints:
