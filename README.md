@@ -242,6 +242,17 @@ Note the following about using these endpoints:
 - Your prompts must be instructive or descriptive, and you can also phrase them as questions.
 - The maximum length of a prompt is 2,000 characters.
 
+#### Titles, topics, and hashtags
+
+To analyze videos and generate titles, topics, and hashtags use the example code below, replacing the following:
+
+- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+
+```py
+res = client.gist(video_id="<YOUR_VIDEO_ID>", types=["title", "topic", "hashtag"])
+print(f"Title={res.title}\nTopics={res.topics}\nHashtags={res.hashtags}")
+```
+
 #### Summaries, chapters, and highlights
 
 To analyze videos and generate summaries, chapters, and highlights, use the example code below, replacing the following:
