@@ -243,7 +243,7 @@ The response is similar to that received when using text queries.
 >- `generate.text` is now `analyze`
 >- `generate.text_stream` is now `analyze_stream`
 >
->To maintain compatibility, update your API calls and SDK methods to the new names before July 30, 2025.
+>To maintain compatibility, update your applications to use the new names before July 30, 2025.
 
 The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
