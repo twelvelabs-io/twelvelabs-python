@@ -10,4 +10,5 @@ src/twelvelabs/wrapper
 
 .gitignore
 README.md
+README-1.0.0-beta.md
 .github
