@@ -3,7 +3,7 @@ name = "twelvelabs"
 
 [tool.poetry]
 name = "twelvelabs"
-version = "1.0.0a1"
+version = "1.0.0b0"
 description = ""
 readme = "README.md"
 authors = []
@@ -31,7 +31,7 @@ packages = [
 ]
 
 [project.urls]
-Repository = 'https://github.com/fern-demo/twelve-labs-python'
+Repository = 'https://github.com/twelvelabs-io/twelvelabs-python'
 
 [tool.poetry.dependencies]
 python = "^3.8"
