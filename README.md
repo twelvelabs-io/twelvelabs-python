@@ -2,6 +2,8 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/twelvelabs.svg)](https://pypi.org/project/twelvelabs/)
 
+> **NOTE**: This is the stable version (0.4.x) of the SDK. Version 1.0.0 introduces an SDK that is automatically generated based on our API specification and includes breaking changes. After the stable 1.0.0 version is officially released, TwelveLabs will no longer maintain versions up to 0.4.x. You can try the 1.0.0 beta version before the stable release is available. For instructions on installing the new version and getting started, see the [README-v1.0.0-beta](./README-1.0.0-beta.md) file.
+
 This SDK provides a convenient way to interact with the Twelve Labs Video Understanding Platform from an application written in the Python language. The SDK equips you with a set of intuitive classes and methods that streamline the process of interacting with the platform, minimizing the need for boilerplate code.
 
 # Prerequisites
