@@ -21,24 +21,7 @@ Install the `twelvelabs` package:
 pip install twelvelabs
 ```
 
-The current SDK version is compatible with API version 1.3. If you wish to use API version 1.2, please use version 0.3.x or earlier of the SDK. Below are the SDK versions and the corresponding supported API versions.
-
-| SDK Version | Supported API Version |
-| ----------- | --------------------- |
-| 0.4.x       | 1.3                   |
-| 0.3.x       | 1.2                   |
-
-How to install the latest 0.3.x version of the SDK:
-
-```sh
-pip install twelvelabs<0.4.0
-```
-
-How to install the SDK with a specific version:
-
-```sh
-pip install twelvelabs==0.3.x # replace 0.3.x with the version you want
-```
+The current SDK version is compatible with API version 1.3.
 
 # Initialize the SDK
 
@@ -236,16 +219,16 @@ The response is similar to that received when using text queries.
 
 ### Analyze videos
 
->**NOTE**: The Generate API has been renamed to the Analyze API to more accurately reflect its purpose of analyzing videos to generate text. This update includes changes to specific SDK methods, outlined below. You can continue using the Generate API until July 30, 2025. After this date, the Generate API will be deprecated, and you must transition to the Analyze API.
+> **NOTE**: The Generate API has been renamed to the Analyze API to more accurately reflect its purpose of analyzing videos to generate text. This update includes changes to specific SDK methods, outlined below. You can continue using the Generate API until July 30, 2025. After this date, the Generate API will be deprecated, and you must transition to the Analyze API.
 >
->The `generate` prefix has been removed from method names, and the following methods have been renamed as follows:
+> The `generate` prefix has been removed from method names, and the following methods have been renamed as follows:
 >
->- `generate.gist` is now `gist`
->- `generate.summarize` is now `summarize`
->- `generate.text` is now `analyze`
->- `generate.text_stream` is now `analyze_stream`
+> - `generate.gist` is now `gist`
+> - `generate.summarize` is now `summarize`
+> - `generate.text` is now `analyze`
+> - `generate.text_stream` is now `analyze_stream`
 >
->To maintain compatibility, update your applications to use the new names before July 30, 2025.
+> To maintain compatibility, update your applications to use the new names before July 30, 2025.
 
 The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
