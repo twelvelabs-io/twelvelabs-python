@@ -1,0 +1,13 @@
+# Specify files that shouldn't be modified by Fern
+venv/
+.venv/
+examples/
+legacy
+
+src/twelvelabs/client.py
+src/twelvelabs/wrapper
+
+
+.gitignore
+README.md
+.github

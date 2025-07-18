@@ -1,8 +1,8 @@
 import os
 import uuid
 
-import _context
 from twelvelabs import TwelveLabs
+from twelvelabs.indexes import IndexesCreateRequestModelsItem
 
 
 API_KEY = os.getenv("API_KEY")
@@ -10,46 +10,40 @@ assert (
     API_KEY
 ), "Your API key should be stored in an environment variable named API_KEY."
 
-with TwelveLabs(API_KEY) as client:
-    index = client.index.create(
-        f"idx-{uuid.uuid4()}",
-        [
-            {
-                "name": "marengo2.7",
-                "options": ["visual", "audio"],
-            },
-            {
-                "name": "pegasus1.2",
-                "options": ["visual", "audio"],
-            },
+
+with TwelveLabs(api_key=API_KEY) as client:
+    index = client.indexes.create(
+        index_name=f"idx-{uuid.uuid4()}",
+        models=[
+            IndexesCreateRequestModelsItem(
+                model_name="marengo2.7", model_options=["visual", "audio"]
+            ),
+            IndexesCreateRequestModelsItem(
+                model_name="pegasus1.2", model_options=["visual", "audio"]
+            ),
+            # or you can provide the dict directly like this:
+            # {
+            #     "model_name": "marengo2.7",
+            #     "model_options": ["visual", "audio"],
+            # },
+            # {
+            #     "model_name": "pegasus1.2",
+            #     "model_options": ["visual", "audio"],
+            # },
         ],
         addons=["thumbnail"],
     )
-    print(f"Created index: id={index.id} name={index.name} models={index.models}")
+    print(f"Created index: id={index.id}")
 
-    client.index.update(index.id, f"idx-{uuid.uuid4()}")
-    index = client.index.retrieve(index.id)
-    print(f"Updated index name to {index.name}")
+    index = client.indexes.retrieve(index_id=index.id)
+    print(f"Retrieved index: id={index.id} name={index.index_name}")
+
+    updated_name = f"idx-{uuid.uuid4()}"
+    client.indexes.update(index_id=index.id, index_name=updated_name)
+    updated_index = client.indexes.retrieve(index_id=index.id)
+    print(f"Updated index name to {updated_index.index_name}")
 
     print("All Indexes: ")
-    indexes = client.index.list(page=1)
-    for index in indexes:
-        print(
-            f"  id={index.id} name={index.name} models={index.models} created_at={index.created_at}"
-        )
-
-    print("With pagination: ")
-    result = client.index.list_pagination()
-
-    for index in result.data:
-        print(
-            f"  id={index.id} name={index.name} models={index.models} created_at={index.created_at}"
-        )
-
-    while True:
-        try:
-            next_page_data = next(result)
-            print(f"Next page's data: {next_page_data}")
-        except StopIteration:
-            print("There is no next page in search result")
-            break
+    indexes_pager = client.indexes.list()
+    for index in indexes_pager:
+        print(f"  id={index.id} name={index.index_name} created_at={index.created_at}")
