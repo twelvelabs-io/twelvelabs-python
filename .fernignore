@@ -3,6 +3,7 @@ venv/
 .venv/
 examples/
 legacy
+0.4/
 
 src/twelvelabs/client.py
 src/twelvelabs/wrapper
