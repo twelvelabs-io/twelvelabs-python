@@ -4,9 +4,11 @@ on:
   push:
     paths-ignore:
       - "legacy/**"
+      - "0.4/**"
     tags:
       - "*"
       - "!legacy*"
+      - "!0.4*"
     branches:
       - "**"
 
@@ -26,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Compile
-        run: poetry run mypy . --exclude legacy
+        run: poetry run mypy . --exclude legacy --exclude 0.4
   test:
     runs-on: ubuntu-latest
     steps:
@@ -43,7 +45,7 @@ jobs:
         run: poetry install
 
       - name: Test
-        run: poetry run pytest -rP . --ignore=legacy
+        run: poetry run pytest -rP . --ignore=legacy --ignore=0.4
 
   publish:
     needs: [compile, test]
