@@ -1,4 +1,4 @@
-# TwelveLabs Python SDK
+# TwelveLabs Python Legacy SDK
 
 [![PyPI version](https://img.shields.io/pypi/v/twelvelabs.svg)](https://pypi.org/project/twelvelabs/)
 
