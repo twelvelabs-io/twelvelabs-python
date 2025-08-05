@@ -129,8 +129,23 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        response = client.tasks.list(page=1, page_limit=10, sort_by='created_at', sort_option='desc', index_id='630aff993fcee0532cb809d0', filename='01.mp4', duration=531.998133, width=640, height=360, created_at='2024-03-01T00:00:00Z', updated_at='2024-03-01T00:00:00Z', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.tasks.list(
+            page=1,
+            page_limit=10,
+            sort_by="created_at",
+            sort_option="desc",
+            index_id="630aff993fcee0532cb809d0",
+            filename="01.mp4",
+            duration=531.998133,
+            width=640,
+            height=360,
+            created_at="2024-03-01T00:00:00Z",
+            updated_at="2024-03-01T00:00:00Z",
+        )
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -160,6 +175,7 @@ class TasksClient:
         video_file: typing.Optional[core.File] = OMIT,
         video_url: typing.Optional[str] = OMIT,
         enable_video_stream: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksCreateResponse:
         """
@@ -200,6 +216,9 @@ class TasksClient:
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -211,14 +230,20 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.tasks.create(index_id='index_id', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.create(
+            index_id="index_id",
+        )
         """
         _response = self._raw_client.create(
             index_id=index_id,
             video_file=video_file,
             video_url=video_url,
             enable_video_stream=enable_video_stream,
+            user_metadata=user_metadata,
             request_options=request_options,
         )
         return _response.data
@@ -245,8 +270,13 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.tasks.retrieve(task_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.retrieve(
+            task_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.retrieve(task_id, request_options=request_options)
         return _response.data
@@ -273,8 +303,13 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.tasks.delete(task_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.delete(
+            task_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.delete(task_id, request_options=request_options)
         return _response.data
@@ -391,17 +426,37 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            response = await client.tasks.list(page=1, page_limit=10, sort_by='created_at', sort_option='desc', index_id='630aff993fcee0532cb809d0', filename='01.mp4', duration=531.998133, width=640, height=360, created_at='2024-03-01T00:00:00Z', updated_at='2024-03-01T00:00:00Z', )
+            response = await client.tasks.list(
+                page=1,
+                page_limit=10,
+                sort_by="created_at",
+                sort_option="desc",
+                index_id="630aff993fcee0532cb809d0",
+                filename="01.mp4",
+                duration=531.998133,
+                width=640,
+                height=360,
+                created_at="2024-03-01T00:00:00Z",
+                updated_at="2024-03-01T00:00:00Z",
+            )
             async for item in response:
                 yield item
 
             # alternatively, you can paginate page-by-page
             async for page in response.iter_pages():
                 yield page
+
+
         asyncio.run(main())
         """
         return await self._raw_client.list(
@@ -427,6 +482,7 @@ class AsyncTasksClient:
         video_file: typing.Optional[core.File] = OMIT,
         video_url: typing.Optional[str] = OMIT,
         enable_video_stream: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksCreateResponse:
         """
@@ -467,6 +523,9 @@ class AsyncTasksClient:
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -477,11 +536,21 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.tasks.create(index_id='index_id', )
+            await client.tasks.create(
+                index_id="index_id",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
@@ -489,6 +558,7 @@ class AsyncTasksClient:
             video_file=video_file,
             video_url=video_url,
             enable_video_stream=enable_video_stream,
+            user_metadata=user_metadata,
             request_options=request_options,
         )
         return _response.data
@@ -514,11 +584,21 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.tasks.retrieve(task_id='6298d673f1090f1100476d4c', )
+            await client.tasks.retrieve(
+                task_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.retrieve(task_id, request_options=request_options)
@@ -545,11 +625,21 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.tasks.delete(task_id='6298d673f1090f1100476d4c', )
+            await client.tasks.delete(
+                task_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(task_id, request_options=request_options)

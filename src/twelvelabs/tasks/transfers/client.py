@@ -103,10 +103,17 @@ class TransfersClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.tasks.transfers.create(integration_id='6298d673f1090f1100476d4c', index_id='6298d673f1090f1100476d4c', incremental_import=True, retry_failed=False, user_metadata={'category': 'recentlyAdded'
-        , 'batchNumber': 5
-        }, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.transfers.create(
+            integration_id="6298d673f1090f1100476d4c",
+            index_id="6298d673f1090f1100476d4c",
+            incremental_import=True,
+            retry_failed=False,
+            user_metadata={"category": "recentlyAdded", "batchNumber": 5},
+        )
         """
         _response = self._raw_client.create(
             integration_id,
@@ -143,8 +150,14 @@ class TransfersClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.tasks.transfers.get_status(integration_id='6298d673f1090f1100476d4c', index_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.transfers.get_status(
+            integration_id="6298d673f1090f1100476d4c",
+            index_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.get_status(integration_id, index_id=index_id, request_options=request_options)
         return _response.data
@@ -175,8 +188,13 @@ class TransfersClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.tasks.transfers.get_logs(integration_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.transfers.get_logs(
+            integration_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.get_logs(integration_id, request_options=request_options)
         return _response.data
@@ -271,13 +289,25 @@ class AsyncTransfersClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.tasks.transfers.create(integration_id='6298d673f1090f1100476d4c', index_id='6298d673f1090f1100476d4c', incremental_import=True, retry_failed=False, user_metadata={'category': 'recentlyAdded'
-            , 'batchNumber': 5
-            }, )
+            await client.tasks.transfers.create(
+                integration_id="6298d673f1090f1100476d4c",
+                index_id="6298d673f1090f1100476d4c",
+                incremental_import=True,
+                retry_failed=False,
+                user_metadata={"category": "recentlyAdded", "batchNumber": 5},
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
@@ -314,11 +344,22 @@ class AsyncTransfersClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.tasks.transfers.get_status(integration_id='6298d673f1090f1100476d4c', index_id='6298d673f1090f1100476d4c', )
+            await client.tasks.transfers.get_status(
+                integration_id="6298d673f1090f1100476d4c",
+                index_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.get_status(
@@ -351,11 +392,21 @@ class AsyncTransfersClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.tasks.transfers.get_logs(integration_id='6298d673f1090f1100476d4c', )
+            await client.tasks.transfers.get_logs(
+                integration_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.get_logs(integration_id, request_options=request_options)

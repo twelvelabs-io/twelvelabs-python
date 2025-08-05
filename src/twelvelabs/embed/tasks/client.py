@@ -84,8 +84,17 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        response = client.embed.tasks.list(started_at='2024-03-01T00:00:00Z', ended_at='2024-03-01T00:00:00Z', status='processing', page=1, page_limit=10, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.embed.tasks.list(
+            started_at="2024-03-01T00:00:00Z",
+            ended_at="2024-03-01T00:00:00Z",
+            status="processing",
+            page=1,
+            page_limit=10,
+        )
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -200,8 +209,13 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.embed.tasks.create(model_name='model_name', )
+        
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.embed.tasks.create(
+            model_name="model_name",
+        )
         """
         _response = self._raw_client.create(
             model_name=model_name,
@@ -240,8 +254,13 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.embed.tasks.status(task_id='663da73b31cdd0c1f638a8e6', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.embed.tasks.status(
+            task_id="663da73b31cdd0c1f638a8e6",
+        )
         """
         _response = self._raw_client.status(task_id, request_options=request_options)
         return _response.data
@@ -283,8 +302,13 @@ class TasksClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.embed.tasks.retrieve(task_id='663da73b31cdd0c1f638a8e6', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.embed.tasks.retrieve(
+            task_id="663da73b31cdd0c1f638a8e6",
+        )
         """
         _response = self._raw_client.retrieve(
             task_id, embedding_option=embedding_option, request_options=request_options
@@ -357,17 +381,31 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            response = await client.embed.tasks.list(started_at='2024-03-01T00:00:00Z', ended_at='2024-03-01T00:00:00Z', status='processing', page=1, page_limit=10, )
+            response = await client.embed.tasks.list(
+                started_at="2024-03-01T00:00:00Z",
+                ended_at="2024-03-01T00:00:00Z",
+                status="processing",
+                page=1,
+                page_limit=10,
+            )
             async for item in response:
                 yield item
 
             # alternatively, you can paginate page-by-page
             async for page in response.iter_pages():
                 yield page
+
+
         asyncio.run(main())
         """
         return await self._raw_client.list(
@@ -477,11 +515,21 @@ class AsyncTasksClient:
         
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+        
+        from twelvelabs import AsyncTwelveLabs
+        
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        
+        
         async def main() -> None:
-            await client.embed.tasks.create(model_name='model_name', )
+            await client.embed.tasks.create(
+                model_name="model_name",
+            )
+        
+        
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
@@ -522,11 +570,21 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.embed.tasks.status(task_id='663da73b31cdd0c1f638a8e6', )
+            await client.embed.tasks.status(
+                task_id="663da73b31cdd0c1f638a8e6",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.status(task_id, request_options=request_options)
@@ -568,11 +626,21 @@ class AsyncTasksClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.embed.tasks.retrieve(task_id='663da73b31cdd0c1f638a8e6', )
+            await client.embed.tasks.retrieve(
+                task_id="663da73b31cdd0c1f638a8e6",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.retrieve(

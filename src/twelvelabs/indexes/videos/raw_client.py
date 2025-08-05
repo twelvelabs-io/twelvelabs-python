@@ -296,7 +296,7 @@ class RawVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[None]:
         """
-        Use this method to update the metadata of a video such as file name.
+        Use this method to update the metadata of a video.
 
         Parameters
         ----------
@@ -350,7 +350,7 @@ class RawVideosClient:
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
-        This method deletes all the information about the specified video This action cannot be undone.
+        This method deletes all the information about the specified video. This action cannot be undone.
 
         Parameters
         ----------
@@ -666,7 +666,7 @@ class AsyncRawVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
-        Use this method to update the metadata of a video such as file name.
+        Use this method to update the metadata of a video.
 
         Parameters
         ----------
@@ -720,7 +720,7 @@ class AsyncRawVideosClient:
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        This method deletes all the information about the specified video This action cannot be undone.
+        This method deletes all the information about the specified video. This action cannot be undone.
 
         Parameters
         ----------

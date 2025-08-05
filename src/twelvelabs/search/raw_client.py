@@ -64,7 +64,6 @@ class RawSearchClient:
           - **Format**: JPEG and PNG.
           - **Dimension**: Must be at least 64 x 64 pixels.
           - **Size**: Must not exceed 5MB.
-          - **Object visibility**: Ensure that the objects of interest are visible and occupy at least 50% of the video frame. This helps the platform accurately identify and match the objects.
         </Accordion>
         
         <Note title="Note">
@@ -365,7 +364,6 @@ class AsyncRawSearchClient:
           - **Format**: JPEG and PNG.
           - **Dimension**: Must be at least 64 x 64 pixels.
           - **Size**: Must not exceed 5MB.
-          - **Object visibility**: Ensure that the objects of interest are visible and occupy at least 50% of the video frame. This helps the platform accurately identify and match the objects.
         </Accordion>
         
         <Note title="Note">

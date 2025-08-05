@@ -31,8 +31,16 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.summarize(video_id='6298d673f1090f1100476d4c', type='summary', prompt='Generate a summary of this video for a social media post, up to two sentences.', temperature=0.2, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.summarize(
+    video_id="6298d673f1090f1100476d4c",
+    type="summary",
+    prompt="Generate a summary of this video for a social media post, up to two sentences.",
+    temperature=0.2,
+)
 
 ```
 </dd>
@@ -144,8 +152,14 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.gist(video_id='6298d673f1090f1100476d4c', types=["title", "topic"], )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.gist(
+    video_id="6298d673f1090f1100476d4c",
+    types=["title", "topic"],
+)
 
 ```
 </dd>
@@ -229,8 +243,16 @@ This endpoint generates open-ended texts based on your videos, including but not
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.generate(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, stream=True, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.generate(
+    video_id="6298d673f1090f1100476d4c",
+    prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+    temperature=0.2,
+    stream=True,
+)
 
 ```
 </dd>
@@ -346,8 +368,15 @@ This endpoint analyzes your videos and creates fully customizable text based on 
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-response = client.analyze_stream(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.analyze_stream(
+    video_id="6298d673f1090f1100476d4c",
+    prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+    temperature=0.2,
+)
 for chunk in response.data:
     yield chunk
 
@@ -453,8 +482,15 @@ This endpoint analyzes your videos and creates fully customizable text based on 
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.analyze(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.analyze(
+    video_id="6298d673f1090f1100476d4c",
+    prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+    temperature=0.2,
+)
 
 ```
 </dd>
@@ -554,8 +590,23 @@ This method returns a list of the video indexing tasks in your account. The API 
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-response = client.tasks.list(page=1, page_limit=10, sort_by='created_at', sort_option='desc', index_id='630aff993fcee0532cb809d0', filename='01.mp4', duration=531.998133, width=640, height=360, created_at='2024-03-01T00:00:00Z', updated_at='2024-03-01T00:00:00Z', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.tasks.list(
+    page=1,
+    page_limit=10,
+    sort_by="created_at",
+    sort_option="desc",
+    index_id="630aff993fcee0532cb809d0",
+    filename="01.mp4",
+    duration=531.998133,
+    width=640,
+    height=360,
+    created_at="2024-03-01T00:00:00Z",
+    updated_at="2024-03-01T00:00:00Z",
+)
 for item in response:
     yield item
 # alternatively, you can paginate page-by-page
@@ -637,7 +688,11 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**status:** `typing.Optional[typing.Union[TasksListRequestStatusItem, typing.Sequence[TasksListRequestStatusItem]]]` 
+**status:** `typing.Optional[
+    typing.Union[
+        TasksListRequestStatusItem, typing.Sequence[TasksListRequestStatusItem]
+    ]
+]` 
 
 Filter by one or more video indexing task statuses. The following options are available:
 - `ready`: The video has been successfully uploaded and indexed.
@@ -768,8 +823,13 @@ Upload options:
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.tasks.create(index_id='index_id', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.tasks.create(
+    index_id="index_id",
+)
 
 ```
 </dd>
@@ -794,6 +854,7 @@ client.tasks.create(index_id='index_id', )
 <dd>
 
 **video_file:** `from __future__ import annotations
+
 typing.Optional[core.File]` — See core.File for more documentation
     
 </dd>
@@ -811,6 +872,14 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dd>
 
 **enable_video_stream:** `typing.Optional[bool]` — This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
     
 </dd>
 </dl>
@@ -858,8 +927,13 @@ This method retrieves a video indexing task.
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.tasks.retrieve(task_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.tasks.retrieve(
+    task_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -926,8 +1000,13 @@ Note the following about deleting a video indexing task:
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.tasks.delete(task_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.tasks.delete(
+    task_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -992,8 +1071,21 @@ This method returns a list of the indexes in your account. The API returns index
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-response = client.indexes.list(page=1, page_limit=10, sort_by='created_at', sort_option='desc', index_name='myIndex', model_options='visual,audio', model_family='marengo', created_at='2024-08-16T16:53:59Z', updated_at='2024-08-16T16:55:59Z', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.indexes.list(
+    page=1,
+    page_limit=10,
+    sort_by="created_at",
+    sort_option="desc",
+    index_name="myIndex",
+    model_options="visual,audio",
+    model_family="marengo",
+    created_at="2024-08-16T16:53:59Z",
+    updated_at="2024-08-16T16:55:59Z",
+)
 for item in response:
     yield item
 # alternatively, you can paginate page-by-page
@@ -1148,8 +1240,24 @@ This method creates an index.
 ```python
 from twelvelabs import TwelveLabs
 from twelvelabs.indexes import IndexesCreateRequestModelsItem
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.create(index_name='myIndex', models=[IndexesCreateRequestModelsItem(model_name='marengo2.7', model_options=['visual', 'audio'], ), IndexesCreateRequestModelsItem(model_name='pegasus1.2', model_options=['visual', 'audio'], )], addons=['thumbnail'], )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.create(
+    index_name="myIndex",
+    models=[
+        IndexesCreateRequestModelsItem(
+            model_name="marengo2.7",
+            model_options=["visual", "audio"],
+        ),
+        IndexesCreateRequestModelsItem(
+            model_name="pegasus1.2",
+            model_options=["visual", "audio"],
+        ),
+    ],
+    addons=["thumbnail"],
+)
 
 ```
 </dd>
@@ -1239,8 +1347,13 @@ This method retrieves details about the specified index.
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.retrieve(index_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.retrieve(
+    index_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -1304,8 +1417,14 @@ This method updates the name of the specified index.
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.update(index_id='6298d673f1090f1100476d4c', index_name='myIndex', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.update(
+    index_id="6298d673f1090f1100476d4c",
+    index_name="myIndex",
+)
 
 ```
 </dd>
@@ -1377,8 +1496,13 @@ This method deletes the specified index and all the videos within it. This actio
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.delete(index_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.delete(
+    index_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -1395,6 +1519,100 @@ client.indexes.delete(index_id='6298d673f1090f1100476d4c', )
 <dd>
 
 **index_id:** `str` — Unique identifier of the index to delete.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Manage videos
+<details><summary><code>client.manage_videos.<a href="src/twelvelabs/manage_videos/client.py">partial_update_video_information</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.manage_videos.partial_update_video_information(
+    index_id="6298d673f1090f1100476d4c",
+    video_id="6298d673f1090f1100476d4c",
+    user_metadata={
+        "category": "recentlyAdded",
+        "batchNumber": 5,
+        "rating": 9.3,
+        "needsReview": True,
+    },
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**index_id:** `str` — The unique identifier of the index to which the video has been uploaded.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**video_id:** `str` — The unique identifier of the video to update.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_metadata:** `typing.Optional[UserMetadata]` 
     
 </dd>
 </dl>
@@ -1467,8 +1685,13 @@ Parameters for embeddings:
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.embed.create(model_name='model_name', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.create(
+    model_name="model_name",
+)
 
 ```
 </dd>
@@ -1536,6 +1759,7 @@ This parameter can take one of the following values:
 <dd>
 
 **image_file:** `from __future__ import annotations
+
 typing.Optional[core.File]` — See core.File for more documentation
     
 </dd>
@@ -1544,7 +1768,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dl>
 <dd>
 
-**audio_url:** `typing.Optional[str]` — The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
+**audio_url:** `typing.Optional[str]` — The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
     
 </dd>
 </dl>
@@ -1553,6 +1777,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dd>
 
 **audio_file:** `from __future__ import annotations
+
 typing.Optional[core.File]` — See core.File for more documentation
     
 </dd>
@@ -1613,7 +1838,6 @@ Your images must meet the following requirements:
   - **Format**: JPEG and PNG.
   - **Dimension**: Must be at least 64 x 64 pixels.
   - **Size**: Must not exceed 5MB.
-  - **Object visibility**: Ensure that the objects of interest are visible and occupy at least 50% of the video frame. This helps the platform accurately identify and match the objects.
 </Accordion>
 
 <Note title="Note">
@@ -1634,8 +1858,14 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.search.create(index_id='index_id', search_options=["visual"], )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.search.create(
+    index_id="index_id",
+    search_options=["visual"],
+)
 
 ```
 </dd>
@@ -1698,6 +1928,7 @@ To search using both visual and audio cues, include this parameter twice in the 
 <dd>
 
 **query_media_file:** `from __future__ import annotations
+
 typing.Optional[core.File]` — See core.File for more documentation
     
 </dd>
@@ -1898,8 +2129,14 @@ When you use pagination, you will not be charged for retrieving subsequent pages
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.search.retrieve(page_token='1234567890', include_user_metadata=True, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.search.retrieve(
+    page_token="1234567890",
+    include_user_metadata=True,
+)
 
 ```
 </dd>
@@ -1977,8 +2214,17 @@ This method returns a list of the video embedding tasks in your account. The pla
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-response = client.embed.tasks.list(started_at='2024-03-01T00:00:00Z', ended_at='2024-03-01T00:00:00Z', status='processing', page=1, page_limit=10, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.embed.tasks.list(
+    started_at="2024-03-01T00:00:00Z",
+    ended_at="2024-03-01T00:00:00Z",
+    status="processing",
+    page=1,
+    page_limit=10,
+)
 for item in response:
     yield item
 # alternatively, you can paginate page-by-page
@@ -2110,8 +2356,13 @@ Specify at least one option. If both are provided, `video_url` takes precedence.
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.embed.tasks.create(model_name='model_name', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.tasks.create(
+    model_name="model_name",
+)
 
 ```
 </dd>
@@ -2139,6 +2390,7 @@ The name of the model you want to use. The following models are available:
 <dd>
 
 **video_file:** `from __future__ import annotations
+
 typing.Optional[core.File]` — See core.File for more documentation
     
 </dd>
@@ -2267,8 +2519,13 @@ A task can have one of the following statuses:
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.embed.tasks.status(task_id='663da73b31cdd0c1f638a8e6', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.tasks.status(
+    task_id="663da73b31cdd0c1f638a8e6",
+)
 
 ```
 </dd>
@@ -2332,8 +2589,13 @@ This method retrieves embeddings for a specific video embedding task. Ensure the
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.embed.tasks.retrieve(task_id='663da73b31cdd0c1f638a8e6', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.tasks.retrieve(
+    task_id="663da73b31cdd0c1f638a8e6",
+)
 
 ```
 </dd>
@@ -2357,7 +2619,12 @@ client.embed.tasks.retrieve(task_id='663da73b31cdd0c1f638a8e6', )
 <dl>
 <dd>
 
-**embedding_option:** `typing.Optional[typing.Union[TasksRetrieveRequestEmbeddingOptionItem, typing.Sequence[TasksRetrieveRequestEmbeddingOptionItem]]]` 
+**embedding_option:** `typing.Optional[
+    typing.Union[
+        TasksRetrieveRequestEmbeddingOptionItem,
+        typing.Sequence[TasksRetrieveRequestEmbeddingOptionItem],
+    ]
+]` 
 
 Specifies which types of embeddings to retrieve. You can include one or more of the following values:
   - `visual-text`:  Returns visual embeddings optimized for text search.
@@ -2412,8 +2679,20 @@ This method returns a list of the videos in the specified index. By default, the
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-response = client.indexes.videos.list(index_id='6298d673f1090f1100476d4c', page=1, page_limit=10, sort_by='created_at', sort_option='desc', filename='01.mp4', created_at='2024-08-16T16:53:59Z', updated_at='2024-08-16T16:53:59Z', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.indexes.videos.list(
+    index_id="6298d673f1090f1100476d4c",
+    page=1,
+    page_limit=10,
+    sort_by="created_at",
+    sort_option="desc",
+    filename="01.mp4",
+    created_at="2024-08-16T16:53:59Z",
+    updated_at="2024-08-16T16:53:59Z",
+)
 for item in response:
     yield item
 # alternatively, you can paginate page-by-page
@@ -2559,7 +2838,9 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**user_metadata:** `typing.Optional[typing.Dict[str, typing.Optional[VideosListRequestUserMetadataValue]]]` 
+**user_metadata:** `typing.Optional[
+    typing.Dict[str, typing.Optional[VideosListRequestUserMetadataValue]]
+]` 
 
 To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/videos/:video-id` endpoint.
 
@@ -2615,8 +2896,14 @@ This method retrieves information about the specified video.
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.videos.retrieve(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.videos.retrieve(
+    index_id="6298d673f1090f1100476d4c",
+    video_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -2648,7 +2935,12 @@ client.indexes.videos.retrieve(index_id='6298d673f1090f1100476d4c', video_id='62
 <dl>
 <dd>
 
-**embedding_option:** `typing.Optional[typing.Union[VideosRetrieveRequestEmbeddingOptionItem, typing.Sequence[VideosRetrieveRequestEmbeddingOptionItem]]]` 
+**embedding_option:** `typing.Optional[
+    typing.Union[
+        VideosRetrieveRequestEmbeddingOptionItem,
+        typing.Sequence[VideosRetrieveRequestEmbeddingOptionItem],
+    ]
+]` 
 
 Specifies which types of embeddings to retrieve. You can include one or more of the following values:
 - `visual-text`:  Returns visual embeddings optimized for text search.
@@ -2698,7 +2990,7 @@ The values you specify in `embedding_option` must be included in the `model_opti
 <dl>
 <dd>
 
-Use this method to update the metadata of a video such as file name.
+Use this method to update the metadata of a video.
 </dd>
 </dl>
 </dd>
@@ -2714,12 +3006,20 @@ Use this method to update the metadata of a video such as file name.
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.videos.update(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', user_metadata={'category': 'recentlyAdded'
-, 'batchNumber': 5
-, 'rating': 9.3
-, 'needsReview': True
-}, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.videos.update(
+    index_id="6298d673f1090f1100476d4c",
+    video_id="6298d673f1090f1100476d4c",
+    user_metadata={
+        "category": "recentlyAdded",
+        "batchNumber": 5,
+        "rating": 9.3,
+        "needsReview": True,
+    },
+)
 
 ```
 </dd>
@@ -2783,7 +3083,7 @@ client.indexes.videos.update(index_id='6298d673f1090f1100476d4c', video_id='6298
 <dl>
 <dd>
 
-This method deletes all the information about the specified video This action cannot be undone.
+This method deletes all the information about the specified video. This action cannot be undone.
 </dd>
 </dl>
 </dd>
@@ -2799,8 +3099,14 @@ This method deletes all the information about the specified video This action ca
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.indexes.videos.delete(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.videos.delete(
+    index_id="6298d673f1090f1100476d4c",
+    video_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -2897,10 +3203,17 @@ The actual uploading and indexing of videos occur asynchronously after you invok
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.tasks.transfers.create(integration_id='6298d673f1090f1100476d4c', index_id='6298d673f1090f1100476d4c', incremental_import=True, retry_failed=False, user_metadata={'category': 'recentlyAdded'
-, 'batchNumber': 5
-}, )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.tasks.transfers.create(
+    integration_id="6298d673f1090f1100476d4c",
+    index_id="6298d673f1090f1100476d4c",
+    incremental_import=True,
+    retry_failed=False,
+    user_metadata={"category": "recentlyAdded", "batchNumber": 5},
+)
 
 ```
 </dd>
@@ -3012,8 +3325,14 @@ This method retrieves the current status for each video from a specified integra
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.tasks.transfers.get_status(integration_id='6298d673f1090f1100476d4c', index_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.tasks.transfers.get_status(
+    integration_id="6298d673f1090f1100476d4c",
+    index_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
@@ -3089,8 +3408,13 @@ Use this endpoint to track import progress and troubleshoot potential issues acr
 
 ```python
 from twelvelabs import TwelveLabs
-client = TwelveLabs(api_key="YOUR_API_KEY", )
-client.tasks.transfers.get_logs(integration_id='6298d673f1090f1100476d4c', )
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.tasks.transfers.get_logs(
+    integration_id="6298d673f1090f1100476d4c",
+)
 
 ```
 </dd>
