@@ -89,8 +89,8 @@ For a description of each field in the request and response, see the [Create an 
 
 Before you upload a video to the platform, ensure that it meets the following requirements:
 
-- **Video resolution**: Must be at least 360x360 and must not exceed 3840x2160.
-- **Aspect ratio**: Must be one of 1:1, 4:3, 4:5, 5:4, 16:9, 9:16, or 17:9.
+- **Video resolution**: The shorter side (width or height) must be at least 360 pixels and must not exceed 2160 pixels.
+- **Aspect ratio**: Must be one of the following (including both landscape and portrait variants): 1:1, 4:3, 4:5, 5:4, 16:9, 9:16, or 17:9.
 - **Video and audio formats**: The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 1 hour (3,600s).
 - **File size**: Must not exceed 2 GB.
@@ -183,17 +183,6 @@ search_results = client.search.query(
 The response is similar to that received when using text queries.
 
 ### Analyze videos
-
->**NOTE**: The Generate API has been renamed to the Analyze API to more accurately reflect its purpose of analyzing videos to generate text. This update includes changes to specific SDK methods, outlined below. You can continue using the Generate API until July 30, 2025. After this date, the Generate API will be deprecated, and you must transition to the Analyze API.
->
->The `generate` prefix has been removed from method names, and the following methods have been renamed as follows:
->
->- `generate.gist` is now `gist`
->- `generate.summarize` is now `summarize`
->- `generate.text` is now `analyze`
->- `generate.text_stream` is now `analyze_stream`
->
->To maintain compatibility, update your applications to use the new names before July 30, 2025.
 
 The Analyze API suite uses a multimodal approach to analyze videos and generate text, processing visuals, sounds, spoken words, and texts to provide a comprehensive understanding.
 
