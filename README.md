@@ -1,8 +1,10 @@
 # TwelveLabs Python SDK
 
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Ffern-demo%2Ftwelve-labs-python)
 [![PyPI version](https://img.shields.io/pypi/v/twelvelabs.svg)](https://pypi.org/project/twelvelabs/)
+![Pepy Total Downloads](https://img.shields.io/pepy/dt/twelvelabs)
 
-> **NOTE**: This is the stable version (0.4.x) of the SDK. Version 1.0.0 introduces an SDK that is automatically generated based on our API specification and includes breaking changes. After the stable 1.0.0 version is officially released, TwelveLabs will no longer maintain versions up to 0.4.x. You can try the 1.0.0 beta version before the stable release is available. For instructions on installing the new version and getting started, see the [README-v1.0.0-beta](./README-1.0.0-beta.md) file.
+> **NOTE**: This version includes breaking changes compared to the 0.4.x version. To use it in your application, you must update your code and thoroughly test the changes to ensure everything functions as expected before deploying it to production environments. If you want to use the legacy version, please refer to the [0.4 folder](./0.4).
 
 This SDK provides a convenient way to interact with the Twelve Labs Video Understanding Platform from an application written in the Python language. The SDK equips you with a set of intuitive classes and methods that streamline the process of interacting with the platform, minimizing the need for boilerplate code.
 
@@ -15,13 +17,11 @@ Ensure that the following prerequisites are met before using the SDK:
 
 # Install the SDK
 
-Install the `twelvelabs` package:
+Install the latest version of the `twelvelabs` package:
 
 ```sh
 pip install twelvelabs
 ```
-
-The current SDK version is compatible with API version 1.3.
 
 # Initialize the SDK
 
@@ -31,10 +31,10 @@ The current SDK version is compatible with API version 1.3.
    from twelvelabs import TwelveLabs
    ```
 
-2. Instantiate the SDK client with your API key. This example code assumes that your API key is stored in an environment variable named `TL_API_KEY`:
+2. Instantiate the SDK client with your API key:
 
    ```py
-   client = TwelveLabs(api_key=os.getenv('TL_API_KEY'))
+   client = TwelveLabs(api_key="<YOUR_API_KEY>")
    ```
 
 # Use the SDK
@@ -43,66 +43,59 @@ To get started with the SDK, follow these basic steps:
 
 1. Create an index.
 2. Upload videos.
-3. Perform downstream tasks, such as searching or generating text from video.
+3. Perform downstream tasks, such as searching or analyzing videos to generate text based on their content.
 
 ## Create an index
 
 To create an index, use the example code below, replacing "<YOUR_INDEX_NAME>" with the desired name for your index:
 
 ```py
-from twelvelabs import APIStatusError
+from twelvelabs import TwelveLabs
+from twelvelabs.indexes import IndexesCreateRequestModelsItem
 
-index_obj = None
 try:
-    index_obj = client.index.create(
-        name = "<YOUR_INDEX_NAME>",
-        models =[
-            {
-                "name": "marengo2.7",
-                "options": ["visual", "audio"],
-            },
-            {
-                "name": "pegasus1.2",
-                "options": ["visual", "audio"],
-            },
+    index = client.indexes.create(
+        index_name="<YOUR_INDEX_NAME>",
+        models=[
+            IndexesCreateRequestModelsItem(
+                model_name="marengo2.7",
+                model_options=["visual", "audio"],
+            ),
+            IndexesCreateRequestModelsItem(
+                model_name="pegasus1.2",
+                model_options=["visual", "audio"],
+            ),
         ],
     )
-    print(index_obj)
-except APIStatusError as e:
-    print('API Status Error, 4xx or 5xx')
-    print(e)
 except Exception as e:
-    print(e)
+    print(f"Error: {e}")
+print(f"Created index: id={index.id} name={index.name}")
 ```
 
 Note the following about this example:
 
-- The platform provides two distinct model types - embedding and generative, each serving unique purposes in multimodal video understanding.
-  - **Embedding models (Marengo)**: These models are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
-  - **Generative models (Pegasus)**: These models generate text based on your videos.
-    For your index, both Marengo and Pegasus are enabled.
-- The `models.options` fields specify the types of information each video understanding model will process.
-- The models and the model options specified when you create an index apply to all the videos you upload to that index and cannot be changed. For details, see the [model options](https://docs.twelvelabs.io/v1.3/docs/model-options) page.
+- The platform provides two distinct models, each serving unique purposes in multimodal video understanding.
+  - **Marengo**: An embedding model that analyzes multiple modalities in video content, including visuals, audio, and text, to provide a holistic understanding similar to human comprehension. Key use cases include searching using image or natural-language queries and creating embeddings for various downstream applications. The current version is Marengo 2.7.
+  - **Pegasus**: A generative model that analyzes multiple modalities to generate contextually relevant text based on the content of your videos. Key use cases include content summarization and timestamp identification. The current version is Pegasus 1.2.
+    This example enables both Marengo and Pegasus.
+- The `models.model_options` fields specify the modalities each video understanding model will process.
+- The models and the model options specified when you create an index apply to all the videos you upload to that index and cannot be changed.
 
-The output should look similar to the following:
+Note that the platform returns, among other information, a field named `id`, representing the unique identifier of your new index.
 
-```
-Index(id='65b1b926560f741da96836d7', created_at='2024-01-25T01:28:06.061Z', updated_at='2024-01-25T01:28:06.061Z', name='test-index-to-researchers1', models=[model(name='marengo2.7', options=['visual', 'audio'], addons=None), model(name='pegasus1.2', options=['visual', 'audio'], addons=None)], video_count=0, total_duration=0.0, expires_at='2024-04-24T01:28:06.061Z')
-```
-
-Note that the API returns, among other information, a field named `id`, representing the unique identifier of your new index.
-
-For a description of each field in the request and response, see the [Create an index](https://docs.twelvelabs.io/v1.3/reference/create-index) page.
+For a description of each field in the request and response, see the [Create an index](https://docs.twelvelabs.io/v1.3/sdk-reference/python/manage-indexes#create-an-index) section.
 
 ## Upload videos
 
 Before you upload a video to the platform, ensure that it meets the following requirements:
 
-- **Video resolution**: Must be at least 480x360 or 360x480, and not exceed 4K (3840x2160).
+- **Video resolution**: The shorter side (width or height) must be at least 360 pixels and must not exceed 2160 pixels.
+- **Aspect ratio**: Must be one of the following (including both landscape and portrait variants): 1:1, 4:3, 4:5, 5:4, 16:9, 9:16, or 17:9.
 - **Video and audio formats**: The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
 - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 1 hour (3,600s).
-- **File size**: Must not exceed 2 GB. If you require different options, send us an email at support@twelvelabs.io.
-- **Audio track**: If the `audio` [model option](https://docs.twelvelabs.io/v1.3/docs/model-options) is selected, the video you're uploading must contain an audio track.
+- **File size**: Must not exceed 2 GB.
+
+If you require different options, send us an email at support@twelvelabs.io.
 
 To upload videos, use the example code below, replacing the following:
 
@@ -111,27 +104,20 @@ To upload videos, use the example code below, replacing the following:
 
 ```py
 from glob import glob
-from twelvelabs.models.task import Task
 
-video_files = glob("<YOUR_VIDEO_PATH>") # Example: "/videos/*.mp4
+video_files = glob("<YOUR_VIDEO_PATH>") # Example: "/videos/*.mp4"
 for video_file in video_files:
   print(f"Uploading {video_file}")
-  task = client.task.create(index_id="<YOUR_INDEX_ID>", file=video_file, language="en")
+  task = client.tasks.create(index_id="<YOUR_INDEX_ID>", video_file=video_file)
   print(f"Task id={task.id}")
 
-  # (Optional) Monitor the video indexing process
-  # Utility function to print the status of a video indexing task
-  def on_task_update(task: Task):
-          print(f"  Status={task.status}")
-  task.wait_for_done(callback=on_task_update)
+  task.wait_for_done(sleep_interval=5, callback=lambda t: print(f"  Status={t.status}"))
   if task.status != "ready":
       raise RuntimeError(f"Indexing failed with status {task.status}")
-  print(f"Uploaded {video_file}. The unique identifer of your video is {task.video_id}.")
+  print(f"Upload complete. The unique identifier of your video is {task.video_id}.")
 ```
 
-Note that once a video has been successfully uploaded and indexed, the response will contain a field named `video_id`, representing the unique identifier of your video.
-
-For a description of each field in the request and response, see the [Create a video indexing task](https://docs.twelvelabs.io/reference/create-video-indexing-task) page.
+For a description of each field in the request and response, see the [Create a video indexing task](https://docs.twelvelabs.io/v1.3/sdk-reference/python/upload-videos#create-a-video-indexing-task) section.
 
 ## Perform downstream tasks
 
@@ -150,37 +136,16 @@ To perform a search request using text queries, use the example code below, repl
 
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual and audio cues, use `["visual", "audio"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the modalities the platform uses when performing a search. For example, to search based on visual and audio cues, use `["visual", "audio"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/v1.3/docs/concepts/modalities#search-options) section.
 
 ```py
 search_results = client.search.query(
-  index_id="<YOUR_INDEX_ID>",
-  query_text="<YOUR_QUERY>",
-  options=["<YOUR_SEARCH_OPTIONS>"]
-)
-
-# Utility function to print a specific page
-def print_page(page):
-  for clip in page:
-    print(
-        f" video_id={clip.video_id} score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}"
+    index_id=index.id,
+    query_text="<YOUR_QUERY>",
+    options=["visual", "audio"]
     )
-
-print_page(search_results.data)
-
-while True:
-    try:
-        print_page(next(search_results))
-    except StopIteration:
-        break
-```
-
-The results are returned one page at a time, with a default limit of 10 results on each page. The `next` method returns the next page of results. When you've reached the end of the dataset, a `StopIteration` exception is raised.
-
-```
- video_id=65ca2bce48db9fa780cb3fa4 score=84.9 start=104.9375 end=111.90625 confidence=high
- video_id=65ca2bce48db9fa780cb3fa4 score=84.82 start=160.46875 end=172.75 confidence=high
- video_id=65ca2bce48db9fa780cb3fa4 score=84.77 start=55.375 end=72.46875 confidence=high
+for clip in search_results.data:
+    print(f" video_id={clip.video_id} score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}")
 ```
 
 Note that the response contains, among other information, the following fields:
@@ -194,7 +159,7 @@ Note that the response contains, among other information, the following fields:
   - `medium`
   - `low`
 
-For a description of each field in the request and response, see the [Make any-to-video search requests](/reference/any-to-video-search) page.
+For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.3/sdk-reference/python/search#make-a-search-request) page.
 
 **Search using image queries**
 
@@ -204,14 +169,14 @@ To perform a search request using image queries, use the example code below, rep
 
 - **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
 - **`<YOUR_FILE_PATH>`**: with a string representing the path of the image file you wish to provide.
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual cues, use `["visual"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/docs/search-options) page.
+- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual cues, use `["visual"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/v1.3/docs/concepts/modalities#search-options) section.
 
 ```python
 search_results = client.search.query(
     index_id="<YOUR_INDEX_ID>",
     query_media_type="image",
-    query_media_file="<YOUR_FILE_PATH>", # Use query_media_url instead to provide a file from a publicly accessible URL.
-    options=["<YOUR_SEARCH_OPTIONS>"]
+    query_media_file="<YOUR_FILE_PATH>",
+    search_options=["<YOUR_SEARCH_OPTIONS>"]
 )
 ```
 
@@ -219,18 +184,9 @@ The response is similar to that received when using text queries.
 
 ### Analyze videos
 
-> **NOTE**: The Generate API has been renamed to the Analyze API to more accurately reflect its purpose of analyzing videos to generate text. This update includes changes to specific SDK methods, outlined below. You can continue using the Generate API until July 30, 2025. After this date, the Generate API will be deprecated, and you must transition to the Analyze API.
->
-> The `generate` prefix has been removed from method names, and the following methods have been renamed as follows:
->
-> - `generate.gist` is now `gist`
-> - `generate.summarize` is now `summarize`
-> - `generate.text` is now `analyze`
-> - `generate.text_stream` is now `analyze_stream`
->
-> To maintain compatibility, update your applications to use the new names before July 30, 2025.
+The Analyze API suite uses a multimodal approach to analyze videos and generate text, processing visuals, sounds, spoken words, and texts to provide a comprehensive understanding.
 
-The Twelve Labs Video Understanding Platform offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
+The Analyze API offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
 
 Note the following about using these endpoints:
 
@@ -245,8 +201,9 @@ To analyze videos and generate titles, topics, and hashtags use the example code
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
 
 ```py
-res = client.gist(video_id="<YOUR_VIDEO_ID>", types=["title", "topic", "hashtag"])
-print(f"Title={res.title}\nTopics={res.topics}\nHashtags={res.hashtags}")
+from twelvelabs import TwelveLabs
+gist = client.gist(video_id=task.video_id, types=["title", "topic", "hashtag"])
+print(f"Title={gist.title}\nTopics={gist.topics}\nHashtags={gist.hashtags}")
 ```
 
 #### Summaries, chapters, and highlights
@@ -258,11 +215,16 @@ To analyze videos and generate summaries, chapters, and highlights, use the exam
 - _(Optional)_ **`<YOUR_PROMPT>`**: with a string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example: "Generate a summary in no more than 5 bullet points."
 
 ```py
-res = client.summarize("<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_PROMPT>")
-print(f"{res.summary}")
+res = client.summarize(video_id="<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_PROMPT>")
+if res.summarize_type == "summary":
+    print(f"{res.summary}")
+elif res.summarize_type == "chapter":
+    print(f"Chapters: {res.chapters}")
+elif res.summarize_type == "highlight":
+    print(f"Highlights: {res.highlights}")
 ```
 
-For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.3/docs/generate-summaries-chapters-highlights) page.
+For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.3/sdk-reference/python/analyze-videos#summaries-chapters-and-highlights) page.
 
 #### Open-ended analysis
 
@@ -270,7 +232,7 @@ To perform open-ended analysis and generate tailored text outputs based on your 
 
 - **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
 - **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 2,000 tokens. Example: "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
-
+-
 ```py
 res = client.analyze(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
 print(f"{res.data}")
@@ -296,29 +258,28 @@ The following example shows how you can handle specific HTTP errors in your appl
 ```python
 import os
 from twelvelabs import TwelveLabs
+from twelvelabs.errors import BadRequestError, NotFoundError
 
-client = TwelveLabs(os.getenv("TWELVELABS_API_KEY"))
+client = TwelveLabs(api_key=os.getenv("TWELVELABS_API_KEY"))
 try:
-    models = client.model.list()
-    print(models)
-except twelvelabs.APIConnectionError as e:
-    print("Cannot connect to API server")
-except twelvelabs.BadRequestError as e:
+    indexes = client.indexes.list()
+    print(indexes)
+except BadRequestError as e:
     print("Bad request.")
-except twelvelabs.APIStatusError as e:
-    print(f"Status code {e.status_code} received")
-    print(e.response)
+except NotFoundError as e:
+    print("Not found.")
+except Exception as e:
+    print(f"An error occurred: {e}")
 ```
 
-# License
+## Contributing
 
-We use the Developer Certificate of Origin (DCO) in lieu of a Contributor License Agreement for all contributions to Twelve Labs' open-source projects. We request that contributors agree to the terms of the DCO and indicate that agreement by signing all commits made to Twelve Labs' projects by adding a line with your name and email address to every Git commit message contributed, as shown in the example below:
+This repository contains code that has been automatically generated from an OpenAPI specification. We are unable to merge direct code contributions to the SDK because the code generation tool overwrites manual changes with each new release.
 
-```
-Signed-off-by: Jane Doe <jane.doe@example.com>
-```
+To contribute, follow these steps:
 
-You can sign your commit automatically with Git by using `git commit -s` if you have your `user.name` and `user.email` set as part of your Git configuration.
-We ask that you use your real name (please, no anonymous contributions or pseudonyms). By signing your commitment, you are certifying that you have the right have the right to submit it under the open-source license used by that particular project. You must use your real name (no pseudonyms or anonymous contributions are allowed.)
-We use the Probot DCO GitHub app to check for DCO signoffs of every commit.
-If you forget to sign your commits, the DCO bot will remind you and give you detailed instructions for how to amend your commits to add a signature.
+1. Open an issue to discuss your proposed changes with our team.
+2. If you would like to submit a proof of concept, create a pull request. We will review your pull request, but we cannot merge it.
+3. We will transfer any approved changes to the repository where the code generation tool operates.
+
+We welcome contributions to the README file. You can submit pull requests directly.
