@@ -101,8 +101,21 @@ class IndexesClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        response = client.indexes.list(page=1, page_limit=10, sort_by='created_at', sort_option='desc', index_name='myIndex', model_options='visual,audio', model_family='marengo', created_at='2024-08-16T16:53:59Z', updated_at='2024-08-16T16:55:59Z', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.indexes.list(
+            page=1,
+            page_limit=10,
+            sort_by="created_at",
+            sort_option="desc",
+            index_name="myIndex",
+            model_options="visual,audio",
+            model_family="marengo",
+            created_at="2024-08-16T16:53:59Z",
+            updated_at="2024-08-16T16:55:59Z",
+        )
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -164,8 +177,24 @@ class IndexesClient:
         --------
         from twelvelabs import TwelveLabs
         from twelvelabs.indexes import IndexesCreateRequestModelsItem
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.create(index_name='myIndex', models=[IndexesCreateRequestModelsItem(model_name='marengo2.7', model_options=['visual', 'audio'], ), IndexesCreateRequestModelsItem(model_name='pegasus1.2', model_options=['visual', 'audio'], )], addons=['thumbnail'], )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.create(
+            index_name="myIndex",
+            models=[
+                IndexesCreateRequestModelsItem(
+                    model_name="marengo2.7",
+                    model_options=["visual", "audio"],
+                ),
+                IndexesCreateRequestModelsItem(
+                    model_name="pegasus1.2",
+                    model_options=["visual", "audio"],
+                ),
+            ],
+            addons=["thumbnail"],
+        )
         """
         _response = self._raw_client.create(
             index_name=index_name, models=models, addons=addons, request_options=request_options
@@ -192,8 +221,13 @@ class IndexesClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.retrieve(index_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.retrieve(
+            index_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.retrieve(index_id, request_options=request_options)
         return _response.data
@@ -222,8 +256,14 @@ class IndexesClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.update(index_id='6298d673f1090f1100476d4c', index_name='myIndex', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.update(
+            index_id="6298d673f1090f1100476d4c",
+            index_name="myIndex",
+        )
         """
         _response = self._raw_client.update(index_id, index_name=index_name, request_options=request_options)
         return _response.data
@@ -247,8 +287,13 @@ class IndexesClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.delete(index_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.delete(
+            index_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.delete(index_id, request_options=request_options)
         return _response.data
@@ -339,17 +384,35 @@ class AsyncIndexesClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            response = await client.indexes.list(page=1, page_limit=10, sort_by='created_at', sort_option='desc', index_name='myIndex', model_options='visual,audio', model_family='marengo', created_at='2024-08-16T16:53:59Z', updated_at='2024-08-16T16:55:59Z', )
+            response = await client.indexes.list(
+                page=1,
+                page_limit=10,
+                sort_by="created_at",
+                sort_option="desc",
+                index_name="myIndex",
+                model_options="visual,audio",
+                model_family="marengo",
+                created_at="2024-08-16T16:53:59Z",
+                updated_at="2024-08-16T16:55:59Z",
+            )
             async for item in response:
                 yield item
 
             # alternatively, you can paginate page-by-page
             async for page in response.iter_pages():
                 yield page
+
+
         asyncio.run(main())
         """
         return await self._raw_client.list(
@@ -405,12 +468,33 @@ class AsyncIndexesClient:
 
         Examples
         --------
+        import asyncio
+
         from twelvelabs import AsyncTwelveLabs
         from twelvelabs.indexes import IndexesCreateRequestModelsItem
-        import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.create(index_name='myIndex', models=[IndexesCreateRequestModelsItem(model_name='marengo2.7', model_options=['visual', 'audio'], ), IndexesCreateRequestModelsItem(model_name='pegasus1.2', model_options=['visual', 'audio'], )], addons=['thumbnail'], )
+            await client.indexes.create(
+                index_name="myIndex",
+                models=[
+                    IndexesCreateRequestModelsItem(
+                        model_name="marengo2.7",
+                        model_options=["visual", "audio"],
+                    ),
+                    IndexesCreateRequestModelsItem(
+                        model_name="pegasus1.2",
+                        model_options=["visual", "audio"],
+                    ),
+                ],
+                addons=["thumbnail"],
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
@@ -437,11 +521,21 @@ class AsyncIndexesClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.retrieve(index_id='6298d673f1090f1100476d4c', )
+            await client.indexes.retrieve(
+                index_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.retrieve(index_id, request_options=request_options)
@@ -470,11 +564,22 @@ class AsyncIndexesClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.update(index_id='6298d673f1090f1100476d4c', index_name='myIndex', )
+            await client.indexes.update(
+                index_id="6298d673f1090f1100476d4c",
+                index_name="myIndex",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.update(index_id, index_name=index_name, request_options=request_options)
@@ -498,11 +603,21 @@ class AsyncIndexesClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.delete(index_id='6298d673f1090f1100476d4c', )
+            await client.indexes.delete(
+                index_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(index_id, request_options=request_options)

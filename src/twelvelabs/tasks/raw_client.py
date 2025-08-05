@@ -192,6 +192,7 @@ class RawTasksClient:
         video_file: typing.Optional[core.File] = OMIT,
         video_url: typing.Optional[str] = OMIT,
         enable_video_stream: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TasksCreateResponse]:
         """
@@ -232,6 +233,9 @@ class RawTasksClient:
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -247,6 +251,7 @@ class RawTasksClient:
                 "index_id": index_id,
                 "video_url": video_url,
                 "enable_video_stream": enable_video_stream,
+                "user_metadata": user_metadata,
             },
             files={
                 **({"video_file": video_file} if video_file is not None else {}),
@@ -548,6 +553,7 @@ class AsyncRawTasksClient:
         video_file: typing.Optional[core.File] = OMIT,
         video_url: typing.Optional[str] = OMIT,
         enable_video_stream: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TasksCreateResponse]:
         """
@@ -588,6 +594,9 @@ class AsyncRawTasksClient:
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -603,6 +612,7 @@ class AsyncRawTasksClient:
                 "index_id": index_id,
                 "video_url": video_url,
                 "enable_video_stream": enable_video_stream,
+                "user_metadata": user_metadata,
             },
             files={
                 **({"video_file": video_file} if video_file is not None else {}),

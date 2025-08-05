@@ -127,8 +127,20 @@ class VideosClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        response = client.indexes.videos.list(index_id='6298d673f1090f1100476d4c', page=1, page_limit=10, sort_by='created_at', sort_option='desc', filename='01.mp4', created_at='2024-08-16T16:53:59Z', updated_at='2024-08-16T16:53:59Z', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.indexes.videos.list(
+            index_id="6298d673f1090f1100476d4c",
+            page=1,
+            page_limit=10,
+            sort_by="created_at",
+            sort_option="desc",
+            filename="01.mp4",
+            created_at="2024-08-16T16:53:59Z",
+            updated_at="2024-08-16T16:53:59Z",
+        )
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -202,8 +214,14 @@ class VideosClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.videos.retrieve(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.videos.retrieve(
+            index_id="6298d673f1090f1100476d4c",
+            video_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.retrieve(
             index_id,
@@ -223,7 +241,7 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update the metadata of a video such as file name.
+        Use this method to update the metadata of a video.
 
         Parameters
         ----------
@@ -245,12 +263,20 @@ class VideosClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.videos.update(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', user_metadata={'category': 'recentlyAdded'
-        , 'batchNumber': 5
-        , 'rating': 9.3
-        , 'needsReview': True
-        }, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.videos.update(
+            index_id="6298d673f1090f1100476d4c",
+            video_id="6298d673f1090f1100476d4c",
+            user_metadata={
+                "category": "recentlyAdded",
+                "batchNumber": 5,
+                "rating": 9.3,
+                "needsReview": True,
+            },
+        )
         """
         _response = self._raw_client.update(
             index_id, video_id, user_metadata=user_metadata, request_options=request_options
@@ -259,7 +285,7 @@ class VideosClient:
 
     def delete(self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        This method deletes all the information about the specified video This action cannot be undone.
+        This method deletes all the information about the specified video. This action cannot be undone.
 
         Parameters
         ----------
@@ -279,8 +305,14 @@ class VideosClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.indexes.videos.delete(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.videos.delete(
+            index_id="6298d673f1090f1100476d4c",
+            video_id="6298d673f1090f1100476d4c",
+        )
         """
         _response = self._raw_client.delete(index_id, video_id, request_options=request_options)
         return _response.data
@@ -396,17 +428,34 @@ class AsyncVideosClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            response = await client.indexes.videos.list(index_id='6298d673f1090f1100476d4c', page=1, page_limit=10, sort_by='created_at', sort_option='desc', filename='01.mp4', created_at='2024-08-16T16:53:59Z', updated_at='2024-08-16T16:53:59Z', )
+            response = await client.indexes.videos.list(
+                index_id="6298d673f1090f1100476d4c",
+                page=1,
+                page_limit=10,
+                sort_by="created_at",
+                sort_option="desc",
+                filename="01.mp4",
+                created_at="2024-08-16T16:53:59Z",
+                updated_at="2024-08-16T16:53:59Z",
+            )
             async for item in response:
                 yield item
 
             # alternatively, you can paginate page-by-page
             async for page in response.iter_pages():
                 yield page
+
+
         asyncio.run(main())
         """
         return await self._raw_client.list(
@@ -475,11 +524,22 @@ class AsyncVideosClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.videos.retrieve(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', )
+            await client.indexes.videos.retrieve(
+                index_id="6298d673f1090f1100476d4c",
+                video_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.retrieve(
@@ -500,7 +560,7 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update the metadata of a video such as file name.
+        Use this method to update the metadata of a video.
 
         Parameters
         ----------
@@ -521,15 +581,28 @@ class AsyncVideosClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.videos.update(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', user_metadata={'category': 'recentlyAdded'
-            , 'batchNumber': 5
-            , 'rating': 9.3
-            , 'needsReview': True
-            }, )
+            await client.indexes.videos.update(
+                index_id="6298d673f1090f1100476d4c",
+                video_id="6298d673f1090f1100476d4c",
+                user_metadata={
+                    "category": "recentlyAdded",
+                    "batchNumber": 5,
+                    "rating": 9.3,
+                    "needsReview": True,
+                },
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
@@ -541,7 +614,7 @@ class AsyncVideosClient:
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
-        This method deletes all the information about the specified video This action cannot be undone.
+        This method deletes all the information about the specified video. This action cannot be undone.
 
         Parameters
         ----------
@@ -560,11 +633,22 @@ class AsyncVideosClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.indexes.videos.delete(index_id='6298d673f1090f1100476d4c', video_id='6298d673f1090f1100476d4c', )
+            await client.indexes.videos.delete(
+                index_id="6298d673f1090f1100476d4c",
+                video_id="6298d673f1090f1100476d4c",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(index_id, video_id, request_options=request_options)

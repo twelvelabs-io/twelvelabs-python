@@ -10,6 +10,7 @@ from .core.request_options import RequestOptions
 from .embed.client import AsyncEmbedClient, EmbedClient
 from .environment import TwelveLabsEnvironment
 from .indexes.client import AsyncIndexesClient, IndexesClient
+from .manage_videos.client import AsyncManageVideosClient, ManageVideosClient
 from .raw_base_client import AsyncRawBaseClient, RawBaseClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
@@ -36,11 +37,16 @@ class BaseClient:
     environment : TwelveLabsEnvironment
         The environment to use for requests from the client. from .environment import TwelveLabsEnvironment
 
+
+
         Defaults to TwelveLabsEnvironment.DEFAULT
 
 
 
     api_key : typing.Optional[str]
+    headers : typing.Optional[typing.Dict[str, str]]
+        Additional headers to send with every request.
+
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
@@ -53,7 +59,10 @@ class BaseClient:
     Examples
     --------
     from twelvelabs import TwelveLabs
-    client = TwelveLabs(api_key="YOUR_API_KEY", )
+
+    client = TwelveLabs(
+        api_key="YOUR_API_KEY",
+    )
     """
 
     def __init__(
@@ -62,6 +71,7 @@ class BaseClient:
         base_url: typing.Optional[str] = None,
         environment: TwelveLabsEnvironment = TwelveLabsEnvironment.DEFAULT,
         api_key: typing.Optional[str] = os.getenv("TWELVE_LABS_API_KEY"),
+        headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
         httpx_client: typing.Optional[httpx.Client] = None,
@@ -76,6 +86,7 @@ class BaseClient:
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             api_key=api_key,
+            headers=headers,
             httpx_client=httpx_client
             if httpx_client is not None
             else httpx.Client(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
@@ -86,6 +97,7 @@ class BaseClient:
         self._raw_client = RawBaseClient(client_wrapper=self._client_wrapper)
         self.tasks = TasksClient(client_wrapper=self._client_wrapper)
         self.indexes = IndexesClient(client_wrapper=self._client_wrapper)
+        self.manage_videos = ManageVideosClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
 
@@ -155,8 +167,16 @@ class BaseClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.summarize(video_id='6298d673f1090f1100476d4c', type='summary', prompt='Generate a summary of this video for a social media post, up to two sentences.', temperature=0.2, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.summarize(
+            video_id="6298d673f1090f1100476d4c",
+            type="summary",
+            prompt="Generate a summary of this video for a social media post, up to two sentences.",
+            temperature=0.2,
+        )
         """
         _response = self._raw_client.summarize(
             video_id=video_id, type=type, prompt=prompt, temperature=temperature, request_options=request_options
@@ -199,8 +219,14 @@ class BaseClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.gist(video_id='6298d673f1090f1100476d4c', types=["title", "topic"], )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.gist(
+            video_id="6298d673f1090f1100476d4c",
+            types=["title", "topic"],
+        )
         """
         _response = self._raw_client.gist(video_id=video_id, types=types, request_options=request_options)
         return _response.data
@@ -266,8 +292,16 @@ class BaseClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.generate(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, stream=True, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.generate(
+            video_id="6298d673f1090f1100476d4c",
+            prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+            temperature=0.2,
+            stream=True,
+        )
         """
         _response = self._raw_client.generate(
             video_id=video_id, prompt=prompt, temperature=temperature, stream=stream, request_options=request_options
@@ -327,8 +361,15 @@ class BaseClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        response = client.analyze_stream(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.analyze_stream(
+            video_id="6298d673f1090f1100476d4c",
+            prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+            temperature=0.2,
+        )
         for chunk in response:
             yield chunk
         """
@@ -390,8 +431,15 @@ class BaseClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.analyze(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.analyze(
+            video_id="6298d673f1090f1100476d4c",
+            prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+            temperature=0.2,
+        )
         """
         _response = self._raw_client.analyze(
             video_id=video_id, prompt=prompt, temperature=temperature, request_options=request_options
@@ -411,11 +459,16 @@ class AsyncBaseClient:
     environment : TwelveLabsEnvironment
         The environment to use for requests from the client. from .environment import TwelveLabsEnvironment
 
+
+
         Defaults to TwelveLabsEnvironment.DEFAULT
 
 
 
     api_key : typing.Optional[str]
+    headers : typing.Optional[typing.Dict[str, str]]
+        Additional headers to send with every request.
+
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
@@ -428,7 +481,10 @@ class AsyncBaseClient:
     Examples
     --------
     from twelvelabs import AsyncTwelveLabs
-    client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+    client = AsyncTwelveLabs(
+        api_key="YOUR_API_KEY",
+    )
     """
 
     def __init__(
@@ -437,6 +493,7 @@ class AsyncBaseClient:
         base_url: typing.Optional[str] = None,
         environment: TwelveLabsEnvironment = TwelveLabsEnvironment.DEFAULT,
         api_key: typing.Optional[str] = os.getenv("TWELVE_LABS_API_KEY"),
+        headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
         httpx_client: typing.Optional[httpx.AsyncClient] = None,
@@ -451,6 +508,7 @@ class AsyncBaseClient:
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             api_key=api_key,
+            headers=headers,
             httpx_client=httpx_client
             if httpx_client is not None
             else httpx.AsyncClient(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
@@ -461,6 +519,7 @@ class AsyncBaseClient:
         self._raw_client = AsyncRawBaseClient(client_wrapper=self._client_wrapper)
         self.tasks = AsyncTasksClient(client_wrapper=self._client_wrapper)
         self.indexes = AsyncIndexesClient(client_wrapper=self._client_wrapper)
+        self.manage_videos = AsyncManageVideosClient(client_wrapper=self._client_wrapper)
         self.embed = AsyncEmbedClient(client_wrapper=self._client_wrapper)
         self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
 
@@ -529,11 +588,24 @@ class AsyncBaseClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.summarize(video_id='6298d673f1090f1100476d4c', type='summary', prompt='Generate a summary of this video for a social media post, up to two sentences.', temperature=0.2, )
+            await client.summarize(
+                video_id="6298d673f1090f1100476d4c",
+                type="summary",
+                prompt="Generate a summary of this video for a social media post, up to two sentences.",
+                temperature=0.2,
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.summarize(
@@ -576,11 +648,22 @@ class AsyncBaseClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.gist(video_id='6298d673f1090f1100476d4c', types=["title", "topic"], )
+            await client.gist(
+                video_id="6298d673f1090f1100476d4c",
+                types=["title", "topic"],
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.gist(video_id=video_id, types=types, request_options=request_options)
@@ -646,11 +729,24 @@ class AsyncBaseClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.generate(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, stream=True, )
+            await client.generate(
+                video_id="6298d673f1090f1100476d4c",
+                prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+                temperature=0.2,
+                stream=True,
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.generate(
@@ -710,20 +806,32 @@ class AsyncBaseClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            response = await client.analyze_stream(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, )
+            response = await client.analyze_stream(
+                video_id="6298d673f1090f1100476d4c",
+                prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+                temperature=0.2,
+            )
             async for chunk in response:
                 yield chunk
+
+
         asyncio.run(main())
         """
         async with self._raw_client.analyze_stream(
             video_id=video_id, prompt=prompt, temperature=temperature, request_options=request_options
         ) as r:
-            async for data in r.data:
-                yield data
+            async for _chunk in r.data:
+                yield _chunk
 
     async def analyze(
         self,
@@ -777,11 +885,23 @@ class AsyncBaseClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.analyze(video_id='6298d673f1090f1100476d4c', prompt='I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.', temperature=0.2, )
+            await client.analyze(
+                video_id="6298d673f1090f1100476d4c",
+                prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+                temperature=0.2,
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.analyze(

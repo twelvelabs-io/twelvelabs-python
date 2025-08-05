@@ -69,7 +69,6 @@ class SearchClient:
           - **Format**: JPEG and PNG.
           - **Dimension**: Must be at least 64 x 64 pixels.
           - **Size**: Must not exceed 5MB.
-          - **Object visibility**: Ensure that the objects of interest are visible and occupy at least 50% of the video frame. This helps the platform accurately identify and match the objects.
         </Accordion>
         
         <Note title="Note">
@@ -206,8 +205,14 @@ class SearchClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.search.create(index_id='index_id', search_options=["visual"], )
+        
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.search.create(
+            index_id="index_id",
+            search_options=["visual"],
+        )
         """
         _response = self._raw_client.create(
             index_id=index_id,
@@ -261,8 +266,14 @@ class SearchClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.search.retrieve(page_token='1234567890', include_user_metadata=True, )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.search.retrieve(
+            page_token="1234567890",
+            include_user_metadata=True,
+        )
         """
         _response = self._raw_client.retrieve(
             page_token, include_user_metadata=include_user_metadata, request_options=request_options
@@ -321,7 +332,6 @@ class AsyncSearchClient:
           - **Format**: JPEG and PNG.
           - **Dimension**: Must be at least 64 x 64 pixels.
           - **Size**: Must not exceed 5MB.
-          - **Object visibility**: Ensure that the objects of interest are visible and occupy at least 50% of the video frame. This helps the platform accurately identify and match the objects.
         </Accordion>
         
         <Note title="Note">
@@ -457,11 +467,22 @@ class AsyncSearchClient:
         
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+        
+        from twelvelabs import AsyncTwelveLabs
+        
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        
+        
         async def main() -> None:
-            await client.search.create(index_id='index_id', search_options=["visual"], )
+            await client.search.create(
+                index_id="index_id",
+                search_options=["visual"],
+            )
+        
+        
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
@@ -515,11 +536,22 @@ class AsyncSearchClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.search.retrieve(page_token='1234567890', include_user_metadata=True, )
+            await client.search.retrieve(
+                page_token="1234567890",
+                include_user_metadata=True,
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.retrieve(

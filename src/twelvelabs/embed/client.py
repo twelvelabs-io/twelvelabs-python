@@ -100,7 +100,7 @@ class EmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -120,8 +120,13 @@ class EmbedClient:
         Examples
         --------
         from twelvelabs import TwelveLabs
-        client = TwelveLabs(api_key="YOUR_API_KEY", )
-        client.embed.create(model_name='model_name', )
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.embed.create(
+            model_name="model_name",
+        )
         """
         _response = self._raw_client.create(
             model_name=model_name,
@@ -224,7 +229,7 @@ class AsyncEmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -243,11 +248,21 @@ class AsyncEmbedClient:
 
         Examples
         --------
-        from twelvelabs import AsyncTwelveLabs
         import asyncio
-        client = AsyncTwelveLabs(api_key="YOUR_API_KEY", )
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
         async def main() -> None:
-            await client.embed.create(model_name='model_name', )
+            await client.embed.create(
+                model_name="model_name",
+            )
+
+
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
