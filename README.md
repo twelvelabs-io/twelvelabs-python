@@ -2,8 +2,9 @@
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Ffern-demo%2Ftwelve-labs-python)
 [![PyPI version](https://img.shields.io/pypi/v/twelvelabs.svg)](https://pypi.org/project/twelvelabs/)
+![Pepy Total Downloads](https://img.shields.io/pepy/dt/twelvelabs)
 
-> **NOTE**: This version includes breaking changes compared to the 0.4.x version. To use it in your application, you must update your code and thoroughly test the changes to ensure everything functions as expected before deploying it to production environments. If you encounter any issues with this version, please report them on the [Issues](https://github.com/twelvelabs-io/twelvelabs-python/issues) page.
+> **NOTE**: This version includes breaking changes compared to the 0.4.x version. To use it in your application, you must update your code and thoroughly test the changes to ensure everything functions as expected before deploying it to production environments. If you want to use the legacy version, please refer to the [0.4 folder](./0.4).
 
 This SDK provides a convenient way to interact with the Twelve Labs Video Understanding Platform from an application written in the Python language. The SDK equips you with a set of intuitive classes and methods that streamline the process of interacting with the platform, minimizing the need for boilerplate code.
 
