@@ -228,7 +228,7 @@ class RawVideosClient:
 
             The platform does not return embeddings if you don't provide this parameter.
 
-            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual,` you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
 
         transcription : typing.Optional[bool]
             The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
@@ -287,65 +287,6 @@ class RawVideosClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def update(
-        self,
-        index_id: str,
-        video_id: str,
-        *,
-        user_metadata: typing.Optional[UserMetadata] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[None]:
-        """
-        Use this method to update the metadata of a video.
-
-        Parameters
-        ----------
-        index_id : str
-            The unique identifier of the index to which the video has been uploaded.
-
-        video_id : str
-            The unique identifier of the video to update.
-
-        user_metadata : typing.Optional[UserMetadata]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[None]
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
-            method="PUT",
-            json={
-                "user_metadata": user_metadata,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return HttpResponse(response=_response, data=None)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
     def delete(
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
@@ -371,6 +312,65 @@ class RawVideosClient:
             f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
             method="DELETE",
             request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return HttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def update(
+        self,
+        index_id: str,
+        video_id: str,
+        *,
+        user_metadata: typing.Optional[UserMetadata] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[None]:
+        """
+        Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
+
+        Parameters
+        ----------
+        index_id : str
+            The unique identifier of the index to which the video has been uploaded.
+
+        video_id : str
+            The unique identifier of the video to update.
+
+        user_metadata : typing.Optional[UserMetadata]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[None]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
+            method="PATCH",
+            json={
+                "user_metadata": user_metadata,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -598,7 +598,7 @@ class AsyncRawVideosClient:
 
             The platform does not return embeddings if you don't provide this parameter.
 
-            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual,` you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
 
         transcription : typing.Optional[bool]
             The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
@@ -657,65 +657,6 @@ class AsyncRawVideosClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def update(
-        self,
-        index_id: str,
-        video_id: str,
-        *,
-        user_metadata: typing.Optional[UserMetadata] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[None]:
-        """
-        Use this method to update the metadata of a video.
-
-        Parameters
-        ----------
-        index_id : str
-            The unique identifier of the index to which the video has been uploaded.
-
-        video_id : str
-            The unique identifier of the video to update.
-
-        user_metadata : typing.Optional[UserMetadata]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[None]
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
-            method="PUT",
-            json={
-                "user_metadata": user_metadata,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return AsyncHttpResponse(response=_response, data=None)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
     async def delete(
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
@@ -741,6 +682,65 @@ class AsyncRawVideosClient:
             f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
             method="DELETE",
             request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return AsyncHttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def update(
+        self,
+        index_id: str,
+        video_id: str,
+        *,
+        user_metadata: typing.Optional[UserMetadata] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[None]:
+        """
+        Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
+
+        Parameters
+        ----------
+        index_id : str
+            The unique identifier of the index to which the video has been uploaded.
+
+        video_id : str
+            The unique identifier of the video to update.
+
+        user_metadata : typing.Optional[UserMetadata]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[None]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
+            method="PATCH",
+            json={
+                "user_metadata": user_metadata,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:

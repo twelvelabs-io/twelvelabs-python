@@ -144,9 +144,6 @@ class SearchClient:
             
               - `and`
             
-              For details and examples, see the [Using multiple sources of information](/v1.3/docs/guides/search/queries/text-queries#visual-and-audio) section.
-            
-            
               **Default**: `or`.
         
         page_limit : typing.Optional[int]
@@ -159,11 +156,11 @@ class SearchClient:
             
             **Syntax for filtering**
             
-            The following table describes the supported data types, operators, and filter syntax: 
+            The following table describes the supported data types, operators, and filter syntax:
             
             | Data type | Operator | Description | Syntax |
             |:----------|:---------|:------------|:-------|
-            | String | `=` | Matches results equal to the specified value. | `{"field": "value"}` 
+            | String | `=` | Matches results equal to the specified value. | `{"field": "value"}`
             | Array of strings | `=` | Matches results with any value in the specified array. Supported only for `id`. | `{"id": ["value1", "value2"]}` |
             | Numeric (integer, float) | `=`, `lte`, `gte` | Matches results equal to or within a range of the specified value. | `{"field": number}` or `{"field": { "gte": number, "lte": number }}` |
             | Boolean | `=` | Matches results equal to the specified boolean value. | `{"field": true}` or `{"field": false}`. |
@@ -179,8 +176,8 @@ class SearchClient:
             | `duration` | Filters based on the duration of the video containing the segment that matches your query. | Number or object with `gte` and `lte` | `{"duration": 600}` or `{"duration": { "gte": 600, "lte": 800 }}` |
             | `width` | Filters by video width (in pixels). | Number or object with `gte` and `lte` | `{"width": 1920}` or `{"width": { "gte": 1280, "lte": 1920}}` |
             | `height` | Filters by video height (in pixels). | Number or object with `gte` and `lte`. | `{"height": 1080}` or `{"height": { "gte": 720, "lte": 1080 }}`. |
-            | `size` | Filters by video size (in bytes) | Number or object with `gte` and `lte`. | `{"size": 1048576}` or `{"size": { "gte": 1048576, "lte": 5242880}}` | 
-            | `filename` | Filters by the exact file name. | String | `{"filename": "Animal Encounters part 1"}` | 
+            | `size` | Filters by video size (in bytes) | Number or object with `gte` and `lte`. | `{"size": 1048576}` or `{"size": { "gte": 1048576, "lte": 5242880}}` |
+            | `filename` | Filters by the exact file name. | String | `{"filename": "Animal Encounters part 1"}` |
             
             <br/>
             **User-defined metadata**
@@ -407,9 +404,6 @@ class AsyncSearchClient:
             
               - `and`
             
-              For details and examples, see the [Using multiple sources of information](/v1.3/docs/guides/search/queries/text-queries#visual-and-audio) section.
-            
-            
               **Default**: `or`.
         
         page_limit : typing.Optional[int]
@@ -422,11 +416,11 @@ class AsyncSearchClient:
             
             **Syntax for filtering**
             
-            The following table describes the supported data types, operators, and filter syntax: 
+            The following table describes the supported data types, operators, and filter syntax:
             
             | Data type | Operator | Description | Syntax |
             |:----------|:---------|:------------|:-------|
-            | String | `=` | Matches results equal to the specified value. | `{"field": "value"}` 
+            | String | `=` | Matches results equal to the specified value. | `{"field": "value"}`
             | Array of strings | `=` | Matches results with any value in the specified array. Supported only for `id`. | `{"id": ["value1", "value2"]}` |
             | Numeric (integer, float) | `=`, `lte`, `gte` | Matches results equal to or within a range of the specified value. | `{"field": number}` or `{"field": { "gte": number, "lte": number }}` |
             | Boolean | `=` | Matches results equal to the specified boolean value. | `{"field": true}` or `{"field": false}`. |
@@ -442,8 +436,8 @@ class AsyncSearchClient:
             | `duration` | Filters based on the duration of the video containing the segment that matches your query. | Number or object with `gte` and `lte` | `{"duration": 600}` or `{"duration": { "gte": 600, "lte": 800 }}` |
             | `width` | Filters by video width (in pixels). | Number or object with `gte` and `lte` | `{"width": 1920}` or `{"width": { "gte": 1280, "lte": 1920}}` |
             | `height` | Filters by video height (in pixels). | Number or object with `gte` and `lte`. | `{"height": 1080}` or `{"height": { "gte": 720, "lte": 1080 }}`. |
-            | `size` | Filters by video size (in bytes) | Number or object with `gte` and `lte`. | `{"size": 1048576}` or `{"size": { "gte": 1048576, "lte": 5242880}}` | 
-            | `filename` | Filters by the exact file name. | String | `{"filename": "Animal Encounters part 1"}` | 
+            | `size` | Filters by video size (in bytes) | Number or object with `gte` and `lte`. | `{"size": 1048576}` or `{"size": { "gte": 1048576, "lte": 5242880}}` |
+            | `filename` | Filters by the exact file name. | String | `{"filename": "Animal Encounters part 1"}` |
             
             <br/>
             **User-defined metadata**

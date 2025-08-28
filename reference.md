@@ -226,7 +226,7 @@ This endpoint generates open-ended texts based on your videos, including but not
 
 <Note title="Notes">
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-- This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+- This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
 </Note>
 </dd>
 </dl>
@@ -351,7 +351,7 @@ This endpoint analyzes your videos and creates fully customizable text based on 
 
 <Note title="Notes">
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-- This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+- This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
 </Note>
 </dd>
 </dl>
@@ -465,7 +465,7 @@ This endpoint analyzes your videos and creates fully customizable text based on 
 
 <Note title="Notes">
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-- This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+- This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
 </Note>
 </dd>
 </dl>
@@ -800,7 +800,7 @@ Upload options:
   - **Duration**: For Marengo, it must be between 4 seconds and 2 hours (7,200s). For Pegasus, it must be between 4 seconds and 60 minutes (3600s). In a future release, the maximum duration for Pegasus will be 2 hours (7,200 seconds).
   - **File size**: Must not exceed 2 GB.
     If you require different options, contact us at support@twelvelabs.io.
-  
+
   If both Marengo and Pegasus are enabled for your index, the most restrictive prerequisites will apply.
 </Accordion>
 
@@ -1538,100 +1538,6 @@ client.indexes.delete(
 </dl>
 </details>
 
-## Manage videos
-<details><summary><code>client.manage_videos.<a href="src/twelvelabs/manage_videos/client.py">partial_update_video_information</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from twelvelabs import TwelveLabs
-
-client = TwelveLabs(
-    api_key="YOUR_API_KEY",
-)
-client.manage_videos.partial_update_video_information(
-    index_id="6298d673f1090f1100476d4c",
-    video_id="6298d673f1090f1100476d4c",
-    user_metadata={
-        "category": "recentlyAdded",
-        "batchNumber": 5,
-        "rating": 9.3,
-        "needsReview": True,
-    },
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**index_id:** `str` — The unique identifier of the index to which the video has been uploaded.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**video_id:** `str` — The unique identifier of the video to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_metadata:** `typing.Optional[UserMetadata]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Embed
 <details><summary><code>client.embed.<a href="src/twelvelabs/embed/client.py">create</a>(...)</code></summary>
 <dl>
@@ -1666,7 +1572,7 @@ Parameters for embeddings:
   - `audio_file`: Local audio file.
 
 <Note title="Notes">
-- The "Marengo-retrieval-2.7" video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
+- The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
 - You can create multiple types of embeddings in a single API call.
 - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
 </Note>
@@ -1768,7 +1674,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dl>
 <dd>
 
-**audio_url:** `typing.Optional[str]` — The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
+**audio_url:** `typing.Optional[str]` — The publicly accessible URL of the audio file for which you wish to create an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
     
 </dd>
 </dl>
@@ -2010,9 +1916,6 @@ When you perform a search specifying multiple [sources of information](/v1.3/doc
 
   - `and`
 
-  For details and examples, see the [Using multiple sources of information](/v1.3/docs/guides/search/queries/text-queries#visual-and-audio) section.
-
-
   **Default**: `or`.
     
 </dd>
@@ -2039,11 +1942,11 @@ Specifies a stringified JSON object to filter your search results. Supports both
 
 **Syntax for filtering**
 
-The following table describes the supported data types, operators, and filter syntax: 
+The following table describes the supported data types, operators, and filter syntax:
 
 | Data type | Operator | Description | Syntax |
 |:----------|:---------|:------------|:-------|
-| String | `=` | Matches results equal to the specified value. | `{"field": "value"}` 
+| String | `=` | Matches results equal to the specified value. | `{"field": "value"}`
 | Array of strings | `=` | Matches results with any value in the specified array. Supported only for `id`. | `{"id": ["value1", "value2"]}` |
 | Numeric (integer, float) | `=`, `lte`, `gte` | Matches results equal to or within a range of the specified value. | `{"field": number}` or `{"field": { "gte": number, "lte": number }}` |
 | Boolean | `=` | Matches results equal to the specified boolean value. | `{"field": true}` or `{"field": false}`. |
@@ -2059,8 +1962,8 @@ The table below describes the system-generated metadata available for filtering 
 | `duration` | Filters based on the duration of the video containing the segment that matches your query. | Number or object with `gte` and `lte` | `{"duration": 600}` or `{"duration": { "gte": 600, "lte": 800 }}` |
 | `width` | Filters by video width (in pixels). | Number or object with `gte` and `lte` | `{"width": 1920}` or `{"width": { "gte": 1280, "lte": 1920}}` |
 | `height` | Filters by video height (in pixels). | Number or object with `gte` and `lte`. | `{"height": 1080}` or `{"height": { "gte": 720, "lte": 1080 }}`. |
-| `size` | Filters by video size (in bytes) | Number or object with `gte` and `lte`. | `{"size": 1048576}` or `{"size": { "gte": 1048576, "lte": 5242880}}` | 
-| `filename` | Filters by the exact file name. | String | `{"filename": "Animal Encounters part 1"}` | 
+| `size` | Filters by video size (in bytes) | Number or object with `gte` and `lte`. | `{"size": 1048576}` or `{"size": { "gte": 1048576, "lte": 5242880}}` |
+| `filename` | Filters by the exact file name. | String | `{"filename": "Animal Encounters part 1"}` |
 
 <br/>
 **User-defined metadata**
@@ -2337,7 +2240,7 @@ Specify at least one option. If both are provided, `video_url` takes precedence.
 </Accordion>
 
 <Note title="Notes">
-- The "Marengo-retrieval-2.7" video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
+- The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
 - Video embeddings are stored for seven days.
 - The platform supports uploading video files that can play without additional user interaction or custom video players. Ensure your URL points to the raw video file, not a web page containing the video. Links to third-party hosting sites, cloud storage services, or videos requiring extra steps to play are not supported.
 </Note>
@@ -2950,7 +2853,7 @@ To retrieve embeddings for a video, it must be indexed using the Marengo video u
 
 The platform does not return embeddings if you don't provide this parameter.
 
-The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual,` you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
     
 </dd>
 </dl>
@@ -2959,99 +2862,6 @@ The values you specify in `embedding_option` must be included in the `model_opti
 <dd>
 
 **transcription:** `typing.Optional[bool]` — The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.indexes.videos.<a href="src/twelvelabs/indexes/videos/client.py">update</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Use this method to update the metadata of a video.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from twelvelabs import TwelveLabs
-
-client = TwelveLabs(
-    api_key="YOUR_API_KEY",
-)
-client.indexes.videos.update(
-    index_id="6298d673f1090f1100476d4c",
-    video_id="6298d673f1090f1100476d4c",
-    user_metadata={
-        "category": "recentlyAdded",
-        "batchNumber": 5,
-        "rating": 9.3,
-        "needsReview": True,
-    },
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**index_id:** `str` — The unique identifier of the index to which the video has been uploaded.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**video_id:** `str` — The unique identifier of the video to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_metadata:** `typing.Optional[UserMetadata]` 
     
 </dd>
 </dl>
@@ -3131,6 +2941,99 @@ client.indexes.videos.delete(
 <dd>
 
 **video_id:** `str` — The unique identifier of the video to delete.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.indexes.videos.<a href="src/twelvelabs/indexes/videos/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.indexes.videos.update(
+    index_id="6298d673f1090f1100476d4c",
+    video_id="6298d673f1090f1100476d4c",
+    user_metadata={
+        "category": "recentlyAdded",
+        "batchNumber": 5,
+        "rating": 9.3,
+        "needsReview": True,
+    },
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**index_id:** `str` — The unique identifier of the index to which the video has been uploaded.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**video_id:** `str` — The unique identifier of the video to update.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_metadata:** `typing.Optional[UserMetadata]` 
     
 </dd>
 </dl>

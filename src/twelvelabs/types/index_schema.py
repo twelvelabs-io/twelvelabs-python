@@ -16,7 +16,7 @@ class IndexSchema(UniversalBaseModel):
 
     id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="_id")] = pydantic.Field(default=None)
     """
-    A string representing the unique identifier of the index. It is assigned by the API when an index is created.
+    A string representing the unique identifier of the index. It is assigned by the platform when an index is created.
     """
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
