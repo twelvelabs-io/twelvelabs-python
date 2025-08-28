@@ -28,7 +28,7 @@ class SummarizeHighlightResultHighlightsItem(UniversalBaseModel):
 
     end_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The ending time of the chapter, measured in seconds from the beginning of the video.
+    The ending time of the highlight, measured in seconds from the beginning of the video.
     """
 
     highlight: typing.Optional[str] = pydantic.Field(default=None)

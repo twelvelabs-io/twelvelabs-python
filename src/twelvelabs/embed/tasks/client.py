@@ -142,7 +142,7 @@ class TasksClient:
         </Accordion>
         
         <Note title="Notes">
-        - The "Marengo-retrieval-2.7" video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
+        - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - Video embeddings are stored for seven days.
         - The platform supports uploading video files that can play without additional user interaction or custom video players. Ensure your URL points to the raw video file, not a web page containing the video. Links to third-party hosting sites, cloud storage services, or videos requiring extra steps to play are not supported.
         </Note>
@@ -449,7 +449,7 @@ class AsyncTasksClient:
         </Accordion>
         
         <Note title="Notes">
-        - The "Marengo-retrieval-2.7" video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
+        - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - Video embeddings are stored for seven days.
         - The platform supports uploading video files that can play without additional user interaction or custom video players. Ensure your URL points to the raw video file, not a web page containing the video. Links to third-party hosting sites, cloud storage services, or videos requiring extra steps to play are not supported.
         </Note>

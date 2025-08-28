@@ -73,7 +73,7 @@ from .types import (
     VideoVectorSystemMetadata,
 )
 from .errors import BadRequestError, NotFoundError, TooManyRequestsError
-from . import embed, indexes, manage_videos, search, tasks
+from . import embed, indexes, search, tasks
 from .client import AsyncTwelveLabs, TwelveLabs
 from .environment import TwelveLabsEnvironment
 from .indexes import IndexesCreateRequestModelsItem, IndexesCreateResponse, IndexesListResponse
@@ -186,7 +186,6 @@ __all__ = [
     "__version__",
     "embed",
     "indexes",
-    "manage_videos",
     "search",
     "tasks",
 ]

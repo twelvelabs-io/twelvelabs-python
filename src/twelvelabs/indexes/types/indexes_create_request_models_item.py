@@ -28,7 +28,7 @@ class IndexesCreateRequestModelsItem(UniversalBaseModel):
 
     model_options: typing.List[str] = pydantic.Field()
     """
-    An array that specifies how the platform will process the videos uploaded to this index. For the Marengo and Pegasus models, you can specify one or both of the following model options: `visual` and `audio`. For more details, see the [model options](/v1.3/docs/concepts/model-options) page.
+    An array that specifies how the platform will process the videos uploaded to this index. For the Marengo and Pegasus models, you can specify one or both of the following model options: `visual` and `audio`. For more details, see the [model options](/v1.3/docs/concepts/modalities#model-options) section.
     """
 
     if IS_PYDANTIC_V2:

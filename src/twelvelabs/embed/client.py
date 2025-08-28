@@ -64,7 +64,7 @@ class EmbedClient:
           - `audio_file`: Local audio file.
 
         <Note title="Notes">
-        - The "Marengo-retrieval-2.7" video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
+        - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - You can create multiple types of embeddings in a single API call.
         - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
         </Note>
@@ -100,7 +100,7 @@ class EmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to create an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -193,7 +193,7 @@ class AsyncEmbedClient:
           - `audio_file`: Local audio file.
 
         <Note title="Notes">
-        - The "Marengo-retrieval-2.7" video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
+        - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - You can create multiple types of embeddings in a single API call.
         - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
         </Note>
@@ -229,7 +229,7 @@ class AsyncEmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to create an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation

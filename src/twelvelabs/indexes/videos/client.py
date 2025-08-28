@@ -198,7 +198,7 @@ class VideosClient:
 
             The platform does not return embeddings if you don't provide this parameter.
 
-            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual,` you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
 
         transcription : typing.Optional[bool]
             The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
@@ -232,6 +232,40 @@ class VideosClient:
         )
         return _response.data
 
+    def delete(self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+        """
+        This method deletes all the information about the specified video. This action cannot be undone.
+
+        Parameters
+        ----------
+        index_id : str
+            The unique identifier of the index to which the video has been uploaded.
+
+        video_id : str
+            The unique identifier of the video to delete.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.indexes.videos.delete(
+            index_id="6298d673f1090f1100476d4c",
+            video_id="6298d673f1090f1100476d4c",
+        )
+        """
+        _response = self._raw_client.delete(index_id, video_id, request_options=request_options)
+        return _response.data
+
     def update(
         self,
         index_id: str,
@@ -241,7 +275,7 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update the metadata of a video.
+        Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
 
         Parameters
         ----------
@@ -281,40 +315,6 @@ class VideosClient:
         _response = self._raw_client.update(
             index_id, video_id, user_metadata=user_metadata, request_options=request_options
         )
-        return _response.data
-
-    def delete(self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
-        """
-        This method deletes all the information about the specified video. This action cannot be undone.
-
-        Parameters
-        ----------
-        index_id : str
-            The unique identifier of the index to which the video has been uploaded.
-
-        video_id : str
-            The unique identifier of the video to delete.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        from twelvelabs import TwelveLabs
-
-        client = TwelveLabs(
-            api_key="YOUR_API_KEY",
-        )
-        client.indexes.videos.delete(
-            index_id="6298d673f1090f1100476d4c",
-            video_id="6298d673f1090f1100476d4c",
-        )
-        """
-        _response = self._raw_client.delete(index_id, video_id, request_options=request_options)
         return _response.data
 
 
@@ -509,7 +509,7 @@ class AsyncVideosClient:
 
             The platform does not return embeddings if you don't provide this parameter.
 
-            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual,` you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
 
         transcription : typing.Optional[bool]
             The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
@@ -551,6 +551,50 @@ class AsyncVideosClient:
         )
         return _response.data
 
+    async def delete(
+        self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        This method deletes all the information about the specified video. This action cannot be undone.
+
+        Parameters
+        ----------
+        index_id : str
+            The unique identifier of the index to which the video has been uploaded.
+
+        video_id : str
+            The unique identifier of the video to delete.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.indexes.videos.delete(
+                index_id="6298d673f1090f1100476d4c",
+                video_id="6298d673f1090f1100476d4c",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete(index_id, video_id, request_options=request_options)
+        return _response.data
+
     async def update(
         self,
         index_id: str,
@@ -560,7 +604,7 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update the metadata of a video.
+        Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
 
         Parameters
         ----------
@@ -608,48 +652,4 @@ class AsyncVideosClient:
         _response = await self._raw_client.update(
             index_id, video_id, user_metadata=user_metadata, request_options=request_options
         )
-        return _response.data
-
-    async def delete(
-        self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
-        """
-        This method deletes all the information about the specified video. This action cannot be undone.
-
-        Parameters
-        ----------
-        index_id : str
-            The unique identifier of the index to which the video has been uploaded.
-
-        video_id : str
-            The unique identifier of the video to delete.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        import asyncio
-
-        from twelvelabs import AsyncTwelveLabs
-
-        client = AsyncTwelveLabs(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.indexes.videos.delete(
-                index_id="6298d673f1090f1100476d4c",
-                video_id="6298d673f1090f1100476d4c",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.delete(index_id, video_id, request_options=request_options)
         return _response.data
