@@ -10,7 +10,6 @@ from .core.request_options import RequestOptions
 from .embed.client import AsyncEmbedClient, EmbedClient
 from .environment import TwelveLabsEnvironment
 from .indexes.client import AsyncIndexesClient, IndexesClient
-from .manage_videos.client import AsyncManageVideosClient, ManageVideosClient
 from .raw_base_client import AsyncRawBaseClient, RawBaseClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
@@ -97,7 +96,6 @@ class BaseClient:
         self._raw_client = RawBaseClient(client_wrapper=self._client_wrapper)
         self.tasks = TasksClient(client_wrapper=self._client_wrapper)
         self.indexes = IndexesClient(client_wrapper=self._client_wrapper)
-        self.manage_videos = ManageVideosClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
 
@@ -247,7 +245,7 @@ class BaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
         </Note>
 
         Parameters
@@ -321,7 +319,7 @@ class BaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
         </Note>
 
         Parameters
@@ -391,7 +389,7 @@ class BaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
         </Note>
 
         Parameters
@@ -519,7 +517,6 @@ class AsyncBaseClient:
         self._raw_client = AsyncRawBaseClient(client_wrapper=self._client_wrapper)
         self.tasks = AsyncTasksClient(client_wrapper=self._client_wrapper)
         self.indexes = AsyncIndexesClient(client_wrapper=self._client_wrapper)
-        self.manage_videos = AsyncManageVideosClient(client_wrapper=self._client_wrapper)
         self.embed = AsyncEmbedClient(client_wrapper=self._client_wrapper)
         self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
 
@@ -685,7 +682,7 @@ class AsyncBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
         </Note>
 
         Parameters
@@ -767,7 +764,7 @@ class AsyncBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
         </Note>
 
         Parameters
@@ -846,7 +843,7 @@ class AsyncBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Streaming response](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
         </Note>
 
         Parameters

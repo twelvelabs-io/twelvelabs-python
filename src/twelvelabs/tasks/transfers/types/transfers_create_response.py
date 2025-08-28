@@ -11,7 +11,7 @@ from .transfers_create_response_videos_item import TransfersCreateResponseVideos
 class TransfersCreateResponse(UniversalBaseModel):
     failed_files: typing.Optional[typing.List[TransfersCreateResponseFailedFilesItem]] = pydantic.Field(default=None)
     """
-    A list of the video files that failed to import. Typically, these files did not meet the upload requirements. To resolve this, review the requirements listed in the [Prerequisites](/v1.3/docs/guides/search#prerequisites) section of the **Search** page.
+    A list of the video files that failed to import. Typically, these files did not meet the upload requirements. To resolve this, review the [video requirements](/v1.3/api-reference/tasks/cloud-to-cloud-integrations/create#video-requirements) listed above.
     """
 
     videos: typing.Optional[typing.List[TransfersCreateResponseVideosItem]] = pydantic.Field(default=None)
