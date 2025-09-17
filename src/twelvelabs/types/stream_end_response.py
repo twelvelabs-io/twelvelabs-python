@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .finish_reason import FinishReason
 from .stream_end_response_metadata import StreamEndResponseMetadata
 
 
@@ -12,11 +13,7 @@ class StreamEndResponse(UniversalBaseModel):
     Indicates the end of the stream.
     """
 
-    event_type: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    This field is always set to `stream_end` for this event.
-    """
-
+    finish_reason: typing.Optional[FinishReason] = None
     metadata: typing.Optional[StreamEndResponseMetadata] = pydantic.Field(default=None)
     """
     An object containing metadata about the stream.

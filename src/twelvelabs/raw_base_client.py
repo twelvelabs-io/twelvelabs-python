@@ -10,12 +10,14 @@ from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .core.http_response import AsyncHttpResponse, HttpResponse
 from .core.pydantic_utilities import parse_obj_as
 from .core.request_options import RequestOptions
+from .core.serialization import convert_and_respect_annotation_metadata
 from .errors.bad_request_error import BadRequestError
 from .errors.too_many_requests_error import TooManyRequestsError
 from .types.generate_response import GenerateResponse
 from .types.gist import Gist
 from .types.gist_request_types_item import GistRequestTypesItem
 from .types.non_stream_analyze_response import NonStreamAnalyzeResponse
+from .types.response_format import ResponseFormat
 from .types.stream_analyze_response import StreamAnalyzeResponse
 from .types.summarize_response import SummarizeResponse
 
@@ -34,6 +36,8 @@ class RawBaseClient:
         type: str,
         prompt: typing.Optional[str] = OMIT,
         temperature: typing.Optional[float] = OMIT,
+        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SummarizeResponse]:
         """
@@ -71,6 +75,14 @@ class RawBaseClient:
             **Min:** 0
             **Max:** 1
 
+        response_format : typing.Optional[ResponseFormat]
+            Use this parameter to specify the format of the response.
+            This parameter is only valid when the `type` parameter is set to `summary`.
+            If you omit this parameter, the platform returns unstructured text.
+
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -87,6 +99,10 @@ class RawBaseClient:
                 "type": type,
                 "prompt": prompt,
                 "temperature": temperature,
+                "response_format": convert_and_respect_annotation_metadata(
+                    object_=response_format, annotation=ResponseFormat, direction="write"
+                ),
+                "max_tokens": max_tokens,
             },
             headers={
                 "content-type": "application/json",
@@ -224,7 +240,7 @@ class RawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GenerateResponse]:
         """
-        <Warning>This endpoint will be deprecated on **July 30, 2025**. Transition to the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint, which provides identical functionality. Ensure you've updated your API calls before the deprecation date to ensure uninterrupted service.</Warning>
+        <Warning>This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.</Warning>
 
         This endpoint generates open-ended texts based on your videos, including but not limited to tables of content, action items, memos, and detailed analyses.
 
@@ -331,6 +347,8 @@ class RawBaseClient:
         video_id: str,
         prompt: str,
         temperature: typing.Optional[float] = OMIT,
+        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[HttpResponse[typing.Iterator[StreamAnalyzeResponse]]]:
         """
@@ -367,6 +385,11 @@ class RawBaseClient:
             **Min:** 0
             **Max:** 1
 
+        response_format : typing.Optional[ResponseFormat]
+
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -382,6 +405,10 @@ class RawBaseClient:
                 "video_id": video_id,
                 "prompt": prompt,
                 "temperature": temperature,
+                "response_format": convert_and_respect_annotation_metadata(
+                    object_=response_format, annotation=ResponseFormat, direction="write"
+                ),
+                "max_tokens": max_tokens,
                 "stream": True,
             },
             headers={
@@ -450,6 +477,8 @@ class RawBaseClient:
         video_id: str,
         prompt: str,
         temperature: typing.Optional[float] = OMIT,
+        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[NonStreamAnalyzeResponse]:
         """
@@ -486,6 +515,11 @@ class RawBaseClient:
             **Min:** 0
             **Max:** 1
 
+        response_format : typing.Optional[ResponseFormat]
+
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -501,6 +535,10 @@ class RawBaseClient:
                 "video_id": video_id,
                 "prompt": prompt,
                 "temperature": temperature,
+                "response_format": convert_and_respect_annotation_metadata(
+                    object_=response_format, annotation=ResponseFormat, direction="write"
+                ),
+                "max_tokens": max_tokens,
                 "stream": False,
             },
             headers={
@@ -558,6 +596,8 @@ class AsyncRawBaseClient:
         type: str,
         prompt: typing.Optional[str] = OMIT,
         temperature: typing.Optional[float] = OMIT,
+        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SummarizeResponse]:
         """
@@ -595,6 +635,14 @@ class AsyncRawBaseClient:
             **Min:** 0
             **Max:** 1
 
+        response_format : typing.Optional[ResponseFormat]
+            Use this parameter to specify the format of the response.
+            This parameter is only valid when the `type` parameter is set to `summary`.
+            If you omit this parameter, the platform returns unstructured text.
+
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -611,6 +659,10 @@ class AsyncRawBaseClient:
                 "type": type,
                 "prompt": prompt,
                 "temperature": temperature,
+                "response_format": convert_and_respect_annotation_metadata(
+                    object_=response_format, annotation=ResponseFormat, direction="write"
+                ),
+                "max_tokens": max_tokens,
             },
             headers={
                 "content-type": "application/json",
@@ -748,7 +800,7 @@ class AsyncRawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GenerateResponse]:
         """
-        <Warning>This endpoint will be deprecated on **July 30, 2025**. Transition to the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint, which provides identical functionality. Ensure you've updated your API calls before the deprecation date to ensure uninterrupted service.</Warning>
+        <Warning>This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.</Warning>
 
         This endpoint generates open-ended texts based on your videos, including but not limited to tables of content, action items, memos, and detailed analyses.
 
@@ -855,6 +907,8 @@ class AsyncRawBaseClient:
         video_id: str,
         prompt: str,
         temperature: typing.Optional[float] = OMIT,
+        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[StreamAnalyzeResponse]]]:
         """
@@ -891,6 +945,11 @@ class AsyncRawBaseClient:
             **Min:** 0
             **Max:** 1
 
+        response_format : typing.Optional[ResponseFormat]
+
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -906,6 +965,10 @@ class AsyncRawBaseClient:
                 "video_id": video_id,
                 "prompt": prompt,
                 "temperature": temperature,
+                "response_format": convert_and_respect_annotation_metadata(
+                    object_=response_format, annotation=ResponseFormat, direction="write"
+                ),
+                "max_tokens": max_tokens,
                 "stream": True,
             },
             headers={
@@ -974,6 +1037,8 @@ class AsyncRawBaseClient:
         video_id: str,
         prompt: str,
         temperature: typing.Optional[float] = OMIT,
+        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[NonStreamAnalyzeResponse]:
         """
@@ -1010,6 +1075,11 @@ class AsyncRawBaseClient:
             **Min:** 0
             **Max:** 1
 
+        response_format : typing.Optional[ResponseFormat]
+
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1025,6 +1095,10 @@ class AsyncRawBaseClient:
                 "video_id": video_id,
                 "prompt": prompt,
                 "temperature": temperature,
+                "response_format": convert_and_respect_annotation_metadata(
+                    object_=response_format, annotation=ResponseFormat, direction="write"
+                ),
+                "max_tokens": max_tokens,
                 "stream": False,
             },
             headers={
