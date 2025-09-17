@@ -1,6 +1,8 @@
+import json
 import os
 
 from twelvelabs import TwelveLabs
+from twelvelabs.types import ResponseFormat, StreamAnalyzeResponse_StreamEnd
 
 
 API_KEY = os.getenv("API_KEY")
@@ -45,16 +47,72 @@ with TwelveLabs(api_key=API_KEY) as client:
     )
     print(f"Gist: title={gist.title} topics={gist.topics} hashtags={gist.hashtags}")
 
+    # Basic analyze example
     res = client.analyze(
         video_id=video_id,
         prompt="What happened?",
     )
-    print(res.data)
+    print("Basic analyze result:")
+    print(json.dumps(res.model_dump(), indent=2))
 
+    # Advanced analyze with structured output and max_tokens
+    res_structured = client.analyze(
+        video_id=video_id,
+        prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
+        temperature=0.2,
+        response_format=ResponseFormat(
+            json_schema={
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "summary": {"type": "string"},
+                    "keywords": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        ),
+        max_tokens=2000,
+    )
+    print("\nStructured analyze result:")
+    print(json.dumps(res_structured.model_dump(), indent=2))
+
+    # Streaming analyze example
     res_stream = client.analyze_stream(
         video_id=video_id,
         prompt="What happened?",
     )
+    print("\nStreaming analyze result:")
     for chunk in res_stream:
         if chunk.event_type == "text_generation":
-            print(chunk.text)
+            print(chunk.text, end="", flush=True)
+        elif isinstance(chunk, StreamAnalyzeResponse_StreamEnd):
+            print(f"\nFinish reason: {chunk.finish_reason}")
+            if chunk.metadata and chunk.metadata.usage:
+                print(f"Usage: {chunk.metadata.usage}")
+    print()  # Add newline after streaming
+
+    # Streaming with structured output
+    res_stream_structured = client.analyze_stream(
+        video_id=video_id,
+        prompt="Analyze this video and provide a structured breakdown of the main topics, key insights, and action items.",
+        temperature=0.3,
+        response_format=ResponseFormat(
+            json_schema={
+                "type": "object",
+                "properties": {
+                    "main_topics": {"type": "array", "items": {"type": "string"}},
+                    "key_insights": {"type": "array", "items": {"type": "string"}},
+                    "action_items": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        ),
+        max_tokens=1500,
+    )
+    print("\nStreaming structured analyze result:")
+    for chunk in res_stream_structured:
+        if chunk.event_type == "text_generation":
+            print(chunk.text, end="", flush=True)
+        elif isinstance(chunk, StreamAnalyzeResponse_StreamEnd):
+            print(f"\nFinish reason: {chunk.finish_reason}")
+            if chunk.metadata and chunk.metadata.usage:
+                print(f"Usage: {chunk.metadata.usage}")
+    print()  # Add newline after streaming
