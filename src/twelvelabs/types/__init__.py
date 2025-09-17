@@ -10,6 +10,7 @@ from .base_segment import BaseSegment
 from .confidence import Confidence
 from .embedding_response import EmbeddingResponse
 from .end_time import EndTime
+from .finish_reason import FinishReason
 from .generate_response import GenerateResponse
 from .gist import Gist
 from .gist_request_types_item import GistRequestTypesItem
@@ -28,6 +29,7 @@ from .not_found_error_body import NotFoundErrorBody
 from .page import Page
 from .page_info import PageInfo
 from .prev_page_token import PrevPageToken
+from .response_format import ResponseFormat
 from .score_search_terms import ScoreSearchTerms
 from .search_item import SearchItem
 from .search_item_clips_item import SearchItemClipsItem
@@ -35,7 +37,12 @@ from .search_pool import SearchPool
 from .search_results import SearchResults
 from .search_results_page_info import SearchResultsPageInfo
 from .start_time import StartTime
-from .stream_analyze_response import StreamAnalyzeResponse
+from .stream_analyze_response import (
+    StreamAnalyzeResponse,
+    StreamAnalyzeResponse_StreamEnd,
+    StreamAnalyzeResponse_StreamStart,
+    StreamAnalyzeResponse_TextGeneration,
+)
 from .stream_end_response import StreamEndResponse
 from .stream_end_response_metadata import StreamEndResponseMetadata
 from .stream_start_response import StreamStartResponse
@@ -82,6 +89,7 @@ __all__ = [
     "Confidence",
     "EmbeddingResponse",
     "EndTime",
+    "FinishReason",
     "GenerateResponse",
     "Gist",
     "GistRequestTypesItem",
@@ -100,6 +108,7 @@ __all__ = [
     "Page",
     "PageInfo",
     "PrevPageToken",
+    "ResponseFormat",
     "ScoreSearchTerms",
     "SearchItem",
     "SearchItemClipsItem",
@@ -108,6 +117,9 @@ __all__ = [
     "SearchResultsPageInfo",
     "StartTime",
     "StreamAnalyzeResponse",
+    "StreamAnalyzeResponse_StreamEnd",
+    "StreamAnalyzeResponse_StreamStart",
+    "StreamAnalyzeResponse_TextGeneration",
     "StreamEndResponse",
     "StreamEndResponseMetadata",
     "StreamStartResponse",

@@ -131,13 +131,7 @@ class RawSearchClient:
             **Default:** `score`
         
         operator : typing.Optional[SearchCreateRequestOperator]
-            When you perform a search specifying multiple [sources of information](/v1.3/docs/concepts/modalities#search-options), you can use the this parameter to broaden or narrow your search.
-            
-              The following logical operators are supported:
-            
-              - `or`
-            
-              - `and`
+            Combines multiple search options using `or` or `and`. Use `and` to find segments matching all search options. Use `or` to find segments matching any search option.
             
               **Default**: `or`.
         
@@ -428,13 +422,7 @@ class AsyncRawSearchClient:
             **Default:** `score`
         
         operator : typing.Optional[SearchCreateRequestOperator]
-            When you perform a search specifying multiple [sources of information](/v1.3/docs/concepts/modalities#search-options), you can use the this parameter to broaden or narrow your search.
-            
-              The following logical operators are supported:
-            
-              - `or`
-            
-              - `and`
+            Combines multiple search options using `or` or `and`. Use `and` to find segments matching all search options. Use `or` to find segments matching any search option.
             
               **Default**: `or`.
         

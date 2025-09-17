@@ -12,11 +12,6 @@ class StreamStartResponse(UniversalBaseModel):
     Indicates the beginning of the stream.
     """
 
-    event_type: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    This field is always set to `stream_start` for this event.
-    """
-
     metadata: typing.Optional[StreamStartResponseMetadata] = pydantic.Field(default=None)
     """
     An object containing metadata about the stream.

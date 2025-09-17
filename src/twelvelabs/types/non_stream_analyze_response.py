@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .finish_reason import FinishReason
 from .token_usage import TokenUsage
 
 
@@ -22,6 +23,7 @@ class NonStreamAnalyzeResponse(UniversalBaseModel):
     The generated text based on the prompt you provided.
     """
 
+    finish_reason: typing.Optional[FinishReason] = None
     usage: typing.Optional[TokenUsage] = None
 
     if IS_PYDANTIC_V2:

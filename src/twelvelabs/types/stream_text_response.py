@@ -11,11 +11,6 @@ class StreamTextResponse(UniversalBaseModel):
     Contains a fragment of generated text. Note that text fragments may be split at arbitrary points, not necessarily at word or sentence boundaries.
     """
 
-    event_type: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    This field is always set to `text_generation` for this event.
-    """
-
     text: typing.Optional[str] = pydantic.Field(default=None)
     """
     A fragment of the generated text.
