@@ -2,7 +2,7 @@ import json
 import os
 
 from twelvelabs import TwelveLabs
-from twelvelabs.types import ResponseFormat, StreamEndResponse
+from twelvelabs.types import ResponseFormat, StreamAnalyzeResponse_StreamEnd
 
 
 API_KEY = os.getenv("API_KEY")
@@ -84,7 +84,7 @@ with TwelveLabs(api_key=API_KEY) as client:
     for chunk in res_stream:
         if chunk.event_type == "text_generation":
             print(chunk.text, end="", flush=True)
-        elif isinstance(chunk, StreamEndResponse):
+        elif isinstance(chunk, StreamAnalyzeResponse_StreamEnd):
             print(f"\nFinish reason: {chunk.finish_reason}")
             if chunk.metadata and chunk.metadata.usage:
                 print(f"Usage: {chunk.metadata.usage}")
@@ -111,7 +111,7 @@ with TwelveLabs(api_key=API_KEY) as client:
     for chunk in res_stream_structured:
         if chunk.event_type == "text_generation":
             print(chunk.text, end="", flush=True)
-        elif isinstance(chunk, StreamEndResponse):
+        elif isinstance(chunk, StreamAnalyzeResponse_StreamEnd):
             print(f"\nFinish reason: {chunk.finish_reason}")
             if chunk.metadata and chunk.metadata.usage:
                 print(f"Usage: {chunk.metadata.usage}")
