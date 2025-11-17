@@ -8,6 +8,7 @@ from ..core.request_options import RequestOptions
 from ..types.embedding_response import EmbeddingResponse
 from .raw_client import AsyncRawEmbedClient, RawEmbedClient
 from .tasks.client import AsyncTasksClient, TasksClient
+from .v_2.client import AsyncV2Client, V2Client
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -17,6 +18,8 @@ class EmbedClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawEmbedClient(client_wrapper=client_wrapper)
         self.tasks = TasksClient(client_wrapper=client_wrapper)
+
+        self.v_2 = V2Client(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawEmbedClient:
@@ -43,15 +46,19 @@ class EmbedClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EmbeddingResponse:
         """
+        <Note title="Note">
+          This endpoint will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
+
         This method creates embeddings for text, image, and audio content.
 
-        Before you create an embedding, ensure that your image or audio files meet the following prerequisites:
-        - [Image embeddings](/v1.3/docs/guides/create-embeddings/image#prerequisites)
-        - [Audio embeddings](/v1.3/docs/guides/create-embeddings/audio#prerequisites)
+        Ensure your media files meet the following requirements:
+        - [Audio files](/v1.3/docs/concepts/models/marengo#audio-requirements).
+        - [Image files](/v1.3/docs/concepts/models/marengo#image-requirements).
 
         Parameters for embeddings:
         - **Common parameters**:
-          - `model_name`: The video understanding model you want to use. Example: "Marengo-retrieval-2.7".
+          - `model_name`: The video understanding model you want to use. Example: "marengo3.0".
         - **Text embeddings**:
           - `text`: Text for which to create an embedding.
         - **Image embeddings**:
@@ -66,30 +73,32 @@ class EmbedClient:
         <Note title="Notes">
         - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - You can create multiple types of embeddings in a single API call.
-        - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
+        - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/create-embeddings-v1/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
         </Note>
 
         Parameters
         ----------
         model_name : str
             The name of the model you want to use. The following models are available:
-              - `Marengo-retrieval-2.7`
+              - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
+              - `Marengo-retrieval-2.7`: Video embedding model for multimodal search.
 
         text : typing.Optional[str]
             The text for which you wish to create an embedding.
 
-            <Note title="Note">
-            Text embeddings are limited to 77 tokens. If the text exceeds this limit, the platform truncates it according to the value of the `text_truncate` parameter described below.
-            </Note>
-
             **Example**: "Man with a dog crossing the street"
 
         text_truncate : typing.Optional[str]
-            Specifies how the platform truncates text that exceeds 77 tokens to fit the maximum length allowed for an embedding.
-            This parameter can take one of the following values:
-            - `start`: The platform will truncate the start of the provided text.
-            - `end`: The platform will truncate the end of the provided text.
-            - `none`: The platform will return an error if the text is longer than the maximum token limit.
+            Specifies how the platform handles text that exceeds token limits.
+
+            **Available options by model version**:
+
+            **Marengo 3.0**: This parameter is deprecated. The platform automatically truncates text exceeding 500 tokens from the end.
+
+            **Marengo 2.7**: Specifies truncation method for text exceeding 77 tokens:
+            - `start`: Removes tokens from the beginning
+            - `end`: Removes tokens from the end (default)
+            - `none`: Returns an error if the text is longer than the maximum token limit.
 
             **Default**: `end`
 
@@ -100,7 +109,7 @@ class EmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to create an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -147,6 +156,8 @@ class AsyncEmbedClient:
         self._raw_client = AsyncRawEmbedClient(client_wrapper=client_wrapper)
         self.tasks = AsyncTasksClient(client_wrapper=client_wrapper)
 
+        self.v_2 = AsyncV2Client(client_wrapper=client_wrapper)
+
     @property
     def with_raw_response(self) -> AsyncRawEmbedClient:
         """
@@ -172,15 +183,19 @@ class AsyncEmbedClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EmbeddingResponse:
         """
+        <Note title="Note">
+          This endpoint will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
+
         This method creates embeddings for text, image, and audio content.
 
-        Before you create an embedding, ensure that your image or audio files meet the following prerequisites:
-        - [Image embeddings](/v1.3/docs/guides/create-embeddings/image#prerequisites)
-        - [Audio embeddings](/v1.3/docs/guides/create-embeddings/audio#prerequisites)
+        Ensure your media files meet the following requirements:
+        - [Audio files](/v1.3/docs/concepts/models/marengo#audio-requirements).
+        - [Image files](/v1.3/docs/concepts/models/marengo#image-requirements).
 
         Parameters for embeddings:
         - **Common parameters**:
-          - `model_name`: The video understanding model you want to use. Example: "Marengo-retrieval-2.7".
+          - `model_name`: The video understanding model you want to use. Example: "marengo3.0".
         - **Text embeddings**:
           - `text`: Text for which to create an embedding.
         - **Image embeddings**:
@@ -195,30 +210,32 @@ class AsyncEmbedClient:
         <Note title="Notes">
         - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - You can create multiple types of embeddings in a single API call.
-        - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
+        - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/create-embeddings-v1/text-image-audio-embeddings/create-text-image-audio-embeddings) from these transcriptions.
         </Note>
 
         Parameters
         ----------
         model_name : str
             The name of the model you want to use. The following models are available:
-              - `Marengo-retrieval-2.7`
+              - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
+              - `Marengo-retrieval-2.7`: Video embedding model for multimodal search.
 
         text : typing.Optional[str]
             The text for which you wish to create an embedding.
 
-            <Note title="Note">
-            Text embeddings are limited to 77 tokens. If the text exceeds this limit, the platform truncates it according to the value of the `text_truncate` parameter described below.
-            </Note>
-
             **Example**: "Man with a dog crossing the street"
 
         text_truncate : typing.Optional[str]
-            Specifies how the platform truncates text that exceeds 77 tokens to fit the maximum length allowed for an embedding.
-            This parameter can take one of the following values:
-            - `start`: The platform will truncate the start of the provided text.
-            - `end`: The platform will truncate the end of the provided text.
-            - `none`: The platform will return an error if the text is longer than the maximum token limit.
+            Specifies how the platform handles text that exceeds token limits.
+
+            **Available options by model version**:
+
+            **Marengo 3.0**: This parameter is deprecated. The platform automatically truncates text exceeding 500 tokens from the end.
+
+            **Marengo 2.7**: Specifies truncation method for text exceeding 77 tokens:
+            - `start`: Removes tokens from the beginning
+            - `end`: Removes tokens from the end (default)
+            - `none`: Returns an error if the text is longer than the maximum token limit.
 
             **Default**: `end`
 
@@ -229,7 +246,7 @@ class AsyncEmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to create an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation

@@ -36,7 +36,7 @@ class ImportLog(UniversalBaseModel):
 
     video_status: typing.Optional[ImportLogVideoStatus] = pydantic.Field(default=None)
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/tasks/the-task-object) page for details on each status.
+    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page for details on each status.
     """
 
     failed_files: typing.Optional[typing.List[ImportLogFailedFilesItem]] = pydantic.Field(default=None)

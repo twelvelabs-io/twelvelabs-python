@@ -4,19 +4,18 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
-from .audio_segment import AudioSegment
+from .base_segment import BaseSegment
+from .end_offset_sec import EndOffsetSec
+from .start_offset_sec import StartOffsetSec
 
 
-class VideoSegment(AudioSegment):
+class VideoSegment(BaseSegment):
     """
     An object that contains the video embedding and its start time. Each segment is between 2 and 10 seconds.
     """
 
-    end_offset_sec: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    The end time, in seconds, of the video segment for this embedding.
-    """
-
+    start_offset_sec: typing.Optional[StartOffsetSec] = None
+    end_offset_sec: typing.Optional[EndOffsetSec] = None
     embedding_option: typing.Optional[str] = pydantic.Field(default=None)
     """
     The type of the embedding.

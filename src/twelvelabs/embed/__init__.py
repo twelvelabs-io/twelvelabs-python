@@ -2,7 +2,7 @@
 
 # isort: skip_file
 
-from . import tasks
+from . import tasks, v_2
 from .tasks import (
     TasksCreateRequestVideoEmbeddingScopeItem,
     TasksCreateResponse,
@@ -14,8 +14,10 @@ from .tasks import (
     TasksStatusResponse,
     TasksStatusResponseVideoEmbedding,
 )
+from .v_2 import CreateEmbeddingsRequestInputType
 
 __all__ = [
+    "CreateEmbeddingsRequestInputType",
     "TasksCreateRequestVideoEmbeddingScopeItem",
     "TasksCreateResponse",
     "TasksListResponse",
@@ -26,4 +28,5 @@ __all__ = [
     "TasksStatusResponse",
     "TasksStatusResponseVideoEmbedding",
     "tasks",
+    "v_2",
 ]

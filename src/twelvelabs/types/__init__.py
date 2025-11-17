@@ -2,33 +2,103 @@
 
 # isort: skip_file
 
+from .asset import Asset
+from .asset_method import AssetMethod
+from .asset_status import AssetStatus
+from .audio_embedding_metadata import AudioEmbeddingMetadata
 from .audio_embedding_result import AudioEmbeddingResult
+from .audio_input_request import AudioInputRequest
+from .audio_input_request_embedding_option_item import AudioInputRequestEmbeddingOptionItem
+from .audio_input_request_embedding_scope_item import AudioInputRequestEmbeddingScopeItem
 from .audio_segment import AudioSegment
+from .audio_segmentation import AudioSegmentation
+from .audio_segmentation_fixed import AudioSegmentationFixed
 from .bad_request_error_body import BadRequestErrorBody
 from .base_embedding_metadata import BaseEmbeddingMetadata
 from .base_segment import BaseSegment
+from .bulk_create_entity_response import BulkCreateEntityResponse
+from .bulk_create_entity_response_entities_item import BulkCreateEntityResponseEntitiesItem
+from .bulk_create_entity_response_errors_item import BulkCreateEntityResponseErrorsItem
+from .chunk_info import ChunkInfo
+from .chunk_info_status import ChunkInfoStatus
+from .completed_chunk import CompletedChunk
 from .confidence import Confidence
+from .create_asset_upload_response import CreateAssetUploadResponse
+from .created_at import CreatedAt
+from .embedding_audio_metadata import EmbeddingAudioMetadata
+from .embedding_audio_metadata_embedding_scopes_item import EmbeddingAudioMetadataEmbeddingScopesItem
+from .embedding_data import EmbeddingData
+from .embedding_data_embedding_option import EmbeddingDataEmbeddingOption
+from .embedding_data_embedding_scope import EmbeddingDataEmbeddingScope
+from .embedding_image_metadata import EmbeddingImageMetadata
+from .embedding_media_metadata import (
+    EmbeddingMediaMetadata,
+    EmbeddingMediaMetadata_Audio,
+    EmbeddingMediaMetadata_Image,
+    EmbeddingMediaMetadata_TextImage,
+    EmbeddingMediaMetadata_Video,
+)
 from .embedding_response import EmbeddingResponse
+from .embedding_success_response import EmbeddingSuccessResponse
+from .embedding_task_media_metadata import (
+    EmbeddingTaskMediaMetadata,
+    EmbeddingTaskMediaMetadata_Audio,
+    EmbeddingTaskMediaMetadata_Video,
+)
+from .embedding_task_response import EmbeddingTaskResponse
+from .embedding_task_response_status import EmbeddingTaskResponseStatus
+from .embedding_text_image_metadata import EmbeddingTextImageMetadata
+from .embedding_video_metadata import EmbeddingVideoMetadata
+from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetadataEmbeddingScopesItem
+from .end_offset_sec import EndOffsetSec
 from .end_time import EndTime
+from .entity import Entity
+from .entity_collection import EntityCollection
+from .entity_status import EntityStatus
+from .error_response import ErrorResponse
+from .error_response_error import ErrorResponseError
+from .expires_at import ExpiresAt
 from .finish_reason import FinishReason
+from .forbidden_error_body import ForbiddenErrorBody
 from .generate_response import GenerateResponse
+from .get_upload_status_response import GetUploadStatusResponse
 from .gist import Gist
 from .gist_request_types_item import GistRequestTypesItem
 from .hls_object import HlsObject
 from .hls_object_status import HlsObjectStatus
 from .image_embedding_result import ImageEmbeddingResult
+from .image_input_request import ImageInputRequest
 from .import_log import ImportLog
 from .import_log_failed_files_item import ImportLogFailedFilesItem
 from .import_log_video_status import ImportLogVideoStatus
+from .incomplete_upload_summary import IncompleteUploadSummary
 from .index_models_item import IndexModelsItem
 from .index_schema import IndexSchema
+from .indexed_asset import IndexedAsset
+from .indexed_asset_detailed import IndexedAssetDetailed
+from .indexed_asset_detailed_embedding import IndexedAssetDetailedEmbedding
+from .indexed_asset_detailed_embedding_video_embedding import IndexedAssetDetailedEmbeddingVideoEmbedding
+from .indexed_asset_status import IndexedAssetStatus
+from .indexed_asset_system_metadata import IndexedAssetSystemMetadata
+from .internal_entity import InternalEntity
+from .internal_server_error_body import InternalServerErrorBody
 from .limit_per_page_simple import LimitPerPageSimple
+from .list_incomplete_uploads_response import ListIncompleteUploadsResponse
+from .media_embedding_task import MediaEmbeddingTask
+from .media_embedding_task_audio_embedding import MediaEmbeddingTaskAudioEmbedding
+from .media_embedding_task_video_embedding import MediaEmbeddingTaskVideoEmbedding
+from .media_source import MediaSource
+from .multipart_upload_status_type import MultipartUploadStatusType
 from .next_page_token import NextPageToken
 from .non_stream_analyze_response import NonStreamAnalyzeResponse
 from .not_found_error_body import NotFoundErrorBody
 from .page import Page
 from .page_info import PageInfo
+from .presigned_url_chunk import PresignedUrlChunk
 from .prev_page_token import PrevPageToken
+from .rank import Rank
+from .report_chunk_batch_response import ReportChunkBatchResponse
+from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
 from .response_format import ResponseFormat
 from .score_search_terms import ScoreSearchTerms
 from .search_item import SearchItem
@@ -36,6 +106,7 @@ from .search_item_clips_item import SearchItemClipsItem
 from .search_pool import SearchPool
 from .search_results import SearchResults
 from .search_results_page_info import SearchResultsPageInfo
+from .start_offset_sec import StartOffsetSec
 from .start_time import StartTime
 from .stream_analyze_response import (
     StreamAnalyzeResponse,
@@ -60,6 +131,8 @@ from .summarize_response import (
 )
 from .summarize_summary_result import SummarizeSummaryResult
 from .text_embedding_result import TextEmbeddingResult
+from .text_image_input_request import TextImageInputRequest
+from .text_input_request import TextInputRequest
 from .threshold_search import ThresholdSearch
 from .thumbnail_url import ThumbnailUrl
 from .token_usage import TokenUsage
@@ -68,46 +141,121 @@ from .total_page import TotalPage
 from .total_results import TotalResults
 from .transcription_data import TranscriptionData
 from .transcription_data_item import TranscriptionDataItem
+from .updated_at import UpdatedAt
 from .user_metadata import UserMetadata
 from .video_embedding_metadata import VideoEmbeddingMetadata
 from .video_embedding_task import VideoEmbeddingTask
 from .video_embedding_task_video_embedding import VideoEmbeddingTaskVideoEmbedding
 from .video_indexing_task import VideoIndexingTask
 from .video_indexing_task_system_metadata import VideoIndexingTaskSystemMetadata
+from .video_input_request import VideoInputRequest
+from .video_input_request_embedding_option_item import VideoInputRequestEmbeddingOptionItem
+from .video_input_request_embedding_scope_item import VideoInputRequestEmbeddingScopeItem
 from .video_item import VideoItem
 from .video_item_failed import VideoItemFailed
 from .video_segment import VideoSegment
+from .video_segmentation import VideoSegmentation, VideoSegmentation_Dynamic, VideoSegmentation_Fixed
+from .video_segmentation_dynamic import VideoSegmentationDynamic
+from .video_segmentation_dynamic_dynamic import VideoSegmentationDynamicDynamic
+from .video_segmentation_fixed import VideoSegmentationFixed
+from .video_segmentation_fixed_fixed import VideoSegmentationFixedFixed
 from .video_vector import VideoVector
 from .video_vector_system_metadata import VideoVectorSystemMetadata
 
 __all__ = [
+    "Asset",
+    "AssetMethod",
+    "AssetStatus",
+    "AudioEmbeddingMetadata",
     "AudioEmbeddingResult",
+    "AudioInputRequest",
+    "AudioInputRequestEmbeddingOptionItem",
+    "AudioInputRequestEmbeddingScopeItem",
     "AudioSegment",
+    "AudioSegmentation",
+    "AudioSegmentationFixed",
     "BadRequestErrorBody",
     "BaseEmbeddingMetadata",
     "BaseSegment",
+    "BulkCreateEntityResponse",
+    "BulkCreateEntityResponseEntitiesItem",
+    "BulkCreateEntityResponseErrorsItem",
+    "ChunkInfo",
+    "ChunkInfoStatus",
+    "CompletedChunk",
     "Confidence",
+    "CreateAssetUploadResponse",
+    "CreatedAt",
+    "EmbeddingAudioMetadata",
+    "EmbeddingAudioMetadataEmbeddingScopesItem",
+    "EmbeddingData",
+    "EmbeddingDataEmbeddingOption",
+    "EmbeddingDataEmbeddingScope",
+    "EmbeddingImageMetadata",
+    "EmbeddingMediaMetadata",
+    "EmbeddingMediaMetadata_Audio",
+    "EmbeddingMediaMetadata_Image",
+    "EmbeddingMediaMetadata_TextImage",
+    "EmbeddingMediaMetadata_Video",
     "EmbeddingResponse",
+    "EmbeddingSuccessResponse",
+    "EmbeddingTaskMediaMetadata",
+    "EmbeddingTaskMediaMetadata_Audio",
+    "EmbeddingTaskMediaMetadata_Video",
+    "EmbeddingTaskResponse",
+    "EmbeddingTaskResponseStatus",
+    "EmbeddingTextImageMetadata",
+    "EmbeddingVideoMetadata",
+    "EmbeddingVideoMetadataEmbeddingScopesItem",
+    "EndOffsetSec",
     "EndTime",
+    "Entity",
+    "EntityCollection",
+    "EntityStatus",
+    "ErrorResponse",
+    "ErrorResponseError",
+    "ExpiresAt",
     "FinishReason",
+    "ForbiddenErrorBody",
     "GenerateResponse",
+    "GetUploadStatusResponse",
     "Gist",
     "GistRequestTypesItem",
     "HlsObject",
     "HlsObjectStatus",
     "ImageEmbeddingResult",
+    "ImageInputRequest",
     "ImportLog",
     "ImportLogFailedFilesItem",
     "ImportLogVideoStatus",
+    "IncompleteUploadSummary",
     "IndexModelsItem",
     "IndexSchema",
+    "IndexedAsset",
+    "IndexedAssetDetailed",
+    "IndexedAssetDetailedEmbedding",
+    "IndexedAssetDetailedEmbeddingVideoEmbedding",
+    "IndexedAssetStatus",
+    "IndexedAssetSystemMetadata",
+    "InternalEntity",
+    "InternalServerErrorBody",
     "LimitPerPageSimple",
+    "ListIncompleteUploadsResponse",
+    "MediaEmbeddingTask",
+    "MediaEmbeddingTaskAudioEmbedding",
+    "MediaEmbeddingTaskVideoEmbedding",
+    "MediaSource",
+    "MultipartUploadStatusType",
     "NextPageToken",
     "NonStreamAnalyzeResponse",
     "NotFoundErrorBody",
     "Page",
     "PageInfo",
+    "PresignedUrlChunk",
     "PrevPageToken",
+    "Rank",
+    "ReportChunkBatchResponse",
+    "RequestAdditionalPresignedUrLsResponse",
     "ResponseFormat",
     "ScoreSearchTerms",
     "SearchItem",
@@ -115,6 +263,7 @@ __all__ = [
     "SearchPool",
     "SearchResults",
     "SearchResultsPageInfo",
+    "StartOffsetSec",
     "StartTime",
     "StreamAnalyzeResponse",
     "StreamAnalyzeResponse_StreamEnd",
@@ -135,6 +284,8 @@ __all__ = [
     "SummarizeResponse_Summary",
     "SummarizeSummaryResult",
     "TextEmbeddingResult",
+    "TextImageInputRequest",
+    "TextInputRequest",
     "ThresholdSearch",
     "ThumbnailUrl",
     "TokenUsage",
@@ -143,15 +294,26 @@ __all__ = [
     "TotalResults",
     "TranscriptionData",
     "TranscriptionDataItem",
+    "UpdatedAt",
     "UserMetadata",
     "VideoEmbeddingMetadata",
     "VideoEmbeddingTask",
     "VideoEmbeddingTaskVideoEmbedding",
     "VideoIndexingTask",
     "VideoIndexingTaskSystemMetadata",
+    "VideoInputRequest",
+    "VideoInputRequestEmbeddingOptionItem",
+    "VideoInputRequestEmbeddingScopeItem",
     "VideoItem",
     "VideoItemFailed",
     "VideoSegment",
+    "VideoSegmentation",
+    "VideoSegmentationDynamic",
+    "VideoSegmentationDynamicDynamic",
+    "VideoSegmentationFixed",
+    "VideoSegmentationFixedFixed",
+    "VideoSegmentation_Dynamic",
+    "VideoSegmentation_Fixed",
     "VideoVector",
     "VideoVectorSystemMetadata",
 ]

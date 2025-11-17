@@ -51,12 +51,12 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[VideoVector]:
         """
-        This method returns a list of the videos in the specified index. By default, the API returns your videos sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the videos in the specified index. By default, the platform returns your videos sorted by creation date, with the newest at the top of the list.
 
         Parameters
         ----------
         index_id : str
-            The unique identifier of the index for which the API will retrieve the videos.
+            The unique identifier of the index for which the platform will retrieve the videos.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
@@ -138,6 +138,11 @@ class VideosClient:
             sort_by="created_at",
             sort_option="desc",
             filename="01.mp4",
+            duration=1.1,
+            fps=1.1,
+            width=1.1,
+            height=1,
+            size=1.1,
             created_at="2024-08-16T16:53:59Z",
             updated_at="2024-08-16T16:53:59Z",
         )
@@ -190,18 +195,18 @@ class VideosClient:
             The unique identifier of the video to retrieve.
 
         embedding_option : typing.Optional[typing.Union[VideosRetrieveRequestEmbeddingOptionItem, typing.Sequence[VideosRetrieveRequestEmbeddingOptionItem]]]
-            Specifies which types of embeddings to retrieve. You can include one or more of the following values:
-            - `visual-text`:  Returns visual embeddings optimized for text search.
-            - `audio`: Returns audio embeddings.
-            <br/>
-            To retrieve embeddings for a video, it must be indexed using the Marengo video understanding model version 2.7 or later. For details on enabling this model for an index, see the [Create an index](/reference/create-index) page.
+            Specifies which types of embeddings to retrieve. Values vary depending on the version of the model:
+            - **Marengo 3.0**: `visual`, `audio`, `transcription`.
+            - **Marengo 2.7**: `visual-text`, `audio`.
 
-            The platform does not return embeddings if you don't provide this parameter.
+            For details, see the [Embedding options](/v1.3/docs/concepts/modalities#embedding-options) section.
 
-            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+            <Note title="Note">
+            To retrieve embeddings for a video, it must be indexed using the Marengo video understanding model. For details on enabling this model for an index, see the [Create an index](/reference/create-index) page.
+            </Note>
 
         transcription : typing.Optional[bool]
-            The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
+            The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -221,6 +226,7 @@ class VideosClient:
         client.indexes.videos.retrieve(
             index_id="6298d673f1090f1100476d4c",
             video_id="6298d673f1090f1100476d4c",
+            transcription=True,
         )
         """
         _response = self._raw_client.retrieve(
@@ -234,7 +240,7 @@ class VideosClient:
 
     def delete(self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        This method deletes all the information about the specified video. This action cannot be undone.
+        This method deletes all the information about the specified video This action cannot be undone.
 
         Parameters
         ----------
@@ -275,7 +281,7 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
+        Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
 
         Parameters
         ----------
@@ -353,12 +359,12 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[VideoVector]:
         """
-        This method returns a list of the videos in the specified index. By default, the API returns your videos sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the videos in the specified index. By default, the platform returns your videos sorted by creation date, with the newest at the top of the list.
 
         Parameters
         ----------
         index_id : str
-            The unique identifier of the index for which the API will retrieve the videos.
+            The unique identifier of the index for which the platform will retrieve the videos.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
@@ -445,6 +451,11 @@ class AsyncVideosClient:
                 sort_by="created_at",
                 sort_option="desc",
                 filename="01.mp4",
+                duration=1.1,
+                fps=1.1,
+                width=1.1,
+                height=1,
+                size=1.1,
                 created_at="2024-08-16T16:53:59Z",
                 updated_at="2024-08-16T16:53:59Z",
             )
@@ -501,18 +512,18 @@ class AsyncVideosClient:
             The unique identifier of the video to retrieve.
 
         embedding_option : typing.Optional[typing.Union[VideosRetrieveRequestEmbeddingOptionItem, typing.Sequence[VideosRetrieveRequestEmbeddingOptionItem]]]
-            Specifies which types of embeddings to retrieve. You can include one or more of the following values:
-            - `visual-text`:  Returns visual embeddings optimized for text search.
-            - `audio`: Returns audio embeddings.
-            <br/>
-            To retrieve embeddings for a video, it must be indexed using the Marengo video understanding model version 2.7 or later. For details on enabling this model for an index, see the [Create an index](/reference/create-index) page.
+            Specifies which types of embeddings to retrieve. Values vary depending on the version of the model:
+            - **Marengo 3.0**: `visual`, `audio`, `transcription`.
+            - **Marengo 2.7**: `visual-text`, `audio`.
 
-            The platform does not return embeddings if you don't provide this parameter.
+            For details, see the [Embedding options](/v1.3/docs/concepts/modalities#embedding-options) section.
 
-            The values you specify in `embedding_option` must be included in the `model_options` defined when the index was created. For example, if `model_options` is set to `visual` only, then you cannot set `embedding_option` to `audio` or  both `visual-text` and `audio`.
+            <Note title="Note">
+            To retrieve embeddings for a video, it must be indexed using the Marengo video understanding model. For details on enabling this model for an index, see the [Create an index](/reference/create-index) page.
+            </Note>
 
         transcription : typing.Optional[bool]
-            The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video. Note that the official SDKs will support this feature in a future release.
+            The parameter indicates whether to retrieve a transcription of the spoken words for the indexed video.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -537,6 +548,7 @@ class AsyncVideosClient:
             await client.indexes.videos.retrieve(
                 index_id="6298d673f1090f1100476d4c",
                 video_id="6298d673f1090f1100476d4c",
+                transcription=True,
             )
 
 
@@ -555,7 +567,7 @@ class AsyncVideosClient:
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
-        This method deletes all the information about the specified video. This action cannot be undone.
+        This method deletes all the information about the specified video This action cannot be undone.
 
         Parameters
         ----------
@@ -604,7 +616,7 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update one or more fields of the metadata of a video. Also, you can delete a field by setting it to `null`.
+        Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
 
         Parameters
         ----------

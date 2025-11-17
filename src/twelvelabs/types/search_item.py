@@ -6,6 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .confidence import Confidence
 from .end_time import EndTime
+from .rank import Rank
 from .score_search_terms import ScoreSearchTerms
 from .search_item_clips_item import SearchItemClipsItem
 from .start_time import StartTime
@@ -27,10 +28,11 @@ class SearchItem(UniversalBaseModel):
     """
 
     confidence: typing.Optional[Confidence] = None
+    rank: typing.Optional[Rank] = None
     thumbnail_url: typing.Optional[ThumbnailUrl] = None
     transcription: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A transcription of the spoken words that are captured in the video. Note that the official SDKs will support this feature in a future release.
+    A transcription of the spoken words that are captured in the video.
     """
 
     id: typing.Optional[str] = pydantic.Field(default=None)

@@ -2,4 +2,4 @@
 
 import typing
 
-SearchCreateRequestSearchOptionsItem = typing.Union[typing.Literal["visual", "audio"], typing.Any]
+SearchCreateRequestSearchOptionsItem = typing.Union[typing.Literal["visual", "audio", "transcription"], typing.Any]

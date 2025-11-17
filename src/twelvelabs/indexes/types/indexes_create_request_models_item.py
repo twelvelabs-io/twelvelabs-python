@@ -13,22 +13,21 @@ class IndexesCreateRequestModelsItem(UniversalBaseModel):
     
       - **Embedding**: These models are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
     
-        - `marengo2.7`
+        - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
+        - `marengo2.7`:  Video embedding model for multimodal search.
     
       - **Generative**: These models generate text based on your videos.
     
-        - `pegasus1.2`
+        - `pegasus1.2`: A model that analyzes multiple modalities to generate contextually relevant text based on the content of your videos.
     
     <Note title="Note">
-    You cannot change the models once the index has been created.
+    You cannot change the model configuration once the index has been created.
     </Note>
-    
-    For more details, see the [Video understanding models](/v1.3/docs/concepts/models) page.
     """
 
     model_options: typing.List[str] = pydantic.Field()
     """
-    An array that specifies how the platform will process the videos uploaded to this index. For the Marengo and Pegasus models, you can specify one or both of the following model options: `visual` and `audio`. For more details, see the [model options](/v1.3/docs/concepts/modalities#model-options) section.
+    An array that specifies which modalities the platform analyzes. For the Marengo and Pegasus models, you can specify one or both of the following model options: `visual` and `audio`. For more details, see the [Model options](/v1.3/docs/concepts/modalities#model-options) section.
     """
 
     if IS_PYDANTIC_V2:

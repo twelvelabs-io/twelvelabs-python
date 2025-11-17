@@ -14,12 +14,12 @@ class VideoEmbeddingMetadata(BaseEmbeddingMetadata):
 
     video_clip_length: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The duration for each clip in seconds, as specified by the `video_clip_length` parameter of the [`POST`](/v1.3/api-reference/video-embeddings/create-video-embedding-task) method of the `/embed/task` endpoint. Note that the platform automatically truncates video segments shorter than 2 seconds. For a 31-second video divided into 6-second segments, the final 1-second segment will be truncated. This truncation only applies to the last segment if it does not meet the minimum length requirement of 2 seconds.
+    The duration for each clip in seconds, as specified in the request. Note that the platform automatically truncates video segments shorter than 2 seconds. For a 31-second video divided into 6-second segments, the final 1-second segment will be truncated. This truncation only applies to the last segment if it does not meet the minimum length requirement of 2 seconds.
     """
 
     video_embedding_scope: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    The scope you've specified in the request. It can take one of the following values: ['clip'] or ['clip', 'video'].
+    The scope you've specified in the request.
     """
 
     duration: typing.Optional[float] = pydantic.Field(default=None)

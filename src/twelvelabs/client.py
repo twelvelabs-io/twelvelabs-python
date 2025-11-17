@@ -9,6 +9,7 @@ from .wrapper.index_client_wrapper import (
     IndexesClientWrapper,
     AsyncIndexesClientWrapper,
 )
+from .wrapper.multipart_upload_client_wrapper import MultipartUploadClientWrapper, AsyncMultipartUploadClientWrapper
 
 OMIT = typing.cast(typing.Any, ...)
 
@@ -43,6 +44,7 @@ class TwelveLabs(BaseClient):
         self.tasks = TaskClientWrapper(client_wrapper=self._client_wrapper)
         self.embed = EmbedClientWrapper(client_wrapper=self._client_wrapper)
         self.indexes = IndexesClientWrapper(client_wrapper=self._client_wrapper)
+        self.multipart_upload = MultipartUploadClientWrapper(client_wrapper=self._client_wrapper)
 
     def __enter__(self):
         return self
@@ -81,6 +83,7 @@ class AsyncTwelveLabs(AsyncBaseClient):
         self.tasks = AsyncTaskClientWrapper(client_wrapper=self._client_wrapper)
         self.embed = AsyncEmbedClientWrapper(client_wrapper=self._client_wrapper)
         self.indexes = AsyncIndexesClientWrapper(client_wrapper=self._client_wrapper)
+        self.multipart_upload = AsyncMultipartUploadClientWrapper(client_wrapper=self._client_wrapper)
 
     async def __aenter__(self):
         return self

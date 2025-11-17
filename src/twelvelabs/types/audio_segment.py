@@ -5,6 +5,8 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
 from .base_segment import BaseSegment
+from .end_offset_sec import EndOffsetSec
+from .start_offset_sec import StartOffsetSec
 
 
 class AudioSegment(BaseSegment):
@@ -12,10 +14,8 @@ class AudioSegment(BaseSegment):
     An object that contains the audio embedding and its start time.
     """
 
-    start_offset_sec: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    The start time, in seconds, from which the platform generated the audio embedding.
-    """
+    start_offset_sec: typing.Optional[StartOffsetSec] = None
+    end_offset_sec: typing.Optional[EndOffsetSec] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

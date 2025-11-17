@@ -28,7 +28,7 @@ with TwelveLabs(api_key=API_KEY) as client:
     print(f"user_metadata={video.user_metadata}")
 
     video = client.indexes.videos.retrieve(
-        index.id, video.id, embedding_option=["visual-text", "audio"]
+        index.id, video.id, embedding_option=["visual", "audio"]
     )
     if video.embedding and video.embedding.video_embedding:
         print("\nVideo Embeddings:")

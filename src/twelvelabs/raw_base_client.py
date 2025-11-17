@@ -240,7 +240,10 @@ class RawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GenerateResponse]:
         """
-        <Warning>This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.</Warning>
+        <Warning>
+        This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.
+        </Warning>
+
 
         This endpoint generates open-ended texts based on your videos, including but not limited to tables of content, action items, memos, and detailed analyses.
 
@@ -287,6 +290,9 @@ class RawBaseClient:
         -------
         HttpResponse[GenerateResponse]
             The specified video has successfully been processed.
+            <Note title="Note">
+              The maximum length of the response is 4,096 tokens.
+            </Note>
         """
         _response = self._client_wrapper.httpx_client.request(
             "generate",
@@ -356,7 +362,7 @@ class RawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
         </Note>
 
         Parameters
@@ -486,7 +492,7 @@ class RawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
         </Note>
 
         Parameters
@@ -800,7 +806,10 @@ class AsyncRawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GenerateResponse]:
         """
-        <Warning>This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.</Warning>
+        <Warning>
+        This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.
+        </Warning>
+
 
         This endpoint generates open-ended texts based on your videos, including but not limited to tables of content, action items, memos, and detailed analyses.
 
@@ -847,6 +856,9 @@ class AsyncRawBaseClient:
         -------
         AsyncHttpResponse[GenerateResponse]
             The specified video has successfully been processed.
+            <Note title="Note">
+              The maximum length of the response is 4,096 tokens.
+            </Note>
         """
         _response = await self._client_wrapper.httpx_client.request(
             "generate",
@@ -916,7 +928,7 @@ class AsyncRawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
         </Note>
 
         Parameters
@@ -1046,7 +1058,7 @@ class AsyncRawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
         </Note>
 
         Parameters
