@@ -3,9 +3,8 @@
 import typing
 
 from ..core.api_error import ApiError
-from ..types.not_found_error_body import NotFoundErrorBody
 
 
 class NotFoundError(ApiError):
-    def __init__(self, body: NotFoundErrorBody, headers: typing.Optional[typing.Dict[str, str]] = None):
+    def __init__(self, body: typing.Optional[typing.Any], headers: typing.Optional[typing.Dict[str, str]] = None):
         super().__init__(status_code=404, headers=headers, body=body)

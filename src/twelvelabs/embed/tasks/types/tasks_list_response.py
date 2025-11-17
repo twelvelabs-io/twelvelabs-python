@@ -4,14 +4,14 @@ import typing
 
 import pydantic
 from ....core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ....types.video_embedding_task import VideoEmbeddingTask
+from ....types.media_embedding_task import MediaEmbeddingTask
 from .tasks_list_response_page_info import TasksListResponsePageInfo
 
 
 class TasksListResponse(UniversalBaseModel):
-    data: typing.Optional[typing.List[VideoEmbeddingTask]] = pydantic.Field(default=None)
+    data: typing.Optional[typing.List[MediaEmbeddingTask]] = pydantic.Field(default=None)
     """
-    An array that contains up to `page_limit` video embedding tasks.
+    An array that contains up to `page_limit` embedding tasks.
     """
 
     page_info: typing.Optional[TasksListResponsePageInfo] = pydantic.Field(default=None)

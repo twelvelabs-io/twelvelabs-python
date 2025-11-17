@@ -10,13 +10,6 @@ from .types import (
     TasksRetrieveResponse,
 )
 from . import transfers
-from .transfers import (
-    TransfersCreateResponse,
-    TransfersCreateResponseFailedFilesItem,
-    TransfersCreateResponseVideosItem,
-    TransfersGetLogsResponse,
-    TransfersGetStatusResponse,
-)
 
 __all__ = [
     "TasksCreateResponse",
@@ -24,10 +17,5 @@ __all__ = [
     "TasksListResponse",
     "TasksListResponsePageInfo",
     "TasksRetrieveResponse",
-    "TransfersCreateResponse",
-    "TransfersCreateResponseFailedFilesItem",
-    "TransfersCreateResponseVideosItem",
-    "TransfersGetLogsResponse",
-    "TransfersGetStatusResponse",
     "transfers",
 ]

@@ -2,4 +2,6 @@
 
 import typing
 
-TasksRetrieveRequestEmbeddingOptionItem = typing.Union[typing.Literal["visual-text", "audio"], typing.Any]
+TasksRetrieveRequestEmbeddingOptionItem = typing.Union[
+    typing.Literal["visual", "audio", "transcription", "visual-text"], typing.Any
+]

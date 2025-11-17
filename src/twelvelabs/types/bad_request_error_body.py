@@ -7,14 +7,19 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class BadRequestErrorBody(UniversalBaseModel):
-    error_code: typing.Optional[int] = pydantic.Field(default=None)
+    code: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Represents the code associated with the error. See the [Error codes](/v1.3/api-reference/error-codes) page for details.
+    A string representing the code associated with the error. See the [Error codes](/v1.3/api-reference/error-codes) page for details.
     """
 
     message: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A human-readable string describing the error.
+    A human-readable string describing the error, intended to be suitable for display in a user interface.
+    """
+
+    docs_url: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The URL of the relevant documentation page.
     """
 
     if IS_PYDANTIC_V2:

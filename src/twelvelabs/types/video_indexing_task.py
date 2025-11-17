@@ -36,7 +36,7 @@ class VideoIndexingTask(UniversalBaseModel):
 
     status: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A string indicating the status of the video indexing task. See the [Task object](/v1.3/api-reference/tasks/the-task-object) page for a list of possible statuses.
+    A string indicating the status of the video indexing task. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page for a list of possible statuses.
     """
 
     index_id: typing.Optional[str] = pydantic.Field(default=None)

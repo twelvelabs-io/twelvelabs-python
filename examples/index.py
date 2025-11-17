@@ -16,14 +16,14 @@ with TwelveLabs(api_key=API_KEY) as client:
         index_name=f"idx-{uuid.uuid4()}",
         models=[
             IndexesCreateRequestModelsItem(
-                model_name="marengo2.7", model_options=["visual", "audio"]
+                model_name="marengo3.0", model_options=["visual", "audio"]
             ),
             IndexesCreateRequestModelsItem(
                 model_name="pegasus1.2", model_options=["visual", "audio"]
             ),
             # or you can provide the dict directly like this:
             # {
-            #     "model_name": "marengo2.7",
+            #     "model_name": "marengo3.0",
             #     "model_options": ["visual", "audio"],
             # },
             # {

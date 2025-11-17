@@ -6,6 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.index_schema import IndexSchema
+from .indexed_assets.client import AsyncIndexedAssetsClient, IndexedAssetsClient
 from .raw_client import AsyncRawIndexesClient, RawIndexesClient
 from .types.indexes_create_request_models_item import IndexesCreateRequestModelsItem
 from .types.indexes_create_response import IndexesCreateResponse
@@ -18,6 +19,8 @@ OMIT = typing.cast(typing.Any, ...)
 class IndexesClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawIndexesClient(client_wrapper=client_wrapper)
+        self.indexed_assets = IndexedAssetsClient(client_wrapper=client_wrapper)
+
         self.videos = VideosClient(client_wrapper=client_wrapper)
 
     @property
@@ -46,7 +49,7 @@ class IndexesClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[IndexSchema]:
         """
-        This method returns a list of the indexes in your account. The API returns indexes sorted by creation date, with the oldest indexes at the top of the list.
+        This method returns a list of the indexes in your account. The platform returns indexes sorted by creation date, with the oldest indexes at the top of the list.
 
         Parameters
         ----------
@@ -152,7 +155,7 @@ class IndexesClient:
             The name of the index. Make sure you use a succinct and descriptive name.
 
         models : typing.Sequence[IndexesCreateRequestModelsItem]
-            An array that specifies the [video understanding models](/v1.3/docs/concepts/models) and the [model options](/v1.3/docs/concepts/modalities#model-options) to be enabled for this index. This determines how the platform processes your videos.
+            An array that specifies the [video understanding models](/v1.3/docs/concepts/models) and the [model options](/v1.3/docs/concepts/modalities#model-options) to be enabled for this index. Models determine what tasks you can perform with your videos. Model options determine which modalities the platform analyzes.
 
         addons : typing.Optional[typing.Sequence[str]]
             An array specifying which add-ons should be enabled. Each entry in the array is an addon, and the following values are supported:
@@ -185,7 +188,7 @@ class IndexesClient:
             index_name="myIndex",
             models=[
                 IndexesCreateRequestModelsItem(
-                    model_name="marengo2.7",
+                    model_name="marengo3.0",
                     model_options=["visual", "audio"],
                 ),
                 IndexesCreateRequestModelsItem(
@@ -302,6 +305,8 @@ class IndexesClient:
 class AsyncIndexesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawIndexesClient(client_wrapper=client_wrapper)
+        self.indexed_assets = AsyncIndexedAssetsClient(client_wrapper=client_wrapper)
+
         self.videos = AsyncVideosClient(client_wrapper=client_wrapper)
 
     @property
@@ -330,7 +335,7 @@ class AsyncIndexesClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[IndexSchema]:
         """
-        This method returns a list of the indexes in your account. The API returns indexes sorted by creation date, with the oldest indexes at the top of the list.
+        This method returns a list of the indexes in your account. The platform returns indexes sorted by creation date, with the oldest indexes at the top of the list.
 
         Parameters
         ----------
@@ -445,7 +450,7 @@ class AsyncIndexesClient:
             The name of the index. Make sure you use a succinct and descriptive name.
 
         models : typing.Sequence[IndexesCreateRequestModelsItem]
-            An array that specifies the [video understanding models](/v1.3/docs/concepts/models) and the [model options](/v1.3/docs/concepts/modalities#model-options) to be enabled for this index. This determines how the platform processes your videos.
+            An array that specifies the [video understanding models](/v1.3/docs/concepts/models) and the [model options](/v1.3/docs/concepts/modalities#model-options) to be enabled for this index. Models determine what tasks you can perform with your videos. Model options determine which modalities the platform analyzes.
 
         addons : typing.Optional[typing.Sequence[str]]
             An array specifying which add-ons should be enabled. Each entry in the array is an addon, and the following values are supported:
@@ -483,7 +488,7 @@ class AsyncIndexesClient:
                 index_name="myIndex",
                 models=[
                     IndexesCreateRequestModelsItem(
-                        model_name="marengo2.7",
+                        model_name="marengo3.0",
                         model_options=["visual", "audio"],
                     ),
                     IndexesCreateRequestModelsItem(

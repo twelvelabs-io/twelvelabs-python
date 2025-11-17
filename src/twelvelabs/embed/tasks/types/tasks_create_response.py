@@ -12,8 +12,8 @@ class TasksCreateResponse(UniversalBaseModel):
     id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="_id")] = pydantic.Field(default=None)
     """
     The unique identifier of the video embedding task. You can use the identifier to:
-    - Retrieve the status of your task by invoking the [`GET`](/v1.3/api-reference/video-embeddings/retrieve-video-embedding-task-status) method of the `/embed/tasks/{task_id}/status` endpoint.
-    - Retrieve the embedding by invoking the  [`GET`](/v1.3/api-reference/video-embeddings/retrieve-video-embeddings) method of the `/embed/tasks/{task_id}` endpoint.
+    - Retrieve the status of your task by invoking the [`GET`](/v1.3/api-reference/create-embeddings-v1/video-embeddings/retrieve-video-embedding-task-status) method of the `/embed/tasks/{task_id}/status` endpoint.
+    - Retrieve the embedding by invoking the  [`GET`](/v1.3/api-reference/create-embeddings-v1/video-embeddings/retrieve-video-embeddings) method of the `/embed/tasks/{task_id}` endpoint.
     """
 
     if IS_PYDANTIC_V2:

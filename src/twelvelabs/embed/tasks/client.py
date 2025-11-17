@@ -6,7 +6,7 @@ from ... import core
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
-from ...types.video_embedding_task import VideoEmbeddingTask
+from ...types.media_embedding_task import MediaEmbeddingTask
 from .raw_client import AsyncRawTasksClient, RawTasksClient
 from .types.tasks_create_request_video_embedding_scope_item import TasksCreateRequestVideoEmbeddingScopeItem
 from .types.tasks_create_response import TasksCreateResponse
@@ -42,8 +42,11 @@ class TasksClient:
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SyncPager[VideoEmbeddingTask]:
+    ) -> SyncPager[MediaEmbeddingTask]:
         """
+        <Note title="Note">
+          This method will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
         This method returns a list of the video embedding tasks in your account. The platform returns your video embedding tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
@@ -54,13 +57,15 @@ class TasksClient:
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the video embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the video embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
-            Filter video embedding tasks by their current status. Possible values are `processing`, `ready`, or `failed`.
+            Filter the embedding tasks by their current status.
+
+            **Values**: `processing`, `ready`, or `failed`.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
@@ -78,8 +83,8 @@ class TasksClient:
 
         Returns
         -------
-        SyncPager[VideoEmbeddingTask]
-            A list of video embedding tasks has successfully been retrieved.
+        SyncPager[MediaEmbeddingTask]
+            A list of async embedding tasks has successfully been retrieved.
 
         Examples
         --------
@@ -123,6 +128,11 @@ class TasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksCreateResponse:
         """
+        
+        <Note title="Note">
+          This endpoint will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
+        
         This method creates a new video embedding task that uploads a video to the platform and creates one or multiple video embeddings.
         
         Upload options:
@@ -131,27 +141,20 @@ class TasksClient:
         
         Specify at least one option. If both are provided, `video_url` takes precedence.
         
-        <Accordion title="Video requirements">
-          The videos you wish to upload must meet the following requirements:
-          - **Video resolution**: Must be at least 360x360 and must not exceed 3840x2160.
-          - **Aspect ratio**: Must be one of 1:1, 4:3, 4:5, 5:4, 16:9, 9:16, or 17:9.
-          - **Video and audio formats**: Your video files must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at support@twelvelabs.io.
-          - **Duration**: Must be between 4 seconds and 2 hours (7,200s).
-          - **File size**: Must not exceed 2 GB.
-            If you require different options, contact us at support@twelvelabs.io.
-        </Accordion>
+        Your video files must meet the [format requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+        This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
         
         <Note title="Notes">
         - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - Video embeddings are stored for seven days.
-        - The platform supports uploading video files that can play without additional user interaction or custom video players. Ensure your URL points to the raw video file, not a web page containing the video. Links to third-party hosting sites, cloud storage services, or videos requiring extra steps to play are not supported.
         </Note>
         
         Parameters
         ----------
         model_name : str
             The name of the model you want to use. The following models are available:
-              - `Marengo-retrieval-2.7`
+              - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
+              - `Marengo-retrieval-2.7`: Video embedding model for multimodal search.
         
         video_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -231,11 +234,14 @@ class TasksClient:
 
     def status(self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> TasksStatusResponse:
         """
+        <Note title="Note">
+          This endpoint will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
         This method retrieves the status of a video embedding task. Check the task status of a video embedding task to determine when you can retrieve the embedding.
 
         A task can have one of the following statuses:
         - `processing`: The platform is creating the embeddings.
-        - `ready`:  Processing is complete. Retrieve the embeddings by invoking the [`GET`](/v1.3/api-reference/video-embeddings/retrieve-video-embeddings) method of the `/embed/tasks/{task_id} endpoint`.
+        - `ready`:  Processing is complete. Retrieve the embeddings by invoking the [`GET`](/v1.3/api-reference/create-embeddings-v1/video-embeddings/retrieve-video-embeddings) method of the `/embed/tasks/{task_id} endpoint`.
         - `failed`: The task could not be completed, and the embeddings haven't been created.
 
         Parameters
@@ -277,7 +283,7 @@ class TasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksRetrieveResponse:
         """
-        This method retrieves embeddings for a specific video embedding task. Ensure the task status is `ready` before invoking this method. Refer to the [Retrieve the status of a video embedding tasks](/v1.3/api-reference/video-embeddings/retrieve-video-embedding-task-status) page for instructions on checking the task status.
+        This method retrieves embeddings for a specific video embedding task. Ensure the task status is `ready` before invoking this method. Refer to the [Retrieve the status of a video embedding tasks](/v1.3/api-reference/create-embeddings-v1/video-embeddings/retrieve-video-embedding-task-status) page for instructions on checking the task status.
 
         Parameters
         ----------
@@ -285,11 +291,15 @@ class TasksClient:
             The unique identifier of your video embedding task.
 
         embedding_option : typing.Optional[typing.Union[TasksRetrieveRequestEmbeddingOptionItem, typing.Sequence[TasksRetrieveRequestEmbeddingOptionItem]]]
-            Specifies which types of embeddings to retrieve. You can include one or more of the following values:
-              - `visual-text`:  Returns visual embeddings optimized for text search.
-              - `audio`: Returns audio embeddings.
+            Specifies which types of embeddings to retrieve. Values vary depending on the version of the model:
+            - **Marengo 3.0**: `visual`, `audio`, `transcription`.
+            - **Marengo 2.7**: `visual-text`, `audio`.
 
-            The platform returns all available embeddings if you don't provide this parameter.
+            For details, see the [Embedding options](/v1.3/docs/concepts/modalities#embedding-options) section.
+
+            <Note title="Note">
+            The platform returns all available embeddings when you omit this parameter.
+            </Note>
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -340,8 +350,11 @@ class AsyncTasksClient:
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncPager[VideoEmbeddingTask]:
+    ) -> AsyncPager[MediaEmbeddingTask]:
         """
+        <Note title="Note">
+          This method will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
         This method returns a list of the video embedding tasks in your account. The platform returns your video embedding tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
@@ -352,13 +365,15 @@ class AsyncTasksClient:
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the video embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the video embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
-            Filter video embedding tasks by their current status. Possible values are `processing`, `ready`, or `failed`.
+            Filter the embedding tasks by their current status.
+
+            **Values**: `processing`, `ready`, or `failed`.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
@@ -376,8 +391,8 @@ class AsyncTasksClient:
 
         Returns
         -------
-        AsyncPager[VideoEmbeddingTask]
-            A list of video embedding tasks has successfully been retrieved.
+        AsyncPager[MediaEmbeddingTask]
+            A list of async embedding tasks has successfully been retrieved.
 
         Examples
         --------
@@ -430,6 +445,11 @@ class AsyncTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksCreateResponse:
         """
+        
+        <Note title="Note">
+          This endpoint will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
+        
         This method creates a new video embedding task that uploads a video to the platform and creates one or multiple video embeddings.
         
         Upload options:
@@ -438,27 +458,20 @@ class AsyncTasksClient:
         
         Specify at least one option. If both are provided, `video_url` takes precedence.
         
-        <Accordion title="Video requirements">
-          The videos you wish to upload must meet the following requirements:
-          - **Video resolution**: Must be at least 360x360 and must not exceed 3840x2160.
-          - **Aspect ratio**: Must be one of 1:1, 4:3, 4:5, 5:4, 16:9, 9:16, or 17:9.
-          - **Video and audio formats**: Your video files must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at support@twelvelabs.io.
-          - **Duration**: Must be between 4 seconds and 2 hours (7,200s).
-          - **File size**: Must not exceed 2 GB.
-            If you require different options, contact us at support@twelvelabs.io.
-        </Accordion>
+        Your video files must meet the [format requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+        This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
         
         <Note title="Notes">
         - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
         - Video embeddings are stored for seven days.
-        - The platform supports uploading video files that can play without additional user interaction or custom video players. Ensure your URL points to the raw video file, not a web page containing the video. Links to third-party hosting sites, cloud storage services, or videos requiring extra steps to play are not supported.
         </Note>
         
         Parameters
         ----------
         model_name : str
             The name of the model you want to use. The following models are available:
-              - `Marengo-retrieval-2.7`
+              - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
+              - `Marengo-retrieval-2.7`: Video embedding model for multimodal search.
         
         video_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -548,11 +561,14 @@ class AsyncTasksClient:
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TasksStatusResponse:
         """
+        <Note title="Note">
+          This endpoint will be deprecated in a future version. Migrate to the [Embed API v2](/v1.3/api-reference/create-embeddings-v2) for continued support and access to new features.
+        </Note>
         This method retrieves the status of a video embedding task. Check the task status of a video embedding task to determine when you can retrieve the embedding.
 
         A task can have one of the following statuses:
         - `processing`: The platform is creating the embeddings.
-        - `ready`:  Processing is complete. Retrieve the embeddings by invoking the [`GET`](/v1.3/api-reference/video-embeddings/retrieve-video-embeddings) method of the `/embed/tasks/{task_id} endpoint`.
+        - `ready`:  Processing is complete. Retrieve the embeddings by invoking the [`GET`](/v1.3/api-reference/create-embeddings-v1/video-embeddings/retrieve-video-embeddings) method of the `/embed/tasks/{task_id} endpoint`.
         - `failed`: The task could not be completed, and the embeddings haven't been created.
 
         Parameters
@@ -602,7 +618,7 @@ class AsyncTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksRetrieveResponse:
         """
-        This method retrieves embeddings for a specific video embedding task. Ensure the task status is `ready` before invoking this method. Refer to the [Retrieve the status of a video embedding tasks](/v1.3/api-reference/video-embeddings/retrieve-video-embedding-task-status) page for instructions on checking the task status.
+        This method retrieves embeddings for a specific video embedding task. Ensure the task status is `ready` before invoking this method. Refer to the [Retrieve the status of a video embedding tasks](/v1.3/api-reference/create-embeddings-v1/video-embeddings/retrieve-video-embedding-task-status) page for instructions on checking the task status.
 
         Parameters
         ----------
@@ -610,11 +626,15 @@ class AsyncTasksClient:
             The unique identifier of your video embedding task.
 
         embedding_option : typing.Optional[typing.Union[TasksRetrieveRequestEmbeddingOptionItem, typing.Sequence[TasksRetrieveRequestEmbeddingOptionItem]]]
-            Specifies which types of embeddings to retrieve. You can include one or more of the following values:
-              - `visual-text`:  Returns visual embeddings optimized for text search.
-              - `audio`: Returns audio embeddings.
+            Specifies which types of embeddings to retrieve. Values vary depending on the version of the model:
+            - **Marengo 3.0**: `visual`, `audio`, `transcription`.
+            - **Marengo 2.7**: `visual-text`, `audio`.
 
-            The platform returns all available embeddings if you don't provide this parameter.
+            For details, see the [Embedding options](/v1.3/docs/concepts/modalities#embedding-options) section.
+
+            <Note title="Note">
+            The platform returns all available embeddings when you omit this parameter.
+            </Note>
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

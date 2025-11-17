@@ -3,7 +3,14 @@
 # isort: skip_file
 
 from .types import IndexesCreateRequestModelsItem, IndexesCreateResponse, IndexesListResponse
-from . import videos
+from . import indexed_assets, videos
+from .indexed_assets import (
+    IndexedAssetsCreateResponse,
+    IndexedAssetsListRequestStatusItem,
+    IndexedAssetsListRequestUserMetadataValue,
+    IndexedAssetsListResponse,
+    IndexedAssetsRetrieveRequestEmbeddingOptionItem,
+)
 from .videos import (
     VideosListRequestUserMetadataValue,
     VideosListResponse,
@@ -15,6 +22,11 @@ from .videos import (
 )
 
 __all__ = [
+    "IndexedAssetsCreateResponse",
+    "IndexedAssetsListRequestStatusItem",
+    "IndexedAssetsListRequestUserMetadataValue",
+    "IndexedAssetsListResponse",
+    "IndexedAssetsRetrieveRequestEmbeddingOptionItem",
     "IndexesCreateRequestModelsItem",
     "IndexesCreateResponse",
     "IndexesListResponse",
@@ -25,5 +37,6 @@ __all__ = [
     "VideosRetrieveResponseEmbedding",
     "VideosRetrieveResponseEmbeddingVideoEmbedding",
     "VideosRetrieveResponseSystemMetadata",
+    "indexed_assets",
     "videos",
 ]

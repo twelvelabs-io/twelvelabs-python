@@ -7,6 +7,7 @@ from .types import (
     SearchCreateRequestOperator,
     SearchCreateRequestSearchOptionsItem,
     SearchCreateRequestSortOption,
+    SearchCreateRequestTranscriptionOptionsItem,
     SearchRetrieveResponse,
     SearchRetrieveResponsePageInfo,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "SearchCreateRequestOperator",
     "SearchCreateRequestSearchOptionsItem",
     "SearchCreateRequestSortOption",
+    "SearchCreateRequestTranscriptionOptionsItem",
     "SearchRetrieveResponse",
     "SearchRetrieveResponsePageInfo",
 ]

@@ -2,4 +2,6 @@
 
 import typing
 
-VideosRetrieveRequestEmbeddingOptionItem = typing.Union[typing.Literal["visual-text", "audio"], typing.Any]
+VideosRetrieveRequestEmbeddingOptionItem = typing.Union[
+    typing.Literal["visual", "audio", "transcription", "visual-text"], typing.Any
+]
