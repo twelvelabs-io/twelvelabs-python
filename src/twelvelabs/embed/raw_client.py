@@ -97,7 +97,7 @@ class RawEmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -241,7 +241,7 @@ class AsyncRawEmbedClient:
             See core.File for more documentation
 
         audio_url : typing.Optional[str]
-            The publicly accessible URL of the audio file for which you wish to creae an emebdding. This parameter is required for audio embeddings if `audio_file` is not provided.
+            The publicly accessible URL of the audio file for which you wish to creae an embedding. This parameter is required for audio embeddings if `audio_file` is not provided.
 
         audio_file : typing.Optional[core.File]
             See core.File for more documentation

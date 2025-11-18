@@ -204,14 +204,11 @@ class IndexedAssetsClient:
 
         This operation is asynchronous. The platform returns an indexed asset ID immediately and processes your content in the background. Monitor the indexing status to know when your content is ready to use.
 
-        **Before you invoke this method**:
-        - Upload your content using [direct uploads](/v1.3/api-reference/upload-content/direct-uploads) or [multipart uploads](/v1.3/api-reference/upload-content/multipart-uploads).
-        - You've created an index with the video understanding models you wish to use.
+        Your asset must meet the requirements based on your workflow:
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
-        **After you invoke this method**:
-        1. Monitor the indexing status by calling the [`GET`](/v1.3/api-reference/index-content/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}`
-        2. Wait until the `status` field shows `ready`
-        3. Use your indexed content to search or analyze it
+        If you want to both search and analyze your videos, the most restrictive requirements apply.
 
         Parameters
         ----------
@@ -619,14 +616,11 @@ class AsyncIndexedAssetsClient:
 
         This operation is asynchronous. The platform returns an indexed asset ID immediately and processes your content in the background. Monitor the indexing status to know when your content is ready to use.
 
-        **Before you invoke this method**:
-        - Upload your content using [direct uploads](/v1.3/api-reference/upload-content/direct-uploads) or [multipart uploads](/v1.3/api-reference/upload-content/multipart-uploads).
-        - You've created an index with the video understanding models you wish to use.
+        Your asset must meet the requirements based on your workflow:
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
-        **After you invoke this method**:
-        1. Monitor the indexing status by calling the [`GET`](/v1.3/api-reference/index-content/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}`
-        2. Wait until the `status` field shows `ready`
-        3. Use your indexed content to search or analyze it
+        If you want to both search and analyze your videos, the most restrictive requirements apply.
 
         Parameters
         ----------

@@ -362,7 +362,7 @@ class RawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
         </Note>
 
         Parameters
@@ -492,7 +492,7 @@ class RawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
         </Note>
 
         Parameters
@@ -928,7 +928,7 @@ class AsyncRawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
         </Note>
 
         Parameters
@@ -1058,7 +1058,7 @@ class AsyncRawBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/generate-text-from-video/open-ended-text#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
         </Note>
 
         Parameters
