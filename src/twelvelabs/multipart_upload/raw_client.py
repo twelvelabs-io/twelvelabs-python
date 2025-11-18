@@ -141,9 +141,10 @@ class RawMultipartUploadClient:
 
         **File size**: 4GB maximum.
 
-        Your content must meet the requirements based on the [video understanding model](/v1.3/docs/concepts/models) you wish to use:
-        - [Marengo requirements](/docs/concepts/models/marengo#input-requirements)
-        - [Pegasus requirements](/docs/concepts/models/pegasus#video-file-requirements)
+        **Additional requirements** depend on your workflow:
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
+        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
 
         Parameters
         ----------
@@ -661,9 +662,10 @@ class AsyncRawMultipartUploadClient:
 
         **File size**: 4GB maximum.
 
-        Your content must meet the requirements based on the [video understanding model](/v1.3/docs/concepts/models) you wish to use:
-        - [Marengo requirements](/docs/concepts/models/marengo#input-requirements)
-        - [Pegasus requirements](/docs/concepts/models/pegasus#video-file-requirements)
+        **Additional requirements** depend on your workflow:
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
+        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
 
         Parameters
         ----------

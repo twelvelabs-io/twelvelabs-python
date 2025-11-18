@@ -51,6 +51,8 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[VideoVector]:
         """
+        <Info>This method will be deprecated in a future version. New implementations should use the [List indexed assets](/v1.3/api-reference/index-content/list) method.</Info>
+
         This method returns a list of the videos in the specified index. By default, the platform returns your videos sorted by creation date, with the newest at the top of the list.
 
         Parameters
@@ -184,6 +186,8 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> VideosRetrieveResponse:
         """
+        <Info> This method will be deprecated in a future version. New implementations should use the [Retrieve an indexed asset](/v1.3/api-reference/index-content/retrieve) method.</Info>
+
         This method retrieves information about the specified video.
 
         Parameters
@@ -240,7 +244,9 @@ class VideosClient:
 
     def delete(self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        This method deletes all the information about the specified video This action cannot be undone.
+        <Info>This method will be deprecated in a future version. New implementations should use the [Delete an indexed asset](/v1.3/api-reference/index-content/delete) method.</Info>
+
+        This method deletes all the information about the specified video. This action cannot be undone.
 
         Parameters
         ----------
@@ -281,6 +287,8 @@ class VideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
+        <Info>This method will be deprecated in a future version. New implementations should use the [Partial update indexed asset](/v1.3/api-reference/index-content/update) method.</Info>
+
         Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
 
         Parameters
@@ -359,6 +367,8 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[VideoVector]:
         """
+        <Info>This method will be deprecated in a future version. New implementations should use the [List indexed assets](/v1.3/api-reference/index-content/list) method.</Info>
+
         This method returns a list of the videos in the specified index. By default, the platform returns your videos sorted by creation date, with the newest at the top of the list.
 
         Parameters
@@ -501,6 +511,8 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> VideosRetrieveResponse:
         """
+        <Info> This method will be deprecated in a future version. New implementations should use the [Retrieve an indexed asset](/v1.3/api-reference/index-content/retrieve) method.</Info>
+
         This method retrieves information about the specified video.
 
         Parameters
@@ -567,7 +579,9 @@ class AsyncVideosClient:
         self, index_id: str, video_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
-        This method deletes all the information about the specified video This action cannot be undone.
+        <Info>This method will be deprecated in a future version. New implementations should use the [Delete an indexed asset](/v1.3/api-reference/index-content/delete) method.</Info>
+
+        This method deletes all the information about the specified video. This action cannot be undone.
 
         Parameters
         ----------
@@ -616,6 +630,8 @@ class AsyncVideosClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
+        <Info>This method will be deprecated in a future version. New implementations should use the [Partial update indexed asset](/v1.3/api-reference/index-content/update) method.</Info>
+
         Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
 
         Parameters
