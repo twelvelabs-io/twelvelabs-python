@@ -17,7 +17,7 @@ class IndexedAsset(UniversalBaseModel):
 
     id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="_id")] = pydantic.Field(default=None)
     """
-    A string representing the unique identifier of an indexed asset. The platform creates a new indexed asset object and assigns it a unique identifier when the asset has been created for indexing.
+    A string representing the unique identifier of your indexed asset.
     """
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)

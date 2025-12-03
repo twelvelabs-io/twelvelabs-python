@@ -1632,10 +1632,7 @@ client.indexes.delete(
 
 This method returns a list of assets in your account.
 
-<Note title="Note">
-- The platform returns your assets sorted by creation date, with the newest at the top of the list.
-- The platform automatically deletes assets that are not associated with any entity after 72 hours.
-</Note>
+The platform returns your assets sorted by creation date, with the newest at the top of the list.
 </dd>
 </dl>
 </dd>
@@ -1749,7 +1746,7 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This method creates an asset by uploading a file to the platform. Assets are files (such as images, audio, or video) that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
+This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
 
 **Supported content**: Video, audio, and images.
 
@@ -1823,9 +1820,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 
 Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-<Note title="Note">
-  URL uploads are limited to 4GB.
-</Note>
+URL uploads have a maximum limit of 4GB.
     
 </dd>
 </dl>
@@ -2147,7 +2142,7 @@ client.multipart_upload.create(
 <dl>
 <dd>
 
-**filename:** `str` — Original filename of the asset
+**filename:** `str` — The original file name of the asset.
     
 </dd>
 </dl>
@@ -2194,14 +2189,14 @@ The total size of the file in bytes. The platform uses this value to:
 
 This method provides information about an upload session, including its current status, chunk-level progress, and completion state.
 
-Use this endpoint to:
+Use this method to:
 - Verify upload completion (`status` = `completed`)
 - Identify any failed chunks that require a retry
 - Monitor the upload progress by comparing `uploaded_size` with `total_size`
 - Determine if the session has expired
 - Retrieve the status information for each chunk
 
- You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
 </dd>
 </dl>
 </dd>
@@ -2303,11 +2298,10 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This method notifies the platform which chunks have been successfully uploaded. When all chunks are reported, the platform finalizes the upload.
+This method reports successfully uploaded chunks to the platform. The platform finalizes the upload after you report all chunks.
 
-<Note title="Note">
+
 For optimal performance, report chunks in batches and in any order.
-</Note>
 </dd>
 </dl>
 </dd>
@@ -4178,7 +4172,6 @@ client = TwelveLabs(
 )
 client.embed.v_2.create(
     input_type="text",
-    model_name="marengo3.0",
     text=TextInputRequest(
         input_text="man walking a dog",
     ),
@@ -4198,15 +4191,17 @@ client.embed.v_2.create(
 <dl>
 <dd>
 
-**input_type:** `CreateEmbeddingsRequestInputType` — The type of content for which you wish to create embeddings.
-    
-</dd>
-</dl>
+**input_type:** `CreateEmbeddingsRequestInputType` 
 
-<dl>
-<dd>
+The type of content for the embeddings.
 
-**model_name:** `str` — The video understanding model you wish to use.
+
+**Values**:
+- `audio`: Creates embeddings for an audio file
+- `video`: Creates embeddings for a video file
+- `image`: Creates embeddings for an image file
+- `text`: Creates embeddings for text input
+- `text_image`: Creates embeddings for text and an image.
     
 </dd>
 </dl>
@@ -4461,7 +4456,6 @@ client = TwelveLabs(
 )
 client.embed.v_2.tasks.create(
     input_type="video",
-    model_name="marengo3.0",
     video=VideoInputRequest(
         media_source=MediaSource(
             url="https://user-bucket.com/video/long-video.mp4",
@@ -4494,19 +4488,11 @@ client.embed.v_2.tasks.create(
 
 **input_type:** `CreateAsyncEmbeddingRequestInputType` 
 
-The type of content for which you wish to create embeddings.
+The type of content for the embeddings.
 
 **Values**:
 - `audio`: Audio files
 - `video`: Video content
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**model_name:** `str` — The model you wish to use.
     
 </dd>
 </dl>
@@ -5624,7 +5610,7 @@ status=ready&status=validating
 <dl>
 <dd>
 
-**created_at:** `typing.Optional[str]` — Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets whose indexing tasks were created on the specified date at or after the given time.
+**created_at:** `typing.Optional[str]` — Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
     
 </dd>
 </dl>
@@ -5779,20 +5765,20 @@ client.indexes.indexed_assets.create(
 
 This method retrieves information about an indexed asset, including its status, metadata, and optional embeddings or transcription.
 
-**Common use cases**:
+Use this method to:
 
-- Monitor indexing progress:
-  - Call this endpoint after creating an indexed asset
-  - Check the `status` field until it shows `ready`
-  - Once ready, your content is available for search and analysis
+- Monitor the indexing progress:
+    - Call this endpoint after creating an indexed asset
+    - Check the `status` field until it shows `ready`
+    - Once ready, your content is available for search and analysis
 
-- Retrieve  asset metadata:
-  - Retrieve system metadata (duration, resolution, filename)
-  - Access user-defined metadata
+- Retrieve the asset metadata:
+    - Retrieve system metadata (duration, resolution, filename)
+    - Access user-defined metadata
 
-- Retrieve embeddings:
-  - Include the `embedding_option` parameter to retrieve video embeddings
-  - Requires the Marengo video understanding model to be enabled in your index
+- Retrieve the embeddings:
+    - Include the `embeddingOption` parameter to retrieve video embeddings
+    - Requires the Marengo video understanding model to be enabled in your index
 
 - Retrieve transcriptions:
   - Set the `transcription` parameter to `true` to retrieve spoken words from your video
@@ -5874,7 +5860,7 @@ To retrieve embeddings for a video, it must be indexed using the Marengo video u
 <dl>
 <dd>
 
-**transcription:** `typing.Optional[bool]` — The parameter indicates whether to retrieve a transcription of the spoken words for the indexed asset.
+**transcription:** `typing.Optional[bool]` — Specifies whether to retrieve a transcription of the spoken words.
     
 </dd>
 </dl>
@@ -5985,7 +5971,7 @@ client.indexes.indexed_assets.delete(
 <dl>
 <dd>
 
-Use this method to update one or more fields of the metadata of an indexed asset. Also, can delete a field by setting it to null.
+This method updates one or more fields of the metadata of an indexed asset. Also, can delete a field by setting it to `null`.
 </dd>
 </dl>
 </dd>
@@ -6499,7 +6485,7 @@ client.indexes.videos.delete(
 
 <Info>This method will be deprecated in a future version. New implementations should use the [Partial update indexed asset](/v1.3/api-reference/index-content/update) method.</Info>
 
-Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
+This method updates one or more fields of the metadata of a video. Also, can delete a field by setting it to `null`.
 </dd>
 </dl>
 </dd>

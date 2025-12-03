@@ -32,7 +32,6 @@ class RawV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -76,10 +75,15 @@ class RawV2Client:
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
 
         text : typing.Optional[TextInputRequest]
 
@@ -104,7 +108,6 @@ class RawV2Client:
             method="POST",
             json={
                 "input_type": input_type,
-                "model_name": model_name,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -120,6 +123,7 @@ class RawV2Client:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
+                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",
@@ -184,7 +188,6 @@ class AsyncRawV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -228,10 +231,15 @@ class AsyncRawV2Client:
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
 
         text : typing.Optional[TextInputRequest]
 
@@ -256,7 +264,6 @@ class AsyncRawV2Client:
             method="POST",
             json={
                 "input_type": input_type,
-                "model_name": model_name,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -272,6 +279,7 @@ class AsyncRawV2Client:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
+                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",

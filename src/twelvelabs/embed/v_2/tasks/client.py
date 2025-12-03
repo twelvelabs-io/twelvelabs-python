@@ -110,7 +110,6 @@ class TasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
-        model_name: str,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -151,14 +150,11 @@ class TasksClient:
         Parameters
         ----------
         input_type : CreateAsyncEmbeddingRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
             **Values**:
             - `audio`: Audio files
             - `video`: Video content
-
-        model_name : str
-            The model you wish to use.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -187,7 +183,6 @@ class TasksClient:
         )
         client.embed.v_2.tasks.create(
             input_type="audio",
-            model_name="marengo3.0",
             audio=AudioInputRequest(
                 media_source=MediaSource(
                     url="https://user-bucket.com/audio/long-audio.wav",
@@ -205,7 +200,7 @@ class TasksClient:
         )
         """
         _response = self._raw_client.create(
-            input_type=input_type, model_name=model_name, audio=audio, video=video, request_options=request_options
+            input_type=input_type, audio=audio, video=video, request_options=request_options
         )
         return _response.data
 
@@ -352,7 +347,6 @@ class AsyncTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
-        model_name: str,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -393,14 +387,11 @@ class AsyncTasksClient:
         Parameters
         ----------
         input_type : CreateAsyncEmbeddingRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
             **Values**:
             - `audio`: Audio files
             - `video`: Video content
-
-        model_name : str
-            The model you wish to use.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -434,7 +425,6 @@ class AsyncTasksClient:
         async def main() -> None:
             await client.embed.v_2.tasks.create(
                 input_type="audio",
-                model_name="marengo3.0",
                 audio=AudioInputRequest(
                     media_source=MediaSource(
                         url="https://user-bucket.com/audio/long-audio.wav",
@@ -455,7 +445,7 @@ class AsyncTasksClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            input_type=input_type, model_name=model_name, audio=audio, video=video, request_options=request_options
+            input_type=input_type, audio=audio, video=video, request_options=request_options
         )
         return _response.data
 
