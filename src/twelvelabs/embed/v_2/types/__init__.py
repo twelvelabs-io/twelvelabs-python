@@ -3,5 +3,6 @@
 # isort: skip_file
 
 from .create_embeddings_request_input_type import CreateEmbeddingsRequestInputType
+from .create_embeddings_request_model_name import CreateEmbeddingsRequestModelName
 
-__all__ = ["CreateEmbeddingsRequestInputType"]
+__all__ = ["CreateEmbeddingsRequestInputType", "CreateEmbeddingsRequestModelName"]

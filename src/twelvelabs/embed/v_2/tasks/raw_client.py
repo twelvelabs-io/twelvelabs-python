@@ -19,6 +19,7 @@ from ....types.embedding_task_response import EmbeddingTaskResponse
 from ....types.media_embedding_task import MediaEmbeddingTask
 from ....types.video_input_request import VideoInputRequest
 from .types.create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
+from .types.create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
 from .types.tasks_create_response import TasksCreateResponse
 from .types.tasks_list_response import TasksListResponse
 
@@ -131,6 +132,7 @@ class RawTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
+        model_name: CreateAsyncEmbeddingRequestModelName,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -177,6 +179,9 @@ class RawTasksClient:
             - `audio`: Audio files
             - `video`: Video content
 
+        model_name : CreateAsyncEmbeddingRequestModelName
+            The model you wish to use. Only `"marengo3.0"` is supported.
+
         audio : typing.Optional[AudioInputRequest]
 
         video : typing.Optional[VideoInputRequest]
@@ -194,13 +199,13 @@ class RawTasksClient:
             method="POST",
             json={
                 "input_type": input_type,
+                "model_name": model_name,
                 "audio": convert_and_respect_annotation_metadata(
                     object_=audio, annotation=AudioInputRequest, direction="write"
                 ),
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
-                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",
@@ -411,6 +416,7 @@ class AsyncRawTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
+        model_name: CreateAsyncEmbeddingRequestModelName,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -457,6 +463,9 @@ class AsyncRawTasksClient:
             - `audio`: Audio files
             - `video`: Video content
 
+        model_name : CreateAsyncEmbeddingRequestModelName
+            The model you wish to use. Only `"marengo3.0"` is supported.
+
         audio : typing.Optional[AudioInputRequest]
 
         video : typing.Optional[VideoInputRequest]
@@ -474,13 +483,13 @@ class AsyncRawTasksClient:
             method="POST",
             json={
                 "input_type": input_type,
+                "model_name": model_name,
                 "audio": convert_and_respect_annotation_metadata(
                     object_=audio, annotation=AudioInputRequest, direction="write"
                 ),
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
-                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",

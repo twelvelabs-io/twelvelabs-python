@@ -19,6 +19,7 @@ from ...types.text_image_input_request import TextImageInputRequest
 from ...types.text_input_request import TextInputRequest
 from ...types.video_input_request import VideoInputRequest
 from .types.create_embeddings_request_input_type import CreateEmbeddingsRequestInputType
+from .types.create_embeddings_request_model_name import CreateEmbeddingsRequestModelName
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,6 +33,7 @@ class RawV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
+        model_name: CreateEmbeddingsRequestModelName,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -85,6 +87,9 @@ class RawV2Client:
             - `text`: Creates embeddings for text input
             - `text_image`: Creates embeddings for text and an image.
 
+        model_name : CreateEmbeddingsRequestModelName
+            The video understanding model to use. Only "marengo3.0" is supported.
+
         text : typing.Optional[TextInputRequest]
 
         image : typing.Optional[ImageInputRequest]
@@ -108,6 +113,7 @@ class RawV2Client:
             method="POST",
             json={
                 "input_type": input_type,
+                "model_name": model_name,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -123,7 +129,6 @@ class RawV2Client:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
-                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",
@@ -188,6 +193,7 @@ class AsyncRawV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
+        model_name: CreateEmbeddingsRequestModelName,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -241,6 +247,9 @@ class AsyncRawV2Client:
             - `text`: Creates embeddings for text input
             - `text_image`: Creates embeddings for text and an image.
 
+        model_name : CreateEmbeddingsRequestModelName
+            The video understanding model to use. Only "marengo3.0" is supported.
+
         text : typing.Optional[TextInputRequest]
 
         image : typing.Optional[ImageInputRequest]
@@ -264,6 +273,7 @@ class AsyncRawV2Client:
             method="POST",
             json={
                 "input_type": input_type,
+                "model_name": model_name,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -279,7 +289,6 @@ class AsyncRawV2Client:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
-                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",

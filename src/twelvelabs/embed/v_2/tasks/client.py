@@ -11,6 +11,7 @@ from ....types.media_embedding_task import MediaEmbeddingTask
 from ....types.video_input_request import VideoInputRequest
 from .raw_client import AsyncRawTasksClient, RawTasksClient
 from .types.create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
+from .types.create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
 from .types.tasks_create_response import TasksCreateResponse
 
 # this is used as the default value for optional parameters
@@ -110,6 +111,7 @@ class TasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
+        model_name: CreateAsyncEmbeddingRequestModelName,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -156,6 +158,9 @@ class TasksClient:
             - `audio`: Audio files
             - `video`: Video content
 
+        model_name : CreateAsyncEmbeddingRequestModelName
+            The model you wish to use. Only `"marengo3.0"` is supported.
+
         audio : typing.Optional[AudioInputRequest]
 
         video : typing.Optional[VideoInputRequest]
@@ -183,6 +188,7 @@ class TasksClient:
         )
         client.embed.v_2.tasks.create(
             input_type="audio",
+            model_name="marengo3.0",
             audio=AudioInputRequest(
                 media_source=MediaSource(
                     url="https://user-bucket.com/audio/long-audio.wav",
@@ -190,6 +196,7 @@ class TasksClient:
                 start_sec=0.0,
                 end_sec=3600.0,
                 segmentation=AudioSegmentation(
+                    strategy="fixed",
                     fixed=AudioSegmentationFixed(
                         duration_sec=6,
                     ),
@@ -200,7 +207,7 @@ class TasksClient:
         )
         """
         _response = self._raw_client.create(
-            input_type=input_type, audio=audio, video=video, request_options=request_options
+            input_type=input_type, model_name=model_name, audio=audio, video=video, request_options=request_options
         )
         return _response.data
 
@@ -347,6 +354,7 @@ class AsyncTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
+        model_name: CreateAsyncEmbeddingRequestModelName,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -393,6 +401,9 @@ class AsyncTasksClient:
             - `audio`: Audio files
             - `video`: Video content
 
+        model_name : CreateAsyncEmbeddingRequestModelName
+            The model you wish to use. Only `"marengo3.0"` is supported.
+
         audio : typing.Optional[AudioInputRequest]
 
         video : typing.Optional[VideoInputRequest]
@@ -425,6 +436,7 @@ class AsyncTasksClient:
         async def main() -> None:
             await client.embed.v_2.tasks.create(
                 input_type="audio",
+                model_name="marengo3.0",
                 audio=AudioInputRequest(
                     media_source=MediaSource(
                         url="https://user-bucket.com/audio/long-audio.wav",
@@ -432,6 +444,7 @@ class AsyncTasksClient:
                     start_sec=0.0,
                     end_sec=3600.0,
                     segmentation=AudioSegmentation(
+                        strategy="fixed",
                         fixed=AudioSegmentationFixed(
                             duration_sec=6,
                         ),
@@ -445,7 +458,7 @@ class AsyncTasksClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            input_type=input_type, audio=audio, video=video, request_options=request_options
+            input_type=input_type, model_name=model_name, audio=audio, video=video, request_options=request_options
         )
         return _response.data
 

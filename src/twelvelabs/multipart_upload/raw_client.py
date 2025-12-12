@@ -23,6 +23,7 @@ from ..types.incomplete_upload_summary import IncompleteUploadSummary
 from ..types.list_incomplete_uploads_response import ListIncompleteUploadsResponse
 from ..types.report_chunk_batch_response import ReportChunkBatchResponse
 from ..types.request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
+from .types.create_asset_upload_request_type import CreateAssetUploadRequestType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -132,7 +133,12 @@ class RawMultipartUploadClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
-        self, *, filename: str, total_size: int, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        filename: str,
+        type: CreateAssetUploadRequestType,
+        total_size: int,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateAssetUploadResponse]:
         """
         This method creates a multipart upload session.
@@ -150,6 +156,9 @@ class RawMultipartUploadClient:
         ----------
         filename : str
             The original file name of the asset.
+
+        type : CreateAssetUploadRequestType
+            The type of asset you want to upload.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -170,8 +179,8 @@ class RawMultipartUploadClient:
             method="POST",
             json={
                 "filename": filename,
+                "type": type,
                 "total_size": total_size,
-                "type": "video",
             },
             headers={
                 "content-type": "application/json",
@@ -652,7 +661,12 @@ class AsyncRawMultipartUploadClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
-        self, *, filename: str, total_size: int, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        filename: str,
+        type: CreateAssetUploadRequestType,
+        total_size: int,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateAssetUploadResponse]:
         """
         This method creates a multipart upload session.
@@ -670,6 +684,9 @@ class AsyncRawMultipartUploadClient:
         ----------
         filename : str
             The original file name of the asset.
+
+        type : CreateAssetUploadRequestType
+            The type of asset you want to upload.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -690,8 +707,8 @@ class AsyncRawMultipartUploadClient:
             method="POST",
             json={
                 "filename": filename,
+                "type": type,
                 "total_size": total_size,
-                "type": "video",
             },
             headers={
                 "content-type": "application/json",

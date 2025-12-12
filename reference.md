@@ -400,6 +400,7 @@ response = client.analyze_stream(
     prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
     temperature=0.2,
     response_format=ResponseFormat(
+        type="json_schema",
         json_schema={
             "type": "object",
             "properties": {
@@ -541,6 +542,7 @@ client.analyze(
     prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
     temperature=0.2,
     response_format=ResponseFormat(
+        type="json_schema",
         json_schema={
             "type": "object",
             "properties": {
@@ -2125,6 +2127,7 @@ client = TwelveLabs(
 )
 client.multipart_upload.create(
     filename="my-video.mp4",
+    type="video",
     total_size=104857600,
 )
 
@@ -2143,6 +2146,14 @@ client.multipart_upload.create(
 <dd>
 
 **filename:** `str` — The original file name of the asset.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `CreateAssetUploadRequestType` — The type of asset you want to upload.
     
 </dd>
 </dl>
@@ -2327,6 +2338,7 @@ client.multipart_upload.report_chunk_batch(
         CompletedChunk(
             chunk_index=1,
             proof="d41d8cd98f00b204e9800998ecf8427e",
+            proof_type="etag",
             chunk_size=5242880,
         )
     ],
@@ -3333,7 +3345,7 @@ For detailed guidance and version-specific behavior, see the [Search options](/v
 <dl>
 <dd>
 
-**query_media_type:** `typing.Optional[typing.Literal["image"]]` — The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
+**query_media_type:** `typing.Optional[SearchCreateRequestQueryMediaType]` — The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
     
 </dd>
 </dl>
@@ -4172,6 +4184,7 @@ client = TwelveLabs(
 )
 client.embed.v_2.create(
     input_type="text",
+    model_name="marengo3.0",
     text=TextInputRequest(
         input_text="man walking a dog",
     ),
@@ -4202,6 +4215,14 @@ The type of content for the embeddings.
 - `image`: Creates embeddings for an image file
 - `text`: Creates embeddings for text input
 - `text_image`: Creates embeddings for text and an image.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**model_name:** `CreateEmbeddingsRequestModelName` — The video understanding model to use. Only "marengo3.0" is supported.
     
 </dd>
 </dl>
@@ -4456,6 +4477,7 @@ client = TwelveLabs(
 )
 client.embed.v_2.tasks.create(
     input_type="video",
+    model_name="marengo3.0",
     video=VideoInputRequest(
         media_source=MediaSource(
             url="https://user-bucket.com/video/long-video.mp4",
@@ -4493,6 +4515,14 @@ The type of content for the embeddings.
 **Values**:
 - `audio`: Audio files
 - `video`: Video content
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**model_name:** `CreateAsyncEmbeddingRequestModelName` — The model you wish to use. Only `"marengo3.0"` is supported.
     
 </dd>
 </dl>

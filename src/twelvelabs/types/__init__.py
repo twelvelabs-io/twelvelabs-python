@@ -13,6 +13,7 @@ from .audio_input_request_embedding_scope_item import AudioInputRequestEmbedding
 from .audio_segment import AudioSegment
 from .audio_segmentation import AudioSegmentation
 from .audio_segmentation_fixed import AudioSegmentationFixed
+from .audio_segmentation_strategy import AudioSegmentationStrategy
 from .bad_request_error_body import BadRequestErrorBody
 from .base_embedding_metadata import BaseEmbeddingMetadata
 from .base_segment import BaseSegment
@@ -22,6 +23,7 @@ from .bulk_create_entity_response_errors_item import BulkCreateEntityResponseErr
 from .chunk_info import ChunkInfo
 from .chunk_info_status import ChunkInfoStatus
 from .completed_chunk import CompletedChunk
+from .completed_chunk_proof_type import CompletedChunkProofType
 from .confidence import Confidence
 from .create_asset_upload_response import CreateAssetUploadResponse
 from .created_at import CreatedAt
@@ -100,6 +102,7 @@ from .rank import Rank
 from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
 from .response_format import ResponseFormat
+from .response_format_type import ResponseFormatType
 from .score_search_terms import ScoreSearchTerms
 from .search_item import SearchItem
 from .search_item_clips_item import SearchItemClipsItem
@@ -174,6 +177,7 @@ __all__ = [
     "AudioSegment",
     "AudioSegmentation",
     "AudioSegmentationFixed",
+    "AudioSegmentationStrategy",
     "BadRequestErrorBody",
     "BaseEmbeddingMetadata",
     "BaseSegment",
@@ -183,6 +187,7 @@ __all__ = [
     "ChunkInfo",
     "ChunkInfoStatus",
     "CompletedChunk",
+    "CompletedChunkProofType",
     "Confidence",
     "CreateAssetUploadResponse",
     "CreatedAt",
@@ -257,6 +262,7 @@ __all__ = [
     "ReportChunkBatchResponse",
     "RequestAdditionalPresignedUrLsResponse",
     "ResponseFormat",
+    "ResponseFormatType",
     "ScoreSearchTerms",
     "SearchItem",
     "SearchItemClipsItem",

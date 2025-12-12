@@ -12,6 +12,7 @@ from ..types.incomplete_upload_summary import IncompleteUploadSummary
 from ..types.report_chunk_batch_response import ReportChunkBatchResponse
 from ..types.request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
 from .raw_client import AsyncRawMultipartUploadClient, RawMultipartUploadClient
+from .types.create_asset_upload_request_type import CreateAssetUploadRequestType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -85,7 +86,12 @@ class MultipartUploadClient:
         )
 
     def create(
-        self, *, filename: str, total_size: int, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        filename: str,
+        type: CreateAssetUploadRequestType,
+        total_size: int,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAssetUploadResponse:
         """
         This method creates a multipart upload session.
@@ -103,6 +109,9 @@ class MultipartUploadClient:
         ----------
         filename : str
             The original file name of the asset.
+
+        type : CreateAssetUploadRequestType
+            The type of asset you want to upload.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -127,10 +136,13 @@ class MultipartUploadClient:
         )
         client.multipart_upload.create(
             filename="my-video.mp4",
+            type="video",
             total_size=104857600,
         )
         """
-        _response = self._raw_client.create(filename=filename, total_size=total_size, request_options=request_options)
+        _response = self._raw_client.create(
+            filename=filename, type=type, total_size=total_size, request_options=request_options
+        )
         return _response.data
 
     def get_status(
@@ -239,6 +251,7 @@ class MultipartUploadClient:
                 CompletedChunk(
                     chunk_index=1,
                     proof="d41d8cd98f00b204e9800998ecf8427e",
+                    proof_type="etag",
                     chunk_size=5242880,
                 )
             ],
@@ -375,7 +388,12 @@ class AsyncMultipartUploadClient:
         )
 
     async def create(
-        self, *, filename: str, total_size: int, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        filename: str,
+        type: CreateAssetUploadRequestType,
+        total_size: int,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAssetUploadResponse:
         """
         This method creates a multipart upload session.
@@ -393,6 +411,9 @@ class AsyncMultipartUploadClient:
         ----------
         filename : str
             The original file name of the asset.
+
+        type : CreateAssetUploadRequestType
+            The type of asset you want to upload.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -422,6 +443,7 @@ class AsyncMultipartUploadClient:
         async def main() -> None:
             await client.multipart_upload.create(
                 filename="my-video.mp4",
+                type="video",
                 total_size=104857600,
             )
 
@@ -429,7 +451,7 @@ class AsyncMultipartUploadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            filename=filename, total_size=total_size, request_options=request_options
+            filename=filename, type=type, total_size=total_size, request_options=request_options
         )
         return _response.data
 
@@ -555,6 +577,7 @@ class AsyncMultipartUploadClient:
                     CompletedChunk(
                         chunk_index=1,
                         proof="d41d8cd98f00b204e9800998ecf8427e",
+                        proof_type="etag",
                         chunk_size=5242880,
                     )
                 ],

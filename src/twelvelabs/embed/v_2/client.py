@@ -13,6 +13,7 @@ from ...types.video_input_request import VideoInputRequest
 from .raw_client import AsyncRawV2Client, RawV2Client
 from .tasks.client import AsyncTasksClient, TasksClient
 from .types.create_embeddings_request_input_type import CreateEmbeddingsRequestInputType
+from .types.create_embeddings_request_model_name import CreateEmbeddingsRequestModelName
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -38,6 +39,7 @@ class V2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
+        model_name: CreateEmbeddingsRequestModelName,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -91,6 +93,9 @@ class V2Client:
             - `text`: Creates embeddings for text input
             - `text_image`: Creates embeddings for text and an image.
 
+        model_name : CreateEmbeddingsRequestModelName
+            The video understanding model to use. Only "marengo3.0" is supported.
+
         text : typing.Optional[TextInputRequest]
 
         image : typing.Optional[ImageInputRequest]
@@ -118,6 +123,7 @@ class V2Client:
         )
         client.embed.v_2.create(
             input_type="text",
+            model_name="marengo3.0",
             text=TextInputRequest(
                 input_text="man walking a dog",
             ),
@@ -125,6 +131,7 @@ class V2Client:
         """
         _response = self._raw_client.create(
             input_type=input_type,
+            model_name=model_name,
             text=text,
             image=image,
             text_image=text_image,
@@ -155,6 +162,7 @@ class AsyncV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
+        model_name: CreateEmbeddingsRequestModelName,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -207,6 +215,9 @@ class AsyncV2Client:
             - `image`: Creates embeddings for an image file
             - `text`: Creates embeddings for text input
             - `text_image`: Creates embeddings for text and an image.
+
+        model_name : CreateEmbeddingsRequestModelName
+            The video understanding model to use. Only "marengo3.0" is supported.
 
         text : typing.Optional[TextInputRequest]
 
@@ -240,6 +251,7 @@ class AsyncV2Client:
         async def main() -> None:
             await client.embed.v_2.create(
                 input_type="text",
+                model_name="marengo3.0",
                 text=TextInputRequest(
                     input_text="man walking a dog",
                 ),
@@ -250,6 +262,7 @@ class AsyncV2Client:
         """
         _response = await self._raw_client.create(
             input_type=input_type,
+            model_name=model_name,
             text=text,
             image=image,
             text_image=text_image,

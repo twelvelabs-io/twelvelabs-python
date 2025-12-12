@@ -4,6 +4,7 @@
 
 from .search_create_request_group_by import SearchCreateRequestGroupBy
 from .search_create_request_operator import SearchCreateRequestOperator
+from .search_create_request_query_media_type import SearchCreateRequestQueryMediaType
 from .search_create_request_search_options_item import SearchCreateRequestSearchOptionsItem
 from .search_create_request_sort_option import SearchCreateRequestSortOption
 from .search_create_request_transcription_options_item import SearchCreateRequestTranscriptionOptionsItem
@@ -13,6 +14,7 @@ from .search_retrieve_response_page_info import SearchRetrieveResponsePageInfo
 __all__ = [
     "SearchCreateRequestGroupBy",
     "SearchCreateRequestOperator",
+    "SearchCreateRequestQueryMediaType",
     "SearchCreateRequestSearchOptionsItem",
     "SearchCreateRequestSortOption",
     "SearchCreateRequestTranscriptionOptionsItem",

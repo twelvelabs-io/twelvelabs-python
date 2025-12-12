@@ -7,6 +7,7 @@ import typing_extensions
 from .....core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .....core.serialization import FieldMetadata
 from .....types.embedding_data import EmbeddingData
+from .tasks_create_response_status import TasksCreateResponseStatus
 
 
 class TasksCreateResponse(UniversalBaseModel):
@@ -15,7 +16,7 @@ class TasksCreateResponse(UniversalBaseModel):
     The unique identifier of the embedding task
     """
 
-    status: typing.Literal["processing"] = pydantic.Field(default="processing")
+    status: TasksCreateResponseStatus = pydantic.Field()
     """
     The initial status of the embedding task.
     """
