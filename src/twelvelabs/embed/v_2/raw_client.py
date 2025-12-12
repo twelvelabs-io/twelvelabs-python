@@ -32,7 +32,6 @@ class RawV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -69,17 +68,22 @@ class RawV2Client:
           - Maximum file size for base64 encoded strings: 36 MB
           - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
           - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 3840x2160 pixels
+          - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
 
         text : typing.Optional[TextInputRequest]
 
@@ -104,7 +108,6 @@ class RawV2Client:
             method="POST",
             json={
                 "input_type": input_type,
-                "model_name": model_name,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -120,6 +123,7 @@ class RawV2Client:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
+                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",
@@ -184,7 +188,6 @@ class AsyncRawV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -221,17 +224,22 @@ class AsyncRawV2Client:
           - Maximum file size for base64 encoded strings: 36 MB
           - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
           - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 3840x2160 pixels
+          - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
 
         text : typing.Optional[TextInputRequest]
 
@@ -256,7 +264,6 @@ class AsyncRawV2Client:
             method="POST",
             json={
                 "input_type": input_type,
-                "model_name": model_name,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -272,6 +279,7 @@ class AsyncRawV2Client:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
+                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",

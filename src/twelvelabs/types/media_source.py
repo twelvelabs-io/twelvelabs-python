@@ -29,7 +29,7 @@ class MediaSource(UniversalBaseModel):
 
     asset_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The unique identifier of an asset uploaded via the Assets API.
+    The unique identifier of an asset from a [direct](/v1.3/api-reference/upload-content) or [multipart](/v1.3/api-reference/upload-content/multipart-uploads) upload.
     """
 
     if IS_PYDANTIC_V2:

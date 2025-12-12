@@ -38,7 +38,6 @@ class V2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -75,17 +74,22 @@ class V2Client:
           - Maximum file size for base64 encoded strings: 36 MB
           - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
           - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 3840x2160 pixels
+          - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
 
         text : typing.Optional[TextInputRequest]
 
@@ -114,7 +118,6 @@ class V2Client:
         )
         client.embed.v_2.create(
             input_type="text",
-            model_name="marengo3.0",
             text=TextInputRequest(
                 input_text="man walking a dog",
             ),
@@ -122,7 +125,6 @@ class V2Client:
         """
         _response = self._raw_client.create(
             input_type=input_type,
-            model_name=model_name,
             text=text,
             image=image,
             text_image=text_image,
@@ -153,7 +155,6 @@ class AsyncV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -190,17 +191,22 @@ class AsyncV2Client:
           - Maximum file size for base64 encoded strings: 36 MB
           - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
           - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 3840x2160 pixels
+          - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
 
         text : typing.Optional[TextInputRequest]
 
@@ -234,7 +240,6 @@ class AsyncV2Client:
         async def main() -> None:
             await client.embed.v_2.create(
                 input_type="text",
-                model_name="marengo3.0",
                 text=TextInputRequest(
                     input_text="man walking a dog",
                 ),
@@ -245,7 +250,6 @@ class AsyncV2Client:
         """
         _response = await self._raw_client.create(
             input_type=input_type,
-            model_name=model_name,
             text=text,
             image=image,
             text_image=text_image,

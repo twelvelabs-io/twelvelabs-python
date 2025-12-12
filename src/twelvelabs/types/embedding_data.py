@@ -18,10 +18,36 @@ class EmbeddingData(UniversalBaseModel):
     The embedding vector for the content.
     """
 
-    embedding_option: typing.Optional[EmbeddingDataEmbeddingOption] = None
-    embedding_scope: typing.Optional[EmbeddingDataEmbeddingScope] = None
-    start_sec: typing.Optional[float] = None
-    end_sec: typing.Optional[float] = None
+    embedding_option: typing.Optional[EmbeddingDataEmbeddingOption] = pydantic.Field(default=None)
+    """
+    The type of embedding generated.
+    
+     **Values**:
+    - `visual`: Embedding based on visual content (video only)
+    - `audio`: Embedding based on audio content
+    - `transcription`: Embedding based on transcribed speech
+    - `null`: For text and image embeddings
+    """
+
+    embedding_scope: typing.Optional[EmbeddingDataEmbeddingScope] = pydantic.Field(default=None)
+    """
+    The scope for which the embedding was generated.
+    
+    **Values**:
+    - `clip`: Embedding for a segment
+    - `asset`: Embedding for the entire file. Use this scope for videos up to 10-30 seconds to maintain optimal performance.
+    - `null`: For text and image embeddings
+    """
+
+    start_sec: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The start time in seconds for this segment. This field is `null` for text and image embeddings.
+    """
+
+    end_sec: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The end time in seconds for this segment. This field is `null` for text and image embeddings.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

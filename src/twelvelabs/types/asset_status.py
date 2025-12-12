@@ -2,4 +2,4 @@
 
 import typing
 
-AssetStatus = typing.Union[typing.Literal["waiting", "processing", "ready"], typing.Any]
+AssetStatus = typing.Union[typing.Literal["failed", "processing", "ready"], typing.Any]

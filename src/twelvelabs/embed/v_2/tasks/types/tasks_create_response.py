@@ -22,7 +22,7 @@ class TasksCreateResponse(UniversalBaseModel):
 
     data: typing.Optional[typing.List[EmbeddingData]] = pydantic.Field(default=None)
     """
-    Array of embedding results (only when status is ready)
+    An array of embedding results when `status` is `ready`, or `null` when `status` is `processing` or `failed`.
     """
 
     if IS_PYDANTIC_V2:

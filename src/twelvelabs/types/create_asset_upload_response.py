@@ -26,12 +26,11 @@ class CreateAssetUploadResponse(UniversalBaseModel):
 
     upload_urls: typing.Optional[typing.List[PresignedUrlChunk]] = pydantic.Field(default=None)
     """
-    The initial set of presigned URLs for uploading chunks. Each URL corresponds to a specific chunk.
+    An array containing the initial set of presigned URLs for uploading chunks. Each URL corresponds to a specific chunk.
     
-    <Note title="Notes>
-    - URLs expire after 1 hour.
-    - Depending on the size of the file, this initial set may not include URLs for all chunks. You can request more using the [`POST`](/v1.3/api-reference/multipart-uploads/get-additional-presigned-urls) method of the `/assets/multipart-uploads/{upload_id}/presigned-urls` endpoint.
-    </Note>
+    Note the following about the presigned URLs:
+    - URLs expire after one hour.
+    - Depending on the size of the file, the initial set may not include URLs for all chunks. If you need more URLs, you can request additional ones using the [`POST`](/v1.3/api-reference/multipart-uploads/get-additional-presigned-urls) method of the `/assets/multipart-uploads/{upload_id}/presigned-urls` endpoint.
     """
 
     upload_headers: typing.Optional[typing.Dict[str, str]] = None

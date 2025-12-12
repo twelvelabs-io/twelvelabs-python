@@ -149,7 +149,7 @@ class RawMultipartUploadClient:
         Parameters
         ----------
         filename : str
-            Original filename of the asset
+            The original file name of the asset.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -238,14 +238,14 @@ class RawMultipartUploadClient:
         """
         This method provides information about an upload session, including its current status, chunk-level progress, and completion state.
 
-        Use this endpoint to:
+        Use this method to:
         - Verify upload completion (`status` = `completed`)
         - Identify any failed chunks that require a retry
         - Monitor the upload progress by comparing `uploaded_size` with `total_size`
         - Determine if the session has expired
         - Retrieve the status information for each chunk
 
-         You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+        You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
 
         Parameters
         ----------
@@ -359,11 +359,10 @@ class RawMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ReportChunkBatchResponse]:
         """
-        This method notifies the platform which chunks have been successfully uploaded. When all chunks are reported, the platform finalizes the upload.
+        This method reports successfully uploaded chunks to the platform. The platform finalizes the upload after you report all chunks.
 
-        <Note title="Note">
+
         For optimal performance, report chunks in batches and in any order.
-        </Note>
 
         Parameters
         ----------
@@ -670,7 +669,7 @@ class AsyncRawMultipartUploadClient:
         Parameters
         ----------
         filename : str
-            Original filename of the asset
+            The original file name of the asset.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -759,14 +758,14 @@ class AsyncRawMultipartUploadClient:
         """
         This method provides information about an upload session, including its current status, chunk-level progress, and completion state.
 
-        Use this endpoint to:
+        Use this method to:
         - Verify upload completion (`status` = `completed`)
         - Identify any failed chunks that require a retry
         - Monitor the upload progress by comparing `uploaded_size` with `total_size`
         - Determine if the session has expired
         - Retrieve the status information for each chunk
 
-         You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+        You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
 
         Parameters
         ----------
@@ -883,11 +882,10 @@ class AsyncRawMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ReportChunkBatchResponse]:
         """
-        This method notifies the platform which chunks have been successfully uploaded. When all chunks are reported, the platform finalizes the upload.
+        This method reports successfully uploaded chunks to the platform. The platform finalizes the upload after you report all chunks.
 
-        <Note title="Note">
+
         For optimal performance, report chunks in batches and in any order.
-        </Note>
 
         Parameters
         ----------

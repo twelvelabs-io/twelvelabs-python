@@ -131,7 +131,6 @@ class RawTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
-        model_name: str,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -153,7 +152,7 @@ class RawTasksClient:
           - Maximum duration: 4 hours
           - Maximum file size: 4 GB
           - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Resolution: 360x360 to 3840x2160 pixels
+          - Resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
 
           **Audio**:
@@ -172,14 +171,11 @@ class RawTasksClient:
         Parameters
         ----------
         input_type : CreateAsyncEmbeddingRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
             **Values**:
             - `audio`: Audio files
             - `video`: Video content
-
-        model_name : str
-            The model you wish to use.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -198,13 +194,13 @@ class RawTasksClient:
             method="POST",
             json={
                 "input_type": input_type,
-                "model_name": model_name,
                 "audio": convert_and_respect_annotation_metadata(
                     object_=audio, annotation=AudioInputRequest, direction="write"
                 ),
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
+                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",
@@ -415,7 +411,6 @@ class AsyncRawTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
-        model_name: str,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -437,7 +432,7 @@ class AsyncRawTasksClient:
           - Maximum duration: 4 hours
           - Maximum file size: 4 GB
           - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Resolution: 360x360 to 3840x2160 pixels
+          - Resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
 
           **Audio**:
@@ -456,14 +451,11 @@ class AsyncRawTasksClient:
         Parameters
         ----------
         input_type : CreateAsyncEmbeddingRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
             **Values**:
             - `audio`: Audio files
             - `video`: Video content
-
-        model_name : str
-            The model you wish to use.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -482,13 +474,13 @@ class AsyncRawTasksClient:
             method="POST",
             json={
                 "input_type": input_type,
-                "model_name": model_name,
                 "audio": convert_and_respect_annotation_metadata(
                     object_=audio, annotation=AudioInputRequest, direction="write"
                 ),
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
                 ),
+                "model_name": "marengo3.0",
             },
             headers={
                 "content-type": "application/json",
