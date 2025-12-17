@@ -11,6 +11,7 @@ from ....types.media_embedding_task import MediaEmbeddingTask
 from ....types.video_input_request import VideoInputRequest
 from .raw_client import AsyncRawTasksClient, RawTasksClient
 from .types.create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
+from .types.create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
 from .types.tasks_create_response import TasksCreateResponse
 
 # this is used as the default value for optional parameters
@@ -110,7 +111,7 @@ class TasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
-        model_name: str,
+        model_name: CreateAsyncEmbeddingRequestModelName,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -132,7 +133,7 @@ class TasksClient:
           - Maximum duration: 4 hours
           - Maximum file size: 4 GB
           - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Resolution: 360x360 to 3840x2160 pixels
+          - Resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
 
           **Audio**:
@@ -151,14 +152,14 @@ class TasksClient:
         Parameters
         ----------
         input_type : CreateAsyncEmbeddingRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
             **Values**:
             - `audio`: Audio files
             - `video`: Video content
 
-        model_name : str
-            The model you wish to use.
+        model_name : CreateAsyncEmbeddingRequestModelName
+            The model you wish to use. Only `"marengo3.0"` is supported.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -195,6 +196,7 @@ class TasksClient:
                 start_sec=0.0,
                 end_sec=3600.0,
                 segmentation=AudioSegmentation(
+                    strategy="fixed",
                     fixed=AudioSegmentationFixed(
                         duration_sec=6,
                     ),
@@ -352,7 +354,7 @@ class AsyncTasksClient:
         self,
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
-        model_name: str,
+        model_name: CreateAsyncEmbeddingRequestModelName,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -374,7 +376,7 @@ class AsyncTasksClient:
           - Maximum duration: 4 hours
           - Maximum file size: 4 GB
           - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Resolution: 360x360 to 3840x2160 pixels
+          - Resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
 
           **Audio**:
@@ -393,14 +395,14 @@ class AsyncTasksClient:
         Parameters
         ----------
         input_type : CreateAsyncEmbeddingRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
             **Values**:
             - `audio`: Audio files
             - `video`: Video content
 
-        model_name : str
-            The model you wish to use.
+        model_name : CreateAsyncEmbeddingRequestModelName
+            The model you wish to use. Only `"marengo3.0"` is supported.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -442,6 +444,7 @@ class AsyncTasksClient:
                     start_sec=0.0,
                     end_sec=3600.0,
                     segmentation=AudioSegmentation(
+                        strategy="fixed",
                         fixed=AudioSegmentationFixed(
                             duration_sec=6,
                         ),

@@ -14,10 +14,11 @@ from .tasks import (
     TasksStatusResponse,
     TasksStatusResponseVideoEmbedding,
 )
-from .v_2 import CreateEmbeddingsRequestInputType
+from .v_2 import CreateEmbeddingsRequestInputType, CreateEmbeddingsRequestModelName
 
 __all__ = [
     "CreateEmbeddingsRequestInputType",
+    "CreateEmbeddingsRequestModelName",
     "TasksCreateRequestVideoEmbeddingScopeItem",
     "TasksCreateResponse",
     "TasksListResponse",

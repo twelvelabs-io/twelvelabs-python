@@ -289,7 +289,7 @@ class VideosClient:
         """
         <Info>This method will be deprecated in a future version. New implementations should use the [Partial update indexed asset](/v1.3/api-reference/index-content/update) method.</Info>
 
-        Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
+        This method updates one or more fields of the metadata of a video. Also, can delete a field by setting it to `null`.
 
         Parameters
         ----------
@@ -632,7 +632,7 @@ class AsyncVideosClient:
         """
         <Info>This method will be deprecated in a future version. New implementations should use the [Partial update indexed asset](/v1.3/api-reference/index-content/update) method.</Info>
 
-        Use this method to update one or more fields of the metadata of a video. Also, can delete a field by setting it to null.
+        This method updates one or more fields of the metadata of a video. Also, can delete a field by setting it to `null`.
 
         Parameters
         ----------

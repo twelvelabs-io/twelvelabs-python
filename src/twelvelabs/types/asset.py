@@ -32,10 +32,10 @@ class Asset(UniversalBaseModel):
 
     status: typing.Optional[AssetStatus] = pydantic.Field(default=None)
     """
-    Indicates the current state of the asset.
+    Indicates the current status of the asset.
     
     **Values**:
-    - `waiting`: The platform is preparing to process the upload
+    - `failed`: The platform failed to process the upload
     - `processing`: The platform is processing the uploaded file
     - `ready`: The asset is ready to use
     """
@@ -48,20 +48,6 @@ class Asset(UniversalBaseModel):
     file_type: typing.Optional[str] = pydantic.Field(default=None)
     """
     The MIME type of the asset file.
-    """
-
-    url: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The URL where you can access the asset file. Use this URL to preview or download the asset. 
-    
-    <Note title="Note">
-    This URL expires after the time specified in the `url_expires_at` field. After expiration, you must retrieve the asset again to obtain a new URL.
-    </Note>
-    """
-
-    url_expires_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
-    """
-    The date and time, in RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the URL expires. After this time, the URL in the `url` field becomes invalid. Retrieve the asset again to obtain a new URL.
     """
 
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)

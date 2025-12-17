@@ -122,7 +122,7 @@ class IndexedAssetsClient:
             Filter by size. Expressed in bytes.
 
         created_at : typing.Optional[str]
-            Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets whose indexing tasks were created on the specified date at or after the given time.
+            Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
 
         updated_at : typing.Optional[str]
             This filter applies only to indexed assets updated using the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
@@ -263,20 +263,20 @@ class IndexedAssetsClient:
         """
         This method retrieves information about an indexed asset, including its status, metadata, and optional embeddings or transcription.
 
-        **Common use cases**:
+        Use this method to:
 
-        - Monitor indexing progress:
-          - Call this endpoint after creating an indexed asset
-          - Check the `status` field until it shows `ready`
-          - Once ready, your content is available for search and analysis
+        - Monitor the indexing progress:
+            - Call this endpoint after creating an indexed asset
+            - Check the `status` field until it shows `ready`
+            - Once ready, your content is available for search and analysis
 
-        - Retrieve  asset metadata:
-          - Retrieve system metadata (duration, resolution, filename)
-          - Access user-defined metadata
+        - Retrieve the asset metadata:
+            - Retrieve system metadata (duration, resolution, filename)
+            - Access user-defined metadata
 
-        - Retrieve embeddings:
-          - Include the `embedding_option` parameter to retrieve video embeddings
-          - Requires the Marengo video understanding model to be enabled in your index
+        - Retrieve the embeddings:
+            - Include the `embeddingOption` parameter to retrieve video embeddings
+            - Requires the Marengo video understanding model to be enabled in your index
 
         - Retrieve transcriptions:
           - Set the `transcription` parameter to `true` to retrieve spoken words from your video
@@ -301,7 +301,7 @@ class IndexedAssetsClient:
             </Note>
 
         transcription : typing.Optional[bool]
-            The parameter indicates whether to retrieve a transcription of the spoken words for the indexed asset.
+            Specifies whether to retrieve a transcription of the spoken words.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -378,7 +378,7 @@ class IndexedAssetsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update one or more fields of the metadata of an indexed asset. Also, can delete a field by setting it to null.
+        This method updates one or more fields of the metadata of an indexed asset. Also, can delete a field by setting it to `null`.
 
         Parameters
         ----------
@@ -525,7 +525,7 @@ class AsyncIndexedAssetsClient:
             Filter by size. Expressed in bytes.
 
         created_at : typing.Optional[str]
-            Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets whose indexing tasks were created on the specified date at or after the given time.
+            Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
 
         updated_at : typing.Optional[str]
             This filter applies only to indexed assets updated using the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
@@ -683,20 +683,20 @@ class AsyncIndexedAssetsClient:
         """
         This method retrieves information about an indexed asset, including its status, metadata, and optional embeddings or transcription.
 
-        **Common use cases**:
+        Use this method to:
 
-        - Monitor indexing progress:
-          - Call this endpoint after creating an indexed asset
-          - Check the `status` field until it shows `ready`
-          - Once ready, your content is available for search and analysis
+        - Monitor the indexing progress:
+            - Call this endpoint after creating an indexed asset
+            - Check the `status` field until it shows `ready`
+            - Once ready, your content is available for search and analysis
 
-        - Retrieve  asset metadata:
-          - Retrieve system metadata (duration, resolution, filename)
-          - Access user-defined metadata
+        - Retrieve the asset metadata:
+            - Retrieve system metadata (duration, resolution, filename)
+            - Access user-defined metadata
 
-        - Retrieve embeddings:
-          - Include the `embedding_option` parameter to retrieve video embeddings
-          - Requires the Marengo video understanding model to be enabled in your index
+        - Retrieve the embeddings:
+            - Include the `embeddingOption` parameter to retrieve video embeddings
+            - Requires the Marengo video understanding model to be enabled in your index
 
         - Retrieve transcriptions:
           - Set the `transcription` parameter to `true` to retrieve spoken words from your video
@@ -721,7 +721,7 @@ class AsyncIndexedAssetsClient:
             </Note>
 
         transcription : typing.Optional[bool]
-            The parameter indicates whether to retrieve a transcription of the spoken words for the indexed asset.
+            Specifies whether to retrieve a transcription of the spoken words.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -814,7 +814,7 @@ class AsyncIndexedAssetsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Use this method to update one or more fields of the metadata of an indexed asset. Also, can delete a field by setting it to null.
+        This method updates one or more fields of the metadata of an indexed asset. Also, can delete a field by setting it to `null`.
 
         Parameters
         ----------

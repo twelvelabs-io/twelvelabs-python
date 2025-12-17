@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import httpx
+from ..multipart_upload.types.create_asset_upload_request_type import CreateAssetUploadRequestType
 from ..core.client_wrapper import SyncClientWrapper, AsyncClientWrapper
 from ..multipart_upload.client import MultipartUploadClient, AsyncMultipartUploadClient
 from ..types.completed_chunk import CompletedChunk
@@ -64,7 +65,7 @@ class MultipartUploadClientWrapper(MultipartUploadClient):
         file_path: typing.Union[str, Path],
         *,
         filename: typing.Optional[str] = None,
-        file_type: str = "video",
+        file_type: CreateAssetUploadRequestType = "video",
         batch_size: int = 10,
         max_workers: int = 5,
         progress_callback: typing.Optional[typing.Callable[[UploadProgress], None]] = None,
@@ -83,7 +84,7 @@ class MultipartUploadClientWrapper(MultipartUploadClient):
         filename : typing.Optional[str]
             Name to use for the asset (defaults to file basename).
 
-        file_type : str
+        file_type : CreateAssetUploadRequestType
             Asset type (default: "video").
 
         batch_size : int
@@ -151,6 +152,7 @@ class MultipartUploadClientWrapper(MultipartUploadClient):
             # Step 1: Create upload session
             upload_session = self.create(
                 filename=filename,
+                type=file_type,
                 total_size=total_size,
                 request_options=request_options
             )
@@ -508,7 +510,7 @@ class AsyncMultipartUploadClientWrapper(AsyncMultipartUploadClient):
         file_path: typing.Union[str, Path],
         *,
         filename: typing.Optional[str] = None,
-        file_type: str = "video",
+        file_type: CreateAssetUploadRequestType = "video",
         batch_size: int = 10,
         max_workers: int = 5,
         progress_callback: typing.Optional[
@@ -529,7 +531,7 @@ class AsyncMultipartUploadClientWrapper(AsyncMultipartUploadClient):
         filename : typing.Optional[str]
             Name to use for the asset (defaults to file basename).
 
-        file_type : str
+        file_type : CreateAssetUploadRequestType
             Asset type (default: "video").
 
         batch_size : int
@@ -601,6 +603,7 @@ class AsyncMultipartUploadClientWrapper(AsyncMultipartUploadClient):
             # Step 1: Create upload session
             upload_session = await self.create(
                 filename=filename,
+                type=file_type,
                 total_size=total_size,
                 request_options=request_options
             )

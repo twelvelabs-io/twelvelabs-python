@@ -39,10 +39,7 @@ class RawAssetsClient:
         """
         This method returns a list of assets in your account.
 
-        <Note title="Note">
-        - The platform returns your assets sorted by creation date, with the newest at the top of the list.
-        - The platform automatically deletes assets that are not associated with any entity after 72 hours.
-        </Note>
+        The platform returns your assets sorted by creation date, with the newest at the top of the list.
 
         Parameters
         ----------
@@ -131,7 +128,7 @@ class RawAssetsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Asset]:
         """
-        This method creates an asset by uploading a file to the platform. Assets are files (such as images, audio, or video) that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
+        This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
 
         **Supported content**: Video, audio, and images.
 
@@ -158,9 +155,7 @@ class RawAssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            <Note title="Note">
-              URL uploads are limited to 4GB.
-            </Note>
+            URL uploads have a maximum limit of 4GB.
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
@@ -323,10 +318,7 @@ class AsyncRawAssetsClient:
         """
         This method returns a list of assets in your account.
 
-        <Note title="Note">
-        - The platform returns your assets sorted by creation date, with the newest at the top of the list.
-        - The platform automatically deletes assets that are not associated with any entity after 72 hours.
-        </Note>
+        The platform returns your assets sorted by creation date, with the newest at the top of the list.
 
         Parameters
         ----------
@@ -418,7 +410,7 @@ class AsyncRawAssetsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Asset]:
         """
-        This method creates an asset by uploading a file to the platform. Assets are files (such as images, audio, or video) that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
+        This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
 
         **Supported content**: Video, audio, and images.
 
@@ -445,9 +437,7 @@ class AsyncRawAssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            <Note title="Note">
-              URL uploads are limited to 4GB.
-            </Note>
+            URL uploads have a maximum limit of 4GB.
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.

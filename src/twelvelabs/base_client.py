@@ -400,6 +400,7 @@ class BaseClient:
             prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
             temperature=0.2,
             response_format=ResponseFormat(
+                type="json_schema",
                 json_schema={
                     "type": "object",
                     "properties": {
@@ -493,6 +494,7 @@ class BaseClient:
             prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
             temperature=0.2,
             response_format=ResponseFormat(
+                type="json_schema",
                 json_schema={
                     "type": "object",
                     "properties": {
@@ -918,6 +920,7 @@ class AsyncBaseClient:
                 prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
                 temperature=0.2,
                 response_format=ResponseFormat(
+                    type="json_schema",
                     json_schema={
                         "type": "object",
                         "properties": {
@@ -1020,6 +1023,7 @@ class AsyncBaseClient:
                 prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
                 temperature=0.2,
                 response_format=ResponseFormat(
+                    type="json_schema",
                     json_schema={
                         "type": "object",
                         "properties": {

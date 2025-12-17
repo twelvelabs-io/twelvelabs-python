@@ -23,6 +23,7 @@ from ..types.incomplete_upload_summary import IncompleteUploadSummary
 from ..types.list_incomplete_uploads_response import ListIncompleteUploadsResponse
 from ..types.report_chunk_batch_response import ReportChunkBatchResponse
 from ..types.request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
+from .types.create_asset_upload_request_type import CreateAssetUploadRequestType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -132,7 +133,12 @@ class RawMultipartUploadClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
-        self, *, filename: str, total_size: int, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        filename: str,
+        type: CreateAssetUploadRequestType,
+        total_size: int,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateAssetUploadResponse]:
         """
         This method creates a multipart upload session.
@@ -149,7 +155,10 @@ class RawMultipartUploadClient:
         Parameters
         ----------
         filename : str
-            Original filename of the asset
+            The original file name of the asset.
+
+        type : CreateAssetUploadRequestType
+            The type of asset you want to upload.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -170,8 +179,8 @@ class RawMultipartUploadClient:
             method="POST",
             json={
                 "filename": filename,
+                "type": type,
                 "total_size": total_size,
-                "type": "video",
             },
             headers={
                 "content-type": "application/json",
@@ -238,14 +247,14 @@ class RawMultipartUploadClient:
         """
         This method provides information about an upload session, including its current status, chunk-level progress, and completion state.
 
-        Use this endpoint to:
+        Use this method to:
         - Verify upload completion (`status` = `completed`)
         - Identify any failed chunks that require a retry
         - Monitor the upload progress by comparing `uploaded_size` with `total_size`
         - Determine if the session has expired
         - Retrieve the status information for each chunk
 
-         You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+        You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
 
         Parameters
         ----------
@@ -359,11 +368,10 @@ class RawMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ReportChunkBatchResponse]:
         """
-        This method notifies the platform which chunks have been successfully uploaded. When all chunks are reported, the platform finalizes the upload.
+        This method reports successfully uploaded chunks to the platform. The platform finalizes the upload after you report all chunks.
 
-        <Note title="Note">
+
         For optimal performance, report chunks in batches and in any order.
-        </Note>
 
         Parameters
         ----------
@@ -653,7 +661,12 @@ class AsyncRawMultipartUploadClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
-        self, *, filename: str, total_size: int, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        filename: str,
+        type: CreateAssetUploadRequestType,
+        total_size: int,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateAssetUploadResponse]:
         """
         This method creates a multipart upload session.
@@ -670,7 +683,10 @@ class AsyncRawMultipartUploadClient:
         Parameters
         ----------
         filename : str
-            Original filename of the asset
+            The original file name of the asset.
+
+        type : CreateAssetUploadRequestType
+            The type of asset you want to upload.
 
         total_size : int
             The total size of the file in bytes. The platform uses this value to:
@@ -691,8 +707,8 @@ class AsyncRawMultipartUploadClient:
             method="POST",
             json={
                 "filename": filename,
+                "type": type,
                 "total_size": total_size,
-                "type": "video",
             },
             headers={
                 "content-type": "application/json",
@@ -759,14 +775,14 @@ class AsyncRawMultipartUploadClient:
         """
         This method provides information about an upload session, including its current status, chunk-level progress, and completion state.
 
-        Use this endpoint to:
+        Use this method to:
         - Verify upload completion (`status` = `completed`)
         - Identify any failed chunks that require a retry
         - Monitor the upload progress by comparing `uploaded_size` with `total_size`
         - Determine if the session has expired
         - Retrieve the status information for each chunk
 
-         You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+        You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
 
         Parameters
         ----------
@@ -883,11 +899,10 @@ class AsyncRawMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ReportChunkBatchResponse]:
         """
-        This method notifies the platform which chunks have been successfully uploaded. When all chunks are reported, the platform finalizes the upload.
+        This method reports successfully uploaded chunks to the platform. The platform finalizes the upload after you report all chunks.
 
-        <Note title="Note">
+
         For optimal performance, report chunks in batches and in any order.
-        </Note>
 
         Parameters
         ----------

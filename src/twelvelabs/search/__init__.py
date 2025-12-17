@@ -5,6 +5,7 @@
 from .types import (
     SearchCreateRequestGroupBy,
     SearchCreateRequestOperator,
+    SearchCreateRequestQueryMediaType,
     SearchCreateRequestSearchOptionsItem,
     SearchCreateRequestSortOption,
     SearchCreateRequestTranscriptionOptionsItem,
@@ -15,6 +16,7 @@ from .types import (
 __all__ = [
     "SearchCreateRequestGroupBy",
     "SearchCreateRequestOperator",
+    "SearchCreateRequestQueryMediaType",
     "SearchCreateRequestSearchOptionsItem",
     "SearchCreateRequestSortOption",
     "SearchCreateRequestTranscriptionOptionsItem",
