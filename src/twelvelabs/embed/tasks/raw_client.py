@@ -208,7 +208,7 @@ class RawTasksClient:
         video_embedding_scope : typing.Optional[typing.List[TasksCreateRequestVideoEmbeddingScopeItem]]
             Defines the scope of video embedding generation. Valid values are the following:
             - `clip`: Creates embeddings for each video segment of `video_clip_length` seconds, from `video_start_offset_sec` to `video_end_offset_sec`.
-            - `clip` and `video`: Creates embeddings for video segments and the entire video.
+            - `clip` and `video`: Creates embeddings for video segments and the entire video. Use the `video` scope for videos up to 10-30 seconds to maintain optimal performance.
             
             To create embeddings for segments and the entire video in the same request, include this parameter twice as shown below:
             
@@ -589,7 +589,7 @@ class AsyncRawTasksClient:
         video_embedding_scope : typing.Optional[typing.List[TasksCreateRequestVideoEmbeddingScopeItem]]
             Defines the scope of video embedding generation. Valid values are the following:
             - `clip`: Creates embeddings for each video segment of `video_clip_length` seconds, from `video_start_offset_sec` to `video_end_offset_sec`.
-            - `clip` and `video`: Creates embeddings for video segments and the entire video.
+            - `clip` and `video`: Creates embeddings for video segments and the entire video. Use the `video` scope for videos up to 10-30 seconds to maintain optimal performance.
             
             To create embeddings for segments and the entire video in the same request, include this parameter twice as shown below:
             

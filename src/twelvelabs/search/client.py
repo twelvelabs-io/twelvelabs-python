@@ -10,6 +10,7 @@ from ..types.threshold_search import ThresholdSearch
 from .raw_client import AsyncRawSearchClient, RawSearchClient
 from .types.search_create_request_group_by import SearchCreateRequestGroupBy
 from .types.search_create_request_operator import SearchCreateRequestOperator
+from .types.search_create_request_query_media_type import SearchCreateRequestQueryMediaType
 from .types.search_create_request_search_options_item import SearchCreateRequestSearchOptionsItem
 from .types.search_create_request_sort_option import SearchCreateRequestSortOption
 from .types.search_create_request_transcription_options_item import SearchCreateRequestTranscriptionOptionsItem
@@ -39,7 +40,7 @@ class SearchClient:
         *,
         index_id: str,
         search_options: typing.List[SearchCreateRequestSearchOptionsItem],
-        query_media_type: typing.Optional[typing.Literal["image"]] = OMIT,
+        query_media_type: typing.Optional[SearchCreateRequestQueryMediaType] = OMIT,
         query_media_url: typing.Optional[str] = OMIT,
         query_media_file: typing.Optional[core.File] = OMIT,
         query_text: typing.Optional[str] = OMIT,
@@ -110,7 +111,7 @@ class SearchClient:
             
             For detailed guidance and version-specific behavior, see the [Search options](/v1.3/docs/concepts/modalities#search-options) section.
         
-        query_media_type : typing.Optional[typing.Literal["image"]]
+        query_media_type : typing.Optional[SearchCreateRequestQueryMediaType]
             The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
         
         query_media_url : typing.Optional[str]
@@ -331,7 +332,7 @@ class AsyncSearchClient:
         *,
         index_id: str,
         search_options: typing.List[SearchCreateRequestSearchOptionsItem],
-        query_media_type: typing.Optional[typing.Literal["image"]] = OMIT,
+        query_media_type: typing.Optional[SearchCreateRequestQueryMediaType] = OMIT,
         query_media_url: typing.Optional[str] = OMIT,
         query_media_file: typing.Optional[core.File] = OMIT,
         query_text: typing.Optional[str] = OMIT,
@@ -402,7 +403,7 @@ class AsyncSearchClient:
             
             For detailed guidance and version-specific behavior, see the [Search options](/v1.3/docs/concepts/modalities#search-options) section.
         
-        query_media_type : typing.Optional[typing.Literal["image"]]
+        query_media_type : typing.Optional[SearchCreateRequestQueryMediaType]
             The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
         
         query_media_url : typing.Optional[str]

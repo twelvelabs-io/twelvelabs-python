@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .completed_chunk_proof_type import CompletedChunkProofType
 
 
 class CompletedChunk(UniversalBaseModel):
@@ -17,7 +18,7 @@ class CompletedChunk(UniversalBaseModel):
     The ETag value you received after uploading the chunk. When you upload a chunk to a presigned URLs, the response includes an ETag. Use this value and submit it as proof of successful upload.
     """
 
-    proof_type: typing.Literal["etag"] = pydantic.Field(default="etag")
+    proof_type: CompletedChunkProofType = pydantic.Field()
     """
     The verification method. Supported value: `etag`.
     """

@@ -26,6 +26,9 @@ class EmbeddingTaskResponse(UniversalBaseModel):
     status: EmbeddingTaskResponseStatus = pydantic.Field()
     """
     The current status of the task.
+    
+    
+    **Values**:
     - `processing`: The platform is creating the embeddings
     - `ready`: Processing is complete. Embeddings are available in the `data` field
     - `failed`: The task failed. The `data` field is `null`
@@ -35,7 +38,7 @@ class EmbeddingTaskResponse(UniversalBaseModel):
     updated_at: typing.Optional[UpdatedAt] = None
     data: typing.Optional[typing.List[EmbeddingData]] = pydantic.Field(default=None)
     """
-    An array of embedding results. The platform retruns this field when `status` is `ready`.
+    An object containing the embedding results, or `null` otherwise.
     """
 
     metadata: typing.Optional[EmbeddingTaskMediaMetadata] = None

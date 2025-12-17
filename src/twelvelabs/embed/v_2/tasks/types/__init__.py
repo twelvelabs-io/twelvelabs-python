@@ -3,13 +3,17 @@
 # isort: skip_file
 
 from .create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
+from .create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
 from .tasks_create_response import TasksCreateResponse
+from .tasks_create_response_status import TasksCreateResponseStatus
 from .tasks_list_response import TasksListResponse
 from .tasks_list_response_page_info import TasksListResponsePageInfo
 
 __all__ = [
     "CreateAsyncEmbeddingRequestInputType",
+    "CreateAsyncEmbeddingRequestModelName",
     "TasksCreateResponse",
+    "TasksCreateResponseStatus",
     "TasksListResponse",
     "TasksListResponsePageInfo",
 ]

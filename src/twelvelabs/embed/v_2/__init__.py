@@ -2,19 +2,24 @@
 
 # isort: skip_file
 
-from .types import CreateEmbeddingsRequestInputType
+from .types import CreateEmbeddingsRequestInputType, CreateEmbeddingsRequestModelName
 from . import tasks
 from .tasks import (
     CreateAsyncEmbeddingRequestInputType,
+    CreateAsyncEmbeddingRequestModelName,
     TasksCreateResponse,
+    TasksCreateResponseStatus,
     TasksListResponse,
     TasksListResponsePageInfo,
 )
 
 __all__ = [
     "CreateAsyncEmbeddingRequestInputType",
+    "CreateAsyncEmbeddingRequestModelName",
     "CreateEmbeddingsRequestInputType",
+    "CreateEmbeddingsRequestModelName",
     "TasksCreateResponse",
+    "TasksCreateResponseStatus",
     "TasksListResponse",
     "TasksListResponsePageInfo",
     "tasks",

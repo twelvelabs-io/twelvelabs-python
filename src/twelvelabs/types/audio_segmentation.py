@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .audio_segmentation_fixed import AudioSegmentationFixed
+from .audio_segmentation_strategy import AudioSegmentationStrategy
 
 
 class AudioSegmentation(UniversalBaseModel):
@@ -12,7 +13,7 @@ class AudioSegmentation(UniversalBaseModel):
     Specifies how the platform divides the audio into segments.
     """
 
-    strategy: typing.Literal["fixed"] = "fixed"
+    strategy: AudioSegmentationStrategy
     fixed: AudioSegmentationFixed = pydantic.Field()
     """
     Configuration for fixed segmentation.

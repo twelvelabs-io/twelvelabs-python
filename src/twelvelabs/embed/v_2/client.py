@@ -13,6 +13,7 @@ from ...types.video_input_request import VideoInputRequest
 from .raw_client import AsyncRawV2Client, RawV2Client
 from .tasks.client import AsyncTasksClient, TasksClient
 from .types.create_embeddings_request_input_type import CreateEmbeddingsRequestInputType
+from .types.create_embeddings_request_model_name import CreateEmbeddingsRequestModelName
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -38,7 +39,7 @@ class V2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
+        model_name: CreateEmbeddingsRequestModelName,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -75,17 +76,25 @@ class V2Client:
           - Maximum file size for base64 encoded strings: 36 MB
           - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
           - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 3840x2160 pixels
+          - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
+
+        model_name : CreateEmbeddingsRequestModelName
+            The video understanding model to use. Only "marengo3.0" is supported.
 
         text : typing.Optional[TextInputRequest]
 
@@ -153,7 +162,7 @@ class AsyncV2Client:
         self,
         *,
         input_type: CreateEmbeddingsRequestInputType,
-        model_name: str,
+        model_name: CreateEmbeddingsRequestModelName,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -190,17 +199,25 @@ class AsyncV2Client:
           - Maximum file size for base64 encoded strings: 36 MB
           - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
           - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 3840x2160 pixels
+          - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
-            The type of content for which you wish to create embeddings.
+            The type of content for the embeddings.
 
-        model_name : str
-            The video understanding model you wish to use.
+
+            **Values**:
+            - `audio`: Creates embeddings for an audio file
+            - `video`: Creates embeddings for a video file
+            - `image`: Creates embeddings for an image file
+            - `text`: Creates embeddings for text input
+            - `text_image`: Creates embeddings for text and an image.
+
+        model_name : CreateEmbeddingsRequestModelName
+            The video understanding model to use. Only "marengo3.0" is supported.
 
         text : typing.Optional[TextInputRequest]
 

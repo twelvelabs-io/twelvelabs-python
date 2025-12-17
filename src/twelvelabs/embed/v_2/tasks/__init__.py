@@ -4,14 +4,18 @@
 
 from .types import (
     CreateAsyncEmbeddingRequestInputType,
+    CreateAsyncEmbeddingRequestModelName,
     TasksCreateResponse,
+    TasksCreateResponseStatus,
     TasksListResponse,
     TasksListResponsePageInfo,
 )
 
 __all__ = [
     "CreateAsyncEmbeddingRequestInputType",
+    "CreateAsyncEmbeddingRequestModelName",
     "TasksCreateResponse",
+    "TasksCreateResponseStatus",
     "TasksListResponse",
     "TasksListResponsePageInfo",
 ]
