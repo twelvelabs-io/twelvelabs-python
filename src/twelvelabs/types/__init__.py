@@ -62,7 +62,6 @@ from .error_response_error import ErrorResponseError
 from .expires_at import ExpiresAt
 from .finish_reason import FinishReason
 from .forbidden_error_body import ForbiddenErrorBody
-from .generate_response import GenerateResponse
 from .get_upload_status_response import GetUploadStatusResponse
 from .gist import Gist
 from .gist_request_types_item import GistRequestTypesItem
@@ -222,7 +221,6 @@ __all__ = [
     "ExpiresAt",
     "FinishReason",
     "ForbiddenErrorBody",
-    "GenerateResponse",
     "GetUploadStatusResponse",
     "Gist",
     "GistRequestTypesItem",

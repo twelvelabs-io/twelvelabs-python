@@ -135,13 +135,17 @@ class TasksClient:
         
         This method creates a new video embedding task that uploads a video to the platform and creates one or multiple video embeddings.
         
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
+        
         Upload options:
         - **Local file**: Use the `video_file` parameter
         - **Publicly accessible URL**: Use the `video_url` parameter.
         
         Specify at least one option. If both are provided, `video_url` takes precedence.
         
-        Your video files must meet the [format requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+        Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
         This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
         
         <Note title="Notes">
@@ -452,13 +456,17 @@ class AsyncTasksClient:
         
         This method creates a new video embedding task that uploads a video to the platform and creates one or multiple video embeddings.
         
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
+        
         Upload options:
         - **Local file**: Use the `video_file` parameter
         - **Publicly accessible URL**: Use the `video_url` parameter.
         
         Specify at least one option. If both are provided, `video_url` takes precedence.
         
-        Your video files must meet the [format requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+        Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
         This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
         
         <Note title="Notes">
