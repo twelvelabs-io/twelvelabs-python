@@ -74,6 +74,10 @@ class RawV2Client:
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
 
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
+
         Parameters
         ----------
         input_type : CreateEmbeddingsRequestInputType
@@ -233,6 +237,10 @@ class AsyncRawV2Client:
           - Video resolution: 360x360 to 5184x2160 pixels
           - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
         </Accordion>
+
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
 
         Parameters
         ----------

@@ -10,7 +10,7 @@ from ..core.serialization import FieldMetadata
 
 class MediaSource(UniversalBaseModel):
     """
-    An object specifying the source of the media file.
+    An object specifying the source of the media file. You must provide exactly one of `url`, `base64_string`, or `asset_id`.
     """
 
     base_64_string: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="base64_string")] = (

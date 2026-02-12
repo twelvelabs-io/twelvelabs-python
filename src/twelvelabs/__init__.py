@@ -59,7 +59,6 @@ from .types import (
     ExpiresAt,
     FinishReason,
     ForbiddenErrorBody,
-    GenerateResponse,
     GetUploadStatusResponse,
     Gist,
     GistRequestTypesItem,
@@ -161,13 +160,12 @@ from .types import (
     VideoVectorSystemMetadata,
 )
 from .errors import BadRequestError, ForbiddenError, InternalServerError, NotFoundError, TooManyRequestsError
-from . import assets, embed, entity_collections, indexes, manage_entities, multipart_upload, search, tasks
+from . import assets, embed, entity_collections, indexes, multipart_upload, search, tasks
 from .assets import AssetsCreateRequestMethod, AssetsListRequestAssetTypesItem, AssetsListResponse
 from .client import AsyncTwelveLabs, TwelveLabs
 from .entity_collections import EntityCollectionsListRequestSortBy, EntityCollectionsListResponse
 from .environment import TwelveLabsEnvironment
 from .indexes import IndexesCreateRequestModelsItem, IndexesCreateResponse, IndexesListResponse
-from .manage_entities import ListAllEntitiesRequestSortBy, ListAllEntitiesRequestStatus, ListAllEntitiesResponse
 from .multipart_upload import CreateAssetUploadRequestType
 from .search import (
     SearchCreateRequestGroupBy,
@@ -254,7 +252,6 @@ __all__ = [
     "FinishReason",
     "ForbiddenError",
     "ForbiddenErrorBody",
-    "GenerateResponse",
     "GetUploadStatusResponse",
     "Gist",
     "GistRequestTypesItem",
@@ -281,9 +278,6 @@ __all__ = [
     "InternalServerError",
     "InternalServerErrorBody",
     "LimitPerPageSimple",
-    "ListAllEntitiesRequestSortBy",
-    "ListAllEntitiesRequestStatus",
-    "ListAllEntitiesResponse",
     "ListIncompleteUploadsResponse",
     "MediaEmbeddingTask",
     "MediaEmbeddingTaskAudioEmbedding",
@@ -383,7 +377,6 @@ __all__ = [
     "embed",
     "entity_collections",
     "indexes",
-    "manage_entities",
     "multipart_upload",
     "search",
     "tasks",

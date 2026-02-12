@@ -10,12 +10,10 @@ from .embed.client import AsyncEmbedClient, EmbedClient
 from .entity_collections.client import AsyncEntityCollectionsClient, EntityCollectionsClient
 from .environment import TwelveLabsEnvironment
 from .indexes.client import AsyncIndexesClient, IndexesClient
-from .manage_entities.client import AsyncManageEntitiesClient, ManageEntitiesClient
 from .multipart_upload.client import AsyncMultipartUploadClient, MultipartUploadClient
 from .raw_base_client import AsyncRawBaseClient, RawBaseClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
-from .types.generate_response import GenerateResponse
 from .types.gist import Gist
 from .types.gist_request_types_item import GistRequestTypesItem
 from .types.non_stream_analyze_response import NonStreamAnalyzeResponse
@@ -98,7 +96,6 @@ class BaseClient:
         self.assets = AssetsClient(client_wrapper=self._client_wrapper)
         self.multipart_upload = MultipartUploadClient(client_wrapper=self._client_wrapper)
         self.entity_collections = EntityCollectionsClient(client_wrapper=self._client_wrapper)
-        self.manage_entities = ManageEntitiesClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
 
@@ -125,6 +122,11 @@ class BaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SummarizeResponse:
         """
+
+        <Note title="Deprecation notice">
+          This endpoint will be sunset and removed. Use the [`POST`](/v1.3/api-reference/analyze-videos/analyze) method of the `/analyze` endpoint. Pass the [`response_format`](/v1.3/api-reference/analyze-videos/analyze#request.body.response_format) parameter to specify the format of the response as structured JSON. For migration instructions, see the [Release notes](/v1.3/docs/get-started/release-notes#predefined-formats-for-video-analysis-will-be-sunset-and-removed) page.
+        </Note>
+
         This endpoint analyzes videos and generates summaries, chapters, or highlights. Optionally, you can provide a prompt to customize the output.
 
         <Note title="Note">
@@ -208,11 +210,11 @@ class BaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Gist:
         """
-        This endpoint analyzes videos and generates titles, topics, and hashtags.
-
-        <Note title="Note">
-        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        <Note title="Deprecation notice">
+          This endpoint will be sunset and removed on February 15, 2026. Instead, use the [`POST`](/v1.3/api-reference/analyze-videos/analyze) method of the `/analyze` endpoint, passing the [`response_format`](/v1.3/api-reference/analyze-videos/analyze#request.body.response_format) parameter to specify the format of the response as structured JSON. For migration instructions, see the [Release notes](/v1.3/docs/get-started/release-notes#predefined-formats-for-video-analysis-will-be-sunset-and-removed) page.
         </Note>
+
+        This method analyzes videos and generates titles, topics, and hashtags.
 
         Parameters
         ----------
@@ -248,89 +250,6 @@ class BaseClient:
         _response = self._raw_client.gist(video_id=video_id, types=types, request_options=request_options)
         return _response.data
 
-    def generate(
-        self,
-        *,
-        video_id: str,
-        prompt: str,
-        temperature: typing.Optional[float] = OMIT,
-        stream: typing.Optional[bool] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GenerateResponse:
-        """
-        <Warning>
-        This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.
-        </Warning>
-
-
-        This endpoint generates open-ended texts based on your videos, including but not limited to tables of content, action items, memos, and detailed analyses.
-
-        <Note title="Notes">
-        - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
-        </Note>
-
-        Parameters
-        ----------
-        video_id : str
-            The unique identifier of the video for which you wish to generate a text.
-
-        prompt : str
-            A prompt that guides the model on the desired format or content.
-
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
-
-            **Examples**:
-
-            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
-            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
-
-        temperature : typing.Optional[float]
-            Controls the randomness of the text output generated by the model. A higher value generates more creative text, while a lower value produces more deterministic text output.
-
-            **Default:** 0.2
-            **Min:** 0
-            **Max:** 1
-
-        stream : typing.Optional[bool]
-            Set this parameter to `true` to enable streaming responses in the <a href="https://github.com/ndjson/ndjson-spec" target="_blank">NDJSON</a> format.
-
-            **Default:** `true`
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GenerateResponse
-            The specified video has successfully been processed.
-            <Note title="Note">
-              The maximum length of the response is 4,096 tokens.
-            </Note>
-
-        Examples
-        --------
-        from twelvelabs import TwelveLabs
-
-        client = TwelveLabs(
-            api_key="YOUR_API_KEY",
-        )
-        client.generate(
-            video_id="6298d673f1090f1100476d4c",
-            prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-            temperature=0.2,
-            stream=True,
-        )
-        """
-        _response = self._raw_client.generate(
-            video_id=video_id, prompt=prompt, temperature=temperature, stream=stream, request_options=request_options
-        )
-        return _response.data
-
     def analyze_stream(
         self,
         *,
@@ -346,7 +265,7 @@ class BaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Analyze videos](/v1.3/docs/guides/analyze-videos) page.
         </Note>
 
         Parameters
@@ -440,7 +359,7 @@ class BaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Analyze videos](/v1.3/docs/guides/analyze-videos) page.
         </Note>
 
         Parameters
@@ -589,7 +508,6 @@ class AsyncBaseClient:
         self.assets = AsyncAssetsClient(client_wrapper=self._client_wrapper)
         self.multipart_upload = AsyncMultipartUploadClient(client_wrapper=self._client_wrapper)
         self.entity_collections = AsyncEntityCollectionsClient(client_wrapper=self._client_wrapper)
-        self.manage_entities = AsyncManageEntitiesClient(client_wrapper=self._client_wrapper)
         self.embed = AsyncEmbedClient(client_wrapper=self._client_wrapper)
         self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
 
@@ -616,6 +534,11 @@ class AsyncBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SummarizeResponse:
         """
+
+        <Note title="Deprecation notice">
+          This endpoint will be sunset and removed. Use the [`POST`](/v1.3/api-reference/analyze-videos/analyze) method of the `/analyze` endpoint. Pass the [`response_format`](/v1.3/api-reference/analyze-videos/analyze#request.body.response_format) parameter to specify the format of the response as structured JSON. For migration instructions, see the [Release notes](/v1.3/docs/get-started/release-notes#predefined-formats-for-video-analysis-will-be-sunset-and-removed) page.
+        </Note>
+
         This endpoint analyzes videos and generates summaries, chapters, or highlights. Optionally, you can provide a prompt to customize the output.
 
         <Note title="Note">
@@ -707,11 +630,11 @@ class AsyncBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Gist:
         """
-        This endpoint analyzes videos and generates titles, topics, and hashtags.
-
-        <Note title="Note">
-        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        <Note title="Deprecation notice">
+          This endpoint will be sunset and removed on February 15, 2026. Instead, use the [`POST`](/v1.3/api-reference/analyze-videos/analyze) method of the `/analyze` endpoint, passing the [`response_format`](/v1.3/api-reference/analyze-videos/analyze#request.body.response_format) parameter to specify the format of the response as structured JSON. For migration instructions, see the [Release notes](/v1.3/docs/get-started/release-notes#predefined-formats-for-video-analysis-will-be-sunset-and-removed) page.
         </Note>
+
+        This method analyzes videos and generates titles, topics, and hashtags.
 
         Parameters
         ----------
@@ -755,97 +678,6 @@ class AsyncBaseClient:
         _response = await self._raw_client.gist(video_id=video_id, types=types, request_options=request_options)
         return _response.data
 
-    async def generate(
-        self,
-        *,
-        video_id: str,
-        prompt: str,
-        temperature: typing.Optional[float] = OMIT,
-        stream: typing.Optional[bool] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GenerateResponse:
-        """
-        <Warning>
-        This endpoint is deprecated. Use the [`/analyze`](/v1.3/api-reference/analyze-videos/analyze) endpoint instead, which provides identical functionality.
-        </Warning>
-
-
-        This endpoint generates open-ended texts based on your videos, including but not limited to tables of content, action items, memos, and detailed analyses.
-
-        <Note title="Notes">
-        - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses) guide.
-        </Note>
-
-        Parameters
-        ----------
-        video_id : str
-            The unique identifier of the video for which you wish to generate a text.
-
-        prompt : str
-            A prompt that guides the model on the desired format or content.
-
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
-
-            **Examples**:
-
-            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
-            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
-
-        temperature : typing.Optional[float]
-            Controls the randomness of the text output generated by the model. A higher value generates more creative text, while a lower value produces more deterministic text output.
-
-            **Default:** 0.2
-            **Min:** 0
-            **Max:** 1
-
-        stream : typing.Optional[bool]
-            Set this parameter to `true` to enable streaming responses in the <a href="https://github.com/ndjson/ndjson-spec" target="_blank">NDJSON</a> format.
-
-            **Default:** `true`
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GenerateResponse
-            The specified video has successfully been processed.
-            <Note title="Note">
-              The maximum length of the response is 4,096 tokens.
-            </Note>
-
-        Examples
-        --------
-        import asyncio
-
-        from twelvelabs import AsyncTwelveLabs
-
-        client = AsyncTwelveLabs(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.generate(
-                video_id="6298d673f1090f1100476d4c",
-                prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-                temperature=0.2,
-                stream=True,
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.generate(
-            video_id=video_id, prompt=prompt, temperature=temperature, stream=stream, request_options=request_options
-        )
-        return _response.data
-
     async def analyze_stream(
         self,
         *,
@@ -861,7 +693,7 @@ class AsyncBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Analyze videos](/v1.3/docs/guides/analyze-videos) page.
         </Note>
 
         Parameters
@@ -964,7 +796,7 @@ class AsyncBaseClient:
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Open-ended analysis](/v1.3/docs/guides/analyze-videos/open-ended-analysis#streaming-responses).
+        - This endpoint supports streaming responses. For details on integrating this feature into your application, refer to the [Analyze videos](/v1.3/docs/guides/analyze-videos) page.
         </Note>
 
         Parameters
