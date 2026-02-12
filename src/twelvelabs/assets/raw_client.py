@@ -144,6 +144,10 @@ class RawAssetsClient:
         - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
         - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
 
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
+
         Parameters
         ----------
         method : AssetsCreateRequestMethod
@@ -425,6 +429,10 @@ class AsyncRawAssetsClient:
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
         - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
         - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
 
         Parameters
         ----------

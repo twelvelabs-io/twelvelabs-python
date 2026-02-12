@@ -210,6 +210,10 @@ class IndexedAssetsClient:
 
         If you want to both search and analyze your videos, the most restrictive requirements apply.
 
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
+
         Parameters
         ----------
         index_id : str
@@ -621,6 +625,10 @@ class AsyncIndexedAssetsClient:
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
         If you want to both search and analyze your videos, the most restrictive requirements apply.
+
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        </Note>
 
         Parameters
         ----------
