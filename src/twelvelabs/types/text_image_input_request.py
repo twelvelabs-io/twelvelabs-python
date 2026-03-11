@@ -9,7 +9,7 @@ from .media_source import MediaSource
 
 class TextImageInputRequest(UniversalBaseModel):
     """
-    This field is required if `input_type` is `text_image`.
+    This field is required if the `input_type` parameter is `text_image`.
     """
 
     media_source: MediaSource

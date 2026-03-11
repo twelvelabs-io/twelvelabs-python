@@ -175,8 +175,8 @@ class RawTasksClient:
         ----------
         model_name : str
             The name of the model you want to use. The following models are available:
-              - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
-              - `Marengo-retrieval-2.7`: Video embedding model for multimodal search.
+              - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
+              - `Marengo-retrieval-2.7`: **Deprecation notice**: Starting mid-March 2026, your videos will be automatically reindexed to Marengo 3.0. Marengo 2.7 will be deprecated once reindexing completes. See the [Migration guide](/v1.3/docs/get-started/migration-guide) for details.
         
         video_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -560,8 +560,8 @@ class AsyncRawTasksClient:
         ----------
         model_name : str
             The name of the model you want to use. The following models are available:
-              - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
-              - `Marengo-retrieval-2.7`: Video embedding model for multimodal search.
+              - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
+              - `Marengo-retrieval-2.7`: **Deprecation notice**: Starting mid-March 2026, your videos will be automatically reindexed to Marengo 3.0. Marengo 2.7 will be deprecated once reindexing completes. See the [Migration guide](/v1.3/docs/get-started/migration-guide) for details.
         
         video_file : typing.Optional[core.File]
             See core.File for more documentation

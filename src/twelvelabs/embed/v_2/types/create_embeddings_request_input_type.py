@@ -3,5 +3,5 @@
 import typing
 
 CreateEmbeddingsRequestInputType = typing.Union[
-    typing.Literal["text", "image", "text_image", "audio", "video"], typing.Any
+    typing.Literal["text", "image", "text_image", "audio", "video", "multi_input"], typing.Any
 ]

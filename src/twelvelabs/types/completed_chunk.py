@@ -25,7 +25,7 @@ class CompletedChunk(UniversalBaseModel):
 
     chunk_size: int = pydantic.Field()
     """
-    The number of bytes uploaded for this chunk. For all chunks except the last, this value equals [`chunk_size`](/v1.3/api-reference/multipart-uploads/create#response.body.chunk_size). For the last chunk, it may be smaller.
+    The number of bytes uploaded for this chunk. For all chunks except the last, this value equals [`chunk_size`](/v1.3/api-reference/upload-content/multipart-uploads/create#response.body.chunk_size). For the last chunk, it may be smaller.
     """
 
     if IS_PYDANTIC_V2:

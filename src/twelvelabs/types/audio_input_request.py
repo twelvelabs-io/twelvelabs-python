@@ -6,13 +6,14 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .audio_input_request_embedding_option_item import AudioInputRequestEmbeddingOptionItem
 from .audio_input_request_embedding_scope_item import AudioInputRequestEmbeddingScopeItem
+from .audio_input_request_embedding_type_item import AudioInputRequestEmbeddingTypeItem
 from .audio_segmentation import AudioSegmentation
 from .media_source import MediaSource
 
 
 class AudioInputRequest(UniversalBaseModel):
     """
-    This field is required if `input_type` is `audio`.
+    This field is required if the `input_type` parameter is `audio`.
     """
 
     media_source: MediaSource
@@ -55,6 +56,19 @@ class AudioInputRequest(UniversalBaseModel):
     - `asset`: Generates one embedding for the entire audio file
     
     You can specify multiple scopes to generate embeddings at different levels.
+    """
+
+    embedding_type: typing.Optional[typing.List[AudioInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
+    """
+    Specifies how to structure the embedding. Include this parameter only when the `embedding_option` parameter contains at least two values.
+    
+    **Values**:
+    - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.
+    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector.
+    
+    Specify both values to receive separate and fused embeddings in the same response.
+    
+    **Default**: `separate_embedding`. 
     """
 
     if IS_PYDANTIC_V2:

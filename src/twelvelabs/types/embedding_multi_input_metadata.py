@@ -6,14 +6,9 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class TextInputRequest(UniversalBaseModel):
+class EmbeddingMultiInputMetadata(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `text`.
-    """
-
-    input_text: str = pydantic.Field()
-    """
-    The text for which you wish to create an embedding. The maximul length is 500 tokens.
+    Metadata for multi-input embeddings
     """
 
     if IS_PYDANTIC_V2:

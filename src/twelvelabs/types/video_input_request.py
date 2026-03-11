@@ -7,12 +7,13 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .media_source import MediaSource
 from .video_input_request_embedding_option_item import VideoInputRequestEmbeddingOptionItem
 from .video_input_request_embedding_scope_item import VideoInputRequestEmbeddingScopeItem
+from .video_input_request_embedding_type_item import VideoInputRequestEmbeddingTypeItem
 from .video_segmentation import VideoSegmentation
 
 
 class VideoInputRequest(UniversalBaseModel):
     """
-    Required if the `input_type` parameter is `video`.
+    This field is required if the `input_type` parameter is `video`.
     """
 
     media_source: MediaSource
@@ -59,6 +60,19 @@ class VideoInputRequest(UniversalBaseModel):
     You can specify multiple scopes to generate embeddings at different levels.
     
     **Default**: `["clip", "asset"]`
+    """
+
+    embedding_type: typing.Optional[typing.List[VideoInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
+    """
+    Specifies how to structure the embedding. Include this parameter only when `embedding_option` contains at least two values. 
+    
+    **Values**:
+    - `separate_embedding`: Returns separate embeddings per modality specified in `embedding_option`
+    - `fused_embedding`: Returns a single embedding that combines all modalities into one vector
+    
+    Specify both values to receive separate and fused embeddings in the same response.
+    
+    **Default**: `separate_embedding`.
     """
 
     if IS_PYDANTIC_V2:

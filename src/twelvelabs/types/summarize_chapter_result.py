@@ -5,12 +5,18 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .summarize_chapter_result_chapters_item import SummarizeChapterResultChaptersItem
+from .summarize_chapter_result_summarize_type import SummarizeChapterResultSummarizeType
 from .token_usage import TokenUsage
 
 
 class SummarizeChapterResult(UniversalBaseModel):
     """
     An object that represents the response from a summarize chapter operation.
+    """
+
+    summarize_type: SummarizeChapterResultSummarizeType = pydantic.Field()
+    """
+    The type of summarize response.
     """
 
     id: typing.Optional[str] = pydantic.Field(default=None)
