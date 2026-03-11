@@ -10,6 +10,7 @@ from .audio_embedding_result import AudioEmbeddingResult
 from .audio_input_request import AudioInputRequest
 from .audio_input_request_embedding_option_item import AudioInputRequestEmbeddingOptionItem
 from .audio_input_request_embedding_scope_item import AudioInputRequestEmbeddingScopeItem
+from .audio_input_request_embedding_type_item import AudioInputRequestEmbeddingTypeItem
 from .audio_segment import AudioSegment
 from .audio_segmentation import AudioSegmentation
 from .audio_segmentation_fixed import AudioSegmentationFixed
@@ -37,9 +38,11 @@ from .embedding_media_metadata import (
     EmbeddingMediaMetadata,
     EmbeddingMediaMetadata_Audio,
     EmbeddingMediaMetadata_Image,
+    EmbeddingMediaMetadata_MultiInput,
     EmbeddingMediaMetadata_TextImage,
     EmbeddingMediaMetadata_Video,
 )
+from .embedding_multi_input_metadata import EmbeddingMultiInputMetadata
 from .embedding_response import EmbeddingResponse
 from .embedding_success_response import EmbeddingSuccessResponse
 from .embedding_task_media_metadata import (
@@ -63,8 +66,6 @@ from .expires_at import ExpiresAt
 from .finish_reason import FinishReason
 from .forbidden_error_body import ForbiddenErrorBody
 from .get_upload_status_response import GetUploadStatusResponse
-from .gist import Gist
-from .gist_request_types_item import GistRequestTypesItem
 from .hls_object import HlsObject
 from .hls_object_status import HlsObjectStatus
 from .image_embedding_result import ImageEmbeddingResult
@@ -89,6 +90,9 @@ from .media_embedding_task import MediaEmbeddingTask
 from .media_embedding_task_audio_embedding import MediaEmbeddingTaskAudioEmbedding
 from .media_embedding_task_video_embedding import MediaEmbeddingTaskVideoEmbedding
 from .media_source import MediaSource
+from .multi_input_media_source import MultiInputMediaSource
+from .multi_input_media_source_media_type import MultiInputMediaSourceMediaType
+from .multi_input_request import MultiInputRequest
 from .multipart_upload_status_type import MultipartUploadStatusType
 from .next_page_token import NextPageToken
 from .non_stream_analyze_response import NonStreamAnalyzeResponse
@@ -123,15 +127,12 @@ from .stream_start_response_metadata import StreamStartResponseMetadata
 from .stream_text_response import StreamTextResponse
 from .summarize_chapter_result import SummarizeChapterResult
 from .summarize_chapter_result_chapters_item import SummarizeChapterResultChaptersItem
+from .summarize_chapter_result_summarize_type import SummarizeChapterResultSummarizeType
 from .summarize_highlight_result import SummarizeHighlightResult
 from .summarize_highlight_result_highlights_item import SummarizeHighlightResultHighlightsItem
-from .summarize_response import (
-    SummarizeResponse,
-    SummarizeResponse_Chapter,
-    SummarizeResponse_Highlight,
-    SummarizeResponse_Summary,
-)
+from .summarize_highlight_result_summarize_type import SummarizeHighlightResultSummarizeType
 from .summarize_summary_result import SummarizeSummaryResult
+from .summarize_summary_result_summarize_type import SummarizeSummaryResultSummarizeType
 from .text_embedding_result import TextEmbeddingResult
 from .text_image_input_request import TextImageInputRequest
 from .text_input_request import TextInputRequest
@@ -153,6 +154,7 @@ from .video_indexing_task_system_metadata import VideoIndexingTaskSystemMetadata
 from .video_input_request import VideoInputRequest
 from .video_input_request_embedding_option_item import VideoInputRequestEmbeddingOptionItem
 from .video_input_request_embedding_scope_item import VideoInputRequestEmbeddingScopeItem
+from .video_input_request_embedding_type_item import VideoInputRequestEmbeddingTypeItem
 from .video_item import VideoItem
 from .video_item_failed import VideoItemFailed
 from .video_segment import VideoSegment
@@ -173,6 +175,7 @@ __all__ = [
     "AudioInputRequest",
     "AudioInputRequestEmbeddingOptionItem",
     "AudioInputRequestEmbeddingScopeItem",
+    "AudioInputRequestEmbeddingTypeItem",
     "AudioSegment",
     "AudioSegmentation",
     "AudioSegmentationFixed",
@@ -199,8 +202,10 @@ __all__ = [
     "EmbeddingMediaMetadata",
     "EmbeddingMediaMetadata_Audio",
     "EmbeddingMediaMetadata_Image",
+    "EmbeddingMediaMetadata_MultiInput",
     "EmbeddingMediaMetadata_TextImage",
     "EmbeddingMediaMetadata_Video",
+    "EmbeddingMultiInputMetadata",
     "EmbeddingResponse",
     "EmbeddingSuccessResponse",
     "EmbeddingTaskMediaMetadata",
@@ -222,8 +227,6 @@ __all__ = [
     "FinishReason",
     "ForbiddenErrorBody",
     "GetUploadStatusResponse",
-    "Gist",
-    "GistRequestTypesItem",
     "HlsObject",
     "HlsObjectStatus",
     "ImageEmbeddingResult",
@@ -248,6 +251,9 @@ __all__ = [
     "MediaEmbeddingTaskAudioEmbedding",
     "MediaEmbeddingTaskVideoEmbedding",
     "MediaSource",
+    "MultiInputMediaSource",
+    "MultiInputMediaSourceMediaType",
+    "MultiInputRequest",
     "MultipartUploadStatusType",
     "NextPageToken",
     "NonStreamAnalyzeResponse",
@@ -280,13 +286,12 @@ __all__ = [
     "StreamTextResponse",
     "SummarizeChapterResult",
     "SummarizeChapterResultChaptersItem",
+    "SummarizeChapterResultSummarizeType",
     "SummarizeHighlightResult",
     "SummarizeHighlightResultHighlightsItem",
-    "SummarizeResponse",
-    "SummarizeResponse_Chapter",
-    "SummarizeResponse_Highlight",
-    "SummarizeResponse_Summary",
+    "SummarizeHighlightResultSummarizeType",
     "SummarizeSummaryResult",
+    "SummarizeSummaryResultSummarizeType",
     "TextEmbeddingResult",
     "TextImageInputRequest",
     "TextInputRequest",
@@ -308,6 +313,7 @@ __all__ = [
     "VideoInputRequest",
     "VideoInputRequestEmbeddingOptionItem",
     "VideoInputRequestEmbeddingScopeItem",
+    "VideoInputRequestEmbeddingTypeItem",
     "VideoItem",
     "VideoItemFailed",
     "VideoSegment",

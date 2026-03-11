@@ -12,7 +12,7 @@ from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetada
 
 class EmbeddingMediaMetadata_Image(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, and video inputs.
+    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
     """
 
     input_type: typing.Literal["image"] = "image"
@@ -31,7 +31,7 @@ class EmbeddingMediaMetadata_Image(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_TextImage(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, and video inputs.
+    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
     """
 
     input_type: typing.Literal["text_image"] = "text_image"
@@ -50,7 +50,7 @@ class EmbeddingMediaMetadata_TextImage(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_Audio(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, and video inputs.
+    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
     """
 
     input_type: typing.Literal["audio"] = "audio"
@@ -74,7 +74,7 @@ class EmbeddingMediaMetadata_Audio(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_Video(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, and video inputs.
+    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
     """
 
     input_type: typing.Literal["video"] = "video"
@@ -97,9 +97,27 @@ class EmbeddingMediaMetadata_Video(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
+class EmbeddingMediaMetadata_MultiInput(UniversalBaseModel):
+    """
+    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
+    """
+
+    input_type: typing.Literal["multi_input"] = "multi_input"
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
 EmbeddingMediaMetadata = typing.Union[
     EmbeddingMediaMetadata_Image,
     EmbeddingMediaMetadata_TextImage,
     EmbeddingMediaMetadata_Audio,
     EmbeddingMediaMetadata_Video,
+    EmbeddingMediaMetadata_MultiInput,
 ]

@@ -5,12 +5,18 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .summarize_highlight_result_highlights_item import SummarizeHighlightResultHighlightsItem
+from .summarize_highlight_result_summarize_type import SummarizeHighlightResultSummarizeType
 from .token_usage import TokenUsage
 
 
 class SummarizeHighlightResult(UniversalBaseModel):
     """
     An object that represents the response from a summarize highlight operation.
+    """
+
+    summarize_type: SummarizeHighlightResultSummarizeType = pydantic.Field()
+    """
+    The type of summarize response.
     """
 
     id: typing.Optional[str] = pydantic.Field(default=None)

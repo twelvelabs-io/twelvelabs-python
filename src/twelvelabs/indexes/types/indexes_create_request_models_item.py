@@ -13,8 +13,8 @@ class IndexesCreateRequestModelsItem(UniversalBaseModel):
     
       - **Embedding**: These models are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
     
-        - `marengo3.0`: Enhanced model with sports intelligence and extended content support. For a list of the new features, see the [New in Marengo 3.0](/v1.3/docs/concepts/models/marengo#new-in-marengo-30) section.
-        - `marengo2.7`:  Video embedding model for multimodal search.
+    - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
+    - `marengo2.7`: **Deprecation notice**: Starting mid-March 2026, your videos will be automatically reindexed to Marengo 3.0. Marengo 2.7 will be deprecated once reindexing completes. See the [Migration guide](/v1.3/docs/get-started/migration-guide) for details.
     
       - **Generative**: These models generate text based on your videos.
     

@@ -58,20 +58,17 @@ class RawSearchClient:
         
         **Media queries**:
         - Set the `query_media_type` parameter to the corresponding media type (example: `image`).
-        - Specify either one of the following parameters:
+        - Provide up to 10 images by specifying the following parameters multiple times:
           - `query_media_url`: Publicly accessible URL of your media file.
           - `query_media_file`: Local media file.
-          If both `query_media_url` and `query_media_file` are specified in the same request, `query_media_url` takes precedence.
+        - Marengo 2.7 supports a single image per request.
         
         **Composed text and media queries** (Marengo 3.0 only):
         - Use the `query_text` parameter for your text query.
         - Set `query_media_type` to `image`.
-        - Specify the image using either the `query_media_url` or the `query_media_file` parameter.
-        
-          Example: Provide an image of a car and include  "red color"  in your query to find red instances of that car model.
+        - Provide up to 10 images by specifying the `query_media_url` and `query_media_file` parameters multiple times.
         
         **Entity search** (Marengo 3.0 only and in beta):
-        
         - To find a specific person in your videos, enclose the unique identifier of the entity you want to find in the `query_text` parameter.
         
         <Note title="Notes">
@@ -107,7 +104,13 @@ class RawSearchClient:
             The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
         
         query_media_url : typing.Optional[str]
-            The publicly accessible URL of the media file you wish to use. This parameter is required for media queries if `query_media_file` is not provided.
+            The publicly accessible URL of a media file to use as a query. This parameter is required for media queries if `query_media_file` is not provided.
+            
+            You can provide up to 10 images by specifying this parameter multiple times (Marengo 3.0 only):
+            ```
+            --form query_media_url=https://example.com/image1.jpg \
+            --form query_media_url=https://example.com/image2.jpg
+            ```
         
         query_media_file : typing.Optional[core.File]
             See core.File for more documentation
@@ -384,20 +387,17 @@ class AsyncRawSearchClient:
         
         **Media queries**:
         - Set the `query_media_type` parameter to the corresponding media type (example: `image`).
-        - Specify either one of the following parameters:
+        - Provide up to 10 images by specifying the following parameters multiple times:
           - `query_media_url`: Publicly accessible URL of your media file.
           - `query_media_file`: Local media file.
-          If both `query_media_url` and `query_media_file` are specified in the same request, `query_media_url` takes precedence.
+        - Marengo 2.7 supports a single image per request.
         
         **Composed text and media queries** (Marengo 3.0 only):
         - Use the `query_text` parameter for your text query.
         - Set `query_media_type` to `image`.
-        - Specify the image using either the `query_media_url` or the `query_media_file` parameter.
-        
-          Example: Provide an image of a car and include  "red color"  in your query to find red instances of that car model.
+        - Provide up to 10 images by specifying the `query_media_url` and `query_media_file` parameters multiple times.
         
         **Entity search** (Marengo 3.0 only and in beta):
-        
         - To find a specific person in your videos, enclose the unique identifier of the entity you want to find in the `query_text` parameter.
         
         <Note title="Notes">
@@ -433,7 +433,13 @@ class AsyncRawSearchClient:
             The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
         
         query_media_url : typing.Optional[str]
-            The publicly accessible URL of the media file you wish to use. This parameter is required for media queries if `query_media_file` is not provided.
+            The publicly accessible URL of a media file to use as a query. This parameter is required for media queries if `query_media_file` is not provided.
+            
+            You can provide up to 10 images by specifying this parameter multiple times (Marengo 3.0 only):
+            ```
+            --form query_media_url=https://example.com/image1.jpg \
+            --form query_media_url=https://example.com/image2.jpg
+            ```
         
         query_media_file : typing.Optional[core.File]
             See core.File for more documentation

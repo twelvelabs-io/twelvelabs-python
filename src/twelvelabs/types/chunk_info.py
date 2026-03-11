@@ -12,7 +12,7 @@ from .updated_at import UpdatedAt
 class ChunkInfo(UniversalBaseModel):
     index: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The index of the chunk. The platform uses 1-based indexing, and this value matches the value of the [`chunk_index`](/v1.3/api-reference/multipart-uploads/create#response.body.upload_urls.chunk_index) field in the list of upload URLs.
+    The index of the chunk. The platform uses 1-based indexing, and this value matches the value of the [`chunk_index`](/v1.3/api-reference/upload-content/multipart-uploads/create#response.body.upload_urls.chunk_index) field in the list of upload URLs.
     """
 
     status: typing.Optional[ChunkInfoStatus] = pydantic.Field(default=None)

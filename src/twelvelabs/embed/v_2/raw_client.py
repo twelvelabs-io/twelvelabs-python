@@ -15,6 +15,7 @@ from ...errors.too_many_requests_error import TooManyRequestsError
 from ...types.audio_input_request import AudioInputRequest
 from ...types.embedding_success_response import EmbeddingSuccessResponse
 from ...types.image_input_request import ImageInputRequest
+from ...types.multi_input_request import MultiInputRequest
 from ...types.text_image_input_request import TextImageInputRequest
 from ...types.text_input_request import TextInputRequest
 from ...types.video_input_request import VideoInputRequest
@@ -39,6 +40,7 @@ class RawV2Client:
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
+        multi_input: typing.Optional[MultiInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EmbeddingSuccessResponse]:
         """
@@ -50,7 +52,7 @@ class RawV2Client:
 
         **When to use this endpoint**:
         - Create embeddings for text, images, audio, or video content
-        - Get immediate results without waiting for background processing
+        - Retrieve immediate results without waiting for background processing
         - Process audio or video content up to 10 minutes in duration
 
         **Do not use this endpoint for**:
@@ -89,7 +91,8 @@ class RawV2Client:
             - `video`: Creates embeddings for a video file
             - `image`: Creates embeddings for an image file
             - `text`: Creates embeddings for text input
-            - `text_image`: Creates embeddings for text and an image.
+            - `text_image`: Creates embeddings for text and an image
+            - `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
 
         model_name : CreateEmbeddingsRequestModelName
             The video understanding model to use. Only "marengo3.0" is supported.
@@ -103,6 +106,8 @@ class RawV2Client:
         audio : typing.Optional[AudioInputRequest]
 
         video : typing.Optional[VideoInputRequest]
+
+        multi_input : typing.Optional[MultiInputRequest]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -132,6 +137,9 @@ class RawV2Client:
                 ),
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
+                ),
+                "multi_input": convert_and_respect_annotation_metadata(
+                    object_=multi_input, annotation=MultiInputRequest, direction="write"
                 ),
             },
             headers={
@@ -203,6 +211,7 @@ class AsyncRawV2Client:
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
         audio: typing.Optional[AudioInputRequest] = OMIT,
         video: typing.Optional[VideoInputRequest] = OMIT,
+        multi_input: typing.Optional[MultiInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EmbeddingSuccessResponse]:
         """
@@ -214,7 +223,7 @@ class AsyncRawV2Client:
 
         **When to use this endpoint**:
         - Create embeddings for text, images, audio, or video content
-        - Get immediate results without waiting for background processing
+        - Retrieve immediate results without waiting for background processing
         - Process audio or video content up to 10 minutes in duration
 
         **Do not use this endpoint for**:
@@ -253,7 +262,8 @@ class AsyncRawV2Client:
             - `video`: Creates embeddings for a video file
             - `image`: Creates embeddings for an image file
             - `text`: Creates embeddings for text input
-            - `text_image`: Creates embeddings for text and an image.
+            - `text_image`: Creates embeddings for text and an image
+            - `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
 
         model_name : CreateEmbeddingsRequestModelName
             The video understanding model to use. Only "marengo3.0" is supported.
@@ -267,6 +277,8 @@ class AsyncRawV2Client:
         audio : typing.Optional[AudioInputRequest]
 
         video : typing.Optional[VideoInputRequest]
+
+        multi_input : typing.Optional[MultiInputRequest]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -296,6 +308,9 @@ class AsyncRawV2Client:
                 ),
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoInputRequest, direction="write"
+                ),
+                "multi_input": convert_and_respect_annotation_metadata(
+                    object_=multi_input, annotation=MultiInputRequest, direction="write"
                 ),
             },
             headers={

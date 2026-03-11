@@ -59,6 +59,8 @@ class SearchClientWrapper(SearchClient):
         query_media_type: typing.Optional[typing.Literal["image"]] = OMIT,
         query_media_url: typing.Optional[str] = OMIT,
         query_media_file: typing.Optional[core.File] = OMIT,
+        query_media_urls: typing.Optional[typing.List[str]] = None,
+        query_media_files: typing.Optional[typing.List[core.File]] = None,
         query_text: typing.Optional[str] = OMIT,
         adjust_confidence_level: typing.Optional[float] = OMIT,
         group_by: typing.Optional[SearchCreateRequestGroupBy] = OMIT,
@@ -255,24 +257,61 @@ class SearchClientWrapper(SearchClient):
         )
         """
 
-        _response = self.create(
-            index_id=index_id,
-            search_options=search_options,
-            query_media_type=query_media_type,
-            query_media_url=query_media_url,
-            query_media_file=query_media_file,
-            query_text=query_text,
-            adjust_confidence_level=adjust_confidence_level,
-            group_by=group_by,
-            threshold=threshold,
-            sort_option=sort_option,
-            operator=operator,
-            page_limit=page_limit,
-            filter=filter,
-            include_user_metadata=include_user_metadata,
-            transcription_options=transcription_options,
-            request_options=request_options,
-        )
+        _has_plural = query_media_urls is not None or query_media_files is not None
+        if _has_plural:
+            _data: typing.Dict[str, typing.Any] = {
+                "index_id": index_id,
+                "search_options": search_options,
+                "query_media_type": query_media_type,
+                "query_media_url": query_media_urls if query_media_urls is not None else query_media_url,
+                "query_text": query_text,
+                "adjust_confidence_level": adjust_confidence_level,
+                "group_by": group_by,
+                "threshold": threshold,
+                "sort_option": sort_option,
+                "operator": operator,
+                "page_limit": page_limit,
+                "filter": filter,
+                "include_user_metadata": include_user_metadata,
+                "transcription_options": transcription_options,
+            }
+            _files: typing.Dict[str, typing.Any] = {}
+            if query_media_files is not None:
+                _files["query_media_file"] = query_media_files
+            elif query_media_file is not OMIT:
+                _files["query_media_file"] = query_media_file
+            _http_response = self._raw_client._client_wrapper.httpx_client.request(
+                "search",
+                method="POST",
+                data=_data,
+                files=_files,
+                request_options=request_options,
+                omit=OMIT,
+                force_multipart=True,
+            )
+            _response = typing.cast(
+                SearchResults,
+                parse_obj_as(type_=SearchResults, object_=_http_response.json()),
+            )
+        else:
+            _response = self.create(
+                index_id=index_id,
+                search_options=search_options,
+                query_media_type=query_media_type,
+                query_media_url=query_media_url,
+                query_media_file=query_media_file,
+                query_text=query_text,
+                adjust_confidence_level=adjust_confidence_level,
+                group_by=group_by,
+                threshold=threshold,
+                sort_option=sort_option,
+                operator=operator,
+                page_limit=page_limit,
+                filter=filter,
+                include_user_metadata=include_user_metadata,
+                transcription_options=transcription_options,
+                request_options=request_options,
+            )
 
         _has_next = (
             _response.page_info is not None
@@ -324,6 +363,8 @@ class AsyncSearchClientWrapper(AsyncSearchClient):
         query_media_type: typing.Optional[typing.Literal["image"]] = OMIT,
         query_media_url: typing.Optional[str] = OMIT,
         query_media_file: typing.Optional[core.File] = OMIT,
+        query_media_urls: typing.Optional[typing.List[str]] = None,
+        query_media_files: typing.Optional[typing.List[core.File]] = None,
         query_text: typing.Optional[str] = OMIT,
         adjust_confidence_level: typing.Optional[float] = OMIT,
         group_by: typing.Optional[SearchCreateRequestGroupBy] = OMIT,
@@ -528,24 +569,61 @@ class AsyncSearchClientWrapper(AsyncSearchClient):
         asyncio.run(main())
         """
 
-        _response = await self.create(
-            index_id=index_id,
-            search_options=search_options,
-            query_media_type=query_media_type,
-            query_media_url=query_media_url,
-            query_media_file=query_media_file,
-            query_text=query_text,
-            adjust_confidence_level=adjust_confidence_level,
-            group_by=group_by,
-            threshold=threshold,
-            sort_option=sort_option,
-            operator=operator,
-            page_limit=page_limit,
-            filter=filter,
-            include_user_metadata=include_user_metadata,
-            transcription_options=transcription_options,
-            request_options=request_options,
-        )
+        _has_plural = query_media_urls is not None or query_media_files is not None
+        if _has_plural:
+            _data: typing.Dict[str, typing.Any] = {
+                "index_id": index_id,
+                "search_options": search_options,
+                "query_media_type": query_media_type,
+                "query_media_url": query_media_urls if query_media_urls is not None else query_media_url,
+                "query_text": query_text,
+                "adjust_confidence_level": adjust_confidence_level,
+                "group_by": group_by,
+                "threshold": threshold,
+                "sort_option": sort_option,
+                "operator": operator,
+                "page_limit": page_limit,
+                "filter": filter,
+                "include_user_metadata": include_user_metadata,
+                "transcription_options": transcription_options,
+            }
+            _files: typing.Dict[str, typing.Any] = {}
+            if query_media_files is not None:
+                _files["query_media_file"] = query_media_files
+            elif query_media_file is not OMIT:
+                _files["query_media_file"] = query_media_file
+            _http_response = await self._raw_client._client_wrapper.httpx_client.request(
+                "search",
+                method="POST",
+                data=_data,
+                files=_files,
+                request_options=request_options,
+                omit=OMIT,
+                force_multipart=True,
+            )
+            _response = typing.cast(
+                SearchResults,
+                parse_obj_as(type_=SearchResults, object_=_http_response.json()),
+            )
+        else:
+            _response = await self.create(
+                index_id=index_id,
+                search_options=search_options,
+                query_media_type=query_media_type,
+                query_media_url=query_media_url,
+                query_media_file=query_media_file,
+                query_text=query_text,
+                adjust_confidence_level=adjust_confidence_level,
+                group_by=group_by,
+                threshold=threshold,
+                sort_option=sort_option,
+                operator=operator,
+                page_limit=page_limit,
+                filter=filter,
+                include_user_metadata=include_user_metadata,
+                transcription_options=transcription_options,
+                request_options=request_options,
+            )
 
         _has_next = (
             _response.page_info is not None

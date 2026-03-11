@@ -30,7 +30,7 @@ class CreateAssetUploadResponse(UniversalBaseModel):
     
     Note the following about the presigned URLs:
     - URLs expire after one hour.
-    - Depending on the size of the file, the initial set may not include URLs for all chunks. If you need more URLs, you can request additional ones using the [`POST`](/v1.3/api-reference/multipart-uploads/get-additional-presigned-urls) method of the `/assets/multipart-uploads/{upload_id}/presigned-urls` endpoint.
+    - Depending on the size of the file, the initial set may not include URLs for all chunks. If you need more URLs, you can request additional ones using the [`POST`](/v1.3/api-reference/upload-content/multipart-uploads/get-additional-presigned-urls) method of the `/assets/multipart-uploads/{upload_id}/presigned-urls` endpoint.
     """
 
     upload_headers: typing.Optional[typing.Dict[str, str]] = None
