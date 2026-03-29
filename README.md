@@ -4,16 +4,25 @@
 [![PyPI version](https://img.shields.io/pypi/v/twelvelabs.svg)](https://pypi.org/project/twelvelabs/)
 ![Pepy Total Downloads](https://img.shields.io/pepy/dt/twelvelabs)
 
-> **NOTE**: This version includes breaking changes compared to the 0.4.x version. To use it in your application, you must update your code and thoroughly test the changes to ensure everything functions as expected before deploying it to production environments. If you want to use the legacy version, please refer to the [0.4 folder](./0.4).
+The TwelveLabs Python SDK provides a set of intuitive classes and methods that streamline platform interaction, minimizing the need for boilerplate code.
 
-This SDK provides a convenient way to interact with the Twelve Labs Video Understanding Platform from an application written in the Python language. The SDK equips you with a set of intuitive classes and methods that streamline the process of interacting with the platform, minimizing the need for boilerplate code.
+> **Note**: The examples in this guide show only the required parameters. For the complete guides, see the [Search](https://docs.twelvelabs.io/docs/guides/search) and [Analyze videos](https://docs.twelvelabs.io/docs/guides/analyze-videos) pages.
 
 # Prerequisites
 
 Ensure that the following prerequisites are met before using the SDK:
 
 - [Python](https://www.python.org) 3.7 or newer must be installed on your machine.
-- You have an API key. If you don't have an account, please [sign up](https://playground.twelvelabs.io/) for a free account. Then, to retrieve your API key, go to the [API Key](https://playground.twelvelabs.io/dashboard/api-key) page, and select the **Copy** icon to the right of the key to copy it to your clipboard.
+- To use the platform, you need an API key:
+  1. If you don't have an account, [sign up](https://playground.twelvelabs.io/) for a free account.
+  2. Go to the [API Keys](https://playground.twelvelabs.io/dashboard/api-keys) page.
+  3. If you need to create a new key, select the **Create API Key** button. Enter a name and set the expiration period. The default is 12 months.
+  4. Select the **Copy** icon next to your key to copy it to your clipboard.
+- Your video files must meet the following requirements:
+    - **For this guide**: Files up to 4 GB when using publicly accessible URLs or 200 MB for local files
+    - **Model capabilities**: See the complete requirements for [Marengo](https://docs.twelvelabs.io/v1.3/docs/concepts/models/marengo#video-file-requirements) and [Pegasus](https://docs.twelvelabs.io/v1.3/docs/concepts/models/pegasus#video-file-requirements) for resolution, aspect ratio, and supported formats.
+    
+    For upload size limits and processing modes, see the [Upload and processing methods](https://docs.twelvelabs.io/v1.3/docs/concepts/upload-methods) page.
 
 # Install the SDK
 
@@ -47,200 +56,226 @@ To get started with the SDK, follow these basic steps:
 
 ## Create an index
 
-To create an index, use the example code below, replacing "<YOUR_INDEX_NAME>" with the desired name for your index:
+Indexes store and organize your video data, allowing you to group related videos. When you create an index, configure which video understanding models process your videos and what modalities those models analyze.
+
+To create an index, call the `client.indexes.create` method with the following parameters:
+
+- **`index_name`**: The name of the index.
+- **`models`**: An array of models to enable. Each entry has two fields:
+  - **`model_name`**: The model to enable. Use `"marengo3.0"` for search or `"pegasus1.2"` for text generation.
+  - **`model_options`**: The modalities to analyze.
 
 ```py
-from twelvelabs import TwelveLabs
-from twelvelabs.indexes import IndexesCreateRequestModelsItem
-
-try:
-    index = client.indexes.create(
-        index_name="<YOUR_INDEX_NAME>",
-        models=[
-            IndexesCreateRequestModelsItem(
-                model_name="marengo3.0",
-                model_options=["visual", "audio"],
-            ),
-            IndexesCreateRequestModelsItem(
-                model_name="pegasus1.2",
-                model_options=["visual", "audio"],
-            ),
-        ],
-    )
-except Exception as e:
-    print(f"Error: {e}")
-print(f"Created index: id={index.id} name={index.name}")
+index = client.indexes.create(
+    index_name="<YOUR_INDEX_NAME>",
+    models=[
+        {"model_name": "marengo3.0", "model_options": ["visual", "audio"]},
+        {"model_name": "pegasus1.2", "model_options": ["visual", "audio"]}
+    ]
+)
+if not index.id:
+    raise RuntimeError("Failed to create an index.")
+print(f"Created index: id={index.id}")
 ```
 
-Note the following about this example:
+The `client.indexes.create` method returns an object that includes, among other information, a field named `id` representing the unique identifier of your new index.
 
-- The platform provides two distinct models, each serving unique purposes in multimodal video understanding.
-  - **Marengo**: An embedding model that analyzes multiple modalities in video content, including visuals, audio, and text, to provide a holistic understanding similar to human comprehension. Key use cases include searching using image or natural-language queries and creating embeddings for various downstream applications. The current version is Marengo 3.0.
-  - **Pegasus**: A generative model that analyzes multiple modalities to generate contextually relevant text based on the content of your videos. Key use cases include content summarization and timestamp identification. The current version is Pegasus 1.2.
-    This example enables both Marengo and Pegasus.
-- The `models.model_options` fields specify the modalities each video understanding model will process.
-- The models and the model options specified when you create an index apply to all the videos you upload to that index and cannot be changed.
-
-Note that the platform returns, among other information, a field named `id`, representing the unique identifier of your new index.
-
-For a description of each field in the request and response, see the [Create an index](https://docs.twelvelabs.io/v1.3/sdk-reference/python/manage-indexes#create-an-index) section.
+See the [Indexes](https://docs.twelvelabs.io/docs/concepts/indexes) page for more details.
 
 ## Upload videos
 
-Before you upload a video to the platform, ensure that it meets the following requirements:
+To upload a video, call the `client.assets.create` method with the following parameters:
 
-- **Video resolution**: The shorter side (width or height) must be at least 360 pixels and must not exceed 2160 pixels.
-- **Aspect ratio**: Must be one of the following (including both landscape and portrait variants): 1:1, 4:3, 4:5, 5:4, 16:9, 9:16, or 17:9.
-- **Video and audio formats**: The video files you wish to upload must be encoded in the video and audio formats listed on the [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) page. For videos in other formats, contact us at [support@twelvelabs.io](mailto:support@twelvelabs.io).
-- **Duration**: For Marengo, it must be between 4 seconds and 4 hours (14,400s). For Pegasus, it must be between 4 seconds and 1 hour (3,600s).
-- **File size**: For Marengo, up to 4 GB is supported. For Pegasus, up to 2 GB is supported.
-
-If you require different options, send us an email at support@twelvelabs.io.
-
-To upload videos, use the example code below, replacing the following:
-
-- **`<YOUR_VIDEO_PATH>`**: with a string representing the path to the directory containing the video files you wish to upload.
-- **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of the index to which you want to upload your video.
+- **`method`**: Upload method. Use `"url"` for publicly accessible URLs or `"direct"` for local files.
+- **`url`** or **`file`**: The video URL or an opened file object in binary read mode. Use direct links to raw media files. Hosting platform links and cloud storage sharing links are not supported.
 
 ```py
-from glob import glob
-
-video_files = glob("<YOUR_VIDEO_PATH>") # Example: "/videos/*.mp4"
-for video_file in video_files:
-  print(f"Uploading {video_file}")
-  task = client.tasks.create(index_id="<YOUR_INDEX_ID>", video_file=video_file)
-  print(f"Task id={task.id}")
-
-  task.wait_for_done(sleep_interval=5, callback=lambda t: print(f"  Status={t.status}"))
-  if task.status != "ready":
-      raise RuntimeError(f"Indexing failed with status {task.status}")
-  print(f"Upload complete. The unique identifier of your video is {task.video_id}.")
+asset = client.assets.create(
+    method="url",
+    url="<YOUR_VIDEO_URL>"
+    # Or use method="direct" and file=open("<PATH_TO_VIDEO_FILE>", "rb") to upload a local file.
+)
+print(f"Created asset: id={asset.id}")
 ```
 
-For a description of each field in the request and response, see the [Create a video indexing task](https://docs.twelvelabs.io/v1.3/sdk-reference/python/upload-videos#create-a-video-indexing-task) section.
+The `client.assets.create` method returns an object that includes, among other information, a field named `id` representing the unique identifier of your asset. Use this identifier in subsequent steps.
+
+## Index your video
+
+To index your video, call the `client.indexes.indexed_assets.create` method with the following parameters:
+
+- **`index_id`**: The unique identifier of your index.
+- **`asset_id`**: The unique identifier of the asset to index.
+
+```py
+indexed_asset = client.indexes.indexed_assets.create(
+    index_id=index.id,
+    asset_id=asset.id
+)
+print(f"Created indexed asset: id={indexed_asset.id}")
+```
+
+The `client.indexes.indexed_assets.create` method returns an object that includes, among other information, a field named `id` representing the unique identifier of your indexed asset.
+
+## Monitor the indexing process
+
+The platform indexes videos asynchronously. To monitor the indexing process, call the `client.indexes.indexed_assets.retrieve` method with the following parameters:
+
+- **`index_id`**: The unique identifier of your index.
+- **`indexed_asset_id`**: The unique identifier of your indexed asset.
+
+```py
+import time
+
+print("Waiting for indexing to complete.")
+while True:
+    indexed_asset = client.indexes.indexed_assets.retrieve(
+        index_id=index.id,
+        indexed_asset_id=indexed_asset.id
+    )
+    print(f"  Status={indexed_asset.status}")
+    if indexed_asset.status == "ready":
+        print("Indexing complete!")
+        break
+    elif indexed_asset.status == "failed":
+        raise RuntimeError("Indexing failed")
+    time.sleep(5)
+```
+
+The `client.indexes.indexed_assets.retrieve` method returns an object that includes, among other information, a field named `status` representing the status of the indexing process. Poll this method until `status` is `"ready"` before performing downstream tasks.
 
 ## Perform downstream tasks
 
-The sections below show how you can perform the most common downstream tasks. See [our documentation](https://docs.twelvelabs.io/docs) for a complete list of all the features the Twelve Labs Understanding Platform provides.
+The sections below show the most common downstream tasks. See [our documentation](https://docs.twelvelabs.io/docs) for the complete list of features the platform provides.
 
 ### Search
 
-To search for relevant video content, you can use either text or images as queries:
+Use natural language, images, or both to find matching video segments. Search operates within a single index.
 
-- **Text queries**: Use natural language to find video segments matching specific keywords or phrases.
-- **Image queries**: Use images to find video segments that are semantically similar to the provided images.
+**Text queries**
 
-**Search using text queries**
+To search using a text query, call the `client.search.query` method with the following parameters:
 
-To perform a search request using text queries, use the example code below, replacing the following:
-
-- **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
-- **`<YOUR_QUERY>`**: with a string representing your search query. Note that the API supports full natural language-based search. The following examples are valid queries: "birds flying near a castle," "sun shining on water," and "an officer holding a child's hand."
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the modalities the platform uses when performing a search. For example, to search based on visual and audio cues, use `["visual", "audio"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/v1.3/docs/concepts/modalities#search-options) section.
+- **`query_text`**: Natural language query. The maximum length of a query is 500 tokens.
+- **`search_options`**: Modalities to search. Valid values: `"visual"`, `"audio"`, `"transcription"` (spoken words). See the [Search options](https://docs.twelvelabs.io/docs/concepts/modalities#search-options) page for details.
 
 ```py
 search_results = client.search.query(
     index_id=index.id,
     query_text="<YOUR_QUERY>",
-    options=["visual", "audio"]
-    )
-for clip in search_results.data:
-    print(f" video_id={clip.video_id} score={clip.score} start={clip.start} end={clip.end} confidence={clip.confidence}")
+    search_options=["visual", "audio"]
+)
+for i, clip in enumerate(search_results):
+    print(f"Result {i + 1}: video_id={clip.video_id} rank={clip.rank} start={clip.start}s end={clip.end}s")
 ```
 
-Note that the response contains, among other information, the following fields:
+The `client.search.query` method returns an iterable where each item contains, among other information, the following fields:
 
-- `video_id`: The unique identifier of the video that matched your search terms.
-- `score`: A quantitative value determined by the AI model representing the level of confidence that the results match your search terms.
-- `start`: The start time of the matching video clip, expressed in seconds.
-- `end`: The end time of the matching video clip, expressed in seconds.
-- `confidence`: A qualitative indicator based on the value of the score field. This field can take one of the following values:
-  - `high`
-  - `medium`
-  - `low`
+- `video_id`: The unique identifier of the matching video.
+- `rank`: The relevance ranking (1 = most relevant).
+- `start`, `end`: The start and end time of the matching clip, expressed in seconds.
 
-  **Note:** The `confidence` field is deprecated for indexes created with the Marengo 3.0 model.
-- `rank`: Indicates the rank of the matched clip based on search relevance.  
+**Image queries**
 
-For a description of each field in the request and response, see the [Make a search request](https://docs.twelvelabs.io/v1.3/sdk-reference/python/search#make-a-search-request) page.
+To search using an image query, call the `client.search.query` method with the following parameters:
 
-**Search using image queries**
+- **`query_media_type`**: Must be `"image"`.
+- **`query_media_file`**, **`query_media_url`**, **`query_media_files`**, or **`query_media_urls`**: The image or images to use as a query (up to 10 total). Provide at least one of the following:
+  - _(Optional)_ **`query_media_file`**: An opened file object in binary read mode.
+  - _(Optional)_ **`query_media_url`**: The publicly accessible URL of your image file.
+  - _(Optional)_ **`query_media_files`**: A list of opened file objects in binary read mode.
+  - _(Optional)_ **`query_media_urls`**: A list of publicly accessible URLs.
 
-You can provide images as local files or publicly accessible URLs. Use the `query_media_file` parameter for local image files and the `query_media_url` parameter for publicly accessible URLs.
-
-To perform a search request using image queries, use the example code below, replacing the following:
-
-- **`<YOUR_INDEX_ID>`**: with a string representing the unique identifier of your index.
-- **`<YOUR_FILE_PATH>`**: with a string representing the path of the image file you wish to provide.
-- **`[<YOUR_SEARCH_OPTIONS>]`**: with an array of strings that specifies the sources of information the platform uses when performing a search. For example, to search based on visual cues, use `["visual"]`. Note that the search options you specify must be a subset of the model options used when you created the index. For more details, see the [Search options](https://docs.twelvelabs.io/v1.3/docs/concepts/modalities#search-options) section.
-
-```python
+```py
 search_results = client.search.query(
-    index_id="<YOUR_INDEX_ID>",
+    index_id=index.id,
     query_media_type="image",
-    query_media_file="<YOUR_FILE_PATH>",
-    search_options=["<YOUR_SEARCH_OPTIONS>"]
+    query_media_url="<YOUR_IMAGE_URL>",
+    # Or use query_media_file=open("<PATH_TO_IMAGE_FILE>", "rb") for a local file.
+    # Or use query_media_urls=["<URL_1>", "<URL_2>"] for multiple URLs.
+    # Or use query_media_files=[open("<FILE_1>", "rb"), open("<FILE_2>", "rb")] for multiple local files.
+    search_options=["visual"]
 )
+for i, clip in enumerate(search_results):
+    print(f"Result {i + 1}: video_id={clip.video_id} rank={clip.rank} start={clip.start}s end={clip.end}s")
+```
+
+The response is similar to that received when using text queries.
+
+**Composed queries**
+
+Combine up to 10 images with text to narrow results. For example, provide an image of a car and add "red color" to find only red instances of that vehicle.
+
+To perform a composed query, call the `client.search.query` method with the following parameters:
+
+- **`query_media_file`**, **`query_media_url`**, **`query_media_files`**, or **`query_media_urls`**: The image or images to use as a query (up to 10 total). Provide at least one of the following:
+  - _(Optional)_ **`query_media_file`**: An opened file object in binary read mode.
+  - _(Optional)_ **`query_media_url`**: The publicly accessible URL of your image file.
+  - _(Optional)_ **`query_media_files`**: A list of opened file objects in binary read mode.
+  - _(Optional)_ **`query_media_urls`**: A list of publicly accessible URLs.
+- **`query_text`**: Text that refines the image query.
+
+```py
+search_results = client.search.query(
+    index_id=index.id,
+    query_media_type="image",
+    query_media_url="<YOUR_IMAGE_URL>",
+    # Or use query_media_file=open("<PATH_TO_IMAGE_FILE>", "rb") for a local file.
+    # Or use query_media_urls=["<URL_1>", "<URL_2>"] for multiple URLs.
+    # Or use query_media_files=[open("<FILE_1>", "rb"), open("<FILE_2>", "rb")] for multiple local files.
+    query_text="<YOUR_QUERY>",
+    search_options=["visual"]
+)
+for i, clip in enumerate(search_results):
+    print(f"Result {i + 1}: video_id={clip.video_id} rank={clip.rank} start={clip.start}s end={clip.end}s")
 ```
 
 The response is similar to that received when using text queries.
 
 ### Analyze videos
 
-The Analyze API suite uses a multimodal approach to analyze videos and generate text, processing visuals, sounds, spoken words, and texts to provide a comprehensive understanding.
+The platform uses a multimodal approach to analyze video content, processing visuals, sounds, spoken words, and on-screen text. Use a custom prompt to generate summaries, extract insights, answer questions, or produce structured output.
 
-The Analyze API offers three distinct endpoints tailored to meet various requirements. Each endpoint has been designed with specific levels of flexibility and customization to accommodate different needs.
+Note the following about using these methods:
 
-Note the following about using these endpoints:
-
-- The Pegasus video understanding model must be enabled for the index to which your video has been uploaded.
-- Your prompts must be instructive or descriptive, and you can also phrase them as questions.
+- The Pegasus model must be enabled for the index.
+- Your prompts can be instructive or descriptive, or you can phrase them as questions.
 - The maximum length of a prompt is 2,000 tokens.
 
-#### Titles, topics, and hashtags
+**Streaming responses**
 
-To analyze videos and generate titles, topics, and hashtags use the example code below, replacing the following:
+Streaming delivers text fragments in real-time. Use it for live transcription or when you need immediate output.
 
-- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
+To analyze a video with streaming responses, call the `client.analyze_stream` method with the following parameters:
 
-```py
-from twelvelabs import TwelveLabs
-gist = client.gist(video_id=task.video_id, types=["title", "topic", "hashtag"])
-print(f"Title={gist.title}\nTopics={gist.topics}\nHashtags={gist.hashtags}")
-```
-
-#### Summaries, chapters, and highlights
-
-To analyze videos and generate summaries, chapters, and highlights, use the example code below, replacing the following:
-
-- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
-- **`<TYPE>`**: with a string representing the type of text the platform should generate. This parameter can take one of the following values: "summary", "chapter", or "highlight".
-- _(Optional)_ **`<YOUR_PROMPT>`**: with a string that provides context for the summarization task, such as the target audience, style, tone of voice, and purpose. Example: "Generate a summary in no more than 5 bullet points."
+- **`video_id`**: The unique identifier of the indexed asset.
+- **`prompt`**: Guides text generation, and it can be instructive, descriptive, or a question. The maximum length is 2,000 tokens.
 
 ```py
-res = client.summarize(video_id="<YOUR_VIDEO_ID>", type="<TYPE>", prompt="<YOUR_PROMPT>")
-if res.summarize_type == "summary":
-    print(f"{res.summary}")
-elif res.summarize_type == "chapter":
-    print(f"Chapters: {res.chapters}")
-elif res.summarize_type == "highlight":
-    print(f"Highlights: {res.highlights}")
+text_stream = client.analyze_stream(
+    video_id=indexed_asset.id,
+    prompt="<YOUR_PROMPT>"
+)
+for text in text_stream:
+    if text.event_type == "text_generation":
+        print(text.text)
 ```
 
-For a description of each field in the request and response, see the [Summaries, chapters, or highlights](https://docs.twelvelabs.io/v1.3/sdk-reference/python/analyze-videos#summaries-chapters-and-highlights) page.
+The `client.analyze_stream` method returns a stream of objects. The `event_type` field can be `"stream_start"`, `"text_generation"`, or `"stream_end"`.
 
-#### Open-ended analysis
+**Non-streaming responses**
 
-To perform open-ended analysis and generate tailored text outputs based on your prompts, use the example code below, replacing the following:
-
-- **`<YOUR_VIDEO_ID>`**: with a string representing the unique identifier of your video.
-- **`<YOUR_PROMPT>`**: with a string that guides the model on the desired format or content. The maximum length of the prompt is 2,000 tokens. Example: "I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks."
--
+Non-streaming returns the complete text in a single response. Use it for reports or summaries where you need the full result at once. Call the `client.analyze` method with the same parameters as `client.analyze_stream`.
 
 ```py
-res = client.analyze(video_id="<YOUR_VIDEO_ID>", prompt="<YOUR_PROMPT>")
-print(f"{res.data}")
+result = client.analyze(
+    video_id=indexed_asset.id,
+    prompt="<YOUR_PROMPT>"
+)
+print(result.data)
 ```
+
+The `client.analyze` method returns an object where the `data` field contains the complete generated text string (up to 4,096 tokens).
 
 ## Error Handling
 
@@ -259,7 +294,7 @@ The SDK includes a set of exceptions that are mapped to specific HTTP status cod
 
 The following example shows how you can handle specific HTTP errors in your application:
 
-```python
+```py
 import os
 from twelvelabs import TwelveLabs
 from twelvelabs.errors import BadRequestError, NotFoundError
