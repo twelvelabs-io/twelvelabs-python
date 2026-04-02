@@ -4,19 +4,20 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .analyze_task_status import AnalyzeTaskStatus
 
 
-class ImportLogVideoStatus(UniversalBaseModel):
+class CreateAnalyzeTaskResponse(UniversalBaseModel):
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page details on possible values.
+    Response when creating a new analysis task.
     """
 
-    ready: int
-    validating: int
-    queued: int
-    pending: int
-    indexing: int
-    failed: int
+    task_id: str = pydantic.Field()
+    """
+    The unique identifier of the analysis task.
+    """
+
+    status: AnalyzeTaskStatus
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

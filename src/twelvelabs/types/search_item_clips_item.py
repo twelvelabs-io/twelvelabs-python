@@ -4,20 +4,16 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .confidence import Confidence
 from .end_time import EndTime
 from .rank import Rank
-from .score_search_terms import ScoreSearchTerms
 from .start_time import StartTime
 from .thumbnail_url import ThumbnailUrl
 from .user_metadata import UserMetadata
 
 
 class SearchItemClipsItem(UniversalBaseModel):
-    score: typing.Optional[ScoreSearchTerms] = None
     start: typing.Optional[StartTime] = None
     end: typing.Optional[EndTime] = None
-    confidence: typing.Optional[Confidence] = None
     rank: typing.Optional[Rank] = None
     thumbnail_url: typing.Optional[ThumbnailUrl] = None
     transcription: typing.Optional[str] = pydantic.Field(default=None)

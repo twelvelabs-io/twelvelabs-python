@@ -9,7 +9,7 @@ from .response_format_type import ResponseFormatType
 
 class ResponseFormat(UniversalBaseModel):
     """
-    Use this parameter to specify the format of the response. When you omit this parameter, the platform returns unstructured text.
+    Specifies the format of the response. When you omit this parameter, the platform returns unstructured text.
     """
 
     type: ResponseFormatType = pydantic.Field()

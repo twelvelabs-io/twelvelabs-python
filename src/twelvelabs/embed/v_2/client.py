@@ -52,10 +52,6 @@ class V2Client:
         """
         This endpoint synchronously creates embeddings for multimodal content and returns the results immediately in the response.
 
-        <Note title="Note">
-          This method only supports Marengo version 3.0 or newer.
-        </Note>
-
         **When to use this endpoint**:
         - Create embeddings for text, images, audio, or video content
         - Retrieve immediate results without waiting for background processing
@@ -101,7 +97,7 @@ class V2Client:
             - `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
 
         model_name : CreateEmbeddingsRequestModelName
-            The video understanding model to use. Only "marengo3.0" is supported.
+            The video understanding model to use. Value: "marengo3.0".
 
         text : typing.Optional[TextInputRequest]
 
@@ -184,10 +180,6 @@ class AsyncV2Client:
         """
         This endpoint synchronously creates embeddings for multimodal content and returns the results immediately in the response.
 
-        <Note title="Note">
-          This method only supports Marengo version 3.0 or newer.
-        </Note>
-
         **When to use this endpoint**:
         - Create embeddings for text, images, audio, or video content
         - Retrieve immediate results without waiting for background processing
@@ -233,7 +225,7 @@ class AsyncV2Client:
             - `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
 
         model_name : CreateEmbeddingsRequestModelName
-            The video understanding model to use. Only "marengo3.0" is supported.
+            The video understanding model to use. Value: "marengo3.0".
 
         text : typing.Optional[TextInputRequest]
 

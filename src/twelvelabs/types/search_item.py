@@ -4,10 +4,8 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .confidence import Confidence
 from .end_time import EndTime
 from .rank import Rank
-from .score_search_terms import ScoreSearchTerms
 from .search_item_clips_item import SearchItemClipsItem
 from .start_time import StartTime
 from .thumbnail_url import ThumbnailUrl
@@ -19,7 +17,6 @@ class SearchItem(UniversalBaseModel):
     An object that contains the search results.
     """
 
-    score: typing.Optional[ScoreSearchTerms] = None
     start: typing.Optional[StartTime] = None
     end: typing.Optional[EndTime] = None
     video_id: typing.Optional[str] = pydantic.Field(default=None)
@@ -27,7 +24,6 @@ class SearchItem(UniversalBaseModel):
     A string representing the unique identifier of the video. Once the platform indexes a video, it assigns a unique identifier. Note that this is different from the identifier of the video indexing task.
     """
 
-    confidence: typing.Optional[Confidence] = None
     rank: typing.Optional[Rank] = None
     thumbnail_url: typing.Optional[ThumbnailUrl] = None
     transcription: typing.Optional[str] = pydantic.Field(default=None)

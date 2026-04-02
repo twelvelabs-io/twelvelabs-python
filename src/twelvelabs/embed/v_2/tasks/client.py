@@ -119,10 +119,6 @@ class TasksClient:
         """
         This endpoint creates embeddings for audio and video content asynchronously.
 
-        <Note title="Note">
-          This method only supports Marengo version 3.0 or newer.
-        </Note>
-
         **When to use this endpoint**:
         - Process audio or video files longer than 10 minutes
         - Process files up to 4 hours in duration
@@ -163,7 +159,7 @@ class TasksClient:
             - `video`: Video content
 
         model_name : CreateAsyncEmbeddingRequestModelName
-            The model you wish to use. Only `"marengo3.0"` is supported.
+            The model you wish to use. Value: `"marengo3.0"`.
 
         audio : typing.Optional[AudioInputRequest]
 
@@ -366,10 +362,6 @@ class AsyncTasksClient:
         """
         This endpoint creates embeddings for audio and video content asynchronously.
 
-        <Note title="Note">
-          This method only supports Marengo version 3.0 or newer.
-        </Note>
-
         **When to use this endpoint**:
         - Process audio or video files longer than 10 minutes
         - Process files up to 4 hours in duration
@@ -410,7 +402,7 @@ class AsyncTasksClient:
             - `video`: Video content
 
         model_name : CreateAsyncEmbeddingRequestModelName
-            The model you wish to use. Only `"marengo3.0"` is supported.
+            The model you wish to use. Value: `"marengo3.0"`.
 
         audio : typing.Optional[AudioInputRequest]
 

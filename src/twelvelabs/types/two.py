@@ -3,20 +3,20 @@
 import typing
 
 import pydantic
+import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.serialization import FieldMetadata
 
 
-class ImportLogVideoStatus(UniversalBaseModel):
+class Two(UniversalBaseModel):
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page details on possible values.
+    Provide the video via base64-encoded data.
     """
 
-    ready: int
-    validating: int
-    queued: int
-    pending: int
-    indexing: int
-    failed: int
+    base_64_string: typing_extensions.Annotated[str, FieldMetadata(alias="base64_string")] = pydantic.Field()
+    """
+    The base64-encoded video data. The maximum size is 30MB.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

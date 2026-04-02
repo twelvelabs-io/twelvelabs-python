@@ -3,6 +3,7 @@
 import typing
 
 import httpx
+from .analyze_async.client import AnalyzeAsyncClient, AsyncAnalyzeAsyncClient
 from .assets.client import AssetsClient, AsyncAssetsClient
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .core.request_options import RequestOptions
@@ -14,9 +15,13 @@ from .multipart_upload.client import AsyncMultipartUploadClient, MultipartUpload
 from .raw_base_client import AsyncRawBaseClient, RawBaseClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
+from .types.analyze_max_tokens import AnalyzeMaxTokens
+from .types.analyze_temperature import AnalyzeTemperature
+from .types.analyze_text_prompt import AnalyzeTextPrompt
 from .types.non_stream_analyze_response import NonStreamAnalyzeResponse
 from .types.response_format import ResponseFormat
 from .types.stream_analyze_response import StreamAnalyzeResponse
+from .types.video_context import VideoContext
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -95,6 +100,7 @@ class BaseClient:
         self.entity_collections = EntityCollectionsClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
+        self.analyze_async = AnalyzeAsyncClient(client_wrapper=self._client_wrapper)
 
     @property
     def with_raw_response(self) -> RawBaseClient:
@@ -110,51 +116,53 @@ class BaseClient:
     def analyze_stream(
         self,
         *,
-        video_id: str,
-        prompt: str,
-        temperature: typing.Optional[float] = OMIT,
+        prompt: AnalyzeTextPrompt,
+        video_id: typing.Optional[str] = OMIT,
+        video: typing.Optional[VideoContext] = OMIT,
+        temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[ResponseFormat] = OMIT,
-        max_tokens: typing.Optional[int] = OMIT,
+        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[StreamAnalyzeResponse]:
         """
-        This endpoint analyzes your videos and creates fully customizable text based on your prompts, including but not limited to tables of content, action items, memos, and detailed analyses.
+        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+
+        <Accordion title="Input requirements">
+        - Minimum duration: 4 seconds
+        - Maximum duration: 1 hour
+        - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
+        - Resolution: 360x360 to 5184x2160 pixels
+        - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
+        </Accordion>
+
+        **When to use this method**:
+        - Analyze videos up to 1 hour
+        - Retrieve immediate results without waiting for asynchronous processing
+        - Stream text fragments in real-time for immediate processing and feedback
+
+        **Do not use this method for**:
+        - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses.
         </Note>
 
         Parameters
         ----------
-        video_id : str
-            The unique identifier of the video for which you wish to generate a text.
+        prompt : AnalyzeTextPrompt
 
-        prompt : str
-            A prompt that guides the model on the desired format or content.
+        video_id : typing.Optional[str]
+            The unique identifier of the video to analyze.
 
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
+            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
-            **Examples**:
+        video : typing.Optional[VideoContext]
 
-            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
-            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
-
-        temperature : typing.Optional[float]
-            Controls the randomness of the text output generated by the model. A higher value generates more creative text, while a lower value produces more deterministic text output.
-
-            **Default:** 0.2
-            **Min:** 0
-            **Max:** 1
+        temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[ResponseFormat]
 
-        max_tokens : typing.Optional[int]
-            The maximum number of tokens to generate.
+        max_tokens : typing.Optional[AnalyzeMaxTokens]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -192,8 +200,9 @@ class BaseClient:
             yield chunk
         """
         with self._raw_client.analyze_stream(
-            video_id=video_id,
             prompt=prompt,
+            video_id=video_id,
+            video=video,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
@@ -204,51 +213,53 @@ class BaseClient:
     def analyze(
         self,
         *,
-        video_id: str,
-        prompt: str,
-        temperature: typing.Optional[float] = OMIT,
+        prompt: AnalyzeTextPrompt,
+        video_id: typing.Optional[str] = OMIT,
+        video: typing.Optional[VideoContext] = OMIT,
+        temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[ResponseFormat] = OMIT,
-        max_tokens: typing.Optional[int] = OMIT,
+        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
         """
-        This endpoint analyzes your videos and creates fully customizable text based on your prompts, including but not limited to tables of content, action items, memos, and detailed analyses.
+        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+
+        <Accordion title="Input requirements">
+        - Minimum duration: 4 seconds
+        - Maximum duration: 1 hour
+        - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
+        - Resolution: 360x360 to 5184x2160 pixels
+        - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
+        </Accordion>
+
+        **When to use this method**:
+        - Analyze videos up to 1 hour
+        - Retrieve immediate results without waiting for asynchronous processing
+        - Stream text fragments in real-time for immediate processing and feedback
+
+        **Do not use this method for**:
+        - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses.
         </Note>
 
         Parameters
         ----------
-        video_id : str
-            The unique identifier of the video for which you wish to generate a text.
+        prompt : AnalyzeTextPrompt
 
-        prompt : str
-            A prompt that guides the model on the desired format or content.
+        video_id : typing.Optional[str]
+            The unique identifier of the video to analyze.
 
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
+            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
-            **Examples**:
+        video : typing.Optional[VideoContext]
 
-            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
-            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
-
-        temperature : typing.Optional[float]
-            Controls the randomness of the text output generated by the model. A higher value generates more creative text, while a lower value produces more deterministic text output.
-
-            **Default:** 0.2
-            **Min:** 0
-            **Max:** 1
+        temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[ResponseFormat]
 
-        max_tokens : typing.Optional[int]
-            The maximum number of tokens to generate.
+        max_tokens : typing.Optional[AnalyzeMaxTokens]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -284,8 +295,9 @@ class BaseClient:
         )
         """
         _response = self._raw_client.analyze(
-            video_id=video_id,
             prompt=prompt,
+            video_id=video_id,
+            video=video,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
@@ -367,6 +379,7 @@ class AsyncBaseClient:
         self.entity_collections = AsyncEntityCollectionsClient(client_wrapper=self._client_wrapper)
         self.embed = AsyncEmbedClient(client_wrapper=self._client_wrapper)
         self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
+        self.analyze_async = AsyncAnalyzeAsyncClient(client_wrapper=self._client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawBaseClient:
@@ -382,51 +395,53 @@ class AsyncBaseClient:
     async def analyze_stream(
         self,
         *,
-        video_id: str,
-        prompt: str,
-        temperature: typing.Optional[float] = OMIT,
+        prompt: AnalyzeTextPrompt,
+        video_id: typing.Optional[str] = OMIT,
+        video: typing.Optional[VideoContext] = OMIT,
+        temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[ResponseFormat] = OMIT,
-        max_tokens: typing.Optional[int] = OMIT,
+        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[StreamAnalyzeResponse]:
         """
-        This endpoint analyzes your videos and creates fully customizable text based on your prompts, including but not limited to tables of content, action items, memos, and detailed analyses.
+        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+
+        <Accordion title="Input requirements">
+        - Minimum duration: 4 seconds
+        - Maximum duration: 1 hour
+        - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
+        - Resolution: 360x360 to 5184x2160 pixels
+        - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
+        </Accordion>
+
+        **When to use this method**:
+        - Analyze videos up to 1 hour
+        - Retrieve immediate results without waiting for asynchronous processing
+        - Stream text fragments in real-time for immediate processing and feedback
+
+        **Do not use this method for**:
+        - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses.
         </Note>
 
         Parameters
         ----------
-        video_id : str
-            The unique identifier of the video for which you wish to generate a text.
+        prompt : AnalyzeTextPrompt
 
-        prompt : str
-            A prompt that guides the model on the desired format or content.
+        video_id : typing.Optional[str]
+            The unique identifier of the video to analyze.
 
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
+            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
-            **Examples**:
+        video : typing.Optional[VideoContext]
 
-            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
-            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
-
-        temperature : typing.Optional[float]
-            Controls the randomness of the text output generated by the model. A higher value generates more creative text, while a lower value produces more deterministic text output.
-
-            **Default:** 0.2
-            **Min:** 0
-            **Max:** 1
+        temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[ResponseFormat]
 
-        max_tokens : typing.Optional[int]
-            The maximum number of tokens to generate.
+        max_tokens : typing.Optional[AnalyzeMaxTokens]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -472,8 +487,9 @@ class AsyncBaseClient:
         asyncio.run(main())
         """
         async with self._raw_client.analyze_stream(
-            video_id=video_id,
             prompt=prompt,
+            video_id=video_id,
+            video=video,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
@@ -485,51 +501,53 @@ class AsyncBaseClient:
     async def analyze(
         self,
         *,
-        video_id: str,
-        prompt: str,
-        temperature: typing.Optional[float] = OMIT,
+        prompt: AnalyzeTextPrompt,
+        video_id: typing.Optional[str] = OMIT,
+        video: typing.Optional[VideoContext] = OMIT,
+        temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[ResponseFormat] = OMIT,
-        max_tokens: typing.Optional[int] = OMIT,
+        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
         """
-        This endpoint analyzes your videos and creates fully customizable text based on your prompts, including but not limited to tables of content, action items, memos, and detailed analyses.
+        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+
+        <Accordion title="Input requirements">
+        - Minimum duration: 4 seconds
+        - Maximum duration: 1 hour
+        - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
+        - Resolution: 360x360 to 5184x2160 pixels
+        - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
+        </Accordion>
+
+        **When to use this method**:
+        - Analyze videos up to 1 hour
+        - Retrieve immediate results without waiting for asynchronous processing
+        - Stream text fragments in real-time for immediate processing and feedback
+
+        **Do not use this method for**:
+        - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-        - This endpoint supports streaming responses.
         </Note>
 
         Parameters
         ----------
-        video_id : str
-            The unique identifier of the video for which you wish to generate a text.
+        prompt : AnalyzeTextPrompt
 
-        prompt : str
-            A prompt that guides the model on the desired format or content.
+        video_id : typing.Optional[str]
+            The unique identifier of the video to analyze.
 
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
+            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
-            **Examples**:
+        video : typing.Optional[VideoContext]
 
-            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
-            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
-
-        temperature : typing.Optional[float]
-            Controls the randomness of the text output generated by the model. A higher value generates more creative text, while a lower value produces more deterministic text output.
-
-            **Default:** 0.2
-            **Min:** 0
-            **Max:** 1
+        temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[ResponseFormat]
 
-        max_tokens : typing.Optional[int]
-            The maximum number of tokens to generate.
+        max_tokens : typing.Optional[AnalyzeMaxTokens]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -573,8 +591,9 @@ class AsyncBaseClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.analyze(
-            video_id=video_id,
             prompt=prompt,
+            video_id=video_id,
+            video=video,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,

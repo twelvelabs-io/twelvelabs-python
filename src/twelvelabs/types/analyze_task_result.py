@@ -4,24 +4,27 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .analyze_task_result_usage import AnalyzeTaskResultUsage
 from .finish_reason import FinishReason
 from .generated_text_data import GeneratedTextData
-from .token_usage import TokenUsage
 
 
-class NonStreamAnalyzeResponse(UniversalBaseModel):
+class AnalyzeTaskResult(UniversalBaseModel):
     """
-    When the value of the `stream` parameter is set to `false`, the response is as follows:
-    """
-
-    id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Unique identifier of the response.
+    The analysis results for a completed task.
     """
 
-    data: typing.Optional[GeneratedTextData] = None
-    finish_reason: typing.Optional[FinishReason] = None
-    usage: typing.Optional[TokenUsage] = None
+    generation_id: str = pydantic.Field()
+    """
+    The unique identifier for the generation session.
+    """
+
+    data: GeneratedTextData
+    finish_reason: FinishReason
+    usage: AnalyzeTaskResultUsage = pydantic.Field()
+    """
+    The number of tokens used in the generation.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
