@@ -25,7 +25,6 @@ class RawEmbedClient:
         *,
         model_name: str,
         text: typing.Optional[str] = OMIT,
-        text_truncate: typing.Optional[str] = OMIT,
         image_url: typing.Optional[str] = OMIT,
         image_file: typing.Optional[core.File] = OMIT,
         audio_url: typing.Optional[str] = OMIT,
@@ -70,26 +69,11 @@ class RawEmbedClient:
         model_name : str
             The name of the model you want to use. The following models are available:
               - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
-              - `Marengo-retrieval-2.7`: **Deprecation notice**: Starting mid-March 2026, your videos will be automatically reindexed to Marengo 3.0. Marengo 2.7 will be deprecated once reindexing completes. See the [Migration guide](/v1.3/docs/get-started/migration-guide) for details.
 
         text : typing.Optional[str]
             The text for which you wish to create an embedding.
 
             **Example**: "Man with a dog crossing the street"
-
-        text_truncate : typing.Optional[str]
-            Specifies how the platform handles text that exceeds token limits.
-
-            **Available options by model version**:
-
-            **Marengo 3.0**: This parameter is deprecated. The platform automatically truncates text exceeding 500 tokens from the end.
-
-            **Marengo 2.7**: Specifies truncation method for text exceeding 77 tokens:
-            - `start`: Removes tokens from the beginning
-            - `end`: Removes tokens from the end (default)
-            - `none`: Returns an error if the text is longer than the maximum token limit.
-
-            **Default**: `end`
 
         image_url : typing.Optional[str]
             The publicly accessible URL of the image for which you wish to create an embedding. This parameter is required for image embeddings if `image_file` is not provided.
@@ -121,7 +105,6 @@ class RawEmbedClient:
             data={
                 "model_name": model_name,
                 "text": text,
-                "text_truncate": text_truncate,
                 "image_url": image_url,
                 "audio_url": audio_url,
                 "audio_start_offset_sec": audio_start_offset_sec,
@@ -170,7 +153,6 @@ class AsyncRawEmbedClient:
         *,
         model_name: str,
         text: typing.Optional[str] = OMIT,
-        text_truncate: typing.Optional[str] = OMIT,
         image_url: typing.Optional[str] = OMIT,
         image_file: typing.Optional[core.File] = OMIT,
         audio_url: typing.Optional[str] = OMIT,
@@ -215,26 +197,11 @@ class AsyncRawEmbedClient:
         model_name : str
             The name of the model you want to use. The following models are available:
               - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
-              - `Marengo-retrieval-2.7`: **Deprecation notice**: Starting mid-March 2026, your videos will be automatically reindexed to Marengo 3.0. Marengo 2.7 will be deprecated once reindexing completes. See the [Migration guide](/v1.3/docs/get-started/migration-guide) for details.
 
         text : typing.Optional[str]
             The text for which you wish to create an embedding.
 
             **Example**: "Man with a dog crossing the street"
-
-        text_truncate : typing.Optional[str]
-            Specifies how the platform handles text that exceeds token limits.
-
-            **Available options by model version**:
-
-            **Marengo 3.0**: This parameter is deprecated. The platform automatically truncates text exceeding 500 tokens from the end.
-
-            **Marengo 2.7**: Specifies truncation method for text exceeding 77 tokens:
-            - `start`: Removes tokens from the beginning
-            - `end`: Removes tokens from the end (default)
-            - `none`: Returns an error if the text is longer than the maximum token limit.
-
-            **Default**: `end`
 
         image_url : typing.Optional[str]
             The publicly accessible URL of the image for which you wish to create an embedding. This parameter is required for image embeddings if `image_file` is not provided.
@@ -266,7 +233,6 @@ class AsyncRawEmbedClient:
             data={
                 "model_name": model_name,
                 "text": text,
-                "text_truncate": text_truncate,
                 "image_url": image_url,
                 "audio_url": audio_url,
                 "audio_start_offset_sec": audio_start_offset_sec,

@@ -44,7 +44,7 @@ class VideoInputRequest(UniversalBaseModel):
     - `audio`: Generates embeddings based on audio content (sounds, music, effects)
     - `transcription`: Generates embeddings based on transcribed speech
     
-    You can specify multiple options to generate different types of embeddings for the same video.
+    You can specify multiple values to generate different types of embeddings for the same video.
     
     **Default**: `["visual", "audio", "transcription"]`
     """
@@ -64,7 +64,7 @@ class VideoInputRequest(UniversalBaseModel):
 
     embedding_type: typing.Optional[typing.List[VideoInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
     """
-    Specifies how to structure the embedding. Include this parameter only when `embedding_option` contains at least two values. 
+    Specifies how to structure the embedding. Include this parameter only when `embedding_option` contains at least two values.
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings per modality specified in `embedding_option`

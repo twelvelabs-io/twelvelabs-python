@@ -6,17 +6,20 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ImportLogVideoStatus(UniversalBaseModel):
+class AnalyzeTaskResultUsage(UniversalBaseModel):
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page details on possible values.
+    The number of tokens used in the generation.
     """
 
-    ready: int
-    validating: int
-    queued: int
-    pending: int
-    indexing: int
-    failed: int
+    output_tokens: int = pydantic.Field()
+    """
+    The number of tokens in the generated text.
+    """
+
+    input_tokens: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The number of tokens in the input prompt.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

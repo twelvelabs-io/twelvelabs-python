@@ -20,7 +20,7 @@ class EmbeddingData(UniversalBaseModel):
 
     embedding_option: typing.Optional[EmbeddingDataEmbeddingOption] = pydantic.Field(default=None)
     """
-    The modality used to generate this embedding. 
+    The modality used to generate this embedding.
     
       **Values**:
      - `visual`: Embedding based on visual content (video only)

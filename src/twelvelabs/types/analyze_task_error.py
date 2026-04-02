@@ -6,17 +6,15 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ImportLogVideoStatus(UniversalBaseModel):
+class AnalyzeTaskError(UniversalBaseModel):
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page details on possible values.
+    Details about why the task failed.
     """
 
-    ready: int
-    validating: int
-    queued: int
-    pending: int
-    indexing: int
-    failed: int
+    message: str = pydantic.Field()
+    """
+    A message that describes why the task failed.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

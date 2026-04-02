@@ -6,17 +6,17 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ImportLogVideoStatus(UniversalBaseModel):
+class Url(UniversalBaseModel):
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page details on possible values.
+    Provide the video via a URL.
     """
 
-    ready: int
-    validating: int
-    queued: int
-    pending: int
-    indexing: int
-    failed: int
+    url: str = pydantic.Field()
+    """
+    The publicly accessible URL of the video file.
+    
+    Use direct links to raw media files. Video hosting platforms and cloud storage sharing links are not supported.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

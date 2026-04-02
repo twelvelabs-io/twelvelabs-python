@@ -2,6 +2,15 @@
 
 # isort: skip_file
 
+from .analyze_max_tokens import AnalyzeMaxTokens
+from .analyze_task_error import AnalyzeTaskError
+from .analyze_task_response import AnalyzeTaskResponse
+from .analyze_task_result import AnalyzeTaskResult
+from .analyze_task_result_usage import AnalyzeTaskResultUsage
+from .analyze_task_status import AnalyzeTaskStatus
+from .analyze_task_webhook_info import AnalyzeTaskWebhookInfo
+from .analyze_temperature import AnalyzeTemperature
+from .analyze_text_prompt import AnalyzeTextPrompt
 from .asset import Asset
 from .asset_method import AssetMethod
 from .asset_status import AssetStatus
@@ -25,7 +34,7 @@ from .chunk_info import ChunkInfo
 from .chunk_info_status import ChunkInfoStatus
 from .completed_chunk import CompletedChunk
 from .completed_chunk_proof_type import CompletedChunkProofType
-from .confidence import Confidence
+from .create_analyze_task_response import CreateAnalyzeTaskResponse
 from .create_asset_upload_response import CreateAssetUploadResponse
 from .created_at import CreatedAt
 from .embedding_audio_metadata import EmbeddingAudioMetadata
@@ -65,6 +74,7 @@ from .error_response_error import ErrorResponseError
 from .expires_at import ExpiresAt
 from .finish_reason import FinishReason
 from .forbidden_error_body import ForbiddenErrorBody
+from .generated_text_data import GeneratedTextData
 from .get_upload_status_response import GetUploadStatusResponse
 from .hls_object import HlsObject
 from .hls_object_status import HlsObjectStatus
@@ -97,6 +107,7 @@ from .multipart_upload_status_type import MultipartUploadStatusType
 from .next_page_token import NextPageToken
 from .non_stream_analyze_response import NonStreamAnalyzeResponse
 from .not_found_error_body import NotFoundErrorBody
+from .one import One
 from .page import Page
 from .page_info import PageInfo
 from .presigned_url_chunk import PresignedUrlChunk
@@ -106,7 +117,6 @@ from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
 from .response_format import ResponseFormat
 from .response_format_type import ResponseFormatType
-from .score_search_terms import ScoreSearchTerms
 from .search_item import SearchItem
 from .search_item_clips_item import SearchItemClipsItem
 from .search_pool import SearchPool
@@ -136,7 +146,6 @@ from .summarize_summary_result_summarize_type import SummarizeSummaryResultSumma
 from .text_embedding_result import TextEmbeddingResult
 from .text_image_input_request import TextImageInputRequest
 from .text_input_request import TextInputRequest
-from .threshold_search import ThresholdSearch
 from .thumbnail_url import ThumbnailUrl
 from .token_usage import TokenUsage
 from .total_inner_matches import TotalInnerMatches
@@ -144,8 +153,11 @@ from .total_page import TotalPage
 from .total_results import TotalResults
 from .transcription_data import TranscriptionData
 from .transcription_data_item import TranscriptionDataItem
+from .two import Two
 from .updated_at import UpdatedAt
+from .url import Url
 from .user_metadata import UserMetadata
+from .video_context import VideoContext, VideoContext_AssetId, VideoContext_Base64String, VideoContext_Url
 from .video_embedding_metadata import VideoEmbeddingMetadata
 from .video_embedding_task import VideoEmbeddingTask
 from .video_embedding_task_video_embedding import VideoEmbeddingTaskVideoEmbedding
@@ -167,6 +179,15 @@ from .video_vector import VideoVector
 from .video_vector_system_metadata import VideoVectorSystemMetadata
 
 __all__ = [
+    "AnalyzeMaxTokens",
+    "AnalyzeTaskError",
+    "AnalyzeTaskResponse",
+    "AnalyzeTaskResult",
+    "AnalyzeTaskResultUsage",
+    "AnalyzeTaskStatus",
+    "AnalyzeTaskWebhookInfo",
+    "AnalyzeTemperature",
+    "AnalyzeTextPrompt",
     "Asset",
     "AssetMethod",
     "AssetStatus",
@@ -190,7 +211,7 @@ __all__ = [
     "ChunkInfoStatus",
     "CompletedChunk",
     "CompletedChunkProofType",
-    "Confidence",
+    "CreateAnalyzeTaskResponse",
     "CreateAssetUploadResponse",
     "CreatedAt",
     "EmbeddingAudioMetadata",
@@ -226,6 +247,7 @@ __all__ = [
     "ExpiresAt",
     "FinishReason",
     "ForbiddenErrorBody",
+    "GeneratedTextData",
     "GetUploadStatusResponse",
     "HlsObject",
     "HlsObjectStatus",
@@ -258,6 +280,7 @@ __all__ = [
     "NextPageToken",
     "NonStreamAnalyzeResponse",
     "NotFoundErrorBody",
+    "One",
     "Page",
     "PageInfo",
     "PresignedUrlChunk",
@@ -267,7 +290,6 @@ __all__ = [
     "RequestAdditionalPresignedUrLsResponse",
     "ResponseFormat",
     "ResponseFormatType",
-    "ScoreSearchTerms",
     "SearchItem",
     "SearchItemClipsItem",
     "SearchPool",
@@ -295,7 +317,6 @@ __all__ = [
     "TextEmbeddingResult",
     "TextImageInputRequest",
     "TextInputRequest",
-    "ThresholdSearch",
     "ThumbnailUrl",
     "TokenUsage",
     "TotalInnerMatches",
@@ -303,8 +324,14 @@ __all__ = [
     "TotalResults",
     "TranscriptionData",
     "TranscriptionDataItem",
+    "Two",
     "UpdatedAt",
+    "Url",
     "UserMetadata",
+    "VideoContext",
+    "VideoContext_AssetId",
+    "VideoContext_Base64String",
+    "VideoContext_Url",
     "VideoEmbeddingMetadata",
     "VideoEmbeddingTask",
     "VideoEmbeddingTaskVideoEmbedding",

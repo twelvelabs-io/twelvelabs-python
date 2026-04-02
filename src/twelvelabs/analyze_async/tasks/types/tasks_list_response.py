@@ -3,20 +3,18 @@
 import typing
 
 import pydantic
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ....core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ....types.analyze_task_response import AnalyzeTaskResponse
+from ....types.page_info import PageInfo
 
 
-class ImportLogVideoStatus(UniversalBaseModel):
+class TasksListResponse(UniversalBaseModel):
+    data: typing.List[AnalyzeTaskResponse] = pydantic.Field()
     """
-    Counts of files in different statuses. See the [Task object](/v1.3/api-reference/upload-content/tasks/the-task-object) page details on possible values.
+    An array that contains up to `page_limit` analysis tasks.
     """
 
-    ready: int
-    validating: int
-    queued: int
-    pending: int
-    indexing: int
-    failed: int
+    page_info: PageInfo
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

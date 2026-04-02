@@ -44,7 +44,7 @@ class AudioInputRequest(UniversalBaseModel):
     - `audio`: Generates embeddings based on audio content (sounds, music, effects)
     - `transcription`: Generates embeddings based on transcribed speech
     
-    You can specify multiple options to generate different types of embeddings for the same audio.
+    You can specify multiple values to generate different types of embeddings for the same audio.
     """
 
     embedding_scope: typing.Optional[typing.List[AudioInputRequestEmbeddingScopeItem]] = pydantic.Field(default=None)
@@ -68,7 +68,7 @@ class AudioInputRequest(UniversalBaseModel):
     
     Specify both values to receive separate and fused embeddings in the same response.
     
-    **Default**: `separate_embedding`. 
+    **Default**: `separate_embedding`.
     """
 
     if IS_PYDANTIC_V2:

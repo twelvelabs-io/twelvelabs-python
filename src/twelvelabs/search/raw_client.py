@@ -13,12 +13,10 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.search_results import SearchResults
-from ..types.threshold_search import ThresholdSearch
 from .types.search_create_request_group_by import SearchCreateRequestGroupBy
 from .types.search_create_request_operator import SearchCreateRequestOperator
 from .types.search_create_request_query_media_type import SearchCreateRequestQueryMediaType
 from .types.search_create_request_search_options_item import SearchCreateRequestSearchOptionsItem
-from .types.search_create_request_sort_option import SearchCreateRequestSortOption
 from .types.search_create_request_transcription_options_item import SearchCreateRequestTranscriptionOptionsItem
 from .types.search_retrieve_response import SearchRetrieveResponse
 
@@ -40,10 +38,7 @@ class RawSearchClient:
         query_media_file: typing.Optional[core.File] = OMIT,
         query_text: typing.Optional[str] = OMIT,
         transcription_options: typing.Optional[typing.List[SearchCreateRequestTranscriptionOptionsItem]] = OMIT,
-        adjust_confidence_level: typing.Optional[float] = OMIT,
         group_by: typing.Optional[SearchCreateRequestGroupBy] = OMIT,
-        threshold: typing.Optional[ThresholdSearch] = OMIT,
-        sort_option: typing.Optional[SearchCreateRequestSortOption] = OMIT,
         operator: typing.Optional[SearchCreateRequestOperator] = OMIT,
         page_limit: typing.Optional[int] = OMIT,
         filter: typing.Optional[str] = OMIT,
@@ -61,14 +56,12 @@ class RawSearchClient:
         - Provide up to 10 images by specifying the following parameters multiple times:
           - `query_media_url`: Publicly accessible URL of your media file.
           - `query_media_file`: Local media file.
-        - Marengo 2.7 supports a single image per request.
-        
-        **Composed text and media queries** (Marengo 3.0 only):
+        **Composed text and media queries**:
         - Use the `query_text` parameter for your text query.
         - Set `query_media_type` to `image`.
         - Provide up to 10 images by specifying the `query_media_url` and `query_media_file` parameters multiple times.
         
-        **Entity search** (Marengo 3.0 only and in beta):
+        **Entity search** (beta):
         - To find a specific person in your videos, enclose the unique identifier of the entity you want to find in the `query_text` parameter.
         
         <Note title="Notes">
@@ -86,8 +79,8 @@ class RawSearchClient:
             
             Available options:
             - `visual`: Searches visual content.
-            - `audio`: Searches non-speech audio (Marengo 3.0) or all audio (Marengo 2.7).
-            - `transcription`: Spoken words (Marengo 3.0 only)
+            - `audio`: Searches non-speech audio.
+            - `transcription`: Spoken words
             
             <Note title="Note">
             - You can specify multiple search options in conjunction with the [`operator`](/v1.3/api-reference/any-to-video-search/make-search-request#request.body.operator.operator) parameter described below to broaden or narrow your search. For example, to search using both visual and non-speech audio content, include this parameter two times in the request as shown below:
@@ -98,7 +91,7 @@ class RawSearchClient:
               ```
             </Note>
             
-            For detailed guidance and version-specific behavior, see the [Search options](/v1.3/docs/concepts/modalities#search-options) section.
+            For guidance, see the [Search options](/v1.3/docs/concepts/modalities#search-options) section.
         
         query_media_type : typing.Optional[SearchCreateRequestQueryMediaType]
             The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
@@ -121,10 +114,10 @@ class RawSearchClient:
             If you're using the Entity Search feature to search for specific persons in your video content, you must enclose the unique identifier of your entity between the `<@` and `>` markers. For example, to search for an entity with the ID `entity123`, use `<@entity123> is walking` as your query.
             
             
-            The maximum query length varies by model. Marengo 3.0 supports up to 500 tokens per query, while Marengo 2.7 supports up to 77 tokens per query.
+            Marengo supports up to 500 tokens per query.
         
         transcription_options : typing.Optional[typing.List[SearchCreateRequestTranscriptionOptionsItem]]
-            Specifies how the platform matches your text query with the words spoken in the video. This parameter applies only when using Marengo 3.0 with the `search_options` parameter containing the `transcription` value.
+            Specifies how the platform matches your text query with the words spoken in the video. This parameter applies only when the `search_options` parameter contains the `transcription` value.
             
             Available options:
             - `lexical`: Exact word matching
@@ -134,40 +127,12 @@ class RawSearchClient:
             
             **Default**: `["lexical", "semantic"]`.
         
-        adjust_confidence_level : typing.Optional[float]
-            <Info>
-              This parameter is deprecated in Marengo 3.0 and newer versions. Use the [`rank`](/v1.3/api-reference/any-to-video-search/make-search-request#response.body.data.rank) field in the response instead, which indicates the relevance ranking assigned by the model.
-            </Info>
-            This parameter specifies the strictness of the thresholds for assigning the high, medium, or low confidence levels to search results. If you use a lower value, the thresholds become more relaxed, and more search results will be classified as having high, medium, or low confidence levels. You can use this parameter to include a broader range of potentially relevant video clips, even if some results might be less precise.
-            
-            **Min**: 0
-            **Max**: 1
-            **Default:** 0.5
-        
         group_by : typing.Optional[SearchCreateRequestGroupBy]
             Use this parameter to group or ungroup items in a response. It can take one of the following values:
             - `video`:  The platform will group the matching video clips in the response by video.
             - `clip`: The matching video clips in the response will not be grouped.
             
             **Default:** `clip`
-        
-        threshold : typing.Optional[ThresholdSearch]
-        
-        sort_option : typing.Optional[SearchCreateRequestSortOption]
-            <Info>
-              This parameter is deprecated in Marengo 3.0 and newer versions. Use the [`rank`](/v1.3/api-reference/any-to-video-search/make-search-request#response.body.data.rank) field in the response instead, which indicates the relevance ranking assigned by the model.
-            </Info>
-            
-            Use this parameter to specify the sort order for the response.
-            
-            When performing a search, the platform assigns a relevance ranking to each video clip that matches your search terms. By default, the search results are sorted by relevance ranking in ascending order, with 1 being the most relevant result.
-            
-            If you set this parameter to `score` and `group_by` is set to `video`, the platform will determine the highest relevance ranking (lowest number) for each video and sort the videos in the response by this ranking. For each video, the matching video clips will be sorted by relevance ranking in ascending order.
-            
-            If you set this parameter to `clip_count` and `group_by` is set to `video`, the platform will sort the videos in the response by the number of clips. For each video, the matching video clips will be sorted by relevance ranking in ascending order. You can use `clip_count` only when the matching video clips are grouped by video.
-            
-            
-            **Default:** `score`
         
         operator : typing.Optional[SearchCreateRequestOperator]
             Combines multiple search options using `or` or `and`. Use `and` to find segments matching all search options. Use `or` to find segments matching any search option. For detailed guidance on using this parameter, see the [Combine multiple modalities](/v1.3/docs/concepts/modalities#combine-multiple-modalities) section.
@@ -237,10 +202,7 @@ class RawSearchClient:
                 "index_id": index_id,
                 "search_options": search_options,
                 "transcription_options": transcription_options,
-                "adjust_confidence_level": adjust_confidence_level,
                 "group_by": group_by,
-                "threshold": threshold,
-                "sort_option": sort_option,
                 "operator": operator,
                 "page_limit": page_limit,
                 "filter": filter,
@@ -369,10 +331,7 @@ class AsyncRawSearchClient:
         query_media_file: typing.Optional[core.File] = OMIT,
         query_text: typing.Optional[str] = OMIT,
         transcription_options: typing.Optional[typing.List[SearchCreateRequestTranscriptionOptionsItem]] = OMIT,
-        adjust_confidence_level: typing.Optional[float] = OMIT,
         group_by: typing.Optional[SearchCreateRequestGroupBy] = OMIT,
-        threshold: typing.Optional[ThresholdSearch] = OMIT,
-        sort_option: typing.Optional[SearchCreateRequestSortOption] = OMIT,
         operator: typing.Optional[SearchCreateRequestOperator] = OMIT,
         page_limit: typing.Optional[int] = OMIT,
         filter: typing.Optional[str] = OMIT,
@@ -390,14 +349,12 @@ class AsyncRawSearchClient:
         - Provide up to 10 images by specifying the following parameters multiple times:
           - `query_media_url`: Publicly accessible URL of your media file.
           - `query_media_file`: Local media file.
-        - Marengo 2.7 supports a single image per request.
-        
-        **Composed text and media queries** (Marengo 3.0 only):
+        **Composed text and media queries**:
         - Use the `query_text` parameter for your text query.
         - Set `query_media_type` to `image`.
         - Provide up to 10 images by specifying the `query_media_url` and `query_media_file` parameters multiple times.
         
-        **Entity search** (Marengo 3.0 only and in beta):
+        **Entity search** (beta):
         - To find a specific person in your videos, enclose the unique identifier of the entity you want to find in the `query_text` parameter.
         
         <Note title="Notes">
@@ -415,8 +372,8 @@ class AsyncRawSearchClient:
             
             Available options:
             - `visual`: Searches visual content.
-            - `audio`: Searches non-speech audio (Marengo 3.0) or all audio (Marengo 2.7).
-            - `transcription`: Spoken words (Marengo 3.0 only)
+            - `audio`: Searches non-speech audio.
+            - `transcription`: Spoken words
             
             <Note title="Note">
             - You can specify multiple search options in conjunction with the [`operator`](/v1.3/api-reference/any-to-video-search/make-search-request#request.body.operator.operator) parameter described below to broaden or narrow your search. For example, to search using both visual and non-speech audio content, include this parameter two times in the request as shown below:
@@ -427,7 +384,7 @@ class AsyncRawSearchClient:
               ```
             </Note>
             
-            For detailed guidance and version-specific behavior, see the [Search options](/v1.3/docs/concepts/modalities#search-options) section.
+            For guidance, see the [Search options](/v1.3/docs/concepts/modalities#search-options) section.
         
         query_media_type : typing.Optional[SearchCreateRequestQueryMediaType]
             The type of media you wish to use. This parameter is required for media queries. For example, to perform an image-based search, set this parameter to `image`. Use `query_text` together with this parameter when you want to perform a composed image+text search.
@@ -450,10 +407,10 @@ class AsyncRawSearchClient:
             If you're using the Entity Search feature to search for specific persons in your video content, you must enclose the unique identifier of your entity between the `<@` and `>` markers. For example, to search for an entity with the ID `entity123`, use `<@entity123> is walking` as your query.
             
             
-            The maximum query length varies by model. Marengo 3.0 supports up to 500 tokens per query, while Marengo 2.7 supports up to 77 tokens per query.
+            Marengo supports up to 500 tokens per query.
         
         transcription_options : typing.Optional[typing.List[SearchCreateRequestTranscriptionOptionsItem]]
-            Specifies how the platform matches your text query with the words spoken in the video. This parameter applies only when using Marengo 3.0 with the `search_options` parameter containing the `transcription` value.
+            Specifies how the platform matches your text query with the words spoken in the video. This parameter applies only when the `search_options` parameter contains the `transcription` value.
             
             Available options:
             - `lexical`: Exact word matching
@@ -463,40 +420,12 @@ class AsyncRawSearchClient:
             
             **Default**: `["lexical", "semantic"]`.
         
-        adjust_confidence_level : typing.Optional[float]
-            <Info>
-              This parameter is deprecated in Marengo 3.0 and newer versions. Use the [`rank`](/v1.3/api-reference/any-to-video-search/make-search-request#response.body.data.rank) field in the response instead, which indicates the relevance ranking assigned by the model.
-            </Info>
-            This parameter specifies the strictness of the thresholds for assigning the high, medium, or low confidence levels to search results. If you use a lower value, the thresholds become more relaxed, and more search results will be classified as having high, medium, or low confidence levels. You can use this parameter to include a broader range of potentially relevant video clips, even if some results might be less precise.
-            
-            **Min**: 0
-            **Max**: 1
-            **Default:** 0.5
-        
         group_by : typing.Optional[SearchCreateRequestGroupBy]
             Use this parameter to group or ungroup items in a response. It can take one of the following values:
             - `video`:  The platform will group the matching video clips in the response by video.
             - `clip`: The matching video clips in the response will not be grouped.
             
             **Default:** `clip`
-        
-        threshold : typing.Optional[ThresholdSearch]
-        
-        sort_option : typing.Optional[SearchCreateRequestSortOption]
-            <Info>
-              This parameter is deprecated in Marengo 3.0 and newer versions. Use the [`rank`](/v1.3/api-reference/any-to-video-search/make-search-request#response.body.data.rank) field in the response instead, which indicates the relevance ranking assigned by the model.
-            </Info>
-            
-            Use this parameter to specify the sort order for the response.
-            
-            When performing a search, the platform assigns a relevance ranking to each video clip that matches your search terms. By default, the search results are sorted by relevance ranking in ascending order, with 1 being the most relevant result.
-            
-            If you set this parameter to `score` and `group_by` is set to `video`, the platform will determine the highest relevance ranking (lowest number) for each video and sort the videos in the response by this ranking. For each video, the matching video clips will be sorted by relevance ranking in ascending order.
-            
-            If you set this parameter to `clip_count` and `group_by` is set to `video`, the platform will sort the videos in the response by the number of clips. For each video, the matching video clips will be sorted by relevance ranking in ascending order. You can use `clip_count` only when the matching video clips are grouped by video.
-            
-            
-            **Default:** `score`
         
         operator : typing.Optional[SearchCreateRequestOperator]
             Combines multiple search options using `or` or `and`. Use `and` to find segments matching all search options. Use `or` to find segments matching any search option. For detailed guidance on using this parameter, see the [Combine multiple modalities](/v1.3/docs/concepts/modalities#combine-multiple-modalities) section.
@@ -566,10 +495,7 @@ class AsyncRawSearchClient:
                 "index_id": index_id,
                 "search_options": search_options,
                 "transcription_options": transcription_options,
-                "adjust_confidence_level": adjust_confidence_level,
                 "group_by": group_by,
-                "threshold": threshold,
-                "sort_option": sort_option,
                 "operator": operator,
                 "page_limit": page_limit,
                 "filter": filter,

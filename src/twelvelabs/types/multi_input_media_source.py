@@ -25,12 +25,12 @@ class MultiInputMediaSource(UniversalBaseModel):
     """
     The type of media.
     
-    **Value**: `image` 
+    **Value**: `image`
     """
 
     url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The publicly accessible URL of the image file  Use direct links to raw image files. Image hosting platforms and cloud storage sharing links are not supported. 
+    The publicly accessible URL of the image file  Use direct links to raw image files. Image hosting platforms and cloud storage sharing links are not supported.
     """
 
     base_64_string: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="base64_string")] = (
