@@ -37,6 +37,7 @@ pip install twelvelabs
 1. Import the SDK into your application:
 
    ```py
+   import time
    from twelvelabs import TwelveLabs
    ```
 
