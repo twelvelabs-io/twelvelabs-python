@@ -13,6 +13,11 @@ from ..indexes.videos.client import VideosClient, AsyncVideosClient
 from ..indexes.videos.types.videos_list_request_user_metadata_value import (
     VideosListRequestUserMetadataValue,
 )
+from ..types.videos_list_request_duration import VideosListRequestDuration
+from ..types.videos_list_request_fps import VideosListRequestFps
+from ..types.videos_list_request_width import VideosListRequestWidth
+from ..types.videos_list_request_height import VideosListRequestHeight
+from ..types.videos_list_request_size import VideosListRequestSize
 from ..indexes.videos.types.videos_list_response import VideosListResponse
 from ..errors.bad_request_error import BadRequestError
 
@@ -58,11 +63,11 @@ class VideosClientWrapper(VideosClient):
         sort_by: typing.Optional[str] = None,
         sort_option: typing.Optional[str] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
-        fps: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
-        width: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
-        height: typing.Optional[typing.Union[int, typing.Dict[str, int]]] = None,
-        size: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        duration: typing.Optional[typing.Union[VideosListRequestDuration, float, typing.Dict[str, float]]] = None,
+        fps: typing.Optional[typing.Union[VideosListRequestFps, float, typing.Dict[str, float]]] = None,
+        width: typing.Optional[typing.Union[VideosListRequestWidth, float, typing.Dict[str, float]]] = None,
+        height: typing.Optional[typing.Union[VideosListRequestHeight, int, typing.Dict[str, int]]] = None,
+        size: typing.Optional[typing.Union[VideosListRequestSize, float, typing.Dict[str, float]]] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[
@@ -268,11 +273,11 @@ class AsyncVideosClientWrapper(AsyncVideosClient):
         sort_by: typing.Optional[str] = None,
         sort_option: typing.Optional[str] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
-        fps: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
-        width: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
-        height: typing.Optional[typing.Union[int, typing.Dict[str, int]]] = None,
-        size: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        duration: typing.Optional[typing.Union[VideosListRequestDuration, float, typing.Dict[str, float]]] = None,
+        fps: typing.Optional[typing.Union[VideosListRequestFps, float, typing.Dict[str, float]]] = None,
+        width: typing.Optional[typing.Union[VideosListRequestWidth, float, typing.Dict[str, float]]] = None,
+        height: typing.Optional[typing.Union[VideosListRequestHeight, int, typing.Dict[str, int]]] = None,
+        size: typing.Optional[typing.Union[VideosListRequestSize, float, typing.Dict[str, float]]] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[
