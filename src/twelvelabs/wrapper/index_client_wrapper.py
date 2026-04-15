@@ -19,6 +19,29 @@ from ..errors.bad_request_error import BadRequestError
 OMIT = typing.cast(typing.Any, ...)
 
 
+def _expand_range_filters(
+    params: typing.Dict[str, typing.Any],
+    range_fields: typing.List[str],
+) -> typing.Dict[str, typing.Any]:
+    """Expand range filter objects into deepObject-style query params.
+
+    If a field value is a dict with 'gte'/'lte' keys, it gets expanded to
+    'field[gte]' and 'field[lte]'. Scalar values are passed through as-is.
+    """
+    expanded: typing.Dict[str, typing.Any] = {}
+    for key, value in params.items():
+        if value is None:
+            continue
+        if key in range_fields and isinstance(value, dict):
+            if "gte" in value and value["gte"] is not None:
+                expanded[f"{key}[gte]"] = value["gte"]
+            if "lte" in value and value["lte"] is not None:
+                expanded[f"{key}[lte]"] = value["lte"]
+        else:
+            expanded[key] = value
+    return expanded
+
+
 class VideosClientWrapper(VideosClient):
     """Wrapper for the VideosClient that adds additional functionality."""
 
@@ -35,11 +58,11 @@ class VideosClientWrapper(VideosClient):
         sort_by: typing.Optional[str] = None,
         sort_option: typing.Optional[str] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[float] = None,
-        fps: typing.Optional[float] = None,
-        width: typing.Optional[float] = None,
-        height: typing.Optional[int] = None,
-        size: typing.Optional[float] = None,
+        duration: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        fps: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        width: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        height: typing.Optional[typing.Union[int, typing.Dict[str, int]]] = None,
+        size: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[
@@ -83,20 +106,25 @@ class VideosClientWrapper(VideosClient):
         filename : typing.Optional[str]
             Filter by filename.
 
-        duration : typing.Optional[float]
-            Filter by duration. Expressed in seconds.
+        duration : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by duration in seconds. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering (e.g. {"gte": 30, "lte": 120}).
 
-        fps : typing.Optional[float]
-            Filter by frames per second.
+        fps : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by frames per second. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
-        width : typing.Optional[float]
-            Filter by width.
+        width : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by width in pixels. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
-        height : typing.Optional[int]
-            Filter by height.
+        height : typing.Optional[typing.Union[int, typing.Dict[str, int]]]
+            Filter by height in pixels. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
-        size : typing.Optional[float]
-            Filter by size. Expressed in bytes.
+        size : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by size in bytes. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
         created_at : typing.Optional[str]
             Filter videos by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the videos whose indexing tasks were created on the specified date at or after the given time.
@@ -135,20 +163,24 @@ class VideosClientWrapper(VideosClient):
         page = page if page is not None else 1
 
         # Build params dict
-        params = {
-            "page": page,
-            "page_limit": page_limit,
-            "sort_by": sort_by,
-            "sort_option": sort_option,
-            "filename": filename,
-            "duration": duration,
-            "fps": fps,
-            "width": width,
-            "height": height,
-            "size": size,
-            "created_at": created_at,
-            "updated_at": updated_at,
-        }
+        _range_fields = ["duration", "fps", "width", "height", "size"]
+        params = _expand_range_filters(
+            {
+                "page": page,
+                "page_limit": page_limit,
+                "sort_by": sort_by,
+                "sort_option": sort_option,
+                "filename": filename,
+                "duration": duration,
+                "fps": fps,
+                "width": width,
+                "height": height,
+                "size": size,
+                "created_at": created_at,
+                "updated_at": updated_at,
+            },
+            _range_fields,
+        )
 
         # Flatten user_metadata into root level parameters
         if user_metadata:
@@ -236,11 +268,11 @@ class AsyncVideosClientWrapper(AsyncVideosClient):
         sort_by: typing.Optional[str] = None,
         sort_option: typing.Optional[str] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[float] = None,
-        fps: typing.Optional[float] = None,
-        width: typing.Optional[float] = None,
-        height: typing.Optional[int] = None,
-        size: typing.Optional[float] = None,
+        duration: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        fps: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        width: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
+        height: typing.Optional[typing.Union[int, typing.Dict[str, int]]] = None,
+        size: typing.Optional[typing.Union[float, typing.Dict[str, float]]] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[
@@ -284,20 +316,25 @@ class AsyncVideosClientWrapper(AsyncVideosClient):
         filename : typing.Optional[str]
             Filter by filename.
 
-        duration : typing.Optional[float]
-            Filter by duration. Expressed in seconds.
+        duration : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by duration in seconds. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering (e.g. {"gte": 30, "lte": 120}).
 
-        fps : typing.Optional[float]
-            Filter by frames per second.
+        fps : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by frames per second. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
-        width : typing.Optional[float]
-            Filter by width.
+        width : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by width in pixels. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
-        height : typing.Optional[int]
-            Filter by height.
+        height : typing.Optional[typing.Union[int, typing.Dict[str, int]]]
+            Filter by height in pixels. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
-        size : typing.Optional[float]
-            Filter by size. Expressed in bytes.
+        size : typing.Optional[typing.Union[float, typing.Dict[str, float]]]
+            Filter by size in bytes. Pass a number for exact match, or a dict
+            with 'gte' and/or 'lte' for range filtering.
 
         created_at : typing.Optional[str]
             Filter videos by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the videos whose indexing tasks were created on the specified date at or after the given time.
@@ -340,20 +377,24 @@ class AsyncVideosClientWrapper(AsyncVideosClient):
         page = page if page is not None else 1
 
         # Build params dict
-        params = {
-            "page": page,
-            "page_limit": page_limit,
-            "sort_by": sort_by,
-            "sort_option": sort_option,
-            "filename": filename,
-            "duration": duration,
-            "fps": fps,
-            "width": width,
-            "height": height,
-            "size": size,
-            "created_at": created_at,
-            "updated_at": updated_at,
-        }
+        _range_fields = ["duration", "fps", "width", "height", "size"]
+        params = _expand_range_filters(
+            {
+                "page": page,
+                "page_limit": page_limit,
+                "sort_by": sort_by,
+                "sort_option": sort_option,
+                "filename": filename,
+                "duration": duration,
+                "fps": fps,
+                "width": width,
+                "height": height,
+                "size": size,
+                "created_at": created_at,
+                "updated_at": updated_at,
+            },
+            _range_fields,
+        )
 
         # Flatten user_metadata into root level parameters
         if user_metadata:
