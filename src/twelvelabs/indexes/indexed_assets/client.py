@@ -7,6 +7,11 @@ from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
 from ...types.indexed_asset import IndexedAsset
 from ...types.indexed_asset_detailed import IndexedAssetDetailed
+from ...types.indexed_assets_list_request_duration import IndexedAssetsListRequestDuration
+from ...types.indexed_assets_list_request_fps import IndexedAssetsListRequestFps
+from ...types.indexed_assets_list_request_height import IndexedAssetsListRequestHeight
+from ...types.indexed_assets_list_request_size import IndexedAssetsListRequestSize
+from ...types.indexed_assets_list_request_width import IndexedAssetsListRequestWidth
 from ...types.user_metadata import UserMetadata
 from .raw_client import AsyncRawIndexedAssetsClient, RawIndexedAssetsClient
 from .types.indexed_assets_create_response import IndexedAssetsCreateResponse
@@ -45,11 +50,11 @@ class IndexedAssetsClient:
             typing.Union[IndexedAssetsListRequestStatusItem, typing.Sequence[IndexedAssetsListRequestStatusItem]]
         ] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[float] = None,
-        fps: typing.Optional[float] = None,
-        width: typing.Optional[float] = None,
-        height: typing.Optional[int] = None,
-        size: typing.Optional[float] = None,
+        duration: typing.Optional[IndexedAssetsListRequestDuration] = None,
+        fps: typing.Optional[IndexedAssetsListRequestFps] = None,
+        width: typing.Optional[IndexedAssetsListRequestWidth] = None,
+        height: typing.Optional[IndexedAssetsListRequestHeight] = None,
+        size: typing.Optional[IndexedAssetsListRequestSize] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[
@@ -106,20 +111,25 @@ class IndexedAssetsClient:
         filename : typing.Optional[str]
             Filter by filename.
 
-        duration : typing.Optional[float]
-            Filter by duration. Expressed in seconds.
+        duration : typing.Optional[IndexedAssetsListRequestDuration]
+            Filter by duration in seconds. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        fps : typing.Optional[float]
-            Filter by frames per second.
+        fps : typing.Optional[IndexedAssetsListRequestFps]
+            Filter by frames per second. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        width : typing.Optional[float]
-            Filter by width.
+        width : typing.Optional[IndexedAssetsListRequestWidth]
+            Filter by width in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        height : typing.Optional[int]
-            Filter by height.
+        height : typing.Optional[IndexedAssetsListRequestHeight]
+            Filter by height in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        size : typing.Optional[float]
-            Filter by size. Expressed in bytes.
+        size : typing.Optional[IndexedAssetsListRequestSize]
+            Filter by size in bytes. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
         created_at : typing.Optional[str]
             Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
@@ -158,11 +168,6 @@ class IndexedAssetsClient:
             sort_by="created_at",
             sort_option="desc",
             filename="01.mp4",
-            duration=1.1,
-            fps=1.1,
-            width=1.1,
-            height=1,
-            size=1.1,
             created_at="2024-08-16T16:53:59Z",
             updated_at="2024-08-16T16:53:59Z",
         )
@@ -220,7 +225,7 @@ class IndexedAssetsClient:
             The unique identifier of the index to which the asset will be indexed.
 
         asset_id : str
-            The unique identifier of the asset to index.
+            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
 
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
@@ -448,11 +453,11 @@ class AsyncIndexedAssetsClient:
             typing.Union[IndexedAssetsListRequestStatusItem, typing.Sequence[IndexedAssetsListRequestStatusItem]]
         ] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[float] = None,
-        fps: typing.Optional[float] = None,
-        width: typing.Optional[float] = None,
-        height: typing.Optional[int] = None,
-        size: typing.Optional[float] = None,
+        duration: typing.Optional[IndexedAssetsListRequestDuration] = None,
+        fps: typing.Optional[IndexedAssetsListRequestFps] = None,
+        width: typing.Optional[IndexedAssetsListRequestWidth] = None,
+        height: typing.Optional[IndexedAssetsListRequestHeight] = None,
+        size: typing.Optional[IndexedAssetsListRequestSize] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[
@@ -509,20 +514,25 @@ class AsyncIndexedAssetsClient:
         filename : typing.Optional[str]
             Filter by filename.
 
-        duration : typing.Optional[float]
-            Filter by duration. Expressed in seconds.
+        duration : typing.Optional[IndexedAssetsListRequestDuration]
+            Filter by duration in seconds. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        fps : typing.Optional[float]
-            Filter by frames per second.
+        fps : typing.Optional[IndexedAssetsListRequestFps]
+            Filter by frames per second. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        width : typing.Optional[float]
-            Filter by width.
+        width : typing.Optional[IndexedAssetsListRequestWidth]
+            Filter by width in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        height : typing.Optional[int]
-            Filter by height.
+        height : typing.Optional[IndexedAssetsListRequestHeight]
+            Filter by height in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        size : typing.Optional[float]
-            Filter by size. Expressed in bytes.
+        size : typing.Optional[IndexedAssetsListRequestSize]
+            Filter by size in bytes. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
         created_at : typing.Optional[str]
             Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
@@ -566,11 +576,6 @@ class AsyncIndexedAssetsClient:
                 sort_by="created_at",
                 sort_option="desc",
                 filename="01.mp4",
-                duration=1.1,
-                fps=1.1,
-                width=1.1,
-                height=1,
-                size=1.1,
                 created_at="2024-08-16T16:53:59Z",
                 updated_at="2024-08-16T16:53:59Z",
             )
@@ -632,7 +637,7 @@ class AsyncIndexedAssetsClient:
             The unique identifier of the index to which the asset will be indexed.
 
         asset_id : str
-            The unique identifier of the asset to index.
+            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
 
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.

@@ -15,6 +15,11 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.not_found_error import NotFoundError
 from ...types.user_metadata import UserMetadata
 from ...types.video_vector import VideoVector
+from ...types.videos_list_request_duration import VideosListRequestDuration
+from ...types.videos_list_request_fps import VideosListRequestFps
+from ...types.videos_list_request_height import VideosListRequestHeight
+from ...types.videos_list_request_size import VideosListRequestSize
+from ...types.videos_list_request_width import VideosListRequestWidth
 from .types.videos_list_request_user_metadata_value import VideosListRequestUserMetadataValue
 from .types.videos_list_response import VideosListResponse
 from .types.videos_retrieve_request_embedding_option_item import VideosRetrieveRequestEmbeddingOptionItem
@@ -37,11 +42,11 @@ class RawVideosClient:
         sort_by: typing.Optional[str] = None,
         sort_option: typing.Optional[str] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[float] = None,
-        fps: typing.Optional[float] = None,
-        width: typing.Optional[float] = None,
-        height: typing.Optional[int] = None,
-        size: typing.Optional[float] = None,
+        duration: typing.Optional[VideosListRequestDuration] = None,
+        fps: typing.Optional[VideosListRequestFps] = None,
+        width: typing.Optional[VideosListRequestWidth] = None,
+        height: typing.Optional[VideosListRequestHeight] = None,
+        size: typing.Optional[VideosListRequestSize] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[typing.Dict[str, typing.Optional[VideosListRequestUserMetadataValue]]] = None,
@@ -85,20 +90,25 @@ class RawVideosClient:
         filename : typing.Optional[str]
             Filter by filename.
 
-        duration : typing.Optional[float]
-            Filter by duration. Expressed in seconds.
+        duration : typing.Optional[VideosListRequestDuration]
+            Filter by duration in seconds. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        fps : typing.Optional[float]
-            Filter by frames per second.
+        fps : typing.Optional[VideosListRequestFps]
+            Filter by frames per second. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        width : typing.Optional[float]
-            Filter by width.
+        width : typing.Optional[VideosListRequestWidth]
+            Filter by width in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        height : typing.Optional[int]
-            Filter by height.
+        height : typing.Optional[VideosListRequestHeight]
+            Filter by height in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        size : typing.Optional[float]
-            Filter by size. Expressed in bytes.
+        size : typing.Optional[VideosListRequestSize]
+            Filter by size in bytes. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
         created_at : typing.Optional[str]
             Filter videos by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the videos whose indexing tasks were created on the specified date at or after the given time.
@@ -134,11 +144,21 @@ class RawVideosClient:
                 "sort_by": sort_by,
                 "sort_option": sort_option,
                 "filename": filename,
-                "duration": duration,
-                "fps": fps,
-                "width": width,
-                "height": height,
-                "size": size,
+                "duration": convert_and_respect_annotation_metadata(
+                    object_=duration, annotation=VideosListRequestDuration, direction="write"
+                ),
+                "fps": convert_and_respect_annotation_metadata(
+                    object_=fps, annotation=VideosListRequestFps, direction="write"
+                ),
+                "width": convert_and_respect_annotation_metadata(
+                    object_=width, annotation=VideosListRequestWidth, direction="write"
+                ),
+                "height": convert_and_respect_annotation_metadata(
+                    object_=height, annotation=VideosListRequestHeight, direction="write"
+                ),
+                "size": convert_and_respect_annotation_metadata(
+                    object_=size, annotation=VideosListRequestSize, direction="write"
+                ),
                 "created_at": created_at,
                 "updated_at": updated_at,
                 "user_metadata": convert_and_respect_annotation_metadata(
@@ -408,11 +428,11 @@ class AsyncRawVideosClient:
         sort_by: typing.Optional[str] = None,
         sort_option: typing.Optional[str] = None,
         filename: typing.Optional[str] = None,
-        duration: typing.Optional[float] = None,
-        fps: typing.Optional[float] = None,
-        width: typing.Optional[float] = None,
-        height: typing.Optional[int] = None,
-        size: typing.Optional[float] = None,
+        duration: typing.Optional[VideosListRequestDuration] = None,
+        fps: typing.Optional[VideosListRequestFps] = None,
+        width: typing.Optional[VideosListRequestWidth] = None,
+        height: typing.Optional[VideosListRequestHeight] = None,
+        size: typing.Optional[VideosListRequestSize] = None,
         created_at: typing.Optional[str] = None,
         updated_at: typing.Optional[str] = None,
         user_metadata: typing.Optional[typing.Dict[str, typing.Optional[VideosListRequestUserMetadataValue]]] = None,
@@ -456,20 +476,25 @@ class AsyncRawVideosClient:
         filename : typing.Optional[str]
             Filter by filename.
 
-        duration : typing.Optional[float]
-            Filter by duration. Expressed in seconds.
+        duration : typing.Optional[VideosListRequestDuration]
+            Filter by duration in seconds. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        fps : typing.Optional[float]
-            Filter by frames per second.
+        fps : typing.Optional[VideosListRequestFps]
+            Filter by frames per second. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        width : typing.Optional[float]
-            Filter by width.
+        width : typing.Optional[VideosListRequestWidth]
+            Filter by width in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        height : typing.Optional[int]
-            Filter by height.
+        height : typing.Optional[VideosListRequestHeight]
+            Filter by height in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
-        size : typing.Optional[float]
-            Filter by size. Expressed in bytes.
+        size : typing.Optional[VideosListRequestSize]
+            Filter by size in bytes. Pass an object with `gte` and/or `lte` for range filtering.
+            For exact match, set both to the same value.
 
         created_at : typing.Optional[str]
             Filter videos by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the videos whose indexing tasks were created on the specified date at or after the given time.
@@ -505,11 +530,21 @@ class AsyncRawVideosClient:
                 "sort_by": sort_by,
                 "sort_option": sort_option,
                 "filename": filename,
-                "duration": duration,
-                "fps": fps,
-                "width": width,
-                "height": height,
-                "size": size,
+                "duration": convert_and_respect_annotation_metadata(
+                    object_=duration, annotation=VideosListRequestDuration, direction="write"
+                ),
+                "fps": convert_and_respect_annotation_metadata(
+                    object_=fps, annotation=VideosListRequestFps, direction="write"
+                ),
+                "width": convert_and_respect_annotation_metadata(
+                    object_=width, annotation=VideosListRequestWidth, direction="write"
+                ),
+                "height": convert_and_respect_annotation_metadata(
+                    object_=height, annotation=VideosListRequestHeight, direction="write"
+                ),
+                "size": convert_and_respect_annotation_metadata(
+                    object_=size, annotation=VideosListRequestSize, direction="write"
+                ),
                 "created_at": created_at,
                 "updated_at": updated_at,
                 "user_metadata": convert_and_respect_annotation_metadata(

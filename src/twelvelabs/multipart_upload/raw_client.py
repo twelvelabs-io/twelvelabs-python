@@ -145,7 +145,7 @@ class RawMultipartUploadClient:
 
         **Supported content**: Video and audio
 
-        **File size**: 4GB maximum.
+        **File size**: 4 GB maximum.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -673,7 +673,7 @@ class AsyncRawMultipartUploadClient:
 
         **Supported content**: Video and audio
 
-        **File size**: 4GB maximum.
+        **File size**: 4 GB maximum.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)

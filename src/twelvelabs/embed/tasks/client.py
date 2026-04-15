@@ -50,7 +50,7 @@ class TasksClient:
         This method returns a list of the video embedding tasks in your account. The platform returns your video embedding tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
-        - Video embeddings are stored for seven days
+        - Video embeddings are stored for seven days.
         - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the video embedding tasks created within the last seven days.
         </Note>
 
@@ -357,7 +357,7 @@ class AsyncTasksClient:
         This method returns a list of the video embedding tasks in your account. The platform returns your video embedding tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
-        - Video embeddings are stored for seven days
+        - Video embeddings are stored for seven days.
         - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the video embedding tasks created within the last seven days.
         </Note>
 

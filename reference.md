@@ -1413,7 +1413,7 @@ This method creates an asset by uploading a file to the platform. Assets are med
 - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
 - **Publicly accessible URL**: Set the `method` parameter to `url` and use the `url` parameter to specify the URL of your file.
 
-**File size**: 200MB maximum for local file uploads, 4GB maximum for URL uploads.
+**File size**: Up to 4 GB.
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -1483,7 +1483,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 
 Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-URL uploads have a maximum limit of 4GB.
+URL uploads have a maximum limit of 4 GB.
     
 </dd>
 </dl>
@@ -1761,7 +1761,7 @@ This method creates a multipart upload session.
 
 **Supported content**: Video and audio
 
-**File size**: 4GB maximum.
+**File size**: 4 GB maximum.
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -3498,7 +3498,7 @@ client.analyze_async.tasks.delete(
 This method returns a list of the video embedding tasks in your account. The platform returns your video embedding tasks sorted by creation date, with the newest at the top of the list.
 
 <Note title="Notes">
-- Video embeddings are stored for seven days
+- Video embeddings are stored for seven days.
 - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the video embedding tasks created within the last seven days.
 </Note>
 </dd>
@@ -4146,6 +4146,11 @@ The type of content for the embeddings.
 <dd>
 
 This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+
+<Note title="Notes">
+- Embeddings are stored for seven days.
+- When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+</Note>
 </dd>
 </dl>
 </dd>
@@ -4297,8 +4302,9 @@ This endpoint creates embeddings for audio and video content asynchronously.
   2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
   3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
-  <Note title="Note">
-  This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+  <Note title="Notes">
+  - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+  - Embeddings are stored for seven days.
   </Note>
 </dd>
 </dl>
@@ -4416,6 +4422,10 @@ This method retrieves the status and the results of an async embedding task.
 - `failed`: The task failed. Embeddings were not created.
 
 Invoke this method repeatedly until the `status` field is `ready`. When `status` is `ready`, use the embeddings from the response.
+
+<Note title="Note">
+Embeddings are stored for seven days.
+</Note>
 </dd>
 </dl>
 </dd>
@@ -5316,11 +5326,6 @@ response = client.indexes.indexed_assets.list(
     sort_by="created_at",
     sort_option="desc",
     filename="01.mp4",
-    duration=1.1,
-    fps=1.1,
-    width=1.1,
-    height=1,
-    size=1.1,
     created_at="2024-08-16T16:53:59Z",
     updated_at="2024-08-16T16:53:59Z",
 )
@@ -5438,7 +5443,10 @@ status=ready&status=validating
 <dl>
 <dd>
 
-**duration:** `typing.Optional[float]` — Filter by duration. Expressed in seconds.
+**duration:** `typing.Optional[IndexedAssetsListRequestDuration]` 
+
+Filter by duration in seconds. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -5446,7 +5454,10 @@ status=ready&status=validating
 <dl>
 <dd>
 
-**fps:** `typing.Optional[float]` — Filter by frames per second.
+**fps:** `typing.Optional[IndexedAssetsListRequestFps]` 
+
+Filter by frames per second. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -5454,7 +5465,10 @@ status=ready&status=validating
 <dl>
 <dd>
 
-**width:** `typing.Optional[float]` — Filter by width.
+**width:** `typing.Optional[IndexedAssetsListRequestWidth]` 
+
+Filter by width in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -5462,7 +5476,10 @@ status=ready&status=validating
 <dl>
 <dd>
 
-**height:** `typing.Optional[int]` — Filter by height.
+**height:** `typing.Optional[IndexedAssetsListRequestHeight]` 
+
+Filter by height in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -5470,7 +5487,10 @@ status=ready&status=validating
 <dl>
 <dd>
 
-**size:** `typing.Optional[float]` — Filter by size. Expressed in bytes.
+**size:** `typing.Optional[IndexedAssetsListRequestSize]` 
+
+Filter by size in bytes. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -5595,7 +5615,7 @@ client.indexes.indexed_assets.create(
 <dl>
 <dd>
 
-**asset_id:** `str` — The unique identifier of the asset to index.
+**asset_id:** `str` — The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
     
 </dd>
 </dl>
@@ -5962,11 +5982,6 @@ response = client.indexes.videos.list(
     sort_by="created_at",
     sort_option="desc",
     filename="01.mp4",
-    duration=1.1,
-    fps=1.1,
-    width=1.1,
-    height=1,
-    size=1.1,
     created_at="2024-08-16T16:53:59Z",
     updated_at="2024-08-16T16:53:59Z",
 )
@@ -6059,7 +6074,10 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**duration:** `typing.Optional[float]` — Filter by duration. Expressed in seconds.
+**duration:** `typing.Optional[VideosListRequestDuration]` 
+
+Filter by duration in seconds. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -6067,7 +6085,10 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**fps:** `typing.Optional[float]` — Filter by frames per second.
+**fps:** `typing.Optional[VideosListRequestFps]` 
+
+Filter by frames per second. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -6075,7 +6096,10 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**width:** `typing.Optional[float]` — Filter by width.
+**width:** `typing.Optional[VideosListRequestWidth]` 
+
+Filter by width in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -6083,7 +6107,10 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**height:** `typing.Optional[int]` — Filter by height.
+**height:** `typing.Optional[VideosListRequestHeight]` 
+
+Filter by height in pixels. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>
@@ -6091,7 +6118,10 @@ The sorting direction. The following options are available:
 <dl>
 <dd>
 
-**size:** `typing.Optional[float]` — Filter by size. Expressed in bytes.
+**size:** `typing.Optional[VideosListRequestSize]` 
+
+Filter by size in bytes. Pass an object with `gte` and/or `lte` for range filtering.
+For exact match, set both to the same value.
     
 </dd>
 </dl>

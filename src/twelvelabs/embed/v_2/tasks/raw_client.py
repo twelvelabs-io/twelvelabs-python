@@ -44,6 +44,11 @@ class RawTasksClient:
         """
         This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
 
+        <Note title="Notes">
+        - Embeddings are stored for seven days.
+        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        </Note>
+
         Parameters
         ----------
         started_at : typing.Optional[str]
@@ -166,8 +171,9 @@ class RawTasksClient:
           2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
           3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
-          <Note title="Note">
-          This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+          <Note title="Notes">
+          - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+          - Embeddings are stored for seven days.
           </Note>
 
         Parameters
@@ -263,6 +269,10 @@ class RawTasksClient:
 
         Invoke this method repeatedly until the `status` field is `ready`. When `status` is `ready`, use the embeddings from the response.
 
+        <Note title="Note">
+        Embeddings are stored for seven days.
+        </Note>
+
         Parameters
         ----------
         task_id : str
@@ -324,6 +334,11 @@ class AsyncRawTasksClient:
     ) -> AsyncPager[MediaEmbeddingTask]:
         """
         This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+
+        <Note title="Notes">
+        - Embeddings are stored for seven days.
+        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        </Note>
 
         Parameters
         ----------
@@ -450,8 +465,9 @@ class AsyncRawTasksClient:
           2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
           3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
-          <Note title="Note">
-          This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+          <Note title="Notes">
+          - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+          - Embeddings are stored for seven days.
           </Note>
 
         Parameters
@@ -546,6 +562,10 @@ class AsyncRawTasksClient:
         - `failed`: The task failed. Embeddings were not created.
 
         Invoke this method repeatedly until the `status` field is `ready`. When `status` is `ready`, use the embeddings from the response.
+
+        <Note title="Note">
+        Embeddings are stored for seven days.
+        </Note>
 
         Parameters
         ----------
