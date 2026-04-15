@@ -92,6 +92,11 @@ from .indexed_asset_detailed_embedding import IndexedAssetDetailedEmbedding
 from .indexed_asset_detailed_embedding_video_embedding import IndexedAssetDetailedEmbeddingVideoEmbedding
 from .indexed_asset_status import IndexedAssetStatus
 from .indexed_asset_system_metadata import IndexedAssetSystemMetadata
+from .indexed_assets_list_request_duration import IndexedAssetsListRequestDuration
+from .indexed_assets_list_request_fps import IndexedAssetsListRequestFps
+from .indexed_assets_list_request_height import IndexedAssetsListRequestHeight
+from .indexed_assets_list_request_size import IndexedAssetsListRequestSize
+from .indexed_assets_list_request_width import IndexedAssetsListRequestWidth
 from .internal_entity import InternalEntity
 from .internal_server_error_body import InternalServerErrorBody
 from .limit_per_page_simple import LimitPerPageSimple
@@ -177,6 +182,11 @@ from .video_segmentation_fixed import VideoSegmentationFixed
 from .video_segmentation_fixed_fixed import VideoSegmentationFixedFixed
 from .video_vector import VideoVector
 from .video_vector_system_metadata import VideoVectorSystemMetadata
+from .videos_list_request_duration import VideosListRequestDuration
+from .videos_list_request_fps import VideosListRequestFps
+from .videos_list_request_height import VideosListRequestHeight
+from .videos_list_request_size import VideosListRequestSize
+from .videos_list_request_width import VideosListRequestWidth
 
 __all__ = [
     "AnalyzeMaxTokens",
@@ -265,6 +275,11 @@ __all__ = [
     "IndexedAssetDetailedEmbeddingVideoEmbedding",
     "IndexedAssetStatus",
     "IndexedAssetSystemMetadata",
+    "IndexedAssetsListRequestDuration",
+    "IndexedAssetsListRequestFps",
+    "IndexedAssetsListRequestHeight",
+    "IndexedAssetsListRequestSize",
+    "IndexedAssetsListRequestWidth",
     "InternalEntity",
     "InternalServerErrorBody",
     "LimitPerPageSimple",
@@ -353,4 +368,9 @@ __all__ = [
     "VideoSegmentation_Fixed",
     "VideoVector",
     "VideoVectorSystemMetadata",
+    "VideosListRequestDuration",
+    "VideosListRequestFps",
+    "VideosListRequestHeight",
+    "VideosListRequestSize",
+    "VideosListRequestWidth",
 ]

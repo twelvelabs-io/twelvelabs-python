@@ -116,7 +116,7 @@ class AssetsClient:
         - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
         - **Publicly accessible URL**: Set the `method` parameter to `url` and use the `url` parameter to specify the URL of your file.
 
-        **File size**: 200MB maximum for local file uploads, 4GB maximum for URL uploads.
+        **File size**: Up to 4 GB.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -139,7 +139,7 @@ class AssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            URL uploads have a maximum limit of 4GB.
+            URL uploads have a maximum limit of 4 GB.
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
@@ -340,7 +340,7 @@ class AsyncAssetsClient:
         - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
         - **Publicly accessible URL**: Set the `method` parameter to `url` and use the `url` parameter to specify the URL of your file.
 
-        **File size**: 200MB maximum for local file uploads, 4GB maximum for URL uploads.
+        **File size**: Up to 4 GB.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -363,7 +363,7 @@ class AsyncAssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            URL uploads have a maximum limit of 4GB.
+            URL uploads have a maximum limit of 4 GB.
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
