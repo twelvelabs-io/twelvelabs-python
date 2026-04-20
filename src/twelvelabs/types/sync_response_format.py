@@ -4,15 +4,15 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .response_format_type import ResponseFormatType
+from .sync_response_format_type import SyncResponseFormatType
 
 
-class ResponseFormat(UniversalBaseModel):
+class SyncResponseFormat(UniversalBaseModel):
     """
     Specifies the format of the response. When you omit this parameter, the platform returns unstructured text.
     """
 
-    type: ResponseFormatType = pydantic.Field()
+    type: SyncResponseFormatType = pydantic.Field()
     """
     Set this parameter to "json_schema" to receive structured JSON responses.
     """

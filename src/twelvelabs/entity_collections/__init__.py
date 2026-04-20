@@ -6,6 +6,7 @@ from .types import EntityCollectionsListRequestSortBy, EntityCollectionsListResp
 from . import entities
 from .entities import (
     EntitiesCreateBulkRequestEntitiesItem,
+    EntitiesListByAssetResponse,
     EntitiesListRequestSortBy,
     EntitiesListRequestStatus,
     EntitiesListResponse,
@@ -13,6 +14,7 @@ from .entities import (
 
 __all__ = [
     "EntitiesCreateBulkRequestEntitiesItem",
+    "EntitiesListByAssetResponse",
     "EntitiesListRequestSortBy",
     "EntitiesListRequestStatus",
     "EntitiesListResponse",

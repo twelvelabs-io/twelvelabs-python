@@ -28,6 +28,7 @@ class Asset(UniversalBaseModel):
     **Values**:
     - `direct`: Uploaded from your local file system
     - `url`: Uploaded from a publicly accessible URL
+    - `multipart`: Uploaded using the multipart upload flow
     """
 
     status: typing.Optional[AssetStatus] = pydantic.Field(default=None)
@@ -48,6 +49,16 @@ class Asset(UniversalBaseModel):
     file_type: typing.Optional[str] = pydantic.Field(default=None)
     """
     The MIME type of the asset file.
+    """
+
+    size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The file size of the asset in bytes. This field is absent while the asset is still being processed.
+    """
+
+    duration: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The duration of the asset in seconds. Only present for video and audio assets. This field is absent for image assets or while the asset is still being processed.
     """
 
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)

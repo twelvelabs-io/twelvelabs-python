@@ -5,6 +5,27 @@
 from .analyze_max_tokens import AnalyzeMaxTokens
 from .analyze_task_error import AnalyzeTaskError
 from .analyze_task_response import AnalyzeTaskResponse
+from .analyze_task_response_request_params import AnalyzeTaskResponseRequestParams
+from .analyze_task_response_request_params_analysis_mode import AnalyzeTaskResponseRequestParamsAnalysisMode
+from .analyze_task_response_request_params_response_format import AnalyzeTaskResponseRequestParamsResponseFormat
+from .analyze_task_response_request_params_response_format_segment_definitions_item import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem,
+)
+from .analyze_task_response_request_params_response_format_segment_definitions_item_fields_item import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem,
+)
+from .analyze_task_response_request_params_response_format_segment_definitions_item_fields_item_items import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItemItems,
+)
+from .analyze_task_response_request_params_response_format_segment_definitions_item_media_sources_item import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem,
+)
+from .analyze_task_response_request_params_response_format_type import (
+    AnalyzeTaskResponseRequestParamsResponseFormatType,
+)
+from .analyze_task_response_video_source import AnalyzeTaskResponseVideoSource
+from .analyze_task_response_video_source_system_metadata import AnalyzeTaskResponseVideoSourceSystemMetadata
+from .analyze_task_response_video_source_type import AnalyzeTaskResponseVideoSourceType
 from .analyze_task_result import AnalyzeTaskResult
 from .analyze_task_result_usage import AnalyzeTaskResultUsage
 from .analyze_task_status import AnalyzeTaskStatus
@@ -12,8 +33,15 @@ from .analyze_task_webhook_info import AnalyzeTaskWebhookInfo
 from .analyze_temperature import AnalyzeTemperature
 from .analyze_text_prompt import AnalyzeTextPrompt
 from .asset import Asset
+from .asset_detail import AssetDetail
+from .asset_hls import AssetHls
+from .asset_hls_status import AssetHlsStatus
 from .asset_method import AssetMethod
 from .asset_status import AssetStatus
+from .asset_thumbnail import AssetThumbnail
+from .asset_thumbnail_status import AssetThumbnailStatus
+from .async_response_format import AsyncResponseFormat
+from .async_response_format_type import AsyncResponseFormatType
 from .audio_embedding_metadata import AudioEmbeddingMetadata
 from .audio_embedding_result import AudioEmbeddingResult
 from .audio_input_request import AudioInputRequest
@@ -34,6 +62,7 @@ from .chunk_info import ChunkInfo
 from .chunk_info_status import ChunkInfoStatus
 from .completed_chunk import CompletedChunk
 from .completed_chunk_proof_type import CompletedChunkProofType
+from .conflict_error_body import ConflictErrorBody
 from .create_analyze_task_response import CreateAnalyzeTaskResponse
 from .create_asset_upload_response import CreateAssetUploadResponse
 from .created_at import CreatedAt
@@ -91,6 +120,8 @@ from .indexed_asset_detailed import IndexedAssetDetailed
 from .indexed_asset_detailed_embedding import IndexedAssetDetailedEmbedding
 from .indexed_asset_detailed_embedding_video_embedding import IndexedAssetDetailedEmbeddingVideoEmbedding
 from .indexed_asset_status import IndexedAssetStatus
+from .indexed_asset_summary import IndexedAssetSummary
+from .indexed_asset_summary_index import IndexedAssetSummaryIndex
 from .indexed_asset_system_metadata import IndexedAssetSystemMetadata
 from .indexed_assets_list_request_duration import IndexedAssetsListRequestDuration
 from .indexed_assets_list_request_fps import IndexedAssetsListRequestFps
@@ -120,13 +151,18 @@ from .prev_page_token import PrevPageToken
 from .rank import Rank
 from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
-from .response_format import ResponseFormat
-from .response_format_type import ResponseFormatType
 from .search_item import SearchItem
 from .search_item_clips_item import SearchItemClipsItem
 from .search_pool import SearchPool
 from .search_results import SearchResults
 from .search_results_page_info import SearchResultsPageInfo
+from .segment_definition import SegmentDefinition
+from .segment_field import SegmentField
+from .segment_field_items import SegmentFieldItems
+from .segment_field_items_type import SegmentFieldItemsType
+from .segment_field_type import SegmentFieldType
+from .sme_media_source import SmeMediaSource
+from .sme_media_source_media_type import SmeMediaSourceMediaType
 from .start_offset_sec import StartOffsetSec
 from .start_time import StartTime
 from .stream_analyze_response import (
@@ -148,6 +184,8 @@ from .summarize_highlight_result_highlights_item import SummarizeHighlightResult
 from .summarize_highlight_result_summarize_type import SummarizeHighlightResultSummarizeType
 from .summarize_summary_result import SummarizeSummaryResult
 from .summarize_summary_result_summarize_type import SummarizeSummaryResultSummarizeType
+from .sync_response_format import SyncResponseFormat
+from .sync_response_format_type import SyncResponseFormatType
 from .text_embedding_result import TextEmbeddingResult
 from .text_image_input_request import TextImageInputRequest
 from .text_input_request import TextInputRequest
@@ -192,6 +230,17 @@ __all__ = [
     "AnalyzeMaxTokens",
     "AnalyzeTaskError",
     "AnalyzeTaskResponse",
+    "AnalyzeTaskResponseRequestParams",
+    "AnalyzeTaskResponseRequestParamsAnalysisMode",
+    "AnalyzeTaskResponseRequestParamsResponseFormat",
+    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem",
+    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem",
+    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItemItems",
+    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem",
+    "AnalyzeTaskResponseRequestParamsResponseFormatType",
+    "AnalyzeTaskResponseVideoSource",
+    "AnalyzeTaskResponseVideoSourceSystemMetadata",
+    "AnalyzeTaskResponseVideoSourceType",
     "AnalyzeTaskResult",
     "AnalyzeTaskResultUsage",
     "AnalyzeTaskStatus",
@@ -199,8 +248,15 @@ __all__ = [
     "AnalyzeTemperature",
     "AnalyzeTextPrompt",
     "Asset",
+    "AssetDetail",
+    "AssetHls",
+    "AssetHlsStatus",
     "AssetMethod",
     "AssetStatus",
+    "AssetThumbnail",
+    "AssetThumbnailStatus",
+    "AsyncResponseFormat",
+    "AsyncResponseFormatType",
     "AudioEmbeddingMetadata",
     "AudioEmbeddingResult",
     "AudioInputRequest",
@@ -221,6 +277,7 @@ __all__ = [
     "ChunkInfoStatus",
     "CompletedChunk",
     "CompletedChunkProofType",
+    "ConflictErrorBody",
     "CreateAnalyzeTaskResponse",
     "CreateAssetUploadResponse",
     "CreatedAt",
@@ -274,6 +331,8 @@ __all__ = [
     "IndexedAssetDetailedEmbedding",
     "IndexedAssetDetailedEmbeddingVideoEmbedding",
     "IndexedAssetStatus",
+    "IndexedAssetSummary",
+    "IndexedAssetSummaryIndex",
     "IndexedAssetSystemMetadata",
     "IndexedAssetsListRequestDuration",
     "IndexedAssetsListRequestFps",
@@ -303,13 +362,18 @@ __all__ = [
     "Rank",
     "ReportChunkBatchResponse",
     "RequestAdditionalPresignedUrLsResponse",
-    "ResponseFormat",
-    "ResponseFormatType",
     "SearchItem",
     "SearchItemClipsItem",
     "SearchPool",
     "SearchResults",
     "SearchResultsPageInfo",
+    "SegmentDefinition",
+    "SegmentField",
+    "SegmentFieldItems",
+    "SegmentFieldItemsType",
+    "SegmentFieldType",
+    "SmeMediaSource",
+    "SmeMediaSourceMediaType",
     "StartOffsetSec",
     "StartTime",
     "StreamAnalyzeResponse",
@@ -329,6 +393,8 @@ __all__ = [
     "SummarizeHighlightResultSummarizeType",
     "SummarizeSummaryResult",
     "SummarizeSummaryResultSummarizeType",
+    "SyncResponseFormat",
+    "SyncResponseFormatType",
     "TextEmbeddingResult",
     "TextImageInputRequest",
     "TextInputRequest",

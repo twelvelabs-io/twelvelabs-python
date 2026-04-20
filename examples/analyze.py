@@ -2,8 +2,7 @@ import json
 import os
 
 from twelvelabs import TwelveLabs
-from twelvelabs.types import ResponseFormat, StreamAnalyzeResponse_StreamEnd
-from twelvelabs.types.response_format_type import ResponseFormatType
+from twelvelabs.types import StreamAnalyzeResponse_StreamEnd, SyncResponseFormat
 
 
 API_KEY = os.getenv("API_KEY")
@@ -61,7 +60,7 @@ with TwelveLabs(api_key=API_KEY) as client:
         video_id=video_id,
         prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
         temperature=0.2,
-        response_format=ResponseFormat(
+        response_format=SyncResponseFormat(
             type="json_schema",
             json_schema={
                 "type": "object",
@@ -97,7 +96,7 @@ with TwelveLabs(api_key=API_KEY) as client:
         video_id=video_id,
         prompt="Analyze this video and provide a structured breakdown of the main topics, key insights, and action items.",
         temperature=0.3,
-        response_format=ResponseFormat(
+        response_format=SyncResponseFormat(
             type="json_schema",
             json_schema={
                 "type": "object",

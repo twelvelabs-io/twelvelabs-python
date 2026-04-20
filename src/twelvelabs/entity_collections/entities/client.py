@@ -31,6 +31,63 @@ class EntitiesClient:
         """
         return self._raw_client
 
+    def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[Entity]:
+        """
+        This method returns a list of entities whose [`asset_ids`](/v1.3/api-reference/entities/entity-collections/entities/retrieve#response.body.asset_ids) array contains the specified asset.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[Entity]
+            The entities have been successfully retrieved.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.entity_collections.entities.list_by_asset(
+            asset_id="6298d673f1090f1100476d4c",
+            page=1,
+            page_limit=10,
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_by_asset(
+            asset_id, page=page, page_limit=page_limit, request_options=request_options
+        )
+
     def list(
         self,
         entity_collection_id: str,
@@ -500,6 +557,72 @@ class AsyncEntitiesClient:
         AsyncRawEntitiesClient
         """
         return self._raw_client
+
+    async def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[Entity]:
+        """
+        This method returns a list of entities whose [`asset_ids`](/v1.3/api-reference/entities/entity-collections/entities/retrieve#response.body.asset_ids) array contains the specified asset.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[Entity]
+            The entities have been successfully retrieved.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.entity_collections.entities.list_by_asset(
+                asset_id="6298d673f1090f1100476d4c",
+                page=1,
+                page_limit=10,
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_by_asset(
+            asset_id, page=page, page_limit=page_limit, request_options=request_options
+        )
 
     async def list(
         self,

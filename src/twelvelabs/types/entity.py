@@ -20,6 +20,11 @@ class Entity(UniversalBaseModel):
     The unique identifier of the entity.
     """
 
+    entity_collection_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the entity collection this entity belongs to.
+    """
+
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     The name of the entity.

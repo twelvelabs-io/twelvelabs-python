@@ -3,6 +3,7 @@
 # isort: skip_file
 
 from .indexed_assets_create_response import IndexedAssetsCreateResponse
+from .indexed_assets_list_by_asset_response import IndexedAssetsListByAssetResponse
 from .indexed_assets_list_request_status_item import IndexedAssetsListRequestStatusItem
 from .indexed_assets_list_request_user_metadata_value import IndexedAssetsListRequestUserMetadataValue
 from .indexed_assets_list_response import IndexedAssetsListResponse
@@ -10,6 +11,7 @@ from .indexed_assets_retrieve_request_embedding_option_item import IndexedAssets
 
 __all__ = [
     "IndexedAssetsCreateResponse",
+    "IndexedAssetsListByAssetResponse",
     "IndexedAssetsListRequestStatusItem",
     "IndexedAssetsListRequestUserMetadataValue",
     "IndexedAssetsListResponse",

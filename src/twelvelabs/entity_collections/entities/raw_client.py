@@ -15,6 +15,7 @@ from ...errors.bad_request_error import BadRequestError
 from ...types.bulk_create_entity_response import BulkCreateEntityResponse
 from ...types.entity import Entity
 from .types.entities_create_bulk_request_entities_item import EntitiesCreateBulkRequestEntitiesItem
+from .types.entities_list_by_asset_response import EntitiesListByAssetResponse
 from .types.entities_list_request_sort_by import EntitiesListRequestSortBy
 from .types.entities_list_request_status import EntitiesListRequestStatus
 from .types.entities_list_response import EntitiesListResponse
@@ -26,6 +27,88 @@ OMIT = typing.cast(typing.Any, ...)
 class RawEntitiesClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[Entity]:
+        """
+        This method returns a list of entities whose [`asset_ids`](/v1.3/api-reference/entities/entity-collections/entities/retrieve#response.body.asset_ids) array contains the specified asset.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[Entity]
+            The entities have been successfully retrieved.
+        """
+        page = page if page is not None else 1
+
+        _response = self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/entities",
+            method="GET",
+            params={
+                "page": page,
+                "page_limit": page_limit,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    EntitiesListByAssetResponse,
+                    parse_obj_as(
+                        type_=EntitiesListByAssetResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.data
+                _has_next = True
+                _get_next = lambda: self.list_by_asset(
+                    asset_id,
+                    page=page + 1,
+                    page_limit=page_limit,
+                    request_options=request_options,
+                )
+                return SyncPager(
+                    has_next=_has_next, items=_items, get_next=_get_next, response=BaseHttpResponse(response=_response)
+                )
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def list(
         self,
@@ -625,6 +708,91 @@ class RawEntitiesClient:
 class AsyncRawEntitiesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    async def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[Entity]:
+        """
+        This method returns a list of entities whose [`asset_ids`](/v1.3/api-reference/entities/entity-collections/entities/retrieve#response.body.asset_ids) array contains the specified asset.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[Entity]
+            The entities have been successfully retrieved.
+        """
+        page = page if page is not None else 1
+
+        _response = await self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/entities",
+            method="GET",
+            params={
+                "page": page,
+                "page_limit": page_limit,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    EntitiesListByAssetResponse,
+                    parse_obj_as(
+                        type_=EntitiesListByAssetResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.data
+                _has_next = True
+
+                async def _get_next():
+                    return await self.list_by_asset(
+                        asset_id,
+                        page=page + 1,
+                        page_limit=page_limit,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(
+                    has_next=_has_next, items=_items, get_next=_get_next, response=BaseHttpResponse(response=_response)
+                )
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def list(
         self,

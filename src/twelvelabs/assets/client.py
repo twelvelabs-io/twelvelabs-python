@@ -7,6 +7,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.asset import Asset
+from ..types.asset_detail import AssetDetail
 from .raw_client import AsyncRawAssetsClient, RawAssetsClient
 from .types.assets_create_request_method import AssetsCreateRequestMethod
 from .types.assets_list_request_asset_types_item import AssetsListRequestAssetTypesItem
@@ -39,8 +40,9 @@ class AssetsClient:
         asset_types: typing.Optional[
             typing.Union[AssetsListRequestAssetTypesItem, typing.Sequence[AssetsListRequestAssetTypesItem]]
         ] = None,
+        filename: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SyncPager[Asset]:
+    ) -> SyncPager[AssetDetail]:
         """
         This method returns a list of assets in your account.
 
@@ -65,12 +67,15 @@ class AssetsClient:
         asset_types : typing.Optional[typing.Union[AssetsListRequestAssetTypesItem, typing.Sequence[AssetsListRequestAssetTypesItem]]]
             Filters the response to include only assets of the specified types. Provide one or more asset types. When you specify multiple types, the platform returns all matching assets.
 
+        filename : typing.Optional[str]
+            Filters the response to include only assets whose filename contains the specified string. The match is case-insensitive and supports partial matching.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SyncPager[Asset]
+        SyncPager[AssetDetail]
             The assets have been successfully retrieved.
 
         Examples
@@ -83,6 +88,7 @@ class AssetsClient:
         response = client.assets.list(
             page=1,
             page_limit=10,
+            filename="meeting",
         )
         for item in response:
             yield item
@@ -95,6 +101,7 @@ class AssetsClient:
             page_limit=page_limit,
             asset_ids=asset_ids,
             asset_types=asset_types,
+            filename=filename,
             request_options=request_options,
         )
 
@@ -105,6 +112,8 @@ class AssetsClient:
         file: typing.Optional[core.File] = OMIT,
         url: typing.Optional[str] = OMIT,
         filename: typing.Optional[str] = OMIT,
+        enable_hls: typing.Optional[bool] = OMIT,
+        enable_thumbnail: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Asset:
         """
@@ -144,6 +153,16 @@ class AssetsClient:
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
 
+        enable_hls : typing.Optional[bool]
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+
+            **Default**: `false`.
+
+        enable_thumbnail : typing.Optional[bool]
+            When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+            **Default**: `false`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -164,11 +183,17 @@ class AssetsClient:
         )
         """
         _response = self._raw_client.create(
-            method=method, file=file, url=url, filename=filename, request_options=request_options
+            method=method,
+            file=file,
+            url=url,
+            filename=filename,
+            enable_hls=enable_hls,
+            enable_thumbnail=enable_thumbnail,
+            request_options=request_options,
         )
         return _response.data
 
-    def retrieve(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Asset:
+    def retrieve(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> AssetDetail:
         """
         This method retrieves details about the specified asset.
 
@@ -182,7 +207,7 @@ class AssetsClient:
 
         Returns
         -------
-        Asset
+        AssetDetail
             The asset has been successfully retrieved.
 
         Examples
@@ -199,14 +224,31 @@ class AssetsClient:
         _response = self._raw_client.retrieve(asset_id, request_options=request_options)
         return _response.data
 
-    def delete(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def delete(
+        self,
+        asset_id: str,
+        *,
+        force: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
         """
         This method deletes the specified asset. This action cannot be undone.
+
+        By default, the platform checks whether any indexed assets reference the asset. If references exist, the platform rejects the request with a `409 Conflict` error. To skip this check and delete the asset anyway, set the `force` query parameter to `true`. The platform unlinks any entity associations.
+
+        Before deleting, you can inspect existing references:
+        - [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) `/assets/{asset_id}/indexed-assets` returns a list of the indexed assets that will block deletion unless the `force` query parameter is set to `true`.
+        - [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) `/assets/{asset_id}/entities` returns a list of the entities whose associations the platform will unlink.
 
         Parameters
         ----------
         asset_id : str
             The unique identifier of the asset to delete.
+
+        force : typing.Optional[bool]
+            When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
+
+            **Default**: `false`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -224,9 +266,10 @@ class AssetsClient:
         )
         client.assets.delete(
             asset_id="6298d673f1090f1100476d4c",
+            force=True,
         )
         """
-        _response = self._raw_client.delete(asset_id, request_options=request_options)
+        _response = self._raw_client.delete(asset_id, force=force, request_options=request_options)
         return _response.data
 
 
@@ -254,8 +297,9 @@ class AsyncAssetsClient:
         asset_types: typing.Optional[
             typing.Union[AssetsListRequestAssetTypesItem, typing.Sequence[AssetsListRequestAssetTypesItem]]
         ] = None,
+        filename: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncPager[Asset]:
+    ) -> AsyncPager[AssetDetail]:
         """
         This method returns a list of assets in your account.
 
@@ -280,12 +324,15 @@ class AsyncAssetsClient:
         asset_types : typing.Optional[typing.Union[AssetsListRequestAssetTypesItem, typing.Sequence[AssetsListRequestAssetTypesItem]]]
             Filters the response to include only assets of the specified types. Provide one or more asset types. When you specify multiple types, the platform returns all matching assets.
 
+        filename : typing.Optional[str]
+            Filters the response to include only assets whose filename contains the specified string. The match is case-insensitive and supports partial matching.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncPager[Asset]
+        AsyncPager[AssetDetail]
             The assets have been successfully retrieved.
 
         Examples
@@ -303,6 +350,7 @@ class AsyncAssetsClient:
             response = await client.assets.list(
                 page=1,
                 page_limit=10,
+                filename="meeting",
             )
             async for item in response:
                 yield item
@@ -319,6 +367,7 @@ class AsyncAssetsClient:
             page_limit=page_limit,
             asset_ids=asset_ids,
             asset_types=asset_types,
+            filename=filename,
             request_options=request_options,
         )
 
@@ -329,6 +378,8 @@ class AsyncAssetsClient:
         file: typing.Optional[core.File] = OMIT,
         url: typing.Optional[str] = OMIT,
         filename: typing.Optional[str] = OMIT,
+        enable_hls: typing.Optional[bool] = OMIT,
+        enable_thumbnail: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Asset:
         """
@@ -367,6 +418,16 @@ class AsyncAssetsClient:
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
+
+        enable_hls : typing.Optional[bool]
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+
+            **Default**: `false`.
+
+        enable_thumbnail : typing.Optional[bool]
+            When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+            **Default**: `false`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -396,11 +457,17 @@ class AsyncAssetsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            method=method, file=file, url=url, filename=filename, request_options=request_options
+            method=method,
+            file=file,
+            url=url,
+            filename=filename,
+            enable_hls=enable_hls,
+            enable_thumbnail=enable_thumbnail,
+            request_options=request_options,
         )
         return _response.data
 
-    async def retrieve(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Asset:
+    async def retrieve(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> AssetDetail:
         """
         This method retrieves details about the specified asset.
 
@@ -414,7 +481,7 @@ class AsyncAssetsClient:
 
         Returns
         -------
-        Asset
+        AssetDetail
             The asset has been successfully retrieved.
 
         Examples
@@ -439,14 +506,31 @@ class AsyncAssetsClient:
         _response = await self._raw_client.retrieve(asset_id, request_options=request_options)
         return _response.data
 
-    async def delete(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    async def delete(
+        self,
+        asset_id: str,
+        *,
+        force: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
         """
         This method deletes the specified asset. This action cannot be undone.
+
+        By default, the platform checks whether any indexed assets reference the asset. If references exist, the platform rejects the request with a `409 Conflict` error. To skip this check and delete the asset anyway, set the `force` query parameter to `true`. The platform unlinks any entity associations.
+
+        Before deleting, you can inspect existing references:
+        - [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) `/assets/{asset_id}/indexed-assets` returns a list of the indexed assets that will block deletion unless the `force` query parameter is set to `true`.
+        - [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) `/assets/{asset_id}/entities` returns a list of the entities whose associations the platform will unlink.
 
         Parameters
         ----------
         asset_id : str
             The unique identifier of the asset to delete.
+
+        force : typing.Optional[bool]
+            When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
+
+            **Default**: `false`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -469,10 +553,11 @@ class AsyncAssetsClient:
         async def main() -> None:
             await client.assets.delete(
                 asset_id="6298d673f1090f1100476d4c",
+                force=True,
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete(asset_id, request_options=request_options)
+        _response = await self._raw_client.delete(asset_id, force=force, request_options=request_options)
         return _response.data

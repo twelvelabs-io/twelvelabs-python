@@ -16,6 +16,7 @@ from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.indexed_asset import IndexedAsset
 from ...types.indexed_asset_detailed import IndexedAssetDetailed
+from ...types.indexed_asset_summary import IndexedAssetSummary
 from ...types.indexed_assets_list_request_duration import IndexedAssetsListRequestDuration
 from ...types.indexed_assets_list_request_fps import IndexedAssetsListRequestFps
 from ...types.indexed_assets_list_request_height import IndexedAssetsListRequestHeight
@@ -23,6 +24,7 @@ from ...types.indexed_assets_list_request_size import IndexedAssetsListRequestSi
 from ...types.indexed_assets_list_request_width import IndexedAssetsListRequestWidth
 from ...types.user_metadata import UserMetadata
 from .types.indexed_assets_create_response import IndexedAssetsCreateResponse
+from .types.indexed_assets_list_by_asset_response import IndexedAssetsListByAssetResponse
 from .types.indexed_assets_list_request_status_item import IndexedAssetsListRequestStatusItem
 from .types.indexed_assets_list_request_user_metadata_value import IndexedAssetsListRequestUserMetadataValue
 from .types.indexed_assets_list_response import IndexedAssetsListResponse
@@ -551,6 +553,88 @@ class RawIndexedAssetsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[IndexedAssetSummary]:
+        """
+        This method returns a list of indexed assets that reference the specified asset. Each entry includes the indexed asset ID and the index it belongs to.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[IndexedAssetSummary]
+            The indexed assets have been successfully retrieved.
+        """
+        page = page if page is not None else 1
+
+        _response = self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/indexed-assets",
+            method="GET",
+            params={
+                "page": page,
+                "page_limit": page_limit,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    IndexedAssetsListByAssetResponse,
+                    parse_obj_as(
+                        type_=IndexedAssetsListByAssetResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.data
+                _has_next = True
+                _get_next = lambda: self.list_by_asset(
+                    asset_id,
+                    page=page + 1,
+                    page_limit=page_limit,
+                    request_options=request_options,
+                )
+                return SyncPager(
+                    has_next=_has_next, items=_items, get_next=_get_next, response=BaseHttpResponse(response=_response)
+                )
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
 
 class AsyncRawIndexedAssetsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -1058,6 +1142,91 @@ class AsyncRawIndexedAssetsClient:
         try:
             if 200 <= _response.status_code < 300:
                 return AsyncHttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[IndexedAssetSummary]:
+        """
+        This method returns a list of indexed assets that reference the specified asset. Each entry includes the indexed asset ID and the index it belongs to.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[IndexedAssetSummary]
+            The indexed assets have been successfully retrieved.
+        """
+        page = page if page is not None else 1
+
+        _response = await self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/indexed-assets",
+            method="GET",
+            params={
+                "page": page,
+                "page_limit": page_limit,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    IndexedAssetsListByAssetResponse,
+                    parse_obj_as(
+                        type_=IndexedAssetsListByAssetResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.data
+                _has_next = True
+
+                async def _get_next():
+                    return await self.list_by_asset(
+                        asset_id,
+                        page=page + 1,
+                        page_limit=page_limit,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(
+                    has_next=_has_next, items=_items, get_next=_get_next, response=BaseHttpResponse(response=_response)
+                )
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),

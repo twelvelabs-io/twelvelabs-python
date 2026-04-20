@@ -2,4 +2,4 @@
 
 import typing
 
-AssetMethod = typing.Union[typing.Literal["direct", "url"], typing.Any]
+AssetMethod = typing.Union[typing.Literal["direct", "url", "multipart"], typing.Any]

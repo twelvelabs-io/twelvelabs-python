@@ -6,6 +6,8 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .analyze_task_error import AnalyzeTaskError
+from .analyze_task_response_request_params import AnalyzeTaskResponseRequestParams
+from .analyze_task_response_video_source import AnalyzeTaskResponseVideoSource
 from .analyze_task_result import AnalyzeTaskResult
 from .analyze_task_status import AnalyzeTaskStatus
 from .analyze_task_webhook_info import AnalyzeTaskWebhookInfo
@@ -19,6 +21,16 @@ class AnalyzeTaskResponse(UniversalBaseModel):
     task_id: str = pydantic.Field()
     """
     The unique identifier of the analysis task.
+    """
+
+    video_source: typing.Optional[AnalyzeTaskResponseVideoSource] = pydantic.Field(default=None)
+    """
+    The video source you provided. Only present for tasks that use direct video input (`url`, `base64_string`, or `asset_id`).
+    """
+
+    request_params: typing.Optional[AnalyzeTaskResponseRequestParams] = pydantic.Field(default=None)
+    """
+    The parameters you sent when creating this task. Only present for tasks created with `model_name` set to `pegasus1.5`.
     """
 
     status: AnalyzeTaskStatus
