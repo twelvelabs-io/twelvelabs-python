@@ -7,6 +7,7 @@ from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
 from ...types.indexed_asset import IndexedAsset
 from ...types.indexed_asset_detailed import IndexedAssetDetailed
+from ...types.indexed_asset_summary import IndexedAssetSummary
 from ...types.indexed_assets_list_request_duration import IndexedAssetsListRequestDuration
 from ...types.indexed_assets_list_request_fps import IndexedAssetsListRequestFps
 from ...types.indexed_assets_list_request_height import IndexedAssetsListRequestHeight
@@ -424,6 +425,63 @@ class IndexedAssetsClient:
             index_id, indexed_asset_id, user_metadata=user_metadata, request_options=request_options
         )
         return _response.data
+
+    def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[IndexedAssetSummary]:
+        """
+        This method returns a list of indexed assets that reference the specified asset. Each entry includes the indexed asset ID and the index it belongs to.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[IndexedAssetSummary]
+            The indexed assets have been successfully retrieved.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.indexes.indexed_assets.list_by_asset(
+            asset_id="6298d673f1090f1100476d4c",
+            page=1,
+            page_limit=10,
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_by_asset(
+            asset_id, page=page, page_limit=page_limit, request_options=request_options
+        )
 
 
 class AsyncIndexedAssetsClient:
@@ -868,3 +926,69 @@ class AsyncIndexedAssetsClient:
             index_id, indexed_asset_id, user_metadata=user_metadata, request_options=request_options
         )
         return _response.data
+
+    async def list_by_asset(
+        self,
+        asset_id: str,
+        *,
+        page: typing.Optional[int] = None,
+        page_limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[IndexedAssetSummary]:
+        """
+        This method returns a list of indexed assets that reference the specified asset. Each entry includes the indexed asset ID and the index it belongs to.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        page : typing.Optional[int]
+            A number that identifies the page to retrieve.
+
+            **Default**: `1`.
+
+        page_limit : typing.Optional[int]
+            The number of items to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[IndexedAssetSummary]
+            The indexed assets have been successfully retrieved.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.indexes.indexed_assets.list_by_asset(
+                asset_id="6298d673f1090f1100476d4c",
+                page=1,
+                page_limit=10,
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_by_asset(
+            asset_id, page=page, page_limit=page_limit, request_options=request_options
+        )

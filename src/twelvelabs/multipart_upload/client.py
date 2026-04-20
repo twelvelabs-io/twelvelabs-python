@@ -91,12 +91,14 @@ class MultipartUploadClient:
         filename: str,
         type: CreateAssetUploadRequestType,
         total_size: int,
+        enable_hls: typing.Optional[bool] = OMIT,
+        enable_thumbnail: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAssetUploadResponse:
         """
         This method creates a multipart upload session.
 
-        **Supported content**: Video and audio
+        **Supported content**: Video
 
         **File size**: 4 GB maximum.
 
@@ -118,6 +120,16 @@ class MultipartUploadClient:
             - Calculate the optimal chunk size.
             - Determine the total number of chunks required
             - Generate the initial set of presigned URLs
+
+        enable_hls : typing.Optional[bool]
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+
+            **Default**: `false`.
+
+        enable_thumbnail : typing.Optional[bool]
+            When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+            **Default**: `false`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -141,7 +153,12 @@ class MultipartUploadClient:
         )
         """
         _response = self._raw_client.create(
-            filename=filename, type=type, total_size=total_size, request_options=request_options
+            filename=filename,
+            type=type,
+            total_size=total_size,
+            enable_hls=enable_hls,
+            enable_thumbnail=enable_thumbnail,
+            request_options=request_options,
         )
         return _response.data
 
@@ -393,12 +410,14 @@ class AsyncMultipartUploadClient:
         filename: str,
         type: CreateAssetUploadRequestType,
         total_size: int,
+        enable_hls: typing.Optional[bool] = OMIT,
+        enable_thumbnail: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAssetUploadResponse:
         """
         This method creates a multipart upload session.
 
-        **Supported content**: Video and audio
+        **Supported content**: Video
 
         **File size**: 4 GB maximum.
 
@@ -420,6 +439,16 @@ class AsyncMultipartUploadClient:
             - Calculate the optimal chunk size.
             - Determine the total number of chunks required
             - Generate the initial set of presigned URLs
+
+        enable_hls : typing.Optional[bool]
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+
+            **Default**: `false`.
+
+        enable_thumbnail : typing.Optional[bool]
+            When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+            **Default**: `false`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -451,7 +480,12 @@ class AsyncMultipartUploadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            filename=filename, type=type, total_size=total_size, request_options=request_options
+            filename=filename,
+            type=type,
+            total_size=total_size,
+            enable_hls=enable_hls,
+            enable_thumbnail=enable_thumbnail,
+            request_options=request_options,
         )
         return _response.data
 

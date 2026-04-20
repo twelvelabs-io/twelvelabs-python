@@ -4,12 +4,12 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ...types.asset import Asset
+from ...types.asset_detail import AssetDetail
 from ...types.page_info import PageInfo
 
 
 class AssetsListResponse(UniversalBaseModel):
-    data: typing.Optional[typing.List[Asset]] = pydantic.Field(default=None)
+    data: typing.Optional[typing.List[AssetDetail]] = pydantic.Field(default=None)
     """
     An array containing the assets.
     """

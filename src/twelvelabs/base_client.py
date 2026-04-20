@@ -19,8 +19,8 @@ from .types.analyze_max_tokens import AnalyzeMaxTokens
 from .types.analyze_temperature import AnalyzeTemperature
 from .types.analyze_text_prompt import AnalyzeTextPrompt
 from .types.non_stream_analyze_response import NonStreamAnalyzeResponse
-from .types.response_format import ResponseFormat
 from .types.stream_analyze_response import StreamAnalyzeResponse
+from .types.sync_response_format import SyncResponseFormat
 from .types.video_context import VideoContext
 
 # this is used as the default value for optional parameters
@@ -120,7 +120,7 @@ class BaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[StreamAnalyzeResponse]:
@@ -142,6 +142,7 @@ class BaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -160,7 +161,7 @@ class BaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -174,7 +175,7 @@ class BaseClient:
 
         Examples
         --------
-        from twelvelabs import ResponseFormat, TwelveLabs
+        from twelvelabs import SyncResponseFormat, TwelveLabs
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
@@ -183,7 +184,7 @@ class BaseClient:
             video_id="6298d673f1090f1100476d4c",
             prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
             temperature=0.2,
-            response_format=ResponseFormat(
+            response_format=SyncResponseFormat(
                 type="json_schema",
                 json_schema={
                     "type": "object",
@@ -217,7 +218,7 @@ class BaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
@@ -239,6 +240,7 @@ class BaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -257,7 +259,7 @@ class BaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -271,7 +273,7 @@ class BaseClient:
 
         Examples
         --------
-        from twelvelabs import ResponseFormat, TwelveLabs
+        from twelvelabs import SyncResponseFormat, TwelveLabs
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
@@ -280,7 +282,7 @@ class BaseClient:
             video_id="6298d673f1090f1100476d4c",
             prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
             temperature=0.2,
-            response_format=ResponseFormat(
+            response_format=SyncResponseFormat(
                 type="json_schema",
                 json_schema={
                     "type": "object",
@@ -399,7 +401,7 @@ class AsyncBaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[StreamAnalyzeResponse]:
@@ -421,6 +423,7 @@ class AsyncBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -439,7 +442,7 @@ class AsyncBaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -455,7 +458,7 @@ class AsyncBaseClient:
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, ResponseFormat
+        from twelvelabs import AsyncTwelveLabs, SyncResponseFormat
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -467,7 +470,7 @@ class AsyncBaseClient:
                 video_id="6298d673f1090f1100476d4c",
                 prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
                 temperature=0.2,
-                response_format=ResponseFormat(
+                response_format=SyncResponseFormat(
                     type="json_schema",
                     json_schema={
                         "type": "object",
@@ -505,7 +508,7 @@ class AsyncBaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
@@ -527,6 +530,7 @@ class AsyncBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -545,7 +549,7 @@ class AsyncBaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -561,7 +565,7 @@ class AsyncBaseClient:
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, ResponseFormat
+        from twelvelabs import AsyncTwelveLabs, SyncResponseFormat
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -573,7 +577,7 @@ class AsyncBaseClient:
                 video_id="6298d673f1090f1100476d4c",
                 prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
                 temperature=0.2,
-                response_format=ResponseFormat(
+                response_format=SyncResponseFormat(
                     type="json_schema",
                     json_schema={
                         "type": "object",

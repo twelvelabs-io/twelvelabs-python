@@ -4,6 +4,7 @@
 
 from .types import (
     IndexedAssetsCreateResponse,
+    IndexedAssetsListByAssetResponse,
     IndexedAssetsListRequestStatusItem,
     IndexedAssetsListRequestUserMetadataValue,
     IndexedAssetsListResponse,
@@ -12,6 +13,7 @@ from .types import (
 
 __all__ = [
     "IndexedAssetsCreateResponse",
+    "IndexedAssetsListByAssetResponse",
     "IndexedAssetsListRequestStatusItem",
     "IndexedAssetsListRequestUserMetadataValue",
     "IndexedAssetsListResponse",

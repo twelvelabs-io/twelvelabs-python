@@ -28,6 +28,7 @@ This method synchronously analyzes your videos and generates fully customizable 
 
 **Do not use this method for**:
 - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+- Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
 <Note title="Notes">
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -46,7 +47,7 @@ This method synchronously analyzes your videos and generates fully customizable 
 <dd>
 
 ```python
-from twelvelabs import ResponseFormat, TwelveLabs
+from twelvelabs import SyncResponseFormat, TwelveLabs
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
@@ -55,7 +56,7 @@ response = client.analyze_stream(
     video_id="6298d673f1090f1100476d4c",
     prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
     temperature=0.2,
-    response_format=ResponseFormat(
+    response_format=SyncResponseFormat(
         type="json_schema",
         json_schema={
             "type": "object",
@@ -121,7 +122,7 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-**response_format:** `typing.Optional[ResponseFormat]` 
+**response_format:** `typing.Optional[SyncResponseFormat]` 
     
 </dd>
 </dl>
@@ -178,6 +179,7 @@ This method synchronously analyzes your videos and generates fully customizable 
 
 **Do not use this method for**:
 - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+- Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
 <Note title="Notes">
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -196,7 +198,7 @@ This method synchronously analyzes your videos and generates fully customizable 
 <dd>
 
 ```python
-from twelvelabs import ResponseFormat, TwelveLabs
+from twelvelabs import SyncResponseFormat, TwelveLabs
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
@@ -205,7 +207,7 @@ client.analyze(
     video_id="6298d673f1090f1100476d4c",
     prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
     temperature=0.2,
-    response_format=ResponseFormat(
+    response_format=SyncResponseFormat(
         type="json_schema",
         json_schema={
             "type": "object",
@@ -269,7 +271,7 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-**response_format:** `typing.Optional[ResponseFormat]` 
+**response_format:** `typing.Optional[SyncResponseFormat]` 
     
 </dd>
 </dl>
@@ -1314,6 +1316,7 @@ client = TwelveLabs(
 response = client.assets.list(
     page=1,
     page_limit=10,
+    filename="meeting",
 )
 for item in response:
     yield item
@@ -1374,6 +1377,14 @@ The number of items to return on each page.
         typing.Sequence[AssetsListRequestAssetTypesItem],
     ]
 ]` — Filters the response to include only assets of the specified types. Provide one or more asset types. When you specify multiple types, the platform returns all matching assets.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filename:** `typing.Optional[str]` — Filters the response to include only assets whose filename contains the specified string. The match is case-insensitive and supports partial matching.
     
 </dd>
 </dl>
@@ -1499,6 +1510,30 @@ URL uploads have a maximum limit of 4 GB.
 <dl>
 <dd>
 
+**enable_hls:** `typing.Optional[bool]` 
+
+When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+
+**Default**: `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enable_thumbnail:** `typing.Optional[bool]` 
+
+When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+**Default**: `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -1594,6 +1629,12 @@ client.assets.retrieve(
 <dd>
 
 This method deletes the specified asset. This action cannot be undone.
+
+By default, the platform checks whether any indexed assets reference the asset. If references exist, the platform rejects the request with a `409 Conflict` error. To skip this check and delete the asset anyway, set the `force` query parameter to `true`. The platform unlinks any entity associations.
+
+Before deleting, you can inspect existing references:
+- [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) `/assets/{asset_id}/indexed-assets` returns a list of the indexed assets that will block deletion unless the `force` query parameter is set to `true`.
+- [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) `/assets/{asset_id}/entities` returns a list of the entities whose associations the platform will unlink.
 </dd>
 </dl>
 </dd>
@@ -1615,6 +1656,7 @@ client = TwelveLabs(
 )
 client.assets.delete(
     asset_id="6298d673f1090f1100476d4c",
+    force=True,
 )
 
 ```
@@ -1632,6 +1674,18 @@ client.assets.delete(
 <dd>
 
 **asset_id:** `str` — The unique identifier of the asset to delete.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**force:** `typing.Optional[bool]` 
+
+When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
+
+**Default**: `false`.
     
 </dd>
 </dl>
@@ -1759,7 +1813,7 @@ The number of items to return on each page.
 
 This method creates a multipart upload session.
 
-**Supported content**: Video and audio
+**Supported content**: Video
 
 **File size**: 4 GB maximum.
 
@@ -1828,6 +1882,30 @@ The total size of the file in bytes. The platform uses this value to:
 - Calculate the optimal chunk size.
 - Determine the total number of chunks required
 - Generate the initial set of presigned URLs
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enable_hls:** `typing.Optional[bool]` 
+
+When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+
+**Default**: `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enable_thumbnail:** `typing.Optional[bool]` 
+
+When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+**Default**: `false`.
     
 </dd>
 </dl>
@@ -3134,6 +3212,9 @@ client.analyze_async.tasks.list(
     page=1,
     page_limit=10,
     status="queued",
+    video_url="https://example.com/video.mp4",
+    asset_id="69abc123def456789012abcd",
+    analysis_mode="time_based_metadata",
 )
 
 ```
@@ -3186,6 +3267,30 @@ Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 <dl>
 <dd>
 
+**video_url:** `typing.Optional[str]` — Filter tasks by exact video source URL.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**asset_id:** `typing.Optional[str]` — Filter tasks by asset ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**analysis_mode:** `typing.Optional[TasksListRequestAnalysisMode]` — Filter tasks by the analysis mode used when creating the task.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -3210,7 +3315,7 @@ Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 <dl>
 <dd>
 
-This method asynchronously analyzes your videos and generates fully customizable text based on your prompts.
+This method asynchronously analyzes your videos. It supports two modes: general analysis (prompt-based text generation) with Pegasus 1.2 and video segmentation with Pegasus 1.5.
 
 <Accordion title="Input requirements">
 - Minimum duration: 4 seconds
@@ -3221,6 +3326,8 @@ This method asynchronously analyzes your videos and generates fully customizable
 </Accordion>
 
 **When to use this method**:
+- Generate custom text from your video using a prompt (Pegasus 1.2 only)
+- Extract timestamped metadata with custom fields from your video (Pegasus 1.5 only)
 - Analyze videos longer than 1 hour
 - Process videos asynchronously without blocking your application
 
@@ -3250,18 +3357,51 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 <dd>
 
 ```python
-from twelvelabs import TwelveLabs, VideoContext_Url
+from twelvelabs import (
+    AsyncResponseFormat,
+    SegmentDefinition,
+    SegmentField,
+    SegmentFieldItems,
+    TwelveLabs,
+    VideoContext_Url,
+)
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
 client.analyze_async.tasks.create(
+    model_name="pegasus1.5",
     video=VideoContext_Url(
         url="https://example.com/video.mp4",
     ),
-    prompt="Generate a detailed summary of this video in 3-4 sentences",
-    temperature=0.2,
-    max_tokens=1000,
+    analysis_mode="time_based_metadata",
+    response_format=AsyncResponseFormat(
+        type="segment_definitions",
+        segment_definitions=[
+            SegmentDefinition(
+                id="scene",
+                description="A distinct scene or setting change in the video",
+                fields=[
+                    SegmentField(
+                        name="sentiment",
+                        type="string",
+                        description="The emotional tone of this segment",
+                        enum=["positive", "negative", "neutral"],
+                    ),
+                    SegmentField(
+                        name="key_objects",
+                        type="array",
+                        description="Notable objects visible in this segment",
+                        items=SegmentFieldItems(
+                            type="string",
+                        ),
+                    ),
+                ],
+            )
+        ],
+    ),
+    min_segment_duration=5.0,
+    max_segment_duration=30.0,
 )
 
 ```
@@ -3286,7 +3426,40 @@ client.analyze_async.tasks.create(
 <dl>
 <dd>
 
-**prompt:** `AnalyzeTextPrompt` 
+**model_name:** `typing.Optional[CreateAsyncAnalyzeRequestModelName]` 
+
+The video understanding model to use for analysis.
+- `pegasus1.2` (default): Analyzes pre-indexed videos. Pass a `video_id` to reference your video.
+- `pegasus1.5`: Analyzes videos directly from a URL, asset, or base64 string. Supports video segmentation with custom segment definitions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**prompt:** `typing.Optional[str]` 
+
+A natural-language text that provides instructions for analyzing the video. Required for general-mode analysis. Not supported when `analysis_mode` is `time_based_metadata`.
+
+<Note title="Notes">
+- Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
+- Your prompts can be instructive or descriptive, or you can also phrase them as questions.
+- The maximum length of a prompt is 2,000 tokens.
+</Note>
+
+**Examples**:
+
+- Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
+- I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**analysis_mode:** `typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]` — Sets the analysis mode to `time_based_metadata`, which segments your video into time-based intervals and extracts custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
     
 </dd>
 </dl>
@@ -3302,7 +3475,11 @@ client.analyze_async.tasks.create(
 <dl>
 <dd>
 
-**max_tokens:** `typing.Optional[AnalyzeMaxTokens]` 
+**max_tokens:** `typing.Optional[int]` 
+
+The maximum number of tokens to generate. The allowed range depends on the model:
+- `pegasus1.2`: **Min:** 1, **Max:** 4,096
+- `pegasus1.5`: **Min:** 2,048, **Max:** 32,768, **Default:** 32,768
     
 </dd>
 </dl>
@@ -3310,7 +3487,31 @@ client.analyze_async.tasks.create(
 <dl>
 <dd>
 
-**response_format:** `typing.Optional[ResponseFormat]` 
+**response_format:** `typing.Optional[AsyncResponseFormat]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_segment_duration:** `typing.Optional[float]` 
+
+Minimum duration for each extracted segment, in seconds. Set this to prevent the model from creating very short segments. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+
+**Min:** 2
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**max_segment_duration:** `typing.Optional[float]` 
+
+Maximum duration for each extracted segment, in seconds. Set this to break long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+
+**Min:** 2
     
 </dd>
 </dl>
@@ -4484,6 +4685,108 @@ client.embed.v_2.tasks.retrieve(
 </details>
 
 ## EntityCollections Entities
+<details><summary><code>client.entity_collections.entities.<a href="src/twelvelabs/entity_collections/entities/client.py">list_by_asset</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns a list of entities whose [`asset_ids`](/v1.3/api-reference/entities/entity-collections/entities/retrieve#response.body.asset_ids) array contains the specified asset.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.entity_collections.entities.list_by_asset(
+    asset_id="6298d673f1090f1100476d4c",
+    page=1,
+    page_limit=10,
+)
+for item in response:
+    yield item
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    yield page
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.entity_collections.entities.<a href="src/twelvelabs/entity_collections/entities/client.py">list</a>(...)</code></summary>
 <dl>
 <dd>
@@ -5921,6 +6224,108 @@ client.indexes.indexed_assets.update(
 <dd>
 
 **user_metadata:** `typing.Optional[UserMetadata]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.indexes.indexed_assets.<a href="src/twelvelabs/indexes/indexed_assets/client.py">list_by_asset</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns a list of indexed assets that reference the specified asset. Each entry includes the indexed asset ID and the index it belongs to.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.indexes.indexed_assets.list_by_asset(
+    asset_id="6298d673f1090f1100476d4c",
+    page=1,
+    page_limit=10,
+)
+for item in response:
+    yield item
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    yield page
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
     
 </dd>
 </dl>

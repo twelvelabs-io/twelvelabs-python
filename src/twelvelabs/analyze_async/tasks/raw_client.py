@@ -14,15 +14,15 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.conflict_error import ConflictError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.analyze_max_tokens import AnalyzeMaxTokens
 from ...types.analyze_task_response import AnalyzeTaskResponse
 from ...types.analyze_task_status import AnalyzeTaskStatus
 from ...types.analyze_temperature import AnalyzeTemperature
-from ...types.analyze_text_prompt import AnalyzeTextPrompt
+from ...types.async_response_format import AsyncResponseFormat
 from ...types.create_analyze_task_response import CreateAnalyzeTaskResponse
-from ...types.error_response import ErrorResponse
-from ...types.response_format import ResponseFormat
 from ...types.video_context import VideoContext
+from .types.create_async_analyze_request_analysis_mode import CreateAsyncAnalyzeRequestAnalysisMode
+from .types.create_async_analyze_request_model_name import CreateAsyncAnalyzeRequestModelName
+from .types.tasks_list_request_analysis_mode import TasksListRequestAnalysisMode
 from .types.tasks_list_response import TasksListResponse
 
 # this is used as the default value for optional parameters
@@ -39,6 +39,9 @@ class RawTasksClient:
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         status: typing.Optional[AnalyzeTaskStatus] = None,
+        video_url: typing.Optional[str] = None,
+        asset_id: typing.Optional[str] = None,
+        analysis_mode: typing.Optional[TasksListRequestAnalysisMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TasksListResponse]:
         """
@@ -61,13 +64,22 @@ class RawTasksClient:
             Filter analysis tasks by status.
             Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 
+        video_url : typing.Optional[str]
+            Filter tasks by exact video source URL.
+
+        asset_id : typing.Optional[str]
+            Filter tasks by asset ID.
+
+        analysis_mode : typing.Optional[TasksListRequestAnalysisMode]
+            Filter tasks by the analysis mode used when creating the task.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
         HttpResponse[TasksListResponse]
-            A list of analysis tasks has successfully been retrieved.
+            A list of analysis tasks.
         """
         _response = self._client_wrapper.httpx_client.request(
             "analyze/tasks",
@@ -76,6 +88,9 @@ class RawTasksClient:
                 "page": page,
                 "page_limit": page_limit,
                 "status": status,
+                "video_url": video_url,
+                "asset_id": asset_id,
+                "analysis_mode": analysis_mode,
             },
             request_options=request_options,
         )
@@ -109,14 +124,18 @@ class RawTasksClient:
         self,
         *,
         video: VideoContext,
-        prompt: AnalyzeTextPrompt,
+        model_name: typing.Optional[CreateAsyncAnalyzeRequestModelName] = OMIT,
+        prompt: typing.Optional[str] = OMIT,
+        analysis_mode: typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
+        response_format: typing.Optional[AsyncResponseFormat] = OMIT,
+        min_segment_duration: typing.Optional[float] = OMIT,
+        max_segment_duration: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateAnalyzeTaskResponse]:
         """
-        This method asynchronously analyzes your videos and generates fully customizable text based on your prompts.
+        This method asynchronously analyzes your videos. It supports two modes: general analysis (prompt-based text generation) with Pegasus 1.2 and video segmentation with Pegasus 1.5.
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -127,6 +146,8 @@ class RawTasksClient:
         </Accordion>
 
         **When to use this method**:
+        - Generate custom text from your video using a prompt (Pegasus 1.2 only)
+        - Extract timestamped metadata with custom fields from your video (Pegasus 1.5 only)
         - Analyze videos longer than 1 hour
         - Process videos asynchronously without blocking your application
 
@@ -147,13 +168,46 @@ class RawTasksClient:
         ----------
         video : VideoContext
 
-        prompt : AnalyzeTextPrompt
+        model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
+            The video understanding model to use for analysis.
+            - `pegasus1.2` (default): Analyzes pre-indexed videos. Pass a `video_id` to reference your video.
+            - `pegasus1.5`: Analyzes videos directly from a URL, asset, or base64 string. Supports video segmentation with custom segment definitions.
+
+        prompt : typing.Optional[str]
+            A natural-language text that provides instructions for analyzing the video. Required for general-mode analysis. Not supported when `analysis_mode` is `time_based_metadata`.
+
+            <Note title="Notes">
+            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
+            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
+            - The maximum length of a prompt is 2,000 tokens.
+            </Note>
+
+            **Examples**:
+
+            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
+            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
+
+        analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
+            Sets the analysis mode to `time_based_metadata`, which segments your video into time-based intervals and extracts custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        max_tokens : typing.Optional[AnalyzeMaxTokens]
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate. The allowed range depends on the model:
+            - `pegasus1.2`: **Min:** 1, **Max:** 4,096
+            - `pegasus1.5`: **Min:** 2,048, **Max:** 32,768, **Default:** 32,768
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[AsyncResponseFormat]
+
+        min_segment_duration : typing.Optional[float]
+            Minimum duration for each extracted segment, in seconds. Set this to prevent the model from creating very short segments. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+
+            **Min:** 2
+
+        max_segment_duration : typing.Optional[float]
+            Maximum duration for each extracted segment, in seconds. Set this to break long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+
+            **Min:** 2
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -161,21 +215,25 @@ class RawTasksClient:
         Returns
         -------
         HttpResponse[CreateAnalyzeTaskResponse]
-            An analysis task has successfully been created.
+            Analysis task created successfully.
         """
         _response = self._client_wrapper.httpx_client.request(
             "analyze/tasks",
             method="POST",
             json={
+                "model_name": model_name,
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
                 "prompt": prompt,
+                "analysis_mode": analysis_mode,
                 "temperature": temperature,
                 "max_tokens": max_tokens,
                 "response_format": convert_and_respect_annotation_metadata(
-                    object_=response_format, annotation=ResponseFormat, direction="write"
+                    object_=response_format, annotation=AsyncResponseFormat, direction="write"
                 ),
+                "min_segment_duration": min_segment_duration,
+                "max_segment_duration": max_segment_duration,
             },
             headers={
                 "content-type": "application/json",
@@ -318,9 +376,9 @@ class RawTasksClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -341,6 +399,9 @@ class AsyncRawTasksClient:
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         status: typing.Optional[AnalyzeTaskStatus] = None,
+        video_url: typing.Optional[str] = None,
+        asset_id: typing.Optional[str] = None,
+        analysis_mode: typing.Optional[TasksListRequestAnalysisMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TasksListResponse]:
         """
@@ -363,13 +424,22 @@ class AsyncRawTasksClient:
             Filter analysis tasks by status.
             Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 
+        video_url : typing.Optional[str]
+            Filter tasks by exact video source URL.
+
+        asset_id : typing.Optional[str]
+            Filter tasks by asset ID.
+
+        analysis_mode : typing.Optional[TasksListRequestAnalysisMode]
+            Filter tasks by the analysis mode used when creating the task.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
         AsyncHttpResponse[TasksListResponse]
-            A list of analysis tasks has successfully been retrieved.
+            A list of analysis tasks.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "analyze/tasks",
@@ -378,6 +448,9 @@ class AsyncRawTasksClient:
                 "page": page,
                 "page_limit": page_limit,
                 "status": status,
+                "video_url": video_url,
+                "asset_id": asset_id,
+                "analysis_mode": analysis_mode,
             },
             request_options=request_options,
         )
@@ -411,14 +484,18 @@ class AsyncRawTasksClient:
         self,
         *,
         video: VideoContext,
-        prompt: AnalyzeTextPrompt,
+        model_name: typing.Optional[CreateAsyncAnalyzeRequestModelName] = OMIT,
+        prompt: typing.Optional[str] = OMIT,
+        analysis_mode: typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
+        response_format: typing.Optional[AsyncResponseFormat] = OMIT,
+        min_segment_duration: typing.Optional[float] = OMIT,
+        max_segment_duration: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateAnalyzeTaskResponse]:
         """
-        This method asynchronously analyzes your videos and generates fully customizable text based on your prompts.
+        This method asynchronously analyzes your videos. It supports two modes: general analysis (prompt-based text generation) with Pegasus 1.2 and video segmentation with Pegasus 1.5.
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -429,6 +506,8 @@ class AsyncRawTasksClient:
         </Accordion>
 
         **When to use this method**:
+        - Generate custom text from your video using a prompt (Pegasus 1.2 only)
+        - Extract timestamped metadata with custom fields from your video (Pegasus 1.5 only)
         - Analyze videos longer than 1 hour
         - Process videos asynchronously without blocking your application
 
@@ -449,13 +528,46 @@ class AsyncRawTasksClient:
         ----------
         video : VideoContext
 
-        prompt : AnalyzeTextPrompt
+        model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
+            The video understanding model to use for analysis.
+            - `pegasus1.2` (default): Analyzes pre-indexed videos. Pass a `video_id` to reference your video.
+            - `pegasus1.5`: Analyzes videos directly from a URL, asset, or base64 string. Supports video segmentation with custom segment definitions.
+
+        prompt : typing.Optional[str]
+            A natural-language text that provides instructions for analyzing the video. Required for general-mode analysis. Not supported when `analysis_mode` is `time_based_metadata`.
+
+            <Note title="Notes">
+            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
+            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
+            - The maximum length of a prompt is 2,000 tokens.
+            </Note>
+
+            **Examples**:
+
+            - Based on this video, I want to generate five keywords for SEO (Search Engine Optimization).
+            - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
+
+        analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
+            Sets the analysis mode to `time_based_metadata`, which segments your video into time-based intervals and extracts custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        max_tokens : typing.Optional[AnalyzeMaxTokens]
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate. The allowed range depends on the model:
+            - `pegasus1.2`: **Min:** 1, **Max:** 4,096
+            - `pegasus1.5`: **Min:** 2,048, **Max:** 32,768, **Default:** 32,768
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[AsyncResponseFormat]
+
+        min_segment_duration : typing.Optional[float]
+            Minimum duration for each extracted segment, in seconds. Set this to prevent the model from creating very short segments. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+
+            **Min:** 2
+
+        max_segment_duration : typing.Optional[float]
+            Maximum duration for each extracted segment, in seconds. Set this to break long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+
+            **Min:** 2
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -463,21 +575,25 @@ class AsyncRawTasksClient:
         Returns
         -------
         AsyncHttpResponse[CreateAnalyzeTaskResponse]
-            An analysis task has successfully been created.
+            Analysis task created successfully.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "analyze/tasks",
             method="POST",
             json={
+                "model_name": model_name,
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
                 "prompt": prompt,
+                "analysis_mode": analysis_mode,
                 "temperature": temperature,
                 "max_tokens": max_tokens,
                 "response_format": convert_and_respect_annotation_metadata(
-                    object_=response_format, annotation=ResponseFormat, direction="write"
+                    object_=response_format, annotation=AsyncResponseFormat, direction="write"
                 ),
+                "min_segment_duration": min_segment_duration,
+                "max_segment_duration": max_segment_duration,
             },
             headers={
                 "content-type": "application/json",
@@ -622,9 +738,9 @@ class AsyncRawTasksClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

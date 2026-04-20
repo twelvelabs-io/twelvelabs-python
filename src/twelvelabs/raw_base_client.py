@@ -17,8 +17,8 @@ from .types.analyze_max_tokens import AnalyzeMaxTokens
 from .types.analyze_temperature import AnalyzeTemperature
 from .types.analyze_text_prompt import AnalyzeTextPrompt
 from .types.non_stream_analyze_response import NonStreamAnalyzeResponse
-from .types.response_format import ResponseFormat
 from .types.stream_analyze_response import StreamAnalyzeResponse
+from .types.sync_response_format import SyncResponseFormat
 from .types.video_context import VideoContext
 
 # this is used as the default value for optional parameters
@@ -37,7 +37,7 @@ class RawBaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[HttpResponse[typing.Iterator[StreamAnalyzeResponse]]]:
@@ -59,6 +59,7 @@ class RawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -77,7 +78,7 @@ class RawBaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -100,7 +101,7 @@ class RawBaseClient:
                 "prompt": prompt,
                 "temperature": temperature,
                 "response_format": convert_and_respect_annotation_metadata(
-                    object_=response_format, annotation=ResponseFormat, direction="write"
+                    object_=response_format, annotation=SyncResponseFormat, direction="write"
                 ),
                 "max_tokens": max_tokens,
                 "stream": True,
@@ -172,7 +173,7 @@ class RawBaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[NonStreamAnalyzeResponse]:
@@ -194,6 +195,7 @@ class RawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -212,7 +214,7 @@ class RawBaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -235,7 +237,7 @@ class RawBaseClient:
                 "prompt": prompt,
                 "temperature": temperature,
                 "response_format": convert_and_respect_annotation_metadata(
-                    object_=response_format, annotation=ResponseFormat, direction="write"
+                    object_=response_format, annotation=SyncResponseFormat, direction="write"
                 ),
                 "max_tokens": max_tokens,
                 "stream": False,
@@ -296,7 +298,7 @@ class AsyncRawBaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[StreamAnalyzeResponse]]]:
@@ -318,6 +320,7 @@ class AsyncRawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -336,7 +339,7 @@ class AsyncRawBaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -359,7 +362,7 @@ class AsyncRawBaseClient:
                 "prompt": prompt,
                 "temperature": temperature,
                 "response_format": convert_and_respect_annotation_metadata(
-                    object_=response_format, annotation=ResponseFormat, direction="write"
+                    object_=response_format, annotation=SyncResponseFormat, direction="write"
                 ),
                 "max_tokens": max_tokens,
                 "stream": True,
@@ -431,7 +434,7 @@ class AsyncRawBaseClient:
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        response_format: typing.Optional[ResponseFormat] = OMIT,
+        response_format: typing.Optional[SyncResponseFormat] = OMIT,
         max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[NonStreamAnalyzeResponse]:
@@ -453,6 +456,7 @@ class AsyncRawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
 
         <Note title="Notes">
         - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -471,7 +475,7 @@ class AsyncRawBaseClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        response_format : typing.Optional[ResponseFormat]
+        response_format : typing.Optional[SyncResponseFormat]
 
         max_tokens : typing.Optional[AnalyzeMaxTokens]
 
@@ -494,7 +498,7 @@ class AsyncRawBaseClient:
                 "prompt": prompt,
                 "temperature": temperature,
                 "response_format": convert_and_respect_annotation_metadata(
-                    object_=response_format, annotation=ResponseFormat, direction="write"
+                    object_=response_format, annotation=SyncResponseFormat, direction="write"
                 ),
                 "max_tokens": max_tokens,
                 "stream": False,

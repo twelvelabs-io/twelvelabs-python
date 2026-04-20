@@ -2,4 +2,4 @@
 
 import typing
 
-ResponseFormatType = typing.Union[typing.Literal["json_schema"], typing.Any]
+SmeMediaSourceMediaType = typing.Union[typing.Literal["image"], typing.Any]

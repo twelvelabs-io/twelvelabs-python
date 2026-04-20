@@ -6,6 +6,7 @@ from .types import IndexesCreateRequestModelsItem, IndexesCreateResponse, Indexe
 from . import indexed_assets, videos
 from .indexed_assets import (
     IndexedAssetsCreateResponse,
+    IndexedAssetsListByAssetResponse,
     IndexedAssetsListRequestStatusItem,
     IndexedAssetsListRequestUserMetadataValue,
     IndexedAssetsListResponse,
@@ -23,6 +24,7 @@ from .videos import (
 
 __all__ = [
     "IndexedAssetsCreateResponse",
+    "IndexedAssetsListByAssetResponse",
     "IndexedAssetsListRequestStatusItem",
     "IndexedAssetsListRequestUserMetadataValue",
     "IndexedAssetsListResponse",

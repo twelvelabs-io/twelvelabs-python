@@ -14,6 +14,11 @@ class IndexedAssetsCreateResponse(UniversalBaseModel):
     The unique identifier of the indexed asset. Use it to monitor the indexing progress.
     """
 
+    asset_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the associated asset.
+    """
+
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
