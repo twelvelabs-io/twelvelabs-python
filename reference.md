@@ -11,7 +11,7 @@
 <dl>
 <dd>
 
-This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
 
 <Accordion title="Input requirements">
 - Minimum duration: 4 seconds
@@ -23,15 +23,15 @@ This method synchronously analyzes your videos and generates fully customizable 
 
 **When to use this method**:
 - Analyze videos up to 1 hour
-- Retrieve immediate results without waiting for asynchronous processing
-- Stream text fragments in real-time for immediate processing and feedback
+- Retrieve immediate results without polling for task completion
+- Stream text fragments in real time for immediate processing and feedback
 
 **Do not use this method for**:
 - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-- Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
+- Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
-<Note title="Notes">
-- This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+<Note title="Note">
+This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
 </Note>
 </dd>
 </dl>
@@ -47,28 +47,12 @@ This method synchronously analyzes your videos and generates fully customizable 
 <dd>
 
 ```python
-from twelvelabs import SyncResponseFormat, TwelveLabs
+from twelvelabs import TwelveLabs
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
-response = client.analyze_stream(
-    video_id="6298d673f1090f1100476d4c",
-    prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-    temperature=0.2,
-    response_format=SyncResponseFormat(
-        type="json_schema",
-        json_schema={
-            "type": "object",
-            "properties": {
-                "title": {"type": "string"},
-                "summary": {"type": "string"},
-                "keywords": {"type": "array", "items": {"type": "string"}},
-            },
-        },
-    ),
-    max_tokens=2000,
-)
+response = client.analyze_stream()
 for chunk in response.data:
     yield chunk
 
@@ -86,7 +70,13 @@ for chunk in response.data:
 <dl>
 <dd>
 
-**prompt:** `AnalyzeTextPrompt` 
+**model_name:** `typing.Optional[AnalyzeStreamRequestModelName]` 
+
+The video understanding model to use for analysis.
+- `pegasus1.2`: General analysis (prompt-based text generation).
+- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+
+**Default:** `pegasus1.2`
     
 </dd>
 </dl>
@@ -96,7 +86,7 @@ for chunk in response.data:
 
 **video_id:** `typing.Optional[str]` 
 
-The unique identifier of the video to analyze.
+The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
 
 <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
     
@@ -114,6 +104,22 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
+**prompt:** `typing.Optional[AnalyzeTextPrompt]` — A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` — A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **temperature:** `typing.Optional[AnalyzeTemperature]` 
     
 </dd>
@@ -122,7 +128,7 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-**response_format:** `typing.Optional[SyncResponseFormat]` 
+**response_format:** `typing.Optional[SyncResponseFormat]` — Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
     
 </dd>
 </dl>
@@ -130,7 +136,44 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-**max_tokens:** `typing.Optional[AnalyzeMaxTokens]` 
+**max_tokens:** `typing.Optional[int]` 
+
+The maximum number of tokens to generate. The allowed range depends on the model:
+
+| Model | Min | Max | Default |
+|-------|-----|-----|---------|
+| Pegasus 1.2 | 1 | 4,096 | 4,096 |
+| Pegasus 1.5 | 512 | 65,536 | 4,096 |
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start_time:** `typing.Optional[float]` 
+
+Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+<Note title="Notes">
+- If omitted, defaults to `0`.
+- Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+</Note>
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end_time:** `typing.Optional[float]` 
+
+End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+<Note title="Notes">
+- If omitted, defaults to the video duration.
+- Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+</Note>
     
 </dd>
 </dl>
@@ -162,7 +205,7 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
 
 <Accordion title="Input requirements">
 - Minimum duration: 4 seconds
@@ -174,15 +217,15 @@ This method synchronously analyzes your videos and generates fully customizable 
 
 **When to use this method**:
 - Analyze videos up to 1 hour
-- Retrieve immediate results without waiting for asynchronous processing
-- Stream text fragments in real-time for immediate processing and feedback
+- Retrieve immediate results without polling for task completion
+- Stream text fragments in real time for immediate processing and feedback
 
 **Do not use this method for**:
 - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-- Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
+- Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
-<Note title="Notes">
-- This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+<Note title="Note">
+This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
 </Note>
 </dd>
 </dl>
@@ -198,28 +241,12 @@ This method synchronously analyzes your videos and generates fully customizable 
 <dd>
 
 ```python
-from twelvelabs import SyncResponseFormat, TwelveLabs
+from twelvelabs import TwelveLabs
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
-client.analyze(
-    video_id="6298d673f1090f1100476d4c",
-    prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-    temperature=0.2,
-    response_format=SyncResponseFormat(
-        type="json_schema",
-        json_schema={
-            "type": "object",
-            "properties": {
-                "title": {"type": "string"},
-                "summary": {"type": "string"},
-                "keywords": {"type": "array", "items": {"type": "string"}},
-            },
-        },
-    ),
-    max_tokens=2000,
-)
+client.analyze()
 
 ```
 </dd>
@@ -235,7 +262,13 @@ client.analyze(
 <dl>
 <dd>
 
-**prompt:** `AnalyzeTextPrompt` 
+**model_name:** `typing.Optional[AnalyzeRequestModelName]` 
+
+The video understanding model to use for analysis.
+- `pegasus1.2`: General analysis (prompt-based text generation).
+- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+
+**Default:** `pegasus1.2`
     
 </dd>
 </dl>
@@ -245,7 +278,7 @@ client.analyze(
 
 **video_id:** `typing.Optional[str]` 
 
-The unique identifier of the video to analyze.
+The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
 
 <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
     
@@ -263,6 +296,22 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
+**prompt:** `typing.Optional[AnalyzeTextPrompt]` — A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` — A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **temperature:** `typing.Optional[AnalyzeTemperature]` 
     
 </dd>
@@ -271,7 +320,7 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-**response_format:** `typing.Optional[SyncResponseFormat]` 
+**response_format:** `typing.Optional[SyncResponseFormat]` — Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
     
 </dd>
 </dl>
@@ -279,7 +328,44 @@ The unique identifier of the video to analyze.
 <dl>
 <dd>
 
-**max_tokens:** `typing.Optional[AnalyzeMaxTokens]` 
+**max_tokens:** `typing.Optional[int]` 
+
+The maximum number of tokens to generate. The allowed range depends on the model:
+
+| Model | Min | Max | Default |
+|-------|-----|-----|---------|
+| Pegasus 1.2 | 1 | 4,096 | 4,096 |
+| Pegasus 1.5 | 512 | 65,536 | 4,096 |
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start_time:** `typing.Optional[float]` 
+
+Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+<Note title="Notes">
+- If omitted, defaults to `0`.
+- Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+</Note>
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end_time:** `typing.Optional[float]` 
+
+End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+<Note title="Notes">
+- If omitted, defaults to the video duration.
+- Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+</Note>
     
 </dd>
 </dl>
@@ -1424,7 +1510,10 @@ This method creates an asset by uploading a file to the platform. Assets are med
 - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
 - **Publicly accessible URL**: Set the `method` parameter to `url` and use the `url` parameter to specify the URL of your file.
 
-**File size**: Up to 4 GB.
+**Upload limits**:
+- **Video and audio, local files**: Up to 200 MB
+- **Video and audio, public URLs**: Up to 4 GB
+- **Images**: Up to 5 MB
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -1494,7 +1583,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 
 Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-URL uploads have a maximum limit of 4 GB.
+Public video and audio URLs support up to 4 GB. Image URLs support up to 5 MB.
     
 </dd>
 </dl>
@@ -1811,11 +1900,11 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This method creates a multipart upload session.
+This method creates a multipart upload session for a local video file.
 
 **Supported content**: Video
 
-**File size**: 4 GB maximum.
+**Upload limits**: Local video files up to 4 GB.
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -3214,7 +3303,8 @@ client.analyze_async.tasks.list(
     status="queued",
     video_url="https://example.com/video.mp4",
     asset_id="69abc123def456789012abcd",
-    analysis_mode="time_based_metadata",
+    video_id="6298d673f1090f1100476d4c",
+    analysis_mode="general",
 )
 
 ```
@@ -3283,6 +3373,14 @@ Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 <dl>
 <dd>
 
+**video_id:** `typing.Optional[str]` — Filter tasks by video ID for pre-indexed videos (Pegasus 1.2 only). Deprecated — use `asset_id` instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **analysis_mode:** `typing.Optional[TasksListRequestAnalysisMode]` — Filter tasks by the analysis mode used when creating the task.
     
 </dd>
@@ -3315,7 +3413,7 @@ Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 <dl>
 <dd>
 
-This method asynchronously analyzes your videos. It supports two modes: general analysis (prompt-based text generation) with Pegasus 1.2 and video segmentation with Pegasus 1.5.
+This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions. Video segmentation requires Pegasus 1.5.
 
 <Accordion title="Input requirements">
 - Minimum duration: 4 seconds
@@ -3326,8 +3424,8 @@ This method asynchronously analyzes your videos. It supports two modes: general 
 </Accordion>
 
 **When to use this method**:
-- Generate custom text from your video using a prompt (Pegasus 1.2 only)
-- Extract timestamped metadata with custom fields from your video (Pegasus 1.5 only)
+- Generate custom text from your video using a prompt (general analysis)
+- Extract timestamped metadata with custom segment definitions from your video (Pegasus 1.5 only)
 - Analyze videos longer than 1 hour
 - Process videos asynchronously without blocking your application
 
@@ -3358,10 +3456,8 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 
 ```python
 from twelvelabs import (
-    AsyncResponseFormat,
-    SegmentDefinition,
-    SegmentField,
-    SegmentFieldItems,
+    AnalyzePromptV2,
+    SmeMediaSource,
     TwelveLabs,
     VideoContext_Url,
 )
@@ -3374,34 +3470,17 @@ client.analyze_async.tasks.create(
     video=VideoContext_Url(
         url="https://example.com/video.mp4",
     ),
-    analysis_mode="time_based_metadata",
-    response_format=AsyncResponseFormat(
-        type="segment_definitions",
-        segment_definitions=[
-            SegmentDefinition(
-                id="scene",
-                description="A distinct scene or setting change in the video",
-                fields=[
-                    SegmentField(
-                        name="sentiment",
-                        type="string",
-                        description="The emotional tone of this segment",
-                        enum=["positive", "negative", "neutral"],
-                    ),
-                    SegmentField(
-                        name="key_objects",
-                        type="array",
-                        description="Notable objects visible in this segment",
-                        items=SegmentFieldItems(
-                            type="string",
-                        ),
-                    ),
-                ],
+    prompt_v_2=AnalyzePromptV2(
+        input_text="Is there a <@tiger-1> in the video?",
+        media_sources=[
+            SmeMediaSource(
+                name="tiger-1",
+                media_type="image",
+                url="https://example.com/tiger.jpg",
             )
         ],
     ),
-    min_segment_duration=5.0,
-    max_segment_duration=30.0,
+    max_tokens=4096,
 )
 
 ```
@@ -3429,8 +3508,29 @@ client.analyze_async.tasks.create(
 **model_name:** `typing.Optional[CreateAsyncAnalyzeRequestModelName]` 
 
 The video understanding model to use for analysis.
-- `pegasus1.2` (default): Analyzes pre-indexed videos. Pass a `video_id` to reference your video.
-- `pegasus1.5`: Analyzes videos directly from a URL, asset, or base64 string. Supports video segmentation with custom segment definitions.
+- `pegasus1.2`: General analysis (prompt-based text generation).
+- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation.
+
+**Default:** `pegasus1.2`
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**custom_id:** `typing.Optional[str]` 
+
+An optional identifier that you set when you create the task. Use this field to correlate tasks across responses, for example, to distinguish tasks by type or environment.
+
+The platform stores this value unchanged and returns it in the following responses:
+- The [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint
+- The [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint
+- The `analyze.task.ready` and `analyze.task.failed` webhook payloads
+
+**Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
+
+This field does not enforce uniqueness. You can submit multiple tasks with the same `custom_id`. To prevent duplicate task creation, use an `Idempotency-Key` header instead.
     
 </dd>
 </dl>
@@ -3440,7 +3540,7 @@ The video understanding model to use for analysis.
 
 **prompt:** `typing.Optional[str]` 
 
-A natural-language text that provides instructions for analyzing the video. Required for general-mode analysis. Not supported when `analysis_mode` is `time_based_metadata`.
+Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
 
 <Note title="Notes">
 - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
@@ -3459,7 +3559,21 @@ A natural-language text that provides instructions for analyzing the video. Requ
 <dl>
 <dd>
 
-**analysis_mode:** `typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]` — Sets the analysis mode to `time_based_metadata`, which segments your video into time-based intervals and extracts custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
+**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**analysis_mode:** `typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]` 
+
+The analysis approach for this task.
+- `general`: Analyze the video and generate a response based on your prompt. Supports both free-form text and structured output via `response_format`.
+- `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
+
+**Default:** `general`
     
 </dd>
 </dl>
@@ -3477,9 +3591,13 @@ A natural-language text that provides instructions for analyzing the video. Requ
 
 **max_tokens:** `typing.Optional[int]` 
 
-The maximum number of tokens to generate. The allowed range depends on the model:
-- `pegasus1.2`: **Min:** 1, **Max:** 4,096
-- `pegasus1.5`: **Min:** 2,048, **Max:** 32,768, **Default:** 32,768
+The maximum number of tokens to generate. The allowed range depends on the model and analysis mode:
+
+| Model | Mode | Min | Max | Default |
+|-------|------|-----|-----|---------|
+| Pegasus 1.2 | — | 1 | 4,096 | 4096 |
+| Pegasus 1.5 | `general` | 512 | 65,536 | 4,096 |
+| Pegasus 1.5 | `time_based_metadata` | 2,048 | 65,536 | 32,768 |
     
 </dd>
 </dl>
@@ -3497,7 +3615,7 @@ The maximum number of tokens to generate. The allowed range depends on the model
 
 **min_segment_duration:** `typing.Optional[float]` 
 
-Minimum duration for each extracted segment, in seconds. Set this to prevent the model from creating very short segments. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+Minimum duration for each extracted segment, in seconds. Set this value to enforce a minimum segment length. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 
 **Min:** 2
     
@@ -3509,9 +3627,41 @@ Minimum duration for each extracted segment, in seconds. Set this to prevent the
 
 **max_segment_duration:** `typing.Optional[float]` 
 
-Maximum duration for each extracted segment, in seconds. Set this to break long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`.
+Maximum duration for each extracted segment, in seconds. Set this value to split long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 
 **Min:** 2
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start_time:** `typing.Optional[float]` 
+
+Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+<Note title="Notes">
+- If omitted, defaults to `0`.
+- Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+</Note>
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end_time:** `typing.Optional[float]` 
+
+End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+<Note title="Notes">
+- If omitted, defaults to the video duration.
+- Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+</Note>
     
 </dd>
 </dl>
@@ -4493,7 +4643,7 @@ This endpoint creates embeddings for audio and video content asynchronously.
   **Audio**:
   - Minimum duration: 4 seconds
   - Maximum duration: 4 hours
-  - Maximum file size: 2 GB
+  - Maximum file size: 4 GB
   - Formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
 </Accordion>
 

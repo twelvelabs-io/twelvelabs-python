@@ -2,4 +2,4 @@
 
 import typing
 
-TasksListRequestAnalysisMode = typing.Union[typing.Literal["time_based_metadata"], typing.Any]
+TasksListRequestAnalysisMode = typing.Union[typing.Literal["general", "time_based_metadata"], typing.Any]

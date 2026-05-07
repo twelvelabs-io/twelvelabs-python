@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .analyze_time_range import AnalyzeTimeRange
 from .segment_field import SegmentField
 from .sme_media_source import SmeMediaSource
 
@@ -31,6 +32,18 @@ class SegmentDefinition(UniversalBaseModel):
     media_sources: typing.Optional[typing.List[SmeMediaSource]] = pydantic.Field(default=None)
     """
     Reference images that help the model identify segments. Maximum 4 sources.
+    """
+
+    time_ranges: typing.Optional[typing.List[AnalyzeTimeRange]] = pydantic.Field(default=None)
+    """
+    Time windows that limit segment extraction to specific parts of the video. Only supported for Pegasus 1.5 with `analysis_mode` set to `time_based_metadata`.
+    
+    <Note title="Notes">
+    - Each range must satisfy `end_time > start_time` with a minimum duration of `2` seconds. Both values must fall within the video duration.
+    - Ranges within a single definition must not overlap. Touching boundaries are allowed (Example: `[0, 5]` and `[5, 10]`).
+    - Mutually exclusive with the top-level `start_time` / `end_time` fields.
+    - Mutually exclusive with `min_segment_duration` and `max_segment_duration`.
+    </Note>
     """
 
     if IS_PYDANTIC_V2:

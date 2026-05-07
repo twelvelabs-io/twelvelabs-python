@@ -6,19 +6,19 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class TokenUsage(UniversalBaseModel):
+class AnalyzeTimeRange(UniversalBaseModel):
     """
-    The number of tokens used in the generation.
-    """
-
-    output_tokens: int = pydantic.Field()
-    """
-    The number of tokens in the generated text.
+    A time window within the video, expressed in seconds.
     """
 
-    input_tokens: typing.Optional[int] = pydantic.Field(default=None)
+    start_time: float = pydantic.Field()
     """
-    The number of tokens consumed by the input (prompt and video). Omitted for Pegasus 1.5.
+    The start of the window, in seconds. Must be less than `end_time` and within the video duration.
+    """
+
+    end_time: float = pydantic.Field()
+    """
+    The end of the window, in seconds. Must be greater than `start_time` by at least `2` seconds and within the video duration.
     """
 
     if IS_PYDANTIC_V2:

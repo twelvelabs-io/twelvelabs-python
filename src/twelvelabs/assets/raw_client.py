@@ -146,7 +146,10 @@ class RawAssetsClient:
         - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
         - **Publicly accessible URL**: Set the `method` parameter to `url` and use the `url` parameter to specify the URL of your file.
 
-        **File size**: Up to 4 GB.
+        **Upload limits**:
+        - **Video and audio, local files**: Up to 200 MB
+        - **Video and audio, public URLs**: Up to 4 GB
+        - **Images**: Up to 5 MB
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -169,7 +172,7 @@ class RawAssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            URL uploads have a maximum limit of 4 GB.
+            Public video and audio URLs support up to 4 GB. Image URLs support up to 5 MB.
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
@@ -483,7 +486,10 @@ class AsyncRawAssetsClient:
         - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
         - **Publicly accessible URL**: Set the `method` parameter to `url` and use the `url` parameter to specify the URL of your file.
 
-        **File size**: Up to 4 GB.
+        **Upload limits**:
+        - **Video and audio, local files**: Up to 200 MB
+        - **Video and audio, public URLs**: Up to 4 GB
+        - **Images**: Up to 5 MB
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -506,7 +512,7 @@ class AsyncRawAssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            URL uploads have a maximum limit of 4 GB.
+            Public video and audio URLs support up to 4 GB. Image URLs support up to 5 MB.
 
         filename : typing.Optional[str]
             The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.

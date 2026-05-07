@@ -14,13 +14,27 @@ from .analyze_task_response_request_params_response_format_type import (
 
 class AnalyzeTaskResponseRequestParamsResponseFormat(UniversalBaseModel):
     """
-    The response format you configured. Present only when you included it in the request.
+    The response format for this task. Present only when the request included a response format.
     """
 
     type: typing.Optional[AnalyzeTaskResponseRequestParamsResponseFormatType] = None
+    json_schema: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    """
+    The JSON schema for this task. Present only when `type` is `json_schema`.
+    
+    - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): Omitted.
+    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task): Returns the full schema.
+    """
+
     segment_definitions: typing.Optional[
         typing.List[AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem]
-    ] = None
+    ] = pydantic.Field(default=None)
+    """
+    The segment definitions for this task. Present only when `type` is `segment_definitions`.
+    
+    - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): Returns only the first element.
+    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task): Returns the full array.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -15,7 +15,9 @@ from .multipart_upload.client import AsyncMultipartUploadClient, MultipartUpload
 from .raw_base_client import AsyncRawBaseClient, RawBaseClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
-from .types.analyze_max_tokens import AnalyzeMaxTokens
+from .types.analyze_prompt_v_2 import AnalyzePromptV2
+from .types.analyze_request_model_name import AnalyzeRequestModelName
+from .types.analyze_stream_request_model_name import AnalyzeStreamRequestModelName
 from .types.analyze_temperature import AnalyzeTemperature
 from .types.analyze_text_prompt import AnalyzeTextPrompt
 from .types.non_stream_analyze_response import NonStreamAnalyzeResponse
@@ -50,7 +52,7 @@ class BaseClient:
         Additional headers to send with every request.
 
     timeout : typing.Optional[float]
-        The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
+        The timeout to be used, in seconds, for requests. By default the timeout is 600 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
     follow_redirects : typing.Optional[bool]
         Whether the default httpx client follows redirects or not, this is irrelevant if a custom httpx client is passed in.
@@ -79,7 +81,7 @@ class BaseClient:
         httpx_client: typing.Optional[httpx.Client] = None,
     ):
         _defaulted_timeout = (
-            timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
+            timeout if timeout is not None else 600 if httpx_client is None else httpx_client.timeout.read
         )
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
@@ -116,16 +118,20 @@ class BaseClient:
     def analyze_stream(
         self,
         *,
-        prompt: AnalyzeTextPrompt,
+        model_name: typing.Optional[AnalyzeStreamRequestModelName] = OMIT,
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
+        prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
+        prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[SyncResponseFormat] = OMIT,
-        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
+        start_time: typing.Optional[float] = OMIT,
+        end_time: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[StreamAnalyzeResponse]:
         """
-        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -137,33 +143,67 @@ class BaseClient:
 
         **When to use this method**:
         - Analyze videos up to 1 hour
-        - Retrieve immediate results without waiting for asynchronous processing
-        - Stream text fragments in real-time for immediate processing and feedback
+        - Retrieve immediate results without polling for task completion
+        - Stream text fragments in real time for immediate processing and feedback
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
-        <Note title="Notes">
-        - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
 
         Parameters
         ----------
-        prompt : AnalyzeTextPrompt
+        model_name : typing.Optional[AnalyzeStreamRequestModelName]
+            The video understanding model to use for analysis.
+            - `pegasus1.2`: General analysis (prompt-based text generation).
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+
+            **Default:** `pegasus1.2`
 
         video_id : typing.Optional[str]
-            The unique identifier of the video to analyze.
+            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
 
             <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
         video : typing.Optional[VideoContext]
 
+        prompt : typing.Optional[AnalyzeTextPrompt]
+            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+
+        prompt_v_2 : typing.Optional[AnalyzePromptV2]
+            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
         temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[SyncResponseFormat]
+            Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
-        max_tokens : typing.Optional[AnalyzeMaxTokens]
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate. The allowed range depends on the model:
+
+            | Model | Min | Max | Default |
+            |-------|-----|-----|---------|
+            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.5 | 512 | 65,536 | 4,096 |
+
+        start_time : typing.Optional[float]
+            Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to `0`.
+            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
+
+        end_time : typing.Optional[float]
+            End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to the video duration.
+            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -175,38 +215,26 @@ class BaseClient:
 
         Examples
         --------
-        from twelvelabs import SyncResponseFormat, TwelveLabs
+        from twelvelabs import TwelveLabs
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        response = client.analyze_stream(
-            video_id="6298d673f1090f1100476d4c",
-            prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-            temperature=0.2,
-            response_format=SyncResponseFormat(
-                type="json_schema",
-                json_schema={
-                    "type": "object",
-                    "properties": {
-                        "title": {"type": "string"},
-                        "summary": {"type": "string"},
-                        "keywords": {"type": "array", "items": {"type": "string"}},
-                    },
-                },
-            ),
-            max_tokens=2000,
-        )
+        response = client.analyze_stream()
         for chunk in response:
             yield chunk
         """
         with self._raw_client.analyze_stream(
-            prompt=prompt,
+            model_name=model_name,
             video_id=video_id,
             video=video,
+            prompt=prompt,
+            prompt_v_2=prompt_v_2,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
+            start_time=start_time,
+            end_time=end_time,
             request_options=request_options,
         ) as r:
             yield from r.data
@@ -214,16 +242,20 @@ class BaseClient:
     def analyze(
         self,
         *,
-        prompt: AnalyzeTextPrompt,
+        model_name: typing.Optional[AnalyzeRequestModelName] = OMIT,
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
+        prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
+        prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[SyncResponseFormat] = OMIT,
-        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
+        start_time: typing.Optional[float] = OMIT,
+        end_time: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
         """
-        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -235,33 +267,67 @@ class BaseClient:
 
         **When to use this method**:
         - Analyze videos up to 1 hour
-        - Retrieve immediate results without waiting for asynchronous processing
-        - Stream text fragments in real-time for immediate processing and feedback
+        - Retrieve immediate results without polling for task completion
+        - Stream text fragments in real time for immediate processing and feedback
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
-        <Note title="Notes">
-        - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
 
         Parameters
         ----------
-        prompt : AnalyzeTextPrompt
+        model_name : typing.Optional[AnalyzeRequestModelName]
+            The video understanding model to use for analysis.
+            - `pegasus1.2`: General analysis (prompt-based text generation).
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+
+            **Default:** `pegasus1.2`
 
         video_id : typing.Optional[str]
-            The unique identifier of the video to analyze.
+            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
 
             <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
         video : typing.Optional[VideoContext]
 
+        prompt : typing.Optional[AnalyzeTextPrompt]
+            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+
+        prompt_v_2 : typing.Optional[AnalyzePromptV2]
+            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
         temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[SyncResponseFormat]
+            Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
-        max_tokens : typing.Optional[AnalyzeMaxTokens]
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate. The allowed range depends on the model:
+
+            | Model | Min | Max | Default |
+            |-------|-----|-----|---------|
+            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.5 | 512 | 65,536 | 4,096 |
+
+        start_time : typing.Optional[float]
+            Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to `0`.
+            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
+
+        end_time : typing.Optional[float]
+            End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to the video duration.
+            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -273,36 +339,24 @@ class BaseClient:
 
         Examples
         --------
-        from twelvelabs import SyncResponseFormat, TwelveLabs
+        from twelvelabs import TwelveLabs
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        client.analyze(
-            video_id="6298d673f1090f1100476d4c",
-            prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-            temperature=0.2,
-            response_format=SyncResponseFormat(
-                type="json_schema",
-                json_schema={
-                    "type": "object",
-                    "properties": {
-                        "title": {"type": "string"},
-                        "summary": {"type": "string"},
-                        "keywords": {"type": "array", "items": {"type": "string"}},
-                    },
-                },
-            ),
-            max_tokens=2000,
-        )
+        client.analyze()
         """
         _response = self._raw_client.analyze(
-            prompt=prompt,
+            model_name=model_name,
             video_id=video_id,
             video=video,
+            prompt=prompt,
+            prompt_v_2=prompt_v_2,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
+            start_time=start_time,
+            end_time=end_time,
             request_options=request_options,
         )
         return _response.data
@@ -331,7 +385,7 @@ class AsyncBaseClient:
         Additional headers to send with every request.
 
     timeout : typing.Optional[float]
-        The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
+        The timeout to be used, in seconds, for requests. By default the timeout is 600 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
     follow_redirects : typing.Optional[bool]
         Whether the default httpx client follows redirects or not, this is irrelevant if a custom httpx client is passed in.
@@ -360,7 +414,7 @@ class AsyncBaseClient:
         httpx_client: typing.Optional[httpx.AsyncClient] = None,
     ):
         _defaulted_timeout = (
-            timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
+            timeout if timeout is not None else 600 if httpx_client is None else httpx_client.timeout.read
         )
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
@@ -397,16 +451,20 @@ class AsyncBaseClient:
     async def analyze_stream(
         self,
         *,
-        prompt: AnalyzeTextPrompt,
+        model_name: typing.Optional[AnalyzeStreamRequestModelName] = OMIT,
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
+        prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
+        prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[SyncResponseFormat] = OMIT,
-        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
+        start_time: typing.Optional[float] = OMIT,
+        end_time: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[StreamAnalyzeResponse]:
         """
-        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -418,33 +476,67 @@ class AsyncBaseClient:
 
         **When to use this method**:
         - Analyze videos up to 1 hour
-        - Retrieve immediate results without waiting for asynchronous processing
-        - Stream text fragments in real-time for immediate processing and feedback
+        - Retrieve immediate results without polling for task completion
+        - Stream text fragments in real time for immediate processing and feedback
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
-        <Note title="Notes">
-        - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
 
         Parameters
         ----------
-        prompt : AnalyzeTextPrompt
+        model_name : typing.Optional[AnalyzeStreamRequestModelName]
+            The video understanding model to use for analysis.
+            - `pegasus1.2`: General analysis (prompt-based text generation).
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+
+            **Default:** `pegasus1.2`
 
         video_id : typing.Optional[str]
-            The unique identifier of the video to analyze.
+            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
 
             <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
         video : typing.Optional[VideoContext]
 
+        prompt : typing.Optional[AnalyzeTextPrompt]
+            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+
+        prompt_v_2 : typing.Optional[AnalyzePromptV2]
+            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
         temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[SyncResponseFormat]
+            Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
-        max_tokens : typing.Optional[AnalyzeMaxTokens]
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate. The allowed range depends on the model:
+
+            | Model | Min | Max | Default |
+            |-------|-----|-----|---------|
+            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.5 | 512 | 65,536 | 4,096 |
+
+        start_time : typing.Optional[float]
+            Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to `0`.
+            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
+
+        end_time : typing.Optional[float]
+            End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to the video duration.
+            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -458,7 +550,7 @@ class AsyncBaseClient:
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, SyncResponseFormat
+        from twelvelabs import AsyncTwelveLabs
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -466,23 +558,7 @@ class AsyncBaseClient:
 
 
         async def main() -> None:
-            response = await client.analyze_stream(
-                video_id="6298d673f1090f1100476d4c",
-                prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-                temperature=0.2,
-                response_format=SyncResponseFormat(
-                    type="json_schema",
-                    json_schema={
-                        "type": "object",
-                        "properties": {
-                            "title": {"type": "string"},
-                            "summary": {"type": "string"},
-                            "keywords": {"type": "array", "items": {"type": "string"}},
-                        },
-                    },
-                ),
-                max_tokens=2000,
-            )
+            response = await client.analyze_stream()
             async for chunk in response:
                 yield chunk
 
@@ -490,12 +566,16 @@ class AsyncBaseClient:
         asyncio.run(main())
         """
         async with self._raw_client.analyze_stream(
-            prompt=prompt,
+            model_name=model_name,
             video_id=video_id,
             video=video,
+            prompt=prompt,
+            prompt_v_2=prompt_v_2,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
+            start_time=start_time,
+            end_time=end_time,
             request_options=request_options,
         ) as r:
             async for _chunk in r.data:
@@ -504,16 +584,20 @@ class AsyncBaseClient:
     async def analyze(
         self,
         *,
-        prompt: AnalyzeTextPrompt,
+        model_name: typing.Optional[AnalyzeRequestModelName] = OMIT,
         video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
+        prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
+        prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
         response_format: typing.Optional[SyncResponseFormat] = OMIT,
-        max_tokens: typing.Optional[AnalyzeMaxTokens] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
+        start_time: typing.Optional[float] = OMIT,
+        end_time: typing.Optional[float] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
         """
-        This method synchronously analyzes your videos and generates fully customizable text based on your prompts.
+        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -525,33 +609,67 @@ class AsyncBaseClient:
 
         **When to use this method**:
         - Analyze videos up to 1 hour
-        - Retrieve immediate results without waiting for asynchronous processing
-        - Stream text fragments in real-time for immediate processing and feedback
+        - Retrieve immediate results without polling for task completion
+        - Stream text fragments in real time for immediate processing and feedback
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with `model_name` set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
-        <Note title="Notes">
-        - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        <Note title="Note">
+        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
 
         Parameters
         ----------
-        prompt : AnalyzeTextPrompt
+        model_name : typing.Optional[AnalyzeRequestModelName]
+            The video understanding model to use for analysis.
+            - `pegasus1.2`: General analysis (prompt-based text generation).
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+
+            **Default:** `pegasus1.2`
 
         video_id : typing.Optional[str]
-            The unique identifier of the video to analyze.
+            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
 
             <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
 
         video : typing.Optional[VideoContext]
 
+        prompt : typing.Optional[AnalyzeTextPrompt]
+            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+
+        prompt_v_2 : typing.Optional[AnalyzePromptV2]
+            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
         temperature : typing.Optional[AnalyzeTemperature]
 
         response_format : typing.Optional[SyncResponseFormat]
+            Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
-        max_tokens : typing.Optional[AnalyzeMaxTokens]
+        max_tokens : typing.Optional[int]
+            The maximum number of tokens to generate. The allowed range depends on the model:
+
+            | Model | Min | Max | Default |
+            |-------|-----|-----|---------|
+            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.5 | 512 | 65,536 | 4,096 |
+
+        start_time : typing.Optional[float]
+            Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to `0`.
+            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
+
+        end_time : typing.Optional[float]
+            End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+
+            <Note title="Notes">
+            - If omitted, defaults to the video duration.
+            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            </Note>
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -565,7 +683,7 @@ class AsyncBaseClient:
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, SyncResponseFormat
+        from twelvelabs import AsyncTwelveLabs
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -573,34 +691,22 @@ class AsyncBaseClient:
 
 
         async def main() -> None:
-            await client.analyze(
-                video_id="6298d673f1090f1100476d4c",
-                prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-                temperature=0.2,
-                response_format=SyncResponseFormat(
-                    type="json_schema",
-                    json_schema={
-                        "type": "object",
-                        "properties": {
-                            "title": {"type": "string"},
-                            "summary": {"type": "string"},
-                            "keywords": {"type": "array", "items": {"type": "string"}},
-                        },
-                    },
-                ),
-                max_tokens=2000,
-            )
+            await client.analyze()
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.analyze(
-            prompt=prompt,
+            model_name=model_name,
             video_id=video_id,
             video=video,
+            prompt=prompt,
+            prompt_v_2=prompt_v_2,
             temperature=temperature,
             response_format=response_format,
             max_tokens=max_tokens,
+            start_time=start_time,
+            end_time=end_time,
             request_options=request_options,
         )
         return _response.data

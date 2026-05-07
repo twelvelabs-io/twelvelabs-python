@@ -143,11 +143,11 @@ class RawMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateAssetUploadResponse]:
         """
-        This method creates a multipart upload session.
+        This method creates a multipart upload session for a local video file.
 
         **Supported content**: Video
 
-        **File size**: 4 GB maximum.
+        **Upload limits**: Local video files up to 4 GB.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -685,11 +685,11 @@ class AsyncRawMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateAssetUploadResponse]:
         """
-        This method creates a multipart upload session.
+        This method creates a multipart upload session for a local video file.
 
         **Supported content**: Video
 
-        **File size**: 4 GB maximum.
+        **Upload limits**: Local video files up to 4 GB.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)

@@ -33,6 +33,11 @@ class AnalyzeTaskResponseVideoSource(UniversalBaseModel):
     The video ID. Present when `type` is `video_id`. Deprecated — use `asset_id` instead.
     """
 
+    index_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The index ID associated with the video. Present when `type` is `video_id`. Deprecated — will be removed when Pegasus 1.2 is sunset.
+    """
+
     system_metadata: typing.Optional[AnalyzeTaskResponseVideoSourceSystemMetadata] = pydantic.Field(default=None)
     """
     System-extracted video metadata. Present on a best-effort basis once the video has been processed.

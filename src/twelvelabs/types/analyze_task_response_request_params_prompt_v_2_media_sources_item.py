@@ -6,19 +6,17 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class TokenUsage(UniversalBaseModel):
+class AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem(UniversalBaseModel):
+    name: str
+    media_type: str
+    url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The number of tokens used in the generation.
-    """
-
-    output_tokens: int = pydantic.Field()
-    """
-    The number of tokens in the generated text.
+    Present when the source was provided as a URL.
     """
 
-    input_tokens: typing.Optional[int] = pydantic.Field(default=None)
+    asset_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The number of tokens consumed by the input (prompt and video). Omitted for Pegasus 1.5.
+    Present when the source was provided as an asset ID.
     """
 
     if IS_PYDANTIC_V2:
