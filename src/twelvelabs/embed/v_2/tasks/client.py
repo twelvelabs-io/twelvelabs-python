@@ -140,7 +140,7 @@ class TasksClient:
           **Audio**:
           - Minimum duration: 4 seconds
           - Maximum duration: 4 hours
-          - Maximum file size: 2 GB
+          - Maximum file size: 4 GB
           - Formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
         </Accordion>
 
@@ -393,7 +393,7 @@ class AsyncTasksClient:
           **Audio**:
           - Minimum duration: 4 seconds
           - Maximum duration: 4 hours
-          - Maximum file size: 2 GB
+          - Maximum file size: 4 GB
           - Formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
         </Accordion>
 

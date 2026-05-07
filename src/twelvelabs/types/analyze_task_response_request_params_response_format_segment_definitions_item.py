@@ -10,6 +10,7 @@ from .analyze_task_response_request_params_response_format_segment_definitions_i
 from .analyze_task_response_request_params_response_format_segment_definitions_item_media_sources_item import (
     AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem,
 )
+from .analyze_time_range import AnalyzeTimeRange
 
 
 class AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem(UniversalBaseModel):
@@ -21,6 +22,10 @@ class AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem(Unive
     media_sources: typing.Optional[
         typing.List[AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem]
     ] = None
+    time_ranges: typing.Optional[typing.List[AnalyzeTimeRange]] = pydantic.Field(default=None)
+    """
+    The time ranges for this segment definition. Present only when the task was created with `time_ranges`.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

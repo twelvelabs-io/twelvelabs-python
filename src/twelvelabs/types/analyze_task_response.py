@@ -23,6 +23,11 @@ class AnalyzeTaskResponse(UniversalBaseModel):
     The unique identifier of the analysis task.
     """
 
+    custom_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The identifier you provided in the `custom_id` field when you created the task, or `null` if you did not set one. This key is always present in the response.
+    """
+
     video_source: typing.Optional[AnalyzeTaskResponseVideoSource] = pydantic.Field(default=None)
     """
     The video source you provided. Only present for tasks that use direct video input (`url`, `base64_string`, or `asset_id`).
@@ -30,7 +35,7 @@ class AnalyzeTaskResponse(UniversalBaseModel):
 
     request_params: typing.Optional[AnalyzeTaskResponseRequestParams] = pydantic.Field(default=None)
     """
-    The parameters you sent when creating this task. Only present for tasks created with `model_name` set to `pegasus1.5`.
+    The request parameters for this task.
     """
 
     status: AnalyzeTaskStatus

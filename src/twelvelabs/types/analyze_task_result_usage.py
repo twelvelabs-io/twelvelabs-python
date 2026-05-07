@@ -18,7 +18,7 @@ class AnalyzeTaskResultUsage(UniversalBaseModel):
 
     input_tokens: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The number of tokens in the input prompt.
+    The number of tokens in the input prompt. Omitted when `model_name` is `pegasus1.5`.
     """
 
     if IS_PYDANTIC_V2:

@@ -2,4 +2,4 @@
 
 import typing
 
-CreateAsyncAnalyzeRequestAnalysisMode = typing.Union[typing.Literal["time_based_metadata"], typing.Any]
+CreateAsyncAnalyzeRequestAnalysisMode = typing.Union[typing.Literal["general", "time_based_metadata"], typing.Any]

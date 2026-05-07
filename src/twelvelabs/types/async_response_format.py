@@ -39,23 +39,30 @@ class AsyncResponseFormat(UniversalBaseModel):
     
     | Type | Supported keywords | Notes |
     |------|-------------------|-------|
-    | `integer` | `maximum`, `exclusiveMaximum`, `minimum`, `exclusiveMinimum`. | - `maximum`: Sets the highest allowed value (inclusive).<br/>- `exclusiveMaximum`: Sets the highest allowed value (exclusive).<br/>-`minimum`: Sets the lowest allowed value (inclusive).<br/>- `exclusiveMinimum`: Sets the lowest allowed value (exclusive).<br/>These constraints are supported only for the `integer` type. |
+    | `integer` | `maximum`, `exclusiveMaximum`, `minimum`, `exclusiveMinimum`. | - `maximum`: Sets the highest allowed value (inclusive).<br/>- `exclusiveMaximum`: Sets the highest allowed value (exclusive).<br/>- `minimum`: Sets the lowest allowed value (inclusive).<br/>- `exclusiveMinimum`: Sets the lowest allowed value (exclusive).<br/>These constraints are supported only for the `integer` type. |
     | `string` | `pattern`, `format` | - `pattern`: A regular expression that the string must match.<br/>- `format`: Validates predefined formats. It accepts the following values: `uuid`, `date-time`, `date`, and `time`.<br/>See string limitations below. |
     | `object` | `properties`, `required` | - `properties`: Defines object properties and their schemas. - `required`: Specifies mandatory properties.<br/>See object limitations below. |
-    | `array` | `items`, `minItems` | `minItems` accepts only `0` or `1` |
+    | `array` | `items`, `minItems` | `minItems` accepts only `0` or `1`.<br/>See array limitations below. |
     
     
     **String limitations**
     
-    The platform validates strings using the `pattern` and `format` constraints only. When you include `minLength` or `maxLength` keywords in your schema, the platform returns an error: "String length constraints (minLength) are not supported."
+    When you use the `string` type:
+    - The platform validates strings using only `pattern` and `format`. Including `minLength` or `maxLength` causes a 422 error: "String length constraints (minLength) are not supported." Remove these keywords from your schema.
     
     
     **Object limitations**
     
     When you use the `object` type:
-    - The platform always ignores the `additionalProperties` setting.
-    - The sequence of the properties is fixed.
-    - The first property should be required. If the first property is optional, the platform moves the first required property to the first position.
+    - The platform does not support the `additionalProperties` keyword. Including it causes a 422 error. Remove it from your schema.
+    - The platform returns properties in declaration order.
+    - Make the first property required. If the first property is optional, the platform moves the first required property to the beginning.
+    
+    
+    **Array limitations**
+    
+    When you use the `array` type:
+    - The platform does not support `uniqueItems` or `maxItems`. Including either keyword causes a 422 error. Remove them from your schema.
     
     
     **Constant and enumerated values**
@@ -84,6 +91,27 @@ class AsyncResponseFormat(UniversalBaseModel):
     
     For details, see the [JSON Schema documentation on $defs](https://json-schema.org/understanding-json-schema/structuring#defs).
     
+    
+    **Reserved property names (`start_time` / `end_time`)**
+    
+    When your response schema includes properties named `start_time` or `end_time`, the platform applies special type handling. These are unrelated to the top-level `start_time` / `end_time` request parameters or `time_ranges`. The model outputs these values as floating-point numbers representing seconds. The platform converts or rejects them based on the declared type in your schema.
+    
+    *Allowed types:*
+    
+    | Declared type | Platform behavior |
+    |---------------|-------------------|
+    | `number` | Passes the value through without conversion. |
+    | `integer` | Rounds the value to the nearest integer. |
+    | `string` (no `format`) | Converts the value to the `hh:mm:ss.fff` format. |
+    
+    *Rejected types (returns `400` error):*
+    - `string` with any `format` keyword (`time`, `date-time`, `email`, `uri`, etc.)
+    - `boolean`
+    - `object`
+    - `array`
+    - `null`
+    
+    All other property names in your schema remain unconstrained by these rules.
     
     
     **Response validation**

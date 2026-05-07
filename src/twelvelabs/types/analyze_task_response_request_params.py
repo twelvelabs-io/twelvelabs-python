@@ -3,14 +3,17 @@
 import typing
 
 import pydantic
+import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.serialization import FieldMetadata
 from .analyze_task_response_request_params_analysis_mode import AnalyzeTaskResponseRequestParamsAnalysisMode
+from .analyze_task_response_request_params_prompt_v_2 import AnalyzeTaskResponseRequestParamsPromptV2
 from .analyze_task_response_request_params_response_format import AnalyzeTaskResponseRequestParamsResponseFormat
 
 
 class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     """
-    The parameters you sent when creating this task. Only present for tasks created with `model_name` set to `pegasus1.5`.
+    The request parameters for this task.
     """
 
     analysis_mode: typing.Optional[AnalyzeTaskResponseRequestParamsAnalysisMode] = pydantic.Field(default=None)
@@ -18,9 +21,27 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     The analysis approach for this task.
     """
 
+    prompt: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The natural-language prompt for this task. Present only when `analysis_mode` is `general` and the task was created with `prompt` (not `prompt_v2`).
+    
+    - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): Truncated to the first 30 characters.
+    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task): Returns the full text.
+    """
+
+    prompt_v_2: typing_extensions.Annotated[
+        typing.Optional[AnalyzeTaskResponseRequestParamsPromptV2], FieldMetadata(alias="prompt_v2")
+    ] = pydantic.Field(default=None)
+    """
+    The structured prompt for this task. Present only when `analysis_mode` is `general` and the task was created with `prompt_v2`. When present, the response excludes the flat `prompt` field.
+    
+    - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): `input_text` is truncated to the first 30 characters.
+    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task): Returns the full text.
+    """
+
     response_format: typing.Optional[AnalyzeTaskResponseRequestParamsResponseFormat] = pydantic.Field(default=None)
     """
-    The response format you configured. Present only when you included it in the request.
+    The response format for this task. Present only when the request included a response format.
     """
 
     temperature: typing.Optional[float] = pydantic.Field(default=None)
@@ -41,6 +62,16 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     max_segment_duration: typing.Optional[float] = pydantic.Field(default=None)
     """
     The maximum segment duration you set, in seconds. Present when `analysis_mode` is `time_based_metadata`.
+    """
+
+    start_time: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The start of the analysis window, in seconds. Present only when the task was created with `start_time`.
+    """
+
+    end_time: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The end of the analysis window, in seconds. Present only when the task was created with `end_time`.
     """
 
     if IS_PYDANTIC_V2:

@@ -3,10 +3,17 @@
 # isort: skip_file
 
 from .analyze_max_tokens import AnalyzeMaxTokens
+from .analyze_prompt_v_2 import AnalyzePromptV2
+from .analyze_request_model_name import AnalyzeRequestModelName
+from .analyze_stream_request_model_name import AnalyzeStreamRequestModelName
 from .analyze_task_error import AnalyzeTaskError
 from .analyze_task_response import AnalyzeTaskResponse
 from .analyze_task_response_request_params import AnalyzeTaskResponseRequestParams
 from .analyze_task_response_request_params_analysis_mode import AnalyzeTaskResponseRequestParamsAnalysisMode
+from .analyze_task_response_request_params_prompt_v_2 import AnalyzeTaskResponseRequestParamsPromptV2
+from .analyze_task_response_request_params_prompt_v_2_media_sources_item import (
+    AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem,
+)
 from .analyze_task_response_request_params_response_format import AnalyzeTaskResponseRequestParamsResponseFormat
 from .analyze_task_response_request_params_response_format_segment_definitions_item import (
     AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem,
@@ -32,6 +39,7 @@ from .analyze_task_status import AnalyzeTaskStatus
 from .analyze_task_webhook_info import AnalyzeTaskWebhookInfo
 from .analyze_temperature import AnalyzeTemperature
 from .analyze_text_prompt import AnalyzeTextPrompt
+from .analyze_time_range import AnalyzeTimeRange
 from .asset import Asset
 from .asset_detail import AssetDetail
 from .asset_hls import AssetHls
@@ -228,10 +236,15 @@ from .videos_list_request_width import VideosListRequestWidth
 
 __all__ = [
     "AnalyzeMaxTokens",
+    "AnalyzePromptV2",
+    "AnalyzeRequestModelName",
+    "AnalyzeStreamRequestModelName",
     "AnalyzeTaskError",
     "AnalyzeTaskResponse",
     "AnalyzeTaskResponseRequestParams",
     "AnalyzeTaskResponseRequestParamsAnalysisMode",
+    "AnalyzeTaskResponseRequestParamsPromptV2",
+    "AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem",
     "AnalyzeTaskResponseRequestParamsResponseFormat",
     "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem",
     "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem",
@@ -247,6 +260,7 @@ __all__ = [
     "AnalyzeTaskWebhookInfo",
     "AnalyzeTemperature",
     "AnalyzeTextPrompt",
+    "AnalyzeTimeRange",
     "Asset",
     "AssetDetail",
     "AssetHls",
