@@ -9,6 +9,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .asset_method import AssetMethod
 from .asset_status import AssetStatus
+from .user_metadata import UserMetadata
 
 
 class Asset(UniversalBaseModel):
@@ -64,6 +65,11 @@ class Asset(UniversalBaseModel):
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     The date and time, in RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the asset was created.
+    """
+
+    user_metadata: typing.Optional[UserMetadata] = pydantic.Field(default=None)
+    """
+    User-defined metadata for this asset. This field is absent when no metadata has been set.
     """
 
     if IS_PYDANTIC_V2:

@@ -6,6 +6,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .analyze_task_error import AnalyzeTaskError
 from .finish_reason import FinishReason
 from .stream_end_response_metadata import StreamEndResponseMetadata
 from .stream_start_response_metadata import StreamStartResponseMetadata
@@ -88,6 +89,7 @@ class StreamAnalyzeResponse_StreamEnd(UniversalBaseModel):
     event_type: typing.Literal["stream_end"] = "stream_end"
     finish_reason: typing.Optional[FinishReason] = None
     metadata: typing.Optional[StreamEndResponseMetadata] = None
+    error: typing.Optional[AnalyzeTaskError] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

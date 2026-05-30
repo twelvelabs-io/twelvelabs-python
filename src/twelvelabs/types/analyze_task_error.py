@@ -8,12 +8,24 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class AnalyzeTaskError(UniversalBaseModel):
     """
-    Details about why the task failed.
+    A message attached to an analysis response. The platform uses this object in three cases:
+
+    - **Task failure** — set on `AnalyzeTaskResponse.error` when `status` is `failed`. The `message` field describes the failure.
+    - **Truncation: maximum response length reached** — set on the response `error` when `finish_reason` is `length` because `output_tokens` reached the requested `max_tokens` value. The `message` field advises increasing the `max_tokens` value.
+    - **Truncation: context window reached** — set on the response `error` when `finish_reason` is `length` because the input and response reached the [context window](/v1.3/docs/concepts/models/pegasus#context-window). The `message` field advises reducing the input size or decreasing the `max_tokens` value.
+
+    For truncation cases, the partial output is in `result.data` (async) or `data` (sync). Check `finish_reason` instead of parsing the message text.
     """
 
     message: str = pydantic.Field()
     """
-    A message that describes why the task failed.
+    A human-readable message. One of:
+    
+    - **Failure** (async, `status: failed`): describes the failure reason, e.g., `"Video duration exceeds maximum allowed duration"`.
+    - **Truncation: maximum response length reached** (`finish_reason: length`, `output_tokens >= max_tokens`): `"output truncated: the generation reached the configured max_tokens. The partial output is returned; raise max_tokens (up to 98304) if you need a longer response."`.
+    - **Truncation: context window reached** (`finish_reason: length`, model stopped before reaching `max_tokens`): `"output truncated: combined input and output tokens reached the model's context limit. The partial output is returned; consider reducing input size (shorter prompt, smaller video clip, fewer media bindings) or lowering max_tokens."`.
+    
+    The exact text is not part of the contract — SDKs should not parse it.
     """
 
     if IS_PYDANTIC_V2:

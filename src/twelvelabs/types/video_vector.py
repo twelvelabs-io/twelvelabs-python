@@ -19,6 +19,11 @@ class VideoVector(UniversalBaseModel):
     A string representing the unique identifier of a video. The platform creates a new `video_vector` object and assigns it a unique identifier when the video has successfully been indexed. Note that video IDs are different from task IDs.
     """
 
+    asset_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the associated asset.
+    """
+
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     A string indicating the date and time, in the RFC RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), that the video indexing task was created.

@@ -18,6 +18,11 @@ class VideosRetrieveResponse(UniversalBaseModel):
     The unique identifier of the video.
     """
 
+    asset_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the associated asset.
+    """
+
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     A string indicating the date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), that the video indexing task was created.
@@ -40,7 +45,7 @@ class VideosRetrieveResponse(UniversalBaseModel):
 
     user_metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    User-generated metadata about the video.
+    User-defined metadata for this video.
     """
 
     hls: typing.Optional[HlsObject] = None

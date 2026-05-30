@@ -9,7 +9,6 @@ from .types import (
     TasksListResponsePageInfo,
     TasksRetrieveResponse,
 )
-from . import transfers
 
 __all__ = [
     "TasksCreateResponse",
@@ -17,5 +16,4 @@ __all__ = [
     "TasksListResponse",
     "TasksListResponsePageInfo",
     "TasksRetrieveResponse",
-    "transfers",
 ]

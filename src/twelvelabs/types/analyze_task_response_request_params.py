@@ -51,7 +51,7 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
 
     max_tokens: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The maximum number of tokens for the response.
+    The maximum response length you set, in tokens.
     """
 
     min_segment_duration: typing.Optional[float] = pydantic.Field(default=None)

@@ -13,3 +13,6 @@ src/twelvelabs/wrapper
 README.md
 README-1.0.0-beta.md
 .github
+.fern/replay.lock
+.fern/replay.yml
+.gitattributes

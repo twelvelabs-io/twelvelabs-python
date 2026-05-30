@@ -8,7 +8,6 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.video_indexing_task import VideoIndexingTask
 from .raw_client import AsyncRawTasksClient, RawTasksClient
-from .transfers.client import AsyncTransfersClient, TransfersClient
 from .types.tasks_create_response import TasksCreateResponse
 from .types.tasks_list_request_status_item import TasksListRequestStatusItem
 from .types.tasks_retrieve_response import TasksRetrieveResponse
@@ -20,7 +19,6 @@ OMIT = typing.cast(typing.Any, ...)
 class TasksClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawTasksClient(client_wrapper=client_wrapper)
-        self.transfers = TransfersClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawTasksClient:
@@ -219,7 +217,7 @@ class TasksClient:
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[str]
-            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -320,7 +318,6 @@ class TasksClient:
 class AsyncTasksClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawTasksClient(client_wrapper=client_wrapper)
-        self.transfers = AsyncTransfersClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawTasksClient:
@@ -528,7 +525,7 @@ class AsyncTasksClient:
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/videos/{video-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[str]
-            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+            Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

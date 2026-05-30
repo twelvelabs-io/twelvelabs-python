@@ -49,6 +49,7 @@ from .asset_status import AssetStatus
 from .asset_thumbnail import AssetThumbnail
 from .asset_thumbnail_status import AssetThumbnailStatus
 from .async_response_format import AsyncResponseFormat
+from .async_response_format_segment_time_format import AsyncResponseFormatSegmentTimeFormat
 from .async_response_format_type import AsyncResponseFormatType
 from .audio_embedding_metadata import AudioEmbeddingMetadata
 from .audio_embedding_result import AudioEmbeddingResult
@@ -117,9 +118,6 @@ from .hls_object import HlsObject
 from .hls_object_status import HlsObjectStatus
 from .image_embedding_result import ImageEmbeddingResult
 from .image_input_request import ImageInputRequest
-from .import_log import ImportLog
-from .import_log_failed_files_item import ImportLogFailedFilesItem
-from .import_log_video_status import ImportLogVideoStatus
 from .incomplete_upload_summary import IncompleteUploadSummary
 from .index_models_item import IndexModelsItem
 from .index_schema import IndexSchema
@@ -166,6 +164,7 @@ from .search_results import SearchResults
 from .search_results_page_info import SearchResultsPageInfo
 from .segment_definition import SegmentDefinition
 from .segment_field import SegmentField
+from .segment_field_format import SegmentFieldFormat
 from .segment_field_items import SegmentFieldItems
 from .segment_field_items_type import SegmentFieldItemsType
 from .segment_field_type import SegmentFieldType
@@ -218,8 +217,6 @@ from .video_input_request import VideoInputRequest
 from .video_input_request_embedding_option_item import VideoInputRequestEmbeddingOptionItem
 from .video_input_request_embedding_scope_item import VideoInputRequestEmbeddingScopeItem
 from .video_input_request_embedding_type_item import VideoInputRequestEmbeddingTypeItem
-from .video_item import VideoItem
-from .video_item_failed import VideoItemFailed
 from .video_segment import VideoSegment
 from .video_segmentation import VideoSegmentation, VideoSegmentation_Dynamic, VideoSegmentation_Fixed
 from .video_segmentation_dynamic import VideoSegmentationDynamic
@@ -270,6 +267,7 @@ __all__ = [
     "AssetThumbnail",
     "AssetThumbnailStatus",
     "AsyncResponseFormat",
+    "AsyncResponseFormatSegmentTimeFormat",
     "AsyncResponseFormatType",
     "AudioEmbeddingMetadata",
     "AudioEmbeddingResult",
@@ -334,9 +332,6 @@ __all__ = [
     "HlsObjectStatus",
     "ImageEmbeddingResult",
     "ImageInputRequest",
-    "ImportLog",
-    "ImportLogFailedFilesItem",
-    "ImportLogVideoStatus",
     "IncompleteUploadSummary",
     "IndexModelsItem",
     "IndexSchema",
@@ -383,6 +378,7 @@ __all__ = [
     "SearchResultsPageInfo",
     "SegmentDefinition",
     "SegmentField",
+    "SegmentFieldFormat",
     "SegmentFieldItems",
     "SegmentFieldItemsType",
     "SegmentFieldType",
@@ -436,8 +432,6 @@ __all__ = [
     "VideoInputRequestEmbeddingOptionItem",
     "VideoInputRequestEmbeddingScopeItem",
     "VideoInputRequestEmbeddingTypeItem",
-    "VideoItem",
-    "VideoItemFailed",
     "VideoSegment",
     "VideoSegmentation",
     "VideoSegmentationDynamic",

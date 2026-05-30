@@ -203,6 +203,7 @@ class IndexedAssetsClient:
         *,
         asset_id: str,
         enable_video_stream: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[UserMetadata] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> IndexedAssetsCreateResponse:
         """
@@ -231,6 +232,9 @@ class IndexedAssetsClient:
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
+        user_metadata : typing.Optional[UserMetadata]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -252,7 +256,11 @@ class IndexedAssetsClient:
         )
         """
         _response = self._raw_client.create(
-            index_id, asset_id=asset_id, enable_video_stream=enable_video_stream, request_options=request_options
+            index_id,
+            asset_id=asset_id,
+            enable_video_stream=enable_video_stream,
+            user_metadata=user_metadata,
+            request_options=request_options,
         )
         return _response.data
 
@@ -672,6 +680,7 @@ class AsyncIndexedAssetsClient:
         *,
         asset_id: str,
         enable_video_stream: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[UserMetadata] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> IndexedAssetsCreateResponse:
         """
@@ -699,6 +708,9 @@ class AsyncIndexedAssetsClient:
 
         enable_video_stream : typing.Optional[bool]
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
+
+        user_metadata : typing.Optional[UserMetadata]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -729,7 +741,11 @@ class AsyncIndexedAssetsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            index_id, asset_id=asset_id, enable_video_stream=enable_video_stream, request_options=request_options
+            index_id,
+            asset_id=asset_id,
+            enable_video_stream=enable_video_stream,
+            user_metadata=user_metadata,
+            request_options=request_options,
         )
         return _response.data
 

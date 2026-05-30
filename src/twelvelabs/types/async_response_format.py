@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .async_response_format_segment_time_format import AsyncResponseFormatSegmentTimeFormat
 from .async_response_format_type import AsyncResponseFormatType
 from .segment_definition import SegmentDefinition
 
@@ -34,6 +35,7 @@ class AsyncResponseFormat(UniversalBaseModel):
     - `number`
     - `object`
     - `string`
+    - `timestamp` (Pegasus 1.5 only)
     
     **Supported constraints**
     
@@ -43,6 +45,7 @@ class AsyncResponseFormat(UniversalBaseModel):
     | `string` | `pattern`, `format` | - `pattern`: A regular expression that the string must match.<br/>- `format`: Validates predefined formats. It accepts the following values: `uuid`, `date-time`, `date`, and `time`.<br/>See string limitations below. |
     | `object` | `properties`, `required` | - `properties`: Defines object properties and their schemas. - `required`: Specifies mandatory properties.<br/>See object limitations below. |
     | `array` | `items`, `minItems` | `minItems` accepts only `0` or `1`.<br/>See array limitations below. |
+    | `timestamp` | `format` | `format` (required): Sets the output format. Accepted values: `seconds`, `hh:mm:ss`, `hh:mm:ss.fff`.<br/>See the **Timestamp type** section below. |
     
     
     **String limitations**
@@ -92,38 +95,84 @@ class AsyncResponseFormat(UniversalBaseModel):
     For details, see the [JSON Schema documentation on $defs](https://json-schema.org/understanding-json-schema/structuring#defs).
     
     
+    **Timestamp type (Pegasus 1.5 only)**
+    
+    Declare a property as `{"type": "timestamp", "format": "<format>"}` to control the format of the returned value.
+    
+    The `format` field accepts the following values:
+    
+    | `format` | Example output | Notes |
+    |----------|----------------|-------|
+    | `seconds` | `10.5` | Returns a JSON number in seconds. |
+    | `hh:mm:ss` | `"00:01:23"` | Rounded to the nearest second. Negative values are converted to `"00:00:00"`. |
+    | `hh:mm:ss.fff` | `"00:01:23.500"` | Millisecond precision. |
+    
+    The type of the response depends on the value of the `format` field: `seconds` returns a JSON number, while `hh:mm:ss` and `hh:mm:ss.fff` return a JSON string.
+    
+    *Supported positions*
+    
+    You can declare `timestamp` fields at the top level of your schema or inside objects nested one level within an array:
+    
+    - Top level: `properties.<field_name>`
+    - Inside an array: `properties.<array_field>.items.properties.<field_name>`
+    
+    Declaring `timestamp` outside these positions — deeper nesting, inside `oneOf` / `anyOf` / `allOf`, or inside `$ref` — is not supported and is rejected with HTTP 400.
+    
+    *Validation errors*
+    
+    When `format` is missing or invalid, the platform returns `400 parameter_invalid`:
+    
+    ```
+    response_format.json_schema.properties.<name>.format: format is required for timestamp type; allowed values: seconds, hh:mm:ss, hh:mm:ss.fff
+    ```
+    
+    
     **Reserved property names (`start_time` / `end_time`)**
     
-    When your response schema includes properties named `start_time` or `end_time`, the platform applies special type handling. These are unrelated to the top-level `start_time` / `end_time` request parameters or `time_ranges`. The model outputs these values as floating-point numbers representing seconds. The platform converts or rejects them based on the declared type in your schema.
+    For Pegasus 1.5, properties named `start_time` or `end_time` in your response schema receive special type handling at any nesting depth (including inside array `items`). These are unrelated to the top-level `start_time` / `end_time` request parameters or `time_ranges`. The platform returns the value in a format determined by the declared type:
     
-    *Allowed types:*
+    *Allowed declarations:*
     
     | Declared type | Platform behavior |
     |---------------|-------------------|
     | `number` | Passes the value through without conversion. |
     | `integer` | Rounds the value to the nearest integer. |
     | `string` (no `format`) | Converts the value to the `hh:mm:ss.fff` format. |
+    | `timestamp` with `format` | See the **Timestamp type** section above for the available formats. |
     
-    *Rejected types (returns `400` error):*
+    *Rejected declarations (returns `400` error):*
     - `string` with any `format` keyword (`time`, `date-time`, `email`, `uri`, etc.)
     - `boolean`
     - `object`
     - `array`
     - `null`
     
-    All other property names in your schema remain unconstrained by these rules.
+    All other property names in your schema remain unconstrained by these rules. For other field names, use the `timestamp` type described above.
     
     
     **Response validation**
     
     Check the `FinishReason` field to verify your JSON response is complete:
     - When `FinishReason` is `stop`, the generation completed normally, and the JSON is valid and complete.
-    - When `FinishReason` is `length`, the platform truncates the response at the token limit. This may result in truncated, invalid JSON that fails to parse.
+    - When `FinishReason` is `length`, the platform truncates the response at the maximum response length or the context window. This may result in truncated, invalid JSON that fails to parse.
     """
 
     segment_definitions: typing.Optional[typing.List[SegmentDefinition]] = pydantic.Field(default=None)
     """
-    Define the types of segments to extract from your video. Minimum 1, maximum 10 definitions.
+    Define the types of segments to extract from your video. Minimum 1, maximum 10 definitions. The number of segment definitions affects billing. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
+    """
+
+    segment_time_format: typing.Optional[AsyncResponseFormatSegmentTimeFormat] = pydantic.Field(default=None)
+    """
+    Set the output format for the automatic `start_time` and `end_time` keys returned on each segment. Requires the `type` parameter set to `segment_definitions` and the `model_name` parameter set to `pegasus1.5`. Omitting this parameter is equivalent to setting it to `seconds` — both return JSON numbers in seconds.
+    
+    | `segment_time_format` | Auto boundary output |
+    |-----------------------|----------------------|
+    | `seconds` (default) | JSON number in seconds (Example: `12.5`) |
+    | `hh:mm:ss` | JSON string (Example: `"00:00:13"`) — rounded to the nearest second |
+    | `hh:mm:ss.fff` | JSON string (Example: `"00:00:12.500"`) — millisecond precision |
+    
+    This parameter applies only to the automatic segment boundaries (`start_time` and `end_time`). Custom `timestamp` fields always use their own format, regardless of the value of this field.
     """
 
     if IS_PYDANTIC_V2:
