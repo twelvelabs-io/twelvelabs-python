@@ -9,7 +9,7 @@ from .segment_field_items_type import SegmentFieldItemsType
 
 class SegmentFieldItems(UniversalBaseModel):
     """
-    Required when `type` is `array`. Specifies the type of array elements.
+    Required when `type` is `array`. Specifies the type of array elements. Not supported when `type` is `timestamp`.
     """
 
     type: SegmentFieldItemsType

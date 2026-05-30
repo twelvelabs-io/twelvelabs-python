@@ -29,6 +29,7 @@ class SyncResponseFormat(UniversalBaseModel):
     - `number`
     - `object`
     - `string`
+    - `timestamp` (Pegasus 1.5 only)
     
     **Supported constraints**
     
@@ -38,6 +39,7 @@ class SyncResponseFormat(UniversalBaseModel):
     | `string` | `pattern`, `format` | - `pattern`: A regular expression that the string must match.<br/>- `format`: Validates predefined formats. It accepts the following values: `uuid`, `date-time`, `date`, and `time`.<br/>See string limitations below. |
     | `object` | `properties`, `required` | - `properties`: Defines object properties and their schemas. - `required`: Specifies mandatory properties.<br/>See object limitations below. |
     | `array` | `items`, `minItems` | `minItems` accepts only `0` or `1`.<br/>See array limitations below. |
+    | `timestamp` | `format` | `format` (required): Sets the output format. Accepted values: `seconds`, `hh:mm:ss`, `hh:mm:ss.fff`.<br/>See the **Timestamp type** section below. |
     
     
     **String limitations**
@@ -87,24 +89,66 @@ class SyncResponseFormat(UniversalBaseModel):
     For details, see the [JSON Schema documentation on $defs](https://json-schema.org/understanding-json-schema/structuring#defs).
     
     
+    **Timestamp type (Pegasus 1.5 only)**
+    
+    Declare a property as `{"type": "timestamp", "format": "<format>"}` to control the format of the returned value.
+    
+    The `format` field accepts the following values:
+    
+    | `format` | Example output | Notes |
+    |----------|----------------|-------|
+    | `seconds` | `10.5` | Returns a JSON number in seconds. |
+    | `hh:mm:ss` | `"00:01:23"` | Rounded to the nearest second. Negative values are converted to `"00:00:00"`. |
+    | `hh:mm:ss.fff` | `"00:01:23.500"` | Millisecond precision. |
+    
+    The type of the response depends on the value of the `format` field: `seconds` returns a JSON number, while `hh:mm:ss` and `hh:mm:ss.fff` return a JSON string.
+    
+    *Supported positions*
+    
+    You can declare `timestamp` fields at the top level of your schema or inside objects nested one level within an array:
+    
+    - Top level: `properties.<field_name>`
+    - Inside an array: `properties.<array_field>.items.properties.<field_name>`
+    
+    Declaring `timestamp` outside these positions — deeper nesting, inside `oneOf` / `anyOf` / `allOf`, or inside `$ref` — is not supported and is rejected with HTTP 400.
+    
+    *Validation errors*
+    
+    When `format` is missing or invalid, the platform returns `400 parameter_invalid`:
+    
+    ```
+    response_format.json_schema.properties.<name>.format: format is required for timestamp type; allowed values: seconds, hh:mm:ss, hh:mm:ss.fff
+    ```
+    
+    
     **Reserved property names (`start_time` / `end_time`)**
     
-    For `pegasus1.5`, properties named `start_time` or `end_time` in your response schema receive special type handling. These are unrelated to the top-level `start_time` / `end_time` request parameters. The model outputs these values as floating-point seconds, and the platform converts them based on the declared type at any nesting depth (including inside array `items`):
+    For Pegasus 1.5, properties named `start_time` or `end_time` in your response schema receive special type handling at any nesting depth (including inside array `items`). These are unrelated to the top-level `start_time` / `end_time` request parameters. The platform returns the value in a format determined by the declared type:
+    
+    *Allowed declarations:*
     
     | Declared type | Platform behavior |
     |---------------|-------------------|
     | `number` | Passes the value through without conversion. |
-    | `integer` | Rounds the value to the nearest integer before returning it. |
+    | `integer` | Rounds the value to the nearest integer. |
     | `string` (no `format`) | Converts the value to the `hh:mm:ss.fff` format. |
+    | `timestamp` with `format` | See the **Timestamp type** section above for the available formats. |
     
-    All other property names in your schema remain unconstrained by these rules.
+    *Rejected declarations (returns `400` error):*
+    - `string` with any `format` keyword (`time`, `date-time`, `email`, `uri`, etc.)
+    - `boolean`
+    - `object`
+    - `array`
+    - `null`
+    
+    All other property names in your schema remain unconstrained by these rules. For other field names, use the `timestamp` type described above.
     
     
     **Response validation**
     
     Check the `FinishReason` field to verify your JSON response is complete:
     - When `FinishReason` is `stop`, the generation completed normally, and the JSON is valid and complete.
-    - When `FinishReason` is `length`, the platform truncates the response at the token limit. This may result in truncated, invalid JSON that fails to parse.
+    - When `FinishReason` is `length`, the platform truncates the response at the maximum response length or the context window. This may result in truncated, invalid JSON that fails to parse.
     """
 
     if IS_PYDANTIC_V2:

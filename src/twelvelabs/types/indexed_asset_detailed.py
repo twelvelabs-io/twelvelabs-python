@@ -13,7 +13,7 @@ from .transcription_data import TranscriptionData
 class IndexedAssetDetailed(IndexedAsset):
     user_metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    User-generated metadata about the indexed asset.
+    User-defined metadata for this indexed asset.
     """
 
     hls: typing.Optional[HlsObject] = None

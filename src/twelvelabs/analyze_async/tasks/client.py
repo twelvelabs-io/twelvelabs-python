@@ -172,7 +172,7 @@ class TasksClient:
         model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
             The video understanding model to use for analysis.
             - `pegasus1.2`: General analysis (prompt-based text generation).
-            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.2`
 
@@ -191,11 +191,7 @@ class TasksClient:
         prompt : typing.Optional[str]
             Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
 
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
             **Examples**:
 
@@ -203,6 +199,9 @@ class TasksClient:
             - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
+            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
             The analysis approach for this task.
@@ -214,13 +213,13 @@ class TasksClient:
         temperature : typing.Optional[AnalyzeTemperature]
 
         max_tokens : typing.Optional[int]
-            The maximum number of tokens to generate. The allowed range depends on the model and analysis mode:
+            The maximum response length, in tokens. The allowed range depends on the model and analysis mode:
 
             | Model | Mode | Min | Max | Default |
             |-------|------|-----|-----|---------|
             | Pegasus 1.2 | — | 1 | 4,096 | 4096 |
-            | Pegasus 1.5 | `general` | 512 | 65,536 | 4,096 |
-            | Pegasus 1.5 | `time_based_metadata` | 2,048 | 65,536 | 32,768 |
+            | Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
+            | Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
         response_format : typing.Optional[AsyncResponseFormat]
 
@@ -241,6 +240,7 @@ class TasksClient:
             - If omitted, defaults to `0`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
 
         end_time : typing.Optional[float]
@@ -250,6 +250,7 @@ class TasksClient:
             - If omitted, defaults to the video duration.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
 
         request_options : typing.Optional[RequestOptions]
@@ -525,7 +526,7 @@ class AsyncTasksClient:
         model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
             The video understanding model to use for analysis.
             - `pegasus1.2`: General analysis (prompt-based text generation).
-            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.2`
 
@@ -544,11 +545,7 @@ class AsyncTasksClient:
         prompt : typing.Optional[str]
             Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
 
-            <Note title="Notes">
-            - Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-            - Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-            - The maximum length of a prompt is 2,000 tokens.
-            </Note>
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
             **Examples**:
 
@@ -556,6 +553,9 @@ class AsyncTasksClient:
             - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
+            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
             The analysis approach for this task.
@@ -567,13 +567,13 @@ class AsyncTasksClient:
         temperature : typing.Optional[AnalyzeTemperature]
 
         max_tokens : typing.Optional[int]
-            The maximum number of tokens to generate. The allowed range depends on the model and analysis mode:
+            The maximum response length, in tokens. The allowed range depends on the model and analysis mode:
 
             | Model | Mode | Min | Max | Default |
             |-------|------|-----|-----|---------|
             | Pegasus 1.2 | — | 1 | 4,096 | 4096 |
-            | Pegasus 1.5 | `general` | 512 | 65,536 | 4,096 |
-            | Pegasus 1.5 | `time_based_metadata` | 2,048 | 65,536 | 32,768 |
+            | Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
+            | Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
         response_format : typing.Optional[AsyncResponseFormat]
 
@@ -594,6 +594,7 @@ class AsyncTasksClient:
             - If omitted, defaults to `0`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
 
         end_time : typing.Optional[float]
@@ -603,6 +604,7 @@ class AsyncTasksClient:
             - If omitted, defaults to the video duration.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
 
         request_options : typing.Optional[RequestOptions]

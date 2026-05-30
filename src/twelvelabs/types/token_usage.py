@@ -18,7 +18,7 @@ class TokenUsage(UniversalBaseModel):
 
     input_tokens: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The number of tokens consumed by the input (prompt and video). Omitted for Pegasus 1.5.
+    The number of tokens the input consumed. Together with `output_tokens`, this value must fit within the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     """
 
     if IS_PYDANTIC_V2:

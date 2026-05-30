@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .analyze_task_error import AnalyzeTaskError
 from .finish_reason import FinishReason
 from .generated_text_data import GeneratedTextData
 from .token_usage import TokenUsage
@@ -22,6 +23,10 @@ class NonStreamAnalyzeResponse(UniversalBaseModel):
     data: typing.Optional[GeneratedTextData] = None
     finish_reason: typing.Optional[FinishReason] = None
     usage: typing.Optional[TokenUsage] = None
+    error: typing.Optional[AnalyzeTaskError] = pydantic.Field(default=None)
+    """
+    A warning. Present when `finish_reason` is `length` — the response reached the maximum response length or the [context window](/v1.3/docs/concepts/models/pegasus#context-window). The partial output is returned in `data`. Pegasus 1.2 also returns this field when `finish_reason` is `length`.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

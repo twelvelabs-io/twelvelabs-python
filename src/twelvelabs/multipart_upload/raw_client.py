@@ -23,6 +23,7 @@ from ..types.incomplete_upload_summary import IncompleteUploadSummary
 from ..types.list_incomplete_uploads_response import ListIncompleteUploadsResponse
 from ..types.report_chunk_batch_response import ReportChunkBatchResponse
 from ..types.request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
+from ..types.user_metadata import UserMetadata
 from .types.create_asset_upload_request_type import CreateAssetUploadRequestType
 
 # this is used as the default value for optional parameters
@@ -140,6 +141,7 @@ class RawMultipartUploadClient:
         total_size: int,
         enable_hls: typing.Optional[bool] = OMIT,
         enable_thumbnail: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[UserMetadata] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateAssetUploadResponse]:
         """
@@ -178,6 +180,9 @@ class RawMultipartUploadClient:
 
             **Default**: `false`.
 
+        user_metadata : typing.Optional[UserMetadata]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -195,6 +200,7 @@ class RawMultipartUploadClient:
                 "total_size": total_size,
                 "enable_hls": enable_hls,
                 "enable_thumbnail": enable_thumbnail,
+                "user_metadata": user_metadata,
             },
             headers={
                 "content-type": "application/json",
@@ -682,6 +688,7 @@ class AsyncRawMultipartUploadClient:
         total_size: int,
         enable_hls: typing.Optional[bool] = OMIT,
         enable_thumbnail: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[UserMetadata] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateAssetUploadResponse]:
         """
@@ -720,6 +727,9 @@ class AsyncRawMultipartUploadClient:
 
             **Default**: `false`.
 
+        user_metadata : typing.Optional[UserMetadata]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -737,6 +747,7 @@ class AsyncRawMultipartUploadClient:
                 "total_size": total_size,
                 "enable_hls": enable_hls,
                 "enable_thumbnail": enable_thumbnail,
+                "user_metadata": user_metadata,
             },
             headers={
                 "content-type": "application/json",

@@ -14,7 +14,7 @@ class AnalyzePromptV2(UniversalBaseModel):
 
     input_text: str = pydantic.Field()
     """
-    The text of the prompt. Use `<@name>` placeholders to reference images declared in `media_sources` (Example: `"Is there a <@tiger-1> in the video?"`). The maximum length is 2,000 tokens.
+    The text of the prompt. Use `<@name>` placeholders to reference images declared in `media_sources` (Example: `"Is there a <@tiger-1> in the video?"`). For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     """
 
     media_sources: typing.Optional[typing.List[SmeMediaSource]] = pydantic.Field(default=None)

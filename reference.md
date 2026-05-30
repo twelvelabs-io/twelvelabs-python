@@ -74,7 +74,7 @@ for chunk in response.data:
 
 The video understanding model to use for analysis.
 - `pegasus1.2`: General analysis (prompt-based text generation).
-- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
 **Default:** `pegasus1.2`
     
@@ -104,7 +104,11 @@ The unique identifier of the video to analyze. Use this parameter when the `mode
 <dl>
 <dd>
 
-**prompt:** `typing.Optional[AnalyzeTextPrompt]` — A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+**prompt:** `typing.Optional[AnalyzeTextPrompt]` 
+
+A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+
+Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     
 </dd>
 </dl>
@@ -112,7 +116,11 @@ The unique identifier of the video to analyze. Use this parameter when the `mode
 <dl>
 <dd>
 
-**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` — A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` 
+
+A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
+The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     
 </dd>
 </dl>
@@ -138,12 +146,12 @@ The unique identifier of the video to analyze. Use this parameter when the `mode
 
 **max_tokens:** `typing.Optional[int]` 
 
-The maximum number of tokens to generate. The allowed range depends on the model:
+The maximum response length, in tokens. The allowed range depends on the model:
 
 | Model | Min | Max | Default |
 |-------|-----|-----|---------|
 | Pegasus 1.2 | 1 | 4,096 | 4,096 |
-| Pegasus 1.5 | 512 | 65,536 | 4,096 |
+| Pegasus 1.5 | 512 | 98,304 | 4,096 |
     
 </dd>
 </dl>
@@ -266,7 +274,7 @@ client.analyze()
 
 The video understanding model to use for analysis.
 - `pegasus1.2`: General analysis (prompt-based text generation).
-- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation (async only). Does not support `analysis_mode=time_based_metadata` or `response_format.type=segment_definitions` — use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
+- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
 **Default:** `pegasus1.2`
     
@@ -296,7 +304,11 @@ The unique identifier of the video to analyze. Use this parameter when the `mode
 <dl>
 <dd>
 
-**prompt:** `typing.Optional[AnalyzeTextPrompt]` — A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+**prompt:** `typing.Optional[AnalyzeTextPrompt]` 
+
+A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+
+Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     
 </dd>
 </dl>
@@ -304,7 +316,11 @@ The unique identifier of the video to analyze. Use this parameter when the `mode
 <dl>
 <dd>
 
-**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` — A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+**prompt_v_2:** `typing.Optional[AnalyzePromptV2]` 
+
+A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
+The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     
 </dd>
 </dl>
@@ -330,12 +346,12 @@ The unique identifier of the video to analyze. Use this parameter when the `mode
 
 **max_tokens:** `typing.Optional[int]` 
 
-The maximum number of tokens to generate. The allowed range depends on the model:
+The maximum response length, in tokens. The allowed range depends on the model:
 
 | Model | Min | Max | Default |
 |-------|-----|-----|---------|
 | Pegasus 1.2 | 1 | 4,096 | 4,096 |
-| Pegasus 1.5 | 512 | 65,536 | 4,096 |
+| Pegasus 1.5 | 512 | 98,304 | 4,096 |
     
 </dd>
 </dl>
@@ -705,7 +721,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dl>
 <dd>
 
-**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float` or `boolean`.
+**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
     
 </dd>
 </dl>
@@ -1623,6 +1639,14 @@ When set to `true`, the platform generates thumbnail images from the uploaded co
 <dl>
 <dd>
 
+**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -1775,6 +1799,168 @@ client.assets.delete(
 When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
 
 **Default**: `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">delete_user_metadata</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method deletes the user-defined metadata of the specified asset.
+
+This action cannot be undone.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.assets.delete_user_metadata(
+    asset_id="6298d673f1090f1100476d4c",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset whose user-defined metadata to delete.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">update_user_metadata</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
+- A key with a value creates or replaces that key.
+- A key set to `null` deletes that key.
+- A key set to an empty string (`""`) is ignored.
+- A key you omit from the request keeps its current value.
+
+To replace all metadata, first delete it using [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint, then use this method to set the new values.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.assets.update_user_metadata(
+    asset_id="6298d673f1090f1100476d4c",
+    user_metadata={
+        "category": "recentlyAdded",
+        "batchNumber": 5,
+        "rating": 9.3,
+        "needsReview": True,
+    },
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset whose user-defined metadata to update.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_metadata:** `UserMetadata` 
     
 </dd>
 </dl>
@@ -1995,6 +2181,14 @@ When set to `true`, the platform generates an HLS playlist and segments for stre
 When set to `true`, the platform generates thumbnail images from the uploaded content.
 
 **Default**: `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_metadata:** `typing.Optional[UserMetadata]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
     
 </dd>
 </dl>
@@ -3455,12 +3649,7 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 <dd>
 
 ```python
-from twelvelabs import (
-    AnalyzePromptV2,
-    SmeMediaSource,
-    TwelveLabs,
-    VideoContext_Url,
-)
+from twelvelabs import AsyncResponseFormat, TwelveLabs, VideoContext_Url
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
@@ -3470,17 +3659,33 @@ client.analyze_async.tasks.create(
     video=VideoContext_Url(
         url="https://example.com/video.mp4",
     ),
-    prompt_v_2=AnalyzePromptV2(
-        input_text="Is there a <@tiger-1> in the video?",
-        media_sources=[
-            SmeMediaSource(
-                name="tiger-1",
-                media_type="image",
-                url="https://example.com/tiger.jpg",
-            )
-        ],
+    prompt="Identify intro, main content, and outro clips.",
+    response_format=AsyncResponseFormat(
+        type="json_schema",
+        json_schema={
+            "type": "object",
+            "properties": {
+                "clip_start": {"type": "timestamp", "format": "seconds"},
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "intro_end": {
+                                "type": "timestamp",
+                                "format": "hh:mm:ss",
+                            },
+                            "outro_start": {
+                                "type": "timestamp",
+                                "format": "hh:mm:ss.fff",
+                            },
+                            "label": {"type": "string"},
+                        },
+                    },
+                },
+            },
+        },
     ),
-    max_tokens=4096,
 )
 
 ```
@@ -3509,7 +3714,7 @@ client.analyze_async.tasks.create(
 
 The video understanding model to use for analysis.
 - `pegasus1.2`: General analysis (prompt-based text generation).
-- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, extended token limits, and video segmentation.
+- `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
 **Default:** `pegasus1.2`
     
@@ -3542,11 +3747,7 @@ This field does not enforce uniqueness. You can submit multiple tasks with the s
 
 Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
 
-<Note title="Notes">
-- Even though the model behind this endpoint is trained to a high degree of accuracy, the preciseness of the generated text may vary based on the nature and quality of the video and the clarity of the prompt.
-- Your prompts can be instructive or descriptive, or you can also phrase them as questions.
-- The maximum length of a prompt is 2,000 tokens.
-</Note>
+Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
 **Examples**:
 
@@ -3560,6 +3761,10 @@ Natural-language instructions for analyzing the video. Required for general anal
 <dd>
 
 **prompt_v_2:** `typing.Optional[AnalyzePromptV2]` 
+
+A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+
+The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     
 </dd>
 </dl>
@@ -3591,13 +3796,13 @@ The analysis approach for this task.
 
 **max_tokens:** `typing.Optional[int]` 
 
-The maximum number of tokens to generate. The allowed range depends on the model and analysis mode:
+The maximum response length, in tokens. The allowed range depends on the model and analysis mode:
 
 | Model | Mode | Min | Max | Default |
 |-------|------|-----|-----|---------|
 | Pegasus 1.2 | — | 1 | 4,096 | 4096 |
-| Pegasus 1.5 | `general` | 512 | 65,536 | 4,096 |
-| Pegasus 1.5 | `time_based_metadata` | 2,048 | 65,536 | 32,768 |
+| Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
+| Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
     
 </dd>
 </dl>
@@ -3645,6 +3850,7 @@ Start of the analysis window, in seconds. Use with `end_time` to analyze only a 
 - If omitted, defaults to `0`.
 - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+- Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
 </Note>
     
 </dd>
@@ -3661,6 +3867,7 @@ End of the analysis window, in seconds. Use with `start_time` to analyze only a 
 - If omitted, defaults to the video duration.
 - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+- Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
 </Note>
     
 </dd>
@@ -6084,6 +6291,14 @@ client.indexes.indexed_assets.create(
 <dl>
 <dd>
 
+**user_metadata:** `typing.Optional[UserMetadata]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -6996,175 +7211,6 @@ client.indexes.videos.update(
 <dd>
 
 **user_metadata:** `typing.Optional[UserMetadata]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Tasks Transfers
-<details><summary><code>client.tasks.transfers.<a href="src/twelvelabs/tasks/transfers/client.py">create</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from twelvelabs import TwelveLabs
-
-client = TwelveLabs(
-    api_key="YOUR_API_KEY",
-)
-client.tasks.transfers.create(
-    integration_id="integration-id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**integration_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.tasks.transfers.<a href="src/twelvelabs/tasks/transfers/client.py">get_status</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from twelvelabs import TwelveLabs
-
-client = TwelveLabs(
-    api_key="YOUR_API_KEY",
-)
-client.tasks.transfers.get_status(
-    integration_id="integration-id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**integration_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.tasks.transfers.<a href="src/twelvelabs/tasks/transfers/client.py">get_logs</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from twelvelabs import TwelveLabs
-
-client = TwelveLabs(
-    api_key="YOUR_API_KEY",
-)
-client.tasks.transfers.get_logs(
-    integration_id="integration-id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**integration_id:** `str` 
     
 </dd>
 </dl>

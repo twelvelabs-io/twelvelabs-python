@@ -56,7 +56,12 @@ class AnalyzeTaskResponse(UniversalBaseModel):
 
     error: typing.Optional[AnalyzeTaskError] = pydantic.Field(default=None)
     """
-    Details about why the task failed. The platform returns this object only when `status` is `failed`.
+    A message attached to the task response. The platform sets this field in two cases:
+    
+    - **Task failure** — `status` is `failed`. The `message` field describes the failure reason.
+    - **Truncation warning** — `status` is `ready` and `result.finish_reason` is `length`. The `message` field describes the truncation cause (either the maximum response length was reached or the context window was reached). The partial output is in `result.data`.
+    
+    Not set when `status` is `ready` and `result.finish_reason` is `stop`. Both Pegasus 1.5 and Pegasus 1.2 return this field when `result.finish_reason` is `length`.
     """
 
     webhooks: typing.Optional[typing.List[AnalyzeTaskWebhookInfo]] = pydantic.Field(default=None)

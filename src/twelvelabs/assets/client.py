@@ -8,6 +8,7 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.asset import Asset
 from ..types.asset_detail import AssetDetail
+from ..types.user_metadata import UserMetadata
 from .raw_client import AsyncRawAssetsClient, RawAssetsClient
 from .types.assets_create_request_method import AssetsCreateRequestMethod
 from .types.assets_list_request_asset_types_item import AssetsListRequestAssetTypesItem
@@ -114,6 +115,7 @@ class AssetsClient:
         filename: typing.Optional[str] = OMIT,
         enable_hls: typing.Optional[bool] = OMIT,
         enable_thumbnail: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Asset:
         """
@@ -166,6 +168,9 @@ class AssetsClient:
 
             **Default**: `false`.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -192,6 +197,7 @@ class AssetsClient:
             filename=filename,
             enable_hls=enable_hls,
             enable_thumbnail=enable_thumbnail,
+            user_metadata=user_metadata,
             request_options=request_options,
         )
         return _response.data
@@ -273,6 +279,86 @@ class AssetsClient:
         )
         """
         _response = self._raw_client.delete(asset_id, force=force, request_options=request_options)
+        return _response.data
+
+    def delete_user_metadata(self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+        """
+        This method deletes the user-defined metadata of the specified asset.
+
+        This action cannot be undone.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to delete.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.assets.delete_user_metadata(
+            asset_id="6298d673f1090f1100476d4c",
+        )
+        """
+        _response = self._raw_client.delete_user_metadata(asset_id, request_options=request_options)
+        return _response.data
+
+    def update_user_metadata(
+        self, asset_id: str, *, user_metadata: UserMetadata, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        To replace all metadata, first delete it using [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint, then use this method to set the new values.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to update.
+
+        user_metadata : UserMetadata
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.assets.update_user_metadata(
+            asset_id="6298d673f1090f1100476d4c",
+            user_metadata={
+                "category": "recentlyAdded",
+                "batchNumber": 5,
+                "rating": 9.3,
+                "needsReview": True,
+            },
+        )
+        """
+        _response = self._raw_client.update_user_metadata(
+            asset_id, user_metadata=user_metadata, request_options=request_options
+        )
         return _response.data
 
 
@@ -383,6 +469,7 @@ class AsyncAssetsClient:
         filename: typing.Optional[str] = OMIT,
         enable_hls: typing.Optional[bool] = OMIT,
         enable_thumbnail: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Asset:
         """
@@ -435,6 +522,9 @@ class AsyncAssetsClient:
 
             **Default**: `false`.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -469,6 +559,7 @@ class AsyncAssetsClient:
             filename=filename,
             enable_hls=enable_hls,
             enable_thumbnail=enable_thumbnail,
+            user_metadata=user_metadata,
             request_options=request_options,
         )
         return _response.data
@@ -566,4 +657,102 @@ class AsyncAssetsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(asset_id, force=force, request_options=request_options)
+        return _response.data
+
+    async def delete_user_metadata(
+        self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        This method deletes the user-defined metadata of the specified asset.
+
+        This action cannot be undone.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to delete.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.assets.delete_user_metadata(
+                asset_id="6298d673f1090f1100476d4c",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete_user_metadata(asset_id, request_options=request_options)
+        return _response.data
+
+    async def update_user_metadata(
+        self, asset_id: str, *, user_metadata: UserMetadata, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        To replace all metadata, first delete it using [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint, then use this method to set the new values.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to update.
+
+        user_metadata : UserMetadata
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.assets.update_user_metadata(
+                asset_id="6298d673f1090f1100476d4c",
+                user_metadata={
+                    "category": "recentlyAdded",
+                    "batchNumber": 5,
+                    "rating": 9.3,
+                    "needsReview": True,
+                },
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update_user_metadata(
+            asset_id, user_metadata=user_metadata, request_options=request_options
+        )
         return _response.data

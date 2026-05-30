@@ -2,4 +2,6 @@
 
 import typing
 
-SegmentFieldType = typing.Union[typing.Literal["string", "boolean", "number", "integer", "array"], typing.Any]
+SegmentFieldType = typing.Union[
+    typing.Literal["string", "boolean", "number", "integer", "array", "timestamp"], typing.Any
+]

@@ -13,8 +13,10 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
+from ..errors.not_found_error import NotFoundError
 from ..types.asset import Asset
 from ..types.asset_detail import AssetDetail
+from ..types.user_metadata import UserMetadata
 from .types.assets_create_request_method import AssetsCreateRequestMethod
 from .types.assets_list_request_asset_types_item import AssetsListRequestAssetTypesItem
 from .types.assets_list_response import AssetsListResponse
@@ -135,6 +137,7 @@ class RawAssetsClient:
         filename: typing.Optional[str] = OMIT,
         enable_hls: typing.Optional[bool] = OMIT,
         enable_thumbnail: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Asset]:
         """
@@ -187,6 +190,9 @@ class RawAssetsClient:
 
             **Default**: `false`.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -204,6 +210,7 @@ class RawAssetsClient:
                 "filename": filename,
                 "enable_hls": enable_hls,
                 "enable_thumbnail": enable_thumbnail,
+                "user_metadata": user_metadata,
             },
             files={
                 **({"file": file} if file is not None else {}),
@@ -359,6 +366,129 @@ class RawAssetsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def delete_user_metadata(
+        self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[None]:
+        """
+        This method deletes the user-defined metadata of the specified asset.
+
+        This action cannot be undone.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to delete.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[None]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/user-metadata",
+            method="DELETE",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return HttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def update_user_metadata(
+        self, asset_id: str, *, user_metadata: UserMetadata, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[None]:
+        """
+        This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        To replace all metadata, first delete it using [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint, then use this method to set the new values.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to update.
+
+        user_metadata : UserMetadata
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[None]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/user-metadata",
+            method="PATCH",
+            json={
+                "user_metadata": user_metadata,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return HttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
 
 class AsyncRawAssetsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -475,6 +605,7 @@ class AsyncRawAssetsClient:
         filename: typing.Optional[str] = OMIT,
         enable_hls: typing.Optional[bool] = OMIT,
         enable_thumbnail: typing.Optional[bool] = OMIT,
+        user_metadata: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Asset]:
         """
@@ -527,6 +658,9 @@ class AsyncRawAssetsClient:
 
             **Default**: `false`.
 
+        user_metadata : typing.Optional[str]
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -544,6 +678,7 @@ class AsyncRawAssetsClient:
                 "filename": filename,
                 "enable_hls": enable_hls,
                 "enable_thumbnail": enable_thumbnail,
+                "user_metadata": user_metadata,
             },
             files={
                 **({"file": file} if file is not None else {}),
@@ -685,6 +820,129 @@ class AsyncRawAssetsClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def delete_user_metadata(
+        self, asset_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[None]:
+        """
+        This method deletes the user-defined metadata of the specified asset.
+
+        This action cannot be undone.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to delete.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[None]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/user-metadata",
+            method="DELETE",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return AsyncHttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def update_user_metadata(
+        self, asset_id: str, *, user_metadata: UserMetadata, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[None]:
+        """
+        This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        To replace all metadata, first delete it using [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint, then use this method to set the new values.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset whose user-defined metadata to update.
+
+        user_metadata : UserMetadata
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[None]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/user-metadata",
+            method="PATCH",
+            json={
+                "user_metadata": user_metadata,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return AsyncHttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
