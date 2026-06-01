@@ -188,11 +188,14 @@ class EmbedTasksClientWrapper(TasksClient):
         if sleep_interval <= 0:
             raise ValueError("sleep_interval must be greater than 0")
 
-        # Get initial task
-        task = self.status(task_id, request_options=request_options)
-
-        # Check if it's already done
         done_statuses = ["ready", "failed"]
+
+        # Get the initial task and report its status immediately. This covers the
+        # case where the task is already terminal at entry (the callback would
+        # otherwise never fire because the polling loop below would not execute).
+        task = self.status(task_id, request_options=request_options)
+        if callback is not None:
+            callback(task)
 
         while task.status not in done_statuses:
             time.sleep(sleep_interval)
@@ -377,11 +380,14 @@ class AsyncEmbedTasksClientWrapper(AsyncTasksClient):
         if sleep_interval <= 0:
             raise ValueError("sleep_interval must be greater than 0")
 
-        # Get initial task
-        task = await self.status(task_id, request_options=request_options)
-
-        # Check if it's already done
         done_statuses = ["ready", "failed"]
+
+        # Get the initial task and report its status immediately. This covers the
+        # case where the task is already terminal at entry (the callback would
+        # otherwise never fire because the polling loop below would not execute).
+        task = await self.status(task_id, request_options=request_options)
+        if callback is not None:
+            await callback(task)
 
         while task.status not in done_statuses:
             await asyncio.sleep(sleep_interval)
