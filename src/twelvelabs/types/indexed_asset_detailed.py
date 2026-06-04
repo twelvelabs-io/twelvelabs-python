@@ -8,10 +8,11 @@ from .hls_object import HlsObject
 from .indexed_asset import IndexedAsset
 from .indexed_asset_detailed_embedding import IndexedAssetDetailedEmbedding
 from .transcription_data import TranscriptionData
+from .user_metadata import UserMetadata
 
 
 class IndexedAssetDetailed(IndexedAsset):
-    user_metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    user_metadata: typing.Optional[UserMetadata] = pydantic.Field(default=None)
     """
     User-defined metadata for this indexed asset.
     """

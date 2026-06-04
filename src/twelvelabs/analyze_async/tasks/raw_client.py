@@ -243,20 +243,22 @@ class RawTasksClient:
             **Min:** 2
 
         start_time : typing.Optional[float]
-            Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
             <Note title="Notes">
-            - If omitted, defaults to `0`.
+            - If omitted, defaults to the video's internal start time.
+            - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
             <Note title="Notes">
-            - If omitted, defaults to the video duration.
+            - If omitted, defaults to the video's internal start time plus its duration.
+            - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
@@ -661,20 +663,22 @@ class AsyncRawTasksClient:
             **Min:** 2
 
         start_time : typing.Optional[float]
-            Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
             <Note title="Notes">
-            - If omitted, defaults to `0`.
+            - If omitted, defaults to the video's internal start time.
+            - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
             <Note title="Notes">
-            - If omitted, defaults to the video duration.
+            - If omitted, defaults to the video's internal start time plus its duration.
+            - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.

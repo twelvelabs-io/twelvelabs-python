@@ -161,10 +161,11 @@ The maximum response length, in tokens. The allowed range depends on the model:
 
 **start_time:** `typing.Optional[float]` 
 
-Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
 <Note title="Notes">
-- If omitted, defaults to `0`.
+- If omitted, defaults to the video's internal start time.
+- Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
 - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 </Note>
     
@@ -176,10 +177,11 @@ Start of the analysis window, in seconds. Use with `end_time` to analyze only a 
 
 **end_time:** `typing.Optional[float]` 
 
-End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
 <Note title="Notes">
-- If omitted, defaults to the video duration.
+- If omitted, defaults to the video's internal start time plus its duration.
+- Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
 - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 </Note>
     
@@ -361,10 +363,11 @@ The maximum response length, in tokens. The allowed range depends on the model:
 
 **start_time:** `typing.Optional[float]` 
 
-Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
 <Note title="Notes">
-- If omitted, defaults to `0`.
+- If omitted, defaults to the video's internal start time.
+- Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
 - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 </Note>
     
@@ -376,10 +379,11 @@ Start of the analysis window, in seconds. Use with `end_time` to analyze only a 
 
 **end_time:** `typing.Optional[float]` 
 
-End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
 <Note title="Notes">
-- If omitted, defaults to the video duration.
+- If omitted, defaults to the video's internal start time plus its duration.
+- Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
 - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 </Note>
     
@@ -1818,6 +1822,95 @@ When set to `true`, the platform deletes the asset even if indexed assets refere
 </dl>
 </details>
 
+<details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">replace_user_metadata</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
+- A key with a value creates or replaces that key.
+- A key set to an empty string (`""`) or `null` is ignored.
+- A key you omit from the request body is removed.
+
+To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.assets.replace_user_metadata(
+    asset_id="6298d673f1090f1100476d4c",
+    user_metadata={
+        "category": "recentlyAdded",
+        "batchNumber": 5,
+        "rating": 9.3,
+        "needsReview": True,
+    },
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset whose user-defined metadata to replace.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_metadata:** `UserMetadata` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">delete_user_metadata</a>(...)</code></summary>
 <dl>
 <dd>
@@ -1830,7 +1923,7 @@ When set to `true`, the platform deletes the asset even if indexed assets refere
 <dl>
 <dd>
 
-This method deletes the user-defined metadata of the specified asset.
+This method deletes the user-defined metadata of the specified asset. To achieve the same result, you can also send an empty object (`{}`) in the `user_metadata` field of the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-asset-user-metadata) method.
 
 This action cannot be undone.
 </dd>
@@ -1908,7 +2001,7 @@ This method updates the user-defined metadata of the specified asset. The platfo
 - A key set to an empty string (`""`) is ignored.
 - A key you omit from the request keeps its current value.
 
-To replace all metadata, first delete it using [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint, then use this method to set the new values.
+To replace all metadata in a single call, use the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint instead.
 </dd>
 </dl>
 </dd>
@@ -3844,10 +3937,11 @@ Maximum duration for each extracted segment, in seconds. Set this value to split
 
 **start_time:** `typing.Optional[float]` 
 
-Start of the analysis window, in seconds. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
 <Note title="Notes">
-- If omitted, defaults to `0`.
+- If omitted, defaults to the video's internal start time.
+- Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
 - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
@@ -3861,10 +3955,11 @@ Start of the analysis window, in seconds. Use with `end_time` to analyze only a 
 
 **end_time:** `typing.Optional[float]` 
 
-End of the analysis window, in seconds. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
 
 <Note title="Notes">
-- If omitted, defaults to the video duration.
+- If omitted, defaults to the video's internal start time plus its duration.
+- Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
 - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
 - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
