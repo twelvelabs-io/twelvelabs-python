@@ -8,6 +8,7 @@ from ....core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ....core.serialization import FieldMetadata
 from ....types.hls_object import HlsObject
 from ....types.transcription_data import TranscriptionData
+from ....types.user_metadata import UserMetadata
 from .videos_retrieve_response_embedding import VideosRetrieveResponseEmbedding
 from .videos_retrieve_response_system_metadata import VideosRetrieveResponseSystemMetadata
 
@@ -43,7 +44,7 @@ class VideosRetrieveResponse(UniversalBaseModel):
     System-generated metadata about the video.
     """
 
-    user_metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    user_metadata: typing.Optional[UserMetadata] = pydantic.Field(default=None)
     """
     User-defined metadata for this video.
     """

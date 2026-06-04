@@ -13,12 +13,16 @@ class AnalyzeTimeRange(UniversalBaseModel):
 
     start_time: float = pydantic.Field()
     """
-    The start of the window, in seconds. Must be less than `end_time` and within the video duration.
+    The start of the window, as an absolute timestamp in seconds, based on the video's internal metadata. Must be less than `end_time` and within the video duration.
+    
+    Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
     """
 
     end_time: float = pydantic.Field()
     """
-    The end of the window, in seconds. Must be greater than `start_time` by at least `2` seconds and within the video duration.
+    The end of the window, as an absolute timestamp in seconds, based on the video's internal metadata. Must be greater than `start_time` by at least `2` seconds and within the video duration.
+    
+    Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
     """
 
     if IS_PYDANTIC_V2:
