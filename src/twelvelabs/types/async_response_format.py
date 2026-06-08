@@ -159,7 +159,7 @@ class AsyncResponseFormat(UniversalBaseModel):
 
     segment_definitions: typing.Optional[typing.List[SegmentDefinition]] = pydantic.Field(default=None)
     """
-    Define the types of segments to extract from your video. Minimum 1, maximum 10 definitions. The number of segment definitions affects billing. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
+    Define the types of segments to extract from your video. Minimum 1, maximum 20 definitions. The number of segment definitions affects billing. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
     """
 
     segment_time_format: typing.Optional[AsyncResponseFormatSegmentTimeFormat] = pydantic.Field(default=None)

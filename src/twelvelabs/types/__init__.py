@@ -98,6 +98,7 @@ from .embedding_task_media_metadata import (
     EmbeddingTaskMediaMetadata_Video,
 )
 from .embedding_task_response import EmbeddingTaskResponse
+from .embedding_task_response_error import EmbeddingTaskResponseError
 from .embedding_task_response_status import EmbeddingTaskResponseStatus
 from .embedding_text_image_metadata import EmbeddingTextImageMetadata
 from .embedding_video_metadata import EmbeddingVideoMetadata
@@ -312,6 +313,7 @@ __all__ = [
     "EmbeddingTaskMediaMetadata_Audio",
     "EmbeddingTaskMediaMetadata_Video",
     "EmbeddingTaskResponse",
+    "EmbeddingTaskResponseError",
     "EmbeddingTaskResponseStatus",
     "EmbeddingTextImageMetadata",
     "EmbeddingVideoMetadata",

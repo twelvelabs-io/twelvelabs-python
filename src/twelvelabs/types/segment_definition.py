@@ -26,7 +26,7 @@ class SegmentDefinition(UniversalBaseModel):
 
     fields: typing.Optional[typing.List[SegmentField]] = pydantic.Field(default=None)
     """
-    Custom fields to extract for each segment instance. Maximum 20 fields.
+    Custom fields to extract for each segment instance.
     """
 
     media_sources: typing.Optional[typing.List[SmeMediaSource]] = pydantic.Field(default=None)
