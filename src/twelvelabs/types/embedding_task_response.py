@@ -9,6 +9,7 @@ from ..core.serialization import FieldMetadata
 from .created_at import CreatedAt
 from .embedding_data import EmbeddingData
 from .embedding_task_media_metadata import EmbeddingTaskMediaMetadata
+from .embedding_task_response_error import EmbeddingTaskResponseError
 from .embedding_task_response_status import EmbeddingTaskResponseStatus
 from .updated_at import UpdatedAt
 
@@ -42,6 +43,10 @@ class EmbeddingTaskResponse(UniversalBaseModel):
     """
 
     metadata: typing.Optional[EmbeddingTaskMediaMetadata] = None
+    error: typing.Optional[EmbeddingTaskResponseError] = pydantic.Field(default=None)
+    """
+    An object describing why the embedding task failed. Present only when `status` is `failed`. Omitted otherwise.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

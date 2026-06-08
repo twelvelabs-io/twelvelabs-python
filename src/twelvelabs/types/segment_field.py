@@ -56,7 +56,7 @@ class SegmentField(UniversalBaseModel):
 
     enum: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Allowed values for this field. Maximum 50 values. Not supported when `type` is `timestamp`.
+    Allowed values for this field. Maximum 100 values. Not supported when `type` is `timestamp`.
     """
 
     items: typing.Optional[SegmentFieldItems] = pydantic.Field(default=None)
