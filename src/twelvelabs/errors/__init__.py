@@ -5,15 +5,19 @@
 from .bad_request_error import BadRequestError
 from .conflict_error import ConflictError
 from .forbidden_error import ForbiddenError
+from .gateway_timeout_error import GatewayTimeoutError
 from .internal_server_error import InternalServerError
 from .not_found_error import NotFoundError
+from .service_unavailable_error import ServiceUnavailableError
 from .too_many_requests_error import TooManyRequestsError
 
 __all__ = [
     "BadRequestError",
     "ConflictError",
     "ForbiddenError",
+    "GatewayTimeoutError",
     "InternalServerError",
     "NotFoundError",
+    "ServiceUnavailableError",
     "TooManyRequestsError",
 ]
