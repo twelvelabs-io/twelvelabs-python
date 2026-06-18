@@ -68,6 +68,8 @@ class RawBaseClient:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
         - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
+        On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -108,7 +110,7 @@ class RawBaseClient:
 
             | Model | Min | Max | Default |
             |-------|-----|-----|---------|
-            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
             | Pegasus 1.5 | 512 | 98,304 | 4,096 |
 
         start_time : typing.Optional[float]
@@ -265,6 +267,8 @@ class RawBaseClient:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
         - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
+        On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -305,7 +309,7 @@ class RawBaseClient:
 
             | Model | Min | Max | Default |
             |-------|-----|-----|---------|
-            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
             | Pegasus 1.5 | 512 | 98,304 | 4,096 |
 
         start_time : typing.Optional[float]
@@ -451,6 +455,8 @@ class AsyncRawBaseClient:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
         - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
+        On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -491,7 +497,7 @@ class AsyncRawBaseClient:
 
             | Model | Min | Max | Default |
             |-------|-----|-----|---------|
-            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
             | Pegasus 1.5 | 512 | 98,304 | 4,096 |
 
         start_time : typing.Optional[float]
@@ -648,6 +654,8 @@ class AsyncRawBaseClient:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
         - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
 
+        On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -688,7 +696,7 @@ class AsyncRawBaseClient:
 
             | Model | Min | Max | Default |
             |-------|-----|-----|---------|
-            | Pegasus 1.2 | 1 | 4,096 | 4,096 |
+            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
             | Pegasus 1.5 | 512 | 98,304 | 4,096 |
 
         start_time : typing.Optional[float]

@@ -161,6 +161,8 @@ class TasksClient:
         2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
         3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
+        On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -217,7 +219,7 @@ class TasksClient:
 
             | Model | Mode | Min | Max | Default |
             |-------|------|-----|-----|---------|
-            | Pegasus 1.2 | — | 1 | 4,096 | 4096 |
+            | Pegasus 1.2 | — | 2 | 4,096 | 4096 |
             | Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
             | Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
@@ -517,6 +519,8 @@ class AsyncTasksClient:
         2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
         3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
+        On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -573,7 +577,7 @@ class AsyncTasksClient:
 
             | Model | Mode | Min | Max | Default |
             |-------|------|-----|-----|---------|
-            | Pegasus 1.2 | — | 1 | 4,096 | 4096 |
+            | Pegasus 1.2 | — | 2 | 4,096 | 4096 |
             | Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
             | Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 

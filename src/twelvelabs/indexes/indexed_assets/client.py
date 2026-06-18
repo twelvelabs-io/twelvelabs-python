@@ -217,6 +217,8 @@ class IndexedAssetsClient:
 
         If you want to both search and analyze your videos, the most restrictive requirements apply.
 
+        Indexes have limits on video hours and video count. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
+
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
         </Note>
@@ -693,6 +695,8 @@ class AsyncIndexedAssetsClient:
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
         If you want to both search and analyze your videos, the most restrictive requirements apply.
+
+        Indexes have limits on video hours and video count. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
