@@ -45,6 +45,7 @@ from .analyze_text_prompt import AnalyzeTextPrompt
 from .analyze_time_range import AnalyzeTimeRange
 from .asset import Asset
 from .asset_detail import AssetDetail
+from .asset_error import AssetError
 from .asset_hls import AssetHls
 from .asset_hls_status import AssetHlsStatus
 from .asset_method import AssetMethod
@@ -64,6 +65,7 @@ from .audio_segment import AudioSegment
 from .audio_segmentation import AudioSegmentation
 from .audio_segmentation_fixed import AudioSegmentationFixed
 from .audio_segmentation_strategy import AudioSegmentationStrategy
+from .audio_stream import AudioStream
 from .bad_request_error_body import BadRequestErrorBody
 from .base_embedding_metadata import BaseEmbeddingMetadata
 from .base_segment import BaseSegment
@@ -208,6 +210,7 @@ from .summarize_summary_result import SummarizeSummaryResult
 from .summarize_summary_result_summarize_type import SummarizeSummaryResultSummarizeType
 from .sync_response_format import SyncResponseFormat
 from .sync_response_format_type import SyncResponseFormatType
+from .technical_metadata import TechnicalMetadata
 from .text_embedding_result import TextEmbeddingResult
 from .text_image_input_request import TextImageInputRequest
 from .text_input_request import TextInputRequest
@@ -238,6 +241,7 @@ from .video_segmentation_dynamic import VideoSegmentationDynamic
 from .video_segmentation_dynamic_dynamic import VideoSegmentationDynamicDynamic
 from .video_segmentation_fixed import VideoSegmentationFixed
 from .video_segmentation_fixed_fixed import VideoSegmentationFixedFixed
+from .video_stream import VideoStream
 from .video_vector import VideoVector
 from .video_vector_system_metadata import VideoVectorSystemMetadata
 from .videos_list_request_duration import VideosListRequestDuration
@@ -278,6 +282,7 @@ __all__ = [
     "AnalyzeTimeRange",
     "Asset",
     "AssetDetail",
+    "AssetError",
     "AssetHls",
     "AssetHlsStatus",
     "AssetMethod",
@@ -297,6 +302,7 @@ __all__ = [
     "AudioSegmentation",
     "AudioSegmentationFixed",
     "AudioSegmentationStrategy",
+    "AudioStream",
     "BadRequestErrorBody",
     "BaseEmbeddingMetadata",
     "BaseSegment",
@@ -435,6 +441,7 @@ __all__ = [
     "SummarizeSummaryResultSummarizeType",
     "SyncResponseFormat",
     "SyncResponseFormatType",
+    "TechnicalMetadata",
     "TextEmbeddingResult",
     "TextImageInputRequest",
     "TextInputRequest",
@@ -470,6 +477,7 @@ __all__ = [
     "VideoSegmentationFixedFixed",
     "VideoSegmentation_Dynamic",
     "VideoSegmentation_Fixed",
+    "VideoStream",
     "VideoVector",
     "VideoVectorSystemMetadata",
     "VideosListRequestDuration",

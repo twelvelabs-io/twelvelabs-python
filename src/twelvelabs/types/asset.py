@@ -34,12 +34,14 @@ class Asset(UniversalBaseModel):
 
     status: typing.Optional[AssetStatus] = pydantic.Field(default=None)
     """
-    Indicates the current status of the asset.
+    Indicates the current processing status of the asset.
+    
+    A newly uploaded asset starts in the `processing` status and transitions asynchronously to `ready` on success or to `failed` on error, typically within a few seconds to a few minutes. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status is `ready` before you use the asset in downstream workflows.
     
     **Values**:
-    - `failed`: The platform failed to process the upload
-    - `processing`: The platform is processing the uploaded file
-    - `ready`: The asset is ready to use
+    - `processing`: The asset is not yet usable. This can mean the upload is still in progress (for example, the platform is still fetching the file from a URL, or a multipart upload has not completed), or the upload has finished and the platform is validating the file. The `technical_metadata` field is omitted from the response.
+    - `ready`: The platform validated the asset successfully, and the asset is ready to use.
+    - `failed`: The platform could not process the file. The `error` field describes the reason, and the `technical_metadata` field may be partially populated.
     """
 
     filename: typing.Optional[str] = pydantic.Field(default=None)
@@ -50,16 +52,6 @@ class Asset(UniversalBaseModel):
     file_type: typing.Optional[str] = pydantic.Field(default=None)
     """
     The MIME type of the asset file.
-    """
-
-    size: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    The file size of the asset in bytes. This field is absent while the asset is still being processed.
-    """
-
-    duration: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    The duration of the asset in seconds. Only present for video and audio assets. This field is absent for image assets or while the asset is still being processed.
     """
 
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)

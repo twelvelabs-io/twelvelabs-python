@@ -151,6 +151,7 @@ class TasksClient:
           3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
           <Note title="Notes">
+          - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
           - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
           - Embeddings are stored for seven days.
           </Note>
@@ -223,12 +224,7 @@ class TasksClient:
         """
         This method retrieves the status and the results of an async embedding task.
 
-        **Task statuses**:
-        - `processing`: The platform is creating the embeddings.
-        - `ready`: Processing is complete. Embeddings are available in the response.
-        - `failed`: The task failed. Embeddings were not created.
-
-        Invoke this method repeatedly until the `status` field is `ready`. When `status` is `ready`, use the embeddings from the response.
+        Invoke this method repeatedly until the `status` field is `ready` or `failed`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason.
 
         <Note title="Note">
         Embeddings are stored for seven days.
@@ -404,6 +400,7 @@ class AsyncTasksClient:
           3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
           <Note title="Notes">
+          - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
           - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
           - Embeddings are stored for seven days.
           </Note>
@@ -484,12 +481,7 @@ class AsyncTasksClient:
         """
         This method retrieves the status and the results of an async embedding task.
 
-        **Task statuses**:
-        - `processing`: The platform is creating the embeddings.
-        - `ready`: Processing is complete. Embeddings are available in the response.
-        - `failed`: The task failed. Embeddings were not created.
-
-        Invoke this method repeatedly until the `status` field is `ready`. When `status` is `ready`, use the embeddings from the response.
+        Invoke this method repeatedly until the `status` field is `ready` or `failed`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason.
 
         <Note title="Note">
         Embeddings are stored for seven days.
