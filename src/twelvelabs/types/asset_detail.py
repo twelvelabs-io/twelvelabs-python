@@ -5,8 +5,10 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
 from .asset import Asset
+from .asset_error import AssetError
 from .asset_hls import AssetHls
 from .asset_thumbnail import AssetThumbnail
+from .technical_metadata import TechnicalMetadata
 
 
 class AssetDetail(Asset):
@@ -16,6 +18,21 @@ class AssetDetail(Asset):
 
     hls: typing.Optional[AssetHls] = None
     thumbnail: typing.Optional[AssetThumbnail] = None
+    technical_metadata: typing.Optional[TechnicalMetadata] = None
+    size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The file size of the asset in bytes. The platform finalizes this value when the asset reaches the `ready` status.
+    """
+
+    duration: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The duration of the asset in seconds. Only present for video and audio assets; absent for images. The platform finalizes this value when the asset reaches the `ready` status.
+    """
+
+    error: typing.Optional[AssetError] = pydantic.Field(default=None)
+    """
+    The reason the asset failed. The platform returns this field only when `status` is `failed`.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

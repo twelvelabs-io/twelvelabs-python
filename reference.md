@@ -1530,6 +1530,8 @@ The number of items to return on each page.
 
 This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
 
+The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to `ready` on success or to `failed` when the file is invalid or corrupt, typically within a few seconds to a few minutes. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
+
 **Supported content**: Video, audio, and images.
 
 **Upload methods**:
@@ -1539,7 +1541,9 @@ This method creates an asset by uploading a file to the platform. Assets are med
 **Upload limits**:
 - **Video and audio, local files**: Up to 200 MB
 - **Video and audio, public URLs**: Up to 4 GB
-- **Images**: Up to 5 MB
+- **Images**: Up to 32 MB
+
+Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits when you index or analyze the asset. For details, see the requirements below.
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -1609,7 +1613,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 
 Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-Public video and audio URLs support up to 4 GB. Image URLs support up to 5 MB.
+Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB.
     
 </dd>
 </dl>
@@ -1929,7 +1933,7 @@ client.assets.replace_user_metadata(
 <dl>
 <dd>
 
-This method deletes the user-defined metadata of the specified asset. To achieve the same result, you can also send an empty object (`{}`) in the `user_metadata` field of the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-asset-user-metadata) method.
+This method deletes the user-defined metadata of the specified asset. To achieve the same result, you can also send an empty object (`{}`) in the `user_metadata` field of the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-user-metadata) method.
 
 This action cannot be undone.
 </dd>
@@ -2007,7 +2011,7 @@ This method updates the user-defined metadata of the specified asset. The platfo
 - A key set to an empty string (`""`) is ignored.
 - A key you omit from the request keeps its current value.
 
-To replace all metadata in a single call, use the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-asset-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint instead.
+To replace all metadata in a single call, use the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint instead.
 </dd>
 </dl>
 </dd>
@@ -2189,7 +2193,7 @@ This method creates a multipart upload session for a local video file.
 
 **Supported content**: Video
 
-**Upload limits**: Local video files up to 4 GB.
+**Upload limits**: Local video files up to 10 GB.
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -2328,7 +2332,7 @@ Use this method to:
 - Determine if the session has expired
 - Retrieve the status information for each chunk
 
-You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+After you report chunk completion, call this method to confirm the upload session reached the `completed` status. This status means the platform received the file, not that the asset is ready to use. The platform then validates the asset asynchronously. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it.
 </dd>
 </dl>
 </dd>
@@ -5576,6 +5580,7 @@ This endpoint creates embeddings for audio and video content asynchronously.
   3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
   <Note title="Notes">
+  - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
   - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
   - Embeddings are stored for seven days.
   </Note>
@@ -5689,12 +5694,7 @@ The type of content for the embeddings.
 
 This method retrieves the status and the results of an async embedding task.
 
-**Task statuses**:
-- `processing`: The platform is creating the embeddings.
-- `ready`: Processing is complete. Embeddings are available in the response.
-- `failed`: The task failed. Embeddings were not created.
-
-Invoke this method repeatedly until the `status` field is `ready`. When `status` is `ready`, use the embeddings from the response.
+Invoke this method repeatedly until the `status` field is `ready` or `failed`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason.
 
 <Note title="Note">
 Embeddings are stored for seven days.

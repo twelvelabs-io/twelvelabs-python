@@ -102,7 +102,7 @@ class MultipartUploadClient:
 
         **Supported content**: Video
 
-        **Upload limits**: Local video files up to 4 GB.
+        **Upload limits**: Local video files up to 10 GB.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -186,7 +186,7 @@ class MultipartUploadClient:
         - Determine if the session has expired
         - Retrieve the status information for each chunk
 
-        You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+        After you report chunk completion, call this method to confirm the upload session reached the `completed` status. This status means the platform received the file, not that the asset is ready to use. The platform then validates the asset asynchronously. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it.
 
         Parameters
         ----------
@@ -426,7 +426,7 @@ class AsyncMultipartUploadClient:
 
         **Supported content**: Video
 
-        **Upload limits**: Local video files up to 4 GB.
+        **Upload limits**: Local video files up to 10 GB.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -518,7 +518,7 @@ class AsyncMultipartUploadClient:
         - Determine if the session has expired
         - Retrieve the status information for each chunk
 
-        You must call this method after reporting chunk completion to confirm the upload has transitioned to the `completed` status before using the asset.
+        After you report chunk completion, call this method to confirm the upload session reached the `completed` status. This status means the platform received the file, not that the asset is ready to use. The platform then validates the asset asynchronously. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it.
 
         Parameters
         ----------
