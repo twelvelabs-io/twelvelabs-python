@@ -31,9 +31,13 @@ from twelvelabs import (
 )
 
 from _ks_helpers import (
+    IMAGE_PATH,
+    VIDEO_PATH,
     cleanup_knowledge_store,
+    create_asset_from_file,
     make_client,
-    setup_ready_knowledge_store,
+    wait_for_asset_ready,
+    wait_for_item_ready,
 )
 
 
@@ -131,8 +135,33 @@ def demo_crud(client):
     cleanup_knowledge_store(client, ks.id)
 
 
-def demo_items(client, ks_id, items):
+def demo_items(client, ks_id):
     print("\n=== Items ===")
+    items = {}
+
+    # Add a video and an image to the knowledge store. Upload each file as an
+    # asset, wait for it to be ready, then create a knowledge store item from it.
+    video_asset_id = create_asset_from_file(client, VIDEO_PATH)
+    wait_for_asset_ready(client, video_asset_id)
+    video_item = client.knowledge_store_items.create(
+        knowledge_store_id=ks_id, asset_id=video_asset_id, asset_type="video"
+    )
+    items["video"] = video_item.id
+    print(f"  created video item: id={video_item.id}")
+
+    image_asset_id = create_asset_from_file(client, IMAGE_PATH)
+    wait_for_asset_ready(client, image_asset_id)
+    image_item = client.knowledge_store_items.create(
+        knowledge_store_id=ks_id, asset_id=image_asset_id, asset_type="image"
+    )
+    items["image"] = image_item.id
+    print(f"  created image item: id={image_item.id}")
+
+    # Wait for both items to finish processing.
+    for kind, item_id in items.items():
+        print(f"  waiting for {kind} item {item_id} to be ready ...")
+        wait_for_item_ready(client, ks_id, item_id)
+
     print("  list all items:")
     for it in client.knowledge_store_items.list(
         knowledge_store_id=ks_id, page_limit=50, sort_by="created_at", sort_option="desc"
@@ -146,12 +175,13 @@ def demo_items(client, ks_id, items):
     print(f"    {len(ready)} ready item(s)")
 
     # Retrieve a single item.
-    any_item_id = next(iter(items.values()))
     single = client.knowledge_store_items.retrieve(
-        knowledge_store_id=ks_id, item_id=any_item_id
+        knowledge_store_id=ks_id, item_id=items["video"]
     )
     print(f"  retrieved item {single.id}: type={single.asset_type} "
           f"system_metadata={single.system_metadata is not None}")
+
+    return items
 
 
 def demo_item_collections(client, ks_id, items):
@@ -199,11 +229,7 @@ def demo_item_collections(client, ks_id, items):
 def demo_search(client, ks_id, items):
     print("\n=== Search ===")
 
-    # NOTE: the spec/SDK document `search_options` as optional (videos default
-    # to visual matching when omitted), but the deployed API (both prod and dev
-    # as of this writing) returns 400 "The search_options parameter is required
-    # but was not provided" when it is omitted. Every call below therefore passes
-    # search_options explicitly.
+    # `search_options` selects which video modalities to match on.
     visual_only = SearchKnowledgeStoreOptions(
         video=VideoSearchOptions(modalities=["visual"])
     )
@@ -249,16 +275,7 @@ def demo_search(client, ks_id, items):
         )
         print_search_response(resp, f"item_id in [{items['video']}]")
 
-    # 5) Pagination with small page_size.
-    # NOTES on cursor pagination across environments:
-    #  - prod (as of this writing) does NOT return a next_page_token on a
-    #    truncated page, so the page-2 branch is simply skipped there.
-    #  - where cursor pagination is available (e.g. dev), a truncated page does
-    #    return a token, but fetching the next page can currently fail to
-    #    deserialize: the server may omit `modalities` on a match while the SDK
-    #    marks VideoMatch.modalities as required, raising a pydantic
-    #    ValidationError. The page-2 fetch is therefore guarded so this example
-    #    degrades gracefully instead of crashing.
+    # 5) Paginate with a small page_size, then fetch the next page with the token.
     resp = client.knowledge_stores.search(
         knowledge_store_id=ks_id,
         query=KnowledgeStoreSearchQuery(text="a person or animal moving"),
@@ -267,18 +284,14 @@ def demo_search(client, ks_id, items):
     )
     print_search_response(resp, "page_size=1")
     if resp.next_page_token:
-        try:
-            page2 = client.knowledge_stores.search(
-                knowledge_store_id=ks_id,
-                query=KnowledgeStoreSearchQuery(text="a person or animal moving"),
-                search_options=visual_only,
-                page_size=1,
-                page_token=resp.next_page_token,
-            )
-            print_search_response(page2, "page 2 (via next_page_token)")
-        except Exception as exc:  # noqa: BLE001
-            print(f"  page 2 fetch failed to deserialize: {type(exc).__name__} "
-                  f"(likely a match missing the required `modalities` field)")
+        page2 = client.knowledge_stores.search(
+            knowledge_store_id=ks_id,
+            query=KnowledgeStoreSearchQuery(text="a person or animal moving"),
+            search_options=visual_only,
+            page_size=1,
+            page_token=resp.next_page_token,
+        )
+        print_search_response(page2, "page 2 (via next_page_token)")
 
 
 def main():
@@ -287,22 +300,12 @@ def main():
         demo_ingestion_config_variants(client)
         demo_crud(client)
 
-        # Full flow: create a store with a ready video, then exercise items,
-        # collections, and search against it.
-        #
-        # NOTE on image items (asset_type="image"), as of this writing:
-        #  - prod rejects them with 422 "The asset_type parameter is invalid".
-        #  - dev accepts the create call, but the image can stay `queued` for a
-        #    long time (image ingestion lag), so waiting for `ready` may time out.
-        # Kept video-only here so the example runs cleanly everywhere. Set
-        # add_image=True on an environment where image items are fully supported.
-        setup = setup_ready_knowledge_store(
-            client, name=f"ks-search-{uuid.uuid4()}", add_image=False
-        )
-        ks = setup.knowledge_store
-        items = setup.items
+        # Full flow: create a store, add a video and an image item, then
+        # exercise items, collections, and search against it.
+        ks = client.knowledge_stores.create(name=f"ks-search-{uuid.uuid4()}")
+        print(f"\nCreated knowledge store: id={ks.id} name={ks.name}")
         try:
-            demo_items(client, ks.id, items)
+            items = demo_items(client, ks.id)
             demo_item_collections(client, ks.id, items)
             demo_search(client, ks.id, items)
         finally:

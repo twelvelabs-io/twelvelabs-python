@@ -8,7 +8,7 @@ reuse them in your own scripts.
 Environment:
     API_KEY               (required) your TwelveLabs API key
     TWELVELABS_BASE_URL   (optional) override the API base URL. When unset the
-                          SDK default (prod, https://api.twelvelabs.io/v1.3) is used.
+                          SDK default (https://api.twelvelabs.io/v1.3) is used.
 """
 
 import os
