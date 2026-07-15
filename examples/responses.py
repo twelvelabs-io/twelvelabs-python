@@ -38,11 +38,10 @@ from _ks_helpers import (
 
 
 def create_response(client, **kwargs):
-    """Wrapper around responses.create_response that retries on HTTP 429.
+    """Wrapper around responses.create that retries on HTTP 429.
 
-    The /responses endpoint is rate-limited (observed: ~4 requests/minute), so
-    a script that fires several calls in a row will get a 429. This honors the
-    `retry-after` header and retries.
+    The /responses endpoint is rate-limited, so a script that fires several
+    calls in a row may get a 429. This honors the `retry-after` header and retries.
     """
     while True:
         try:
@@ -223,9 +222,8 @@ def demo_streaming(client, ks_id):
     text as they arrive.
     """
     print("\n[streaming] responses.create_stream():")
-    # NOTE: create_stream() is lazy — the request (and any 429) fires when the
-    # iterator is first consumed, not at the call. So the whole create+consume
-    # is wrapped in the 429 retry.
+    # create_stream() is lazy: the request fires when the iterator is first
+    # consumed, not at the call, so the whole create+consume is wrapped in the retry.
     while True:
         try:
             text_parts = []
@@ -260,11 +258,9 @@ def demo_streaming(client, ks_id):
 
 def main():
     with make_client() as client:
-        # video-only: image items (asset_type="image") are rejected on prod and
-        # process slowly on dev as of this writing. Set add_image=True where
-        # image items are fully supported.
+        # Create a knowledge store with a ready video and image item to reason over.
         setup = setup_ready_knowledge_store(
-            client, name=f"ks-responses-{uuid.uuid4()}", add_image=False
+            client, name=f"ks-responses-{uuid.uuid4()}"
         )
         ks = setup.knowledge_store
         items = setup.items
