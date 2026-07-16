@@ -49,6 +49,7 @@ def create_asset_from_file(client: TwelveLabs, path: str, **kwargs) -> str:
     with open(path, "rb") as f:
         asset = client.assets.create(method="direct", file=f, **kwargs)
     print(f"  Created asset (direct): id={asset.id} from {os.path.basename(path)}")
+    assert asset.id is not None
     return asset.id
 
 
@@ -56,6 +57,7 @@ def create_asset_from_url(client: TwelveLabs, url: str, **kwargs) -> str:
     """Create an asset from a public URL (method='url'). Returns the asset id."""
     asset = client.assets.create(method="url", url=url, **kwargs)
     print(f"  Created asset (url): id={asset.id}")
+    assert asset.id is not None
     return asset.id
 
 
@@ -119,6 +121,8 @@ def setup_ready_knowledge_store(
         name=name, ingestion_config=ingestion_config
     )
     print(f"Created knowledge store: id={ks.id} name={ks.name}")
+    assert ks.id is not None
+    ks_id: str = ks.id
 
     items: Dict[str, str] = {}
 
@@ -126,8 +130,9 @@ def setup_ready_knowledge_store(
         video_asset_id = create_asset_from_file(client, VIDEO_PATH)
         wait_for_asset_ready(client, video_asset_id)
         video_item = client.knowledge_store_items.create(
-            knowledge_store_id=ks.id, asset_id=video_asset_id, asset_type="video"
+            knowledge_store_id=ks_id, asset_id=video_asset_id, asset_type="video"
         )
+        assert video_item.id is not None
         items["video"] = video_item.id
         print(f"  Added video item: id={video_item.id}")
 
@@ -135,15 +140,16 @@ def setup_ready_knowledge_store(
         image_asset_id = create_asset_from_file(client, IMAGE_PATH)
         wait_for_asset_ready(client, image_asset_id)
         image_item = client.knowledge_store_items.create(
-            knowledge_store_id=ks.id, asset_id=image_asset_id, asset_type="image"
+            knowledge_store_id=ks_id, asset_id=image_asset_id, asset_type="image"
         )
+        assert image_item.id is not None
         items["image"] = image_item.id
         print(f"  Added image item: id={image_item.id}")
 
     if wait:
         for kind, item_id in items.items():
             print(f"Waiting for {kind} item {item_id} to be ready ...")
-            wait_for_item_ready(client, ks.id, item_id)
+            wait_for_item_ready(client, ks_id, item_id)
 
     return KnowledgeStoreSetup(knowledge_store=ks, items=items)
 
