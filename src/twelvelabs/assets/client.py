@@ -89,6 +89,8 @@ class AssetsClient:
         response = client.assets.list(
             page=1,
             page_limit=10,
+            asset_ids=["6298d673f1090f1100476d4c", "6298d673f1090f1100476d4d"],
+            asset_types=["image", "video"],
             filename="meeting",
         )
         for item in response:
@@ -490,6 +492,8 @@ class AsyncAssetsClient:
             response = await client.assets.list(
                 page=1,
                 page_limit=10,
+                asset_ids=["6298d673f1090f1100476d4c", "6298d673f1090f1100476d4d"],
+                asset_types=["image", "video"],
                 filename="meeting",
             )
             async for item in response:

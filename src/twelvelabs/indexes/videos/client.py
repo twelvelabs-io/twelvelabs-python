@@ -231,6 +231,7 @@ class VideosClient:
         client.indexes.videos.retrieve(
             index_id="6298d673f1090f1100476d4c",
             video_id="6298d673f1090f1100476d4c",
+            embedding_option=["visual"],
             transcription=True,
         )
         """
@@ -557,6 +558,7 @@ class AsyncVideosClient:
             await client.indexes.videos.retrieve(
                 index_id="6298d673f1090f1100476d4c",
                 video_id="6298d673f1090f1100476d4c",
+                embedding_option=["visual"],
                 transcription=True,
             )
 

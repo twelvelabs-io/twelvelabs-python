@@ -12,7 +12,11 @@ from .tasks_retrieve_response_video_embedding import TasksRetrieveResponseVideoE
 
 
 class TasksRetrieveResponse(UniversalBaseModel):
-    video_embedding: typing.Optional[TasksRetrieveResponseVideoEmbedding] = None
+    video_embedding: typing.Optional[TasksRetrieveResponseVideoEmbedding] = pydantic.Field(default=None)
+    """
+    An object containing the metadata associated with the embedding.
+    """
+
     id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="_id")] = pydantic.Field(default=None)
     """
     The unique identifier of the video embedding task.

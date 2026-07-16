@@ -317,6 +317,7 @@ class TasksClient:
         )
         client.embed.tasks.retrieve(
             task_id="663da73b31cdd0c1f638a8e6",
+            embedding_option=["visual"],
         )
         """
         _response = self._raw_client.retrieve(
@@ -656,6 +657,7 @@ class AsyncTasksClient:
         async def main() -> None:
             await client.embed.tasks.retrieve(
                 task_id="663da73b31cdd0c1f638a8e6",
+                embedding_option=["visual"],
             )
 
 

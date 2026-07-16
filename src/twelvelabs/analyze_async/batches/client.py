@@ -94,6 +94,8 @@ class BatchesClient:
         response = client.analyze_async.batches.list(
             page=1,
             page_limit=10,
+            status=["processing", "canceling"],
+            analysis_mode=["general", "time_based_metadata"],
         )
         for item in response:
             yield item
@@ -469,6 +471,8 @@ class AsyncBatchesClient:
             response = await client.analyze_async.batches.list(
                 page=1,
                 page_limit=10,
+                status=["processing", "canceling"],
+                analysis_mode=["general", "time_based_metadata"],
             )
             async for item in response:
                 yield item
