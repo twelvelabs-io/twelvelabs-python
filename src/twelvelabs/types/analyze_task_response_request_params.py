@@ -26,7 +26,7 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     The natural-language prompt for this task. Present only when `analysis_mode` is `general` and the task was created with `prompt` (not `prompt_v2`).
     
     - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): Truncated to the first 30 characters.
-    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task): Returns the full text.
+    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results): Returns the full text.
     """
 
     prompt_v_2: typing_extensions.Annotated[
@@ -36,7 +36,7 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     The structured prompt for this task. Present only when `analysis_mode` is `general` and the task was created with `prompt_v2`. When present, the response excludes the flat `prompt` field.
     
     - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): `input_text` is truncated to the first 30 characters.
-    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task): Returns the full text.
+    - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results): Returns the full text.
     """
 
     response_format: typing.Optional[AnalyzeTaskResponseRequestParamsResponseFormat] = pydantic.Field(default=None)

@@ -448,6 +448,7 @@ response = client.tasks.list(
     sort_by="created_at",
     sort_option="desc",
     index_id="630aff993fcee0532cb809d0",
+    status=["ready", "failed"],
     filename="01.mp4",
     duration=531.998133,
     width=640,
@@ -1428,6 +1429,8 @@ client = TwelveLabs(
 response = client.assets.list(
     page=1,
     page_limit=10,
+    asset_ids=["6298d673f1090f1100476d4c", "6298d673f1090f1100476d4d"],
+    asset_types=["image", "video"],
     filename="meeting",
 )
 for item in response:
@@ -3040,6 +3043,1814 @@ client.entity_collections.update(
 </dl>
 </details>
 
+## Knowledge stores
+<details><summary><code>client.knowledge_stores.<a href="src/twelvelabs/knowledge_stores/client.py">list</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns a list of the knowledge stores in your account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.knowledge_stores.list(
+    page=1,
+    page_limit=10,
+    sort_by="created_at",
+    sort_option="desc",
+)
+for item in response:
+    yield item
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    yield page
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort_by:** `typing.Optional[KnowledgeStoresListRequestSortBy]` 
+
+The field to sort on. The following options are available:
+- `created_at`: Sorts by the time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the knowledge store was created.
+- `updated_at`: Sorts by the time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the knowledge store was updated.
+
+**Default**: `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort_option:** `typing.Optional[str]` 
+
+The sorting direction. The following options are available:
+- `asc`
+- `desc`
+
+**Default**: `desc`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_stores.<a href="src/twelvelabs/knowledge_stores/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method creates a knowledge store.
+
+Provide a name. Optionally include a description, a metadata map, and an `ingestion_config` object that controls how content added to the store is processed. The `ingestion_config` object is immutable after creation.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_stores.create(
+    name="Product Demo Analysis",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `str` — The name of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ingestion_config:** `typing.Optional[IngestionConfig]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — An optional description of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the knowledge store. Both keys and values must be strings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_stores.<a href="src/twelvelabs/knowledge_stores/client.py">retrieve</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method retrieves the details of a specific knowledge store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_stores.retrieve(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_stores.<a href="src/twelvelabs/knowledge_stores/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method deletes the specified knowledge store and all its items.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_stores.delete(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_stores.<a href="src/twelvelabs/knowledge_stores/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method updates the specified knowledge store. Only the `name`, `description`, and `metadata` fields can be updated.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_stores.update(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` — The name of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — An optional description of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the knowledge store. Both keys and values must be strings. The provided object replaces the existing metadata in full, so include every key you want to keep. To clear all metadata, set this field to an empty object (`{}`). A null value is stored as an empty string.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_stores.<a href="src/twelvelabs/knowledge_stores/client.py">search</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method searches a knowledge store using natural language and returns matching video clips and images ranked by relevance.
+
+Provide your natural-language query in the `query.text` field. Use the `filter` parameter to choose which items to search: by type of item (the `asset_type` field) or by specific items (the `item_id` field). Use the optional `search_options` parameter to control how videos are matched (by visual content, audio, or both). If you omit it, videos are matched on their visual content. Images are always matched on their visual content.
+
+By default, each result is an individual match: a video clip or an image. Set the `group_by` parameter to `item` to group clips under their parent item.
+
+<Note title="Note">
+This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+</Note>
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import (
+    KnowledgeStoreSearchQuery,
+    SearchKnowledgeStoreOptions,
+    TwelveLabs,
+    VideoSearchOptions,
+)
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_stores.search(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    query=KnowledgeStoreSearchQuery(
+        text="A person cooking pasta",
+    ),
+    search_options=SearchKnowledgeStoreOptions(
+        video=VideoSearchOptions(
+            modalities=["visual", "audio"],
+        ),
+    ),
+    group_by="none",
+    page_size=10,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `KnowledgeStoreSearchQuery` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filter:** `typing.Optional[SearchKnowledgeStoreFilter]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search_options:** `typing.Optional[SearchKnowledgeStoreOptions]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_by:** `typing.Optional[SearchKnowledgeStoreRequestGroupBy]` 
+
+Controls how the platform groups matches in the response.
+
+- `none`: Returns individual matches ordered by relevance.
+- `item`: Groups matches under their parent item.
+
+**Default**: `none`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_size:** `typing.Optional[int]` 
+
+The maximum number of results per page. A result is one entry in the `data` array. With the `group_by` parameter set to its default of `none`, each result is an individual match: a video clip or an image. When set to `item`, each result is one item: a video with all its matching clips, or an image.
+
+**Default**: `10`. **Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_token:** `typing.Optional[str]` 
+
+Pagination token used to retrieve the next page of results. Omit it on the first request. To fetch the next page, set it to the `next_page_token` field returned in the previous response and send the request again.
+
+A malformed or unrecognized token returns a `400` error. A token that has expired returns a `410` error (make a new search request to obtain a fresh page token).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_metadata:** `typing.Optional[bool]` — Set to `true` to include metadata in each result. Each result includes a `metadata` object with a `system` field (platform-derived file properties such as duration and resolution) and a `user` field (metadata you attached to the item).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Knowledge store items
+<details><summary><code>client.knowledge_store_items.<a href="src/twelvelabs/knowledge_store_items/client.py">list</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns a list of items in the specified knowledge store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.knowledge_store_items.list(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    page=1,
+    page_limit=10,
+    sort_by="created_at",
+    sort_option="desc",
+    status=["queued"],
+)
+for item in response:
+    yield item
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    yield page
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort_by:** `typing.Optional[KnowledgeStoreItemsListRequestSortBy]` 
+
+The field to sort on. The following options are available:
+- `created_at`: Sorts by the time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the item was created.
+- `updated_at`: Sorts by the time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the item was last updated.
+
+**Default**: `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort_option:** `typing.Optional[str]` 
+
+The sorting direction. The following options are available:
+- `asc`
+- `desc`
+
+**Default**: `desc`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `typing.Optional[
+    typing.Union[
+        KnowledgeStoreItemsListRequestStatusItem,
+        typing.Sequence[KnowledgeStoreItemsListRequestStatusItem],
+    ]
+]` 
+
+Filter by one or more item processing statuses. For the meaning of each value, see the
+[Item statuses](/v1.3/api-reference/knowledge-store-items/the-knowledge-store-item-object#item-statuses)
+section on **The knowledge store item object** page.
+
+To filter by multiple statuses, repeat the `status` parameter for each value:
+```
+status=queued&status=pending
+```
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_items.<a href="src/twelvelabs/knowledge_store_items/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method adds an asset to a knowledge store for processing.
+The operation is asynchronous. The item is created immediately with the `queued`
+status and processed in the background.
+
+The asset must not exceed 5 GB.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_items.create(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    asset_id="6298d673f1090f1100476d4c",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset to add to the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**asset_type:** `typing.Optional[KnowledgeStoreItemAssetType]` — The type of item to create.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the item. Both keys and values must be strings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_items.<a href="src/twelvelabs/knowledge_store_items/client.py">retrieve</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method retrieves the details of a specific knowledge store item.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_items.retrieve(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_items.<a href="src/twelvelabs/knowledge_store_items/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method deletes the specified knowledge store item.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_items.delete(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Knowledge store item collections
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">list</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a list of the item collections in the specified knowledge store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.knowledge_store_item_collections.list(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    page=1,
+    page_limit=10,
+    sort_by="created_at",
+    sort_option="desc",
+)
+for item in response:
+    yield item
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    yield page
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort_by:** `typing.Optional[KnowledgeStoreItemCollectionsListRequestSortBy]` 
+
+The field to sort on. The following options are available:
+- `created_at`: Sorts by the time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the item collection was created.
+- `updated_at`: Sorts by the time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when the item collection was last updated.
+- `name`: Sorts alphabetically by the name of the item collection.
+
+**Default**: `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort_option:** `typing.Optional[str]` 
+
+The sorting direction. The following options are available:
+- `asc`
+- `desc`
+
+**Default**: `desc`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates an item collection in the specified knowledge store. An item collection is a named collection of items. Use item collections to organize and reference subsets of items together.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_collections.create(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    name="Q1 highlights",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `str` — The name of the item collection. Must be unique within the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — An optional description of the item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the item collection. Both keys and values must be strings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">retrieve</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves the details of a specific item collection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_collections.retrieve(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    collection_id="ksic_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**collection_id:** `str` — The unique identifier of the knowledge store item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes the specified item collection. The items themselves remain in the knowledge store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_collections.delete(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    collection_id="ksic_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**collection_id:** `str` — The unique identifier of the knowledge store item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the `name`, `description`, and `metadata` fields of the specified item collection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_collections.update(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    collection_id="ksic_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**collection_id:** `str` — The unique identifier of the knowledge store item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` — The name of the item collection. Must be unique within the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — An optional description of the item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the item collection. Both keys and values must be strings. To remove all metadata, set this field to an empty object (`{}`).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">list_items</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a list of the items in the specified item collection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.knowledge_store_item_collections.list_items(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    collection_id="ksic_069e9870-3c4d-7abc-9012-3456789abcde",
+    page=1,
+    page_limit=10,
+)
+for item in response:
+    yield item
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    yield page
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**collection_id:** `str` — The unique identifier of the knowledge store item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">add_items</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds one or more items to the specified item collection. This operation is idempotent — items already in the collection are skipped. Every identifier must reference an existing item in the knowledge store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_collections.add_items(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    collection_id="ksic_069e9870-3c4d-7abc-9012-3456789abcde",
+    item_ids=["ksi_069e9870-3c4d-7abc-9012-3456789abcde"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**collection_id:** `str` — The unique identifier of the knowledge store item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_ids:** `typing.Sequence[str]` — The unique identifiers of the items to add to the collection. Include up to 500 identifiers per request.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">remove_items</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes one or more items from the specified item collection. This operation is idempotent — identifiers that do not match a member of the collection are ignored. The items themselves remain in the knowledge store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_collections.remove_items(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    collection_id="ksic_069e9870-3c4d-7abc-9012-3456789abcde",
+    item_ids=["ksi_069e9870-3c4d-7abc-9012-3456789abcde"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**collection_id:** `str` — The unique identifier of the knowledge store item collection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_ids:** `typing.Sequence[str]` — The unique identifiers of the items to remove from the collection. Include up to 500 identifiers per request.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Embed
 <details><summary><code>client.embed.<a href="src/twelvelabs/embed/client.py">create</a>(...)</code></summary>
 <dl>
@@ -3542,6 +5353,417 @@ client.search.retrieve(
 <dd>
 
 **include_user_metadata:** `typing.Optional[bool]` — Specifies whether to include user-defined metadata in the search results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Responses
+<details><summary><code>client.responses.<a href="src/twelvelabs/responses/client.py">create_stream</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method uses [Jockey](/v1.3/agents/concepts/jockey) to reason over content in a knowledge store and create a response. It uses [Open Responses](https://www.openresponses.org/specification) conventions for input items and streaming events.
+
+Before you use this method, you must create an asset, create a knowledge store, and add the asset to the knowledge store as an item.
+
+**Multi-turn conversations**: Supported via a session identifier. The first request implicitly creates a session; subsequent requests pass the returned identifier to continue the conversation.
+
+**Selections**: By default, Jockey reasons over every item in the knowledge store. To narrow the scope, set the optional `selections` parameter to specific items or item collections, then reference each one with a `{{sel:N}}` token in the `content` field of an `input` item (`N` is the zero-based position in the `selections` array). The narrowing is applied at the prompt level; the knowledge store does not block access to other items.
+
+**Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
+
+<Accordion title="Example response">
+```json
+{
+  "id": "resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff",
+  "type": "response",
+  "status": "completed",
+  "session_id": "sess_019f4f2a-b69b-7a01-9018-cc51681121ea",
+  "knowledge_store_id": "ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56",
+  "output": [
+    {
+      "type": "message",
+      "id": "msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0",
+      "status": "completed",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 12625,
+    "output_tokens": 289
+  },
+  "created_at": "2026-07-11T03:13:57Z"
+}
+```
+</Accordion>
+
+<Accordion title="Example streamed response (SSE)">
+```
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"in_progress","output":[],"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:47Z"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"in_progress","role":"assistant","content":[{"type":"output_text","text":""}]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":"The video captures a heated sideline moment"}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":" during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid."}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"completed","output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+
+data: [DONE]
+```
+</Accordion>
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import ResponseInputItem, TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.responses.create_stream(
+    knowledge_store_id="ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56",
+    input=[
+        ResponseInputItem(
+            type="message",
+            role="user",
+            content="Give me the highlight.",
+        )
+    ],
+)
+for chunk in response.data:
+    yield chunk
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store to reason over.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**input:** `typing.Sequence[ResponseInputItem]` — Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**session_id:** `typing.Optional[str]` 
+
+The session identifier for a multi-turn conversation. Pass the session identifier
+returned from a previous response to continue that conversation. Omit to start
+a new session.
+
+When provided, the `knowledge_store_id` field must match the knowledge store the session
+was originally created against, or the request returns `400`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**instructions:** `typing.Optional[str]` — Additional guidance for Jockey, acting as a per-request system prompt.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include:** `typing.Optional[typing.Sequence[ResponsesCreateStreamRequestIncludeItem]]` 
+
+Additional items to include in the response's `output` array. By default, the `output` array contains only Jockey's final reply.
+
+**Values**:
+- `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**selections:** `typing.Optional[typing.Sequence[ResponseSelection]]` 
+
+Restricts the request to specific knowledge store items or item collections. The restriction is applied at the prompt level; the knowledge store does not block access to other items. Treat it as a strong preference, not a hard access boundary. Omit to run against every item.
+
+Selections persist in the session context, and selections sent on later turns are added to that context. You can reference selections from earlier turns in natural language without repeating their `{{sel:N}}` tokens.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**text:** `typing.Optional[TextParam]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.responses.<a href="src/twelvelabs/responses/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method uses [Jockey](/v1.3/agents/concepts/jockey) to reason over content in a knowledge store and create a response. It uses [Open Responses](https://www.openresponses.org/specification) conventions for input items and streaming events.
+
+Before you use this method, you must create an asset, create a knowledge store, and add the asset to the knowledge store as an item.
+
+**Multi-turn conversations**: Supported via a session identifier. The first request implicitly creates a session; subsequent requests pass the returned identifier to continue the conversation.
+
+**Selections**: By default, Jockey reasons over every item in the knowledge store. To narrow the scope, set the optional `selections` parameter to specific items or item collections, then reference each one with a `{{sel:N}}` token in the `content` field of an `input` item (`N` is the zero-based position in the `selections` array). The narrowing is applied at the prompt level; the knowledge store does not block access to other items.
+
+**Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
+
+<Accordion title="Example response">
+```json
+{
+  "id": "resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff",
+  "type": "response",
+  "status": "completed",
+  "session_id": "sess_019f4f2a-b69b-7a01-9018-cc51681121ea",
+  "knowledge_store_id": "ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56",
+  "output": [
+    {
+      "type": "message",
+      "id": "msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0",
+      "status": "completed",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 12625,
+    "output_tokens": 289
+  },
+  "created_at": "2026-07-11T03:13:57Z"
+}
+```
+</Accordion>
+
+<Accordion title="Example streamed response (SSE)">
+```
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"in_progress","output":[],"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:47Z"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"in_progress","role":"assistant","content":[{"type":"output_text","text":""}]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":"The video captures a heated sideline moment"}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":" during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid."}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"completed","output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+
+data: [DONE]
+```
+</Accordion>
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import ResponseInputItem, TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.responses.create(
+    knowledge_store_id="ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56",
+    input=[
+        ResponseInputItem(
+            type="message",
+            role="user",
+            content="Give me the highlight.",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store to reason over.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**input:** `typing.Sequence[ResponseInputItem]` — Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**session_id:** `typing.Optional[str]` 
+
+The session identifier for a multi-turn conversation. Pass the session identifier
+returned from a previous response to continue that conversation. Omit to start
+a new session.
+
+When provided, the `knowledge_store_id` field must match the knowledge store the session
+was originally created against, or the request returns `400`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**instructions:** `typing.Optional[str]` — Additional guidance for Jockey, acting as a per-request system prompt.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include:** `typing.Optional[typing.Sequence[ResponsesCreateRequestIncludeItem]]` 
+
+Additional items to include in the response's `output` array. By default, the `output` array contains only Jockey's final reply.
+
+**Values**:
+- `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**selections:** `typing.Optional[typing.Sequence[ResponseSelection]]` 
+
+Restricts the request to specific knowledge store items or item collections. The restriction is applied at the prompt level; the knowledge store does not block access to other items. Treat it as a strong preference, not a hard access boundary. Omit to run against every item.
+
+Selections persist in the session context, and selections sent on later turns are added to that context. You can reference selections from earlier turns in natural language without repeating their `{{sel:N}}` tokens.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**text:** `typing.Optional[TextParam]` 
     
 </dd>
 </dl>
@@ -4180,6 +6402,8 @@ client = TwelveLabs(
 response = client.analyze_async.batches.list(
     page=1,
     page_limit=10,
+    status=["processing", "canceling"],
+    analysis_mode=["general", "time_based_metadata"],
 )
 for item in response:
     yield item
@@ -5182,6 +7406,7 @@ client = TwelveLabs(
 )
 client.embed.tasks.retrieve(
     task_id="663da73b31cdd0c1f638a8e6",
+    embedding_option=["visual"],
 )
 
 ```
@@ -6700,6 +8925,7 @@ response = client.indexes.indexed_assets.list(
     page_limit=10,
     sort_by="created_at",
     sort_option="desc",
+    status=["ready"],
     filename="01.mp4",
     created_at="2024-08-16T16:53:59Z",
     updated_at="2024-08-16T16:53:59Z",
@@ -7081,6 +9307,7 @@ client = TwelveLabs(
 client.indexes.indexed_assets.retrieve(
     index_id="6298d673f1090f1100476d4c",
     indexed_asset_id="6298d673f1090f1100476d4c",
+    embedding_option=["visual"],
     transcription=True,
 )
 
@@ -7699,6 +9926,7 @@ client = TwelveLabs(
 client.indexes.videos.retrieve(
     index_id="6298d673f1090f1100476d4c",
     video_id="6298d673f1090f1100476d4c",
+    embedding_option=["visual"],
     transcription=True,
 )
 

@@ -52,6 +52,7 @@ from .asset_method import AssetMethod
 from .asset_status import AssetStatus
 from .asset_thumbnail import AssetThumbnail
 from .asset_thumbnail_status import AssetThumbnailStatus
+from .asset_type_filter import AssetTypeFilter
 from .async_response_format import AsyncResponseFormat
 from .async_response_format_segment_time_format import AsyncResponseFormatSegmentTimeFormat
 from .async_response_format_type import AsyncResponseFormatType
@@ -121,6 +122,11 @@ from .embedding_video_metadata import EmbeddingVideoMetadata
 from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetadataEmbeddingScopesItem
 from .end_offset_sec import EndOffsetSec
 from .end_time import EndTime
+from .enrichment_config import EnrichmentConfig, EnrichmentConfig_Description, EnrichmentConfig_JsonSchema
+from .enrichment_config_description import EnrichmentConfigDescription
+from .enrichment_config_json_schema import EnrichmentConfigJsonSchema
+from .enrichment_config_json_schema_json_schema import EnrichmentConfigJsonSchemaJsonSchema
+from .enrichment_config_json_schema_json_schema_type import EnrichmentConfigJsonSchemaJsonSchemaType
 from .entity import Entity
 from .entity_collection import EntityCollection
 from .entity_status import EntityStatus
@@ -131,10 +137,15 @@ from .finish_reason import FinishReason
 from .forbidden_error_body import ForbiddenErrorBody
 from .generated_text_data import GeneratedTextData
 from .get_upload_status_response import GetUploadStatusResponse
+from .gone_error_body import GoneErrorBody
 from .hls_object import HlsObject
 from .hls_object_status import HlsObjectStatus
 from .image_embedding_result import ImageEmbeddingResult
 from .image_input_request import ImageInputRequest
+from .image_metadata import ImageMetadata
+from .image_search_hit import ImageSearchHit
+from .image_search_item_metadata import ImageSearchItemMetadata
+from .image_search_system_metadata import ImageSearchSystemMetadata
 from .incomplete_upload_summary import IncompleteUploadSummary
 from .index_models_item import IndexModelsItem
 from .index_schema import IndexSchema
@@ -151,8 +162,21 @@ from .indexed_assets_list_request_fps import IndexedAssetsListRequestFps
 from .indexed_assets_list_request_height import IndexedAssetsListRequestHeight
 from .indexed_assets_list_request_size import IndexedAssetsListRequestSize
 from .indexed_assets_list_request_width import IndexedAssetsListRequestWidth
+from .ingestion_config import IngestionConfig
 from .internal_entity import InternalEntity
 from .internal_server_error_body import InternalServerErrorBody
+from .item_id_filter import ItemIdFilter
+from .knowledge_store import KnowledgeStore
+from .knowledge_store_item import KnowledgeStoreItem
+from .knowledge_store_item_asset_type import KnowledgeStoreItemAssetType
+from .knowledge_store_item_collection import KnowledgeStoreItemCollection
+from .knowledge_store_item_status import KnowledgeStoreItemStatus
+from .knowledge_store_item_system_metadata import (
+    KnowledgeStoreItemSystemMetadata,
+    KnowledgeStoreItemSystemMetadata_Image,
+    KnowledgeStoreItemSystemMetadata_Video,
+)
+from .knowledge_store_search_query import KnowledgeStoreSearchQuery
 from .limit_per_page_simple import LimitPerPageSimple
 from .list_incomplete_uploads_response import ListIncompleteUploadsResponse
 from .media_embedding_task import MediaEmbeddingTask
@@ -174,8 +198,55 @@ from .prev_page_token import PrevPageToken
 from .rank import Rank
 from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
+from .response_create_request import ResponseCreateRequest
+from .response_create_request_include_item import ResponseCreateRequestIncludeItem
+from .response_input_item import ResponseInputItem
+from .response_input_item_role import ResponseInputItemRole
+from .response_input_item_type import ResponseInputItemType
+from .response_object import ResponseObject
+from .response_object_type import ResponseObjectType
+from .response_output_content_part import ResponseOutputContentPart
+from .response_output_content_part_type import ResponseOutputContentPartType
+from .response_output_item import ResponseOutputItem
+from .response_output_item_role import ResponseOutputItemRole
+from .response_output_item_type import ResponseOutputItemType
+from .response_selection import ResponseSelection
+from .response_selection_kind import ResponseSelectionKind
+from .response_status import ResponseStatus
+from .response_stream_content_part_added_event import ResponseStreamContentPartAddedEvent
+from .response_stream_content_part_done_event import ResponseStreamContentPartDoneEvent
+from .response_stream_event import (
+    ResponseStreamEvent,
+    ResponseStreamEvent_ResponseCompleted,
+    ResponseStreamEvent_ResponseContentPartAdded,
+    ResponseStreamEvent_ResponseContentPartDone,
+    ResponseStreamEvent_ResponseCreated,
+    ResponseStreamEvent_ResponseFailed,
+    ResponseStreamEvent_ResponseFunctionCallArgumentsDone,
+    ResponseStreamEvent_ResponseInProgress,
+    ResponseStreamEvent_ResponseOutputItemAdded,
+    ResponseStreamEvent_ResponseOutputItemDone,
+    ResponseStreamEvent_ResponseOutputTextDelta,
+    ResponseStreamEvent_ResponseOutputTextDone,
+)
+from .response_stream_event_base import ResponseStreamEventBase
+from .response_stream_func_call_args_done_event import ResponseStreamFuncCallArgsDoneEvent
+from .response_stream_output_item_added_event import ResponseStreamOutputItemAddedEvent
+from .response_stream_output_item_done_event import ResponseStreamOutputItemDoneEvent
+from .response_stream_output_text_delta_event import ResponseStreamOutputTextDeltaEvent
+from .response_stream_output_text_done_event import ResponseStreamOutputTextDoneEvent
+from .response_stream_response_event import ResponseStreamResponseEvent
+from .response_usage import ResponseUsage
 from .search_item import SearchItem
 from .search_item_clips_item import SearchItemClipsItem
+from .search_knowledge_store_filter import SearchKnowledgeStoreFilter
+from .search_knowledge_store_hit import (
+    SearchKnowledgeStoreHit,
+    SearchKnowledgeStoreHit_Image,
+    SearchKnowledgeStoreHit_Video,
+)
+from .search_knowledge_store_options import SearchKnowledgeStoreOptions
+from .search_knowledge_store_response import SearchKnowledgeStoreResponse
 from .search_pool import SearchPool
 from .search_results import SearchResults
 from .search_results_page_info import SearchResultsPageInfo
@@ -214,6 +285,10 @@ from .technical_metadata import TechnicalMetadata
 from .text_embedding_result import TextEmbeddingResult
 from .text_image_input_request import TextImageInputRequest
 from .text_input_request import TextInputRequest
+from .text_param import TextParam
+from .text_param_format import TextParamFormat, TextParamFormat_JsonSchema, TextParamFormat_Text
+from .text_response_format_json_schema import TextResponseFormatJsonSchema
+from .text_response_format_text import TextResponseFormatText
 from .thumbnail_url import ThumbnailUrl
 from .token_usage import TokenUsage
 from .total_inner_matches import TotalInnerMatches
@@ -235,6 +310,13 @@ from .video_input_request import VideoInputRequest
 from .video_input_request_embedding_option_item import VideoInputRequestEmbeddingOptionItem
 from .video_input_request_embedding_scope_item import VideoInputRequestEmbeddingScopeItem
 from .video_input_request_embedding_type_item import VideoInputRequestEmbeddingTypeItem
+from .video_match import VideoMatch
+from .video_metadata import VideoMetadata
+from .video_search_hit import VideoSearchHit
+from .video_search_item_metadata import VideoSearchItemMetadata
+from .video_search_modality import VideoSearchModality
+from .video_search_options import VideoSearchOptions
+from .video_search_system_metadata import VideoSearchSystemMetadata
 from .video_segment import VideoSegment
 from .video_segmentation import VideoSegmentation, VideoSegmentation_Dynamic, VideoSegmentation_Fixed
 from .video_segmentation_dynamic import VideoSegmentationDynamic
@@ -289,6 +371,7 @@ __all__ = [
     "AssetStatus",
     "AssetThumbnail",
     "AssetThumbnailStatus",
+    "AssetTypeFilter",
     "AsyncResponseFormat",
     "AsyncResponseFormatSegmentTimeFormat",
     "AsyncResponseFormatType",
@@ -354,6 +437,13 @@ __all__ = [
     "EmbeddingVideoMetadataEmbeddingScopesItem",
     "EndOffsetSec",
     "EndTime",
+    "EnrichmentConfig",
+    "EnrichmentConfigDescription",
+    "EnrichmentConfigJsonSchema",
+    "EnrichmentConfigJsonSchemaJsonSchema",
+    "EnrichmentConfigJsonSchemaJsonSchemaType",
+    "EnrichmentConfig_Description",
+    "EnrichmentConfig_JsonSchema",
     "Entity",
     "EntityCollection",
     "EntityStatus",
@@ -364,10 +454,15 @@ __all__ = [
     "ForbiddenErrorBody",
     "GeneratedTextData",
     "GetUploadStatusResponse",
+    "GoneErrorBody",
     "HlsObject",
     "HlsObjectStatus",
     "ImageEmbeddingResult",
     "ImageInputRequest",
+    "ImageMetadata",
+    "ImageSearchHit",
+    "ImageSearchItemMetadata",
+    "ImageSearchSystemMetadata",
     "IncompleteUploadSummary",
     "IndexModelsItem",
     "IndexSchema",
@@ -384,8 +479,19 @@ __all__ = [
     "IndexedAssetsListRequestHeight",
     "IndexedAssetsListRequestSize",
     "IndexedAssetsListRequestWidth",
+    "IngestionConfig",
     "InternalEntity",
     "InternalServerErrorBody",
+    "ItemIdFilter",
+    "KnowledgeStore",
+    "KnowledgeStoreItem",
+    "KnowledgeStoreItemAssetType",
+    "KnowledgeStoreItemCollection",
+    "KnowledgeStoreItemStatus",
+    "KnowledgeStoreItemSystemMetadata",
+    "KnowledgeStoreItemSystemMetadata_Image",
+    "KnowledgeStoreItemSystemMetadata_Video",
+    "KnowledgeStoreSearchQuery",
     "LimitPerPageSimple",
     "ListIncompleteUploadsResponse",
     "MediaEmbeddingTask",
@@ -407,8 +513,51 @@ __all__ = [
     "Rank",
     "ReportChunkBatchResponse",
     "RequestAdditionalPresignedUrLsResponse",
+    "ResponseCreateRequest",
+    "ResponseCreateRequestIncludeItem",
+    "ResponseInputItem",
+    "ResponseInputItemRole",
+    "ResponseInputItemType",
+    "ResponseObject",
+    "ResponseObjectType",
+    "ResponseOutputContentPart",
+    "ResponseOutputContentPartType",
+    "ResponseOutputItem",
+    "ResponseOutputItemRole",
+    "ResponseOutputItemType",
+    "ResponseSelection",
+    "ResponseSelectionKind",
+    "ResponseStatus",
+    "ResponseStreamContentPartAddedEvent",
+    "ResponseStreamContentPartDoneEvent",
+    "ResponseStreamEvent",
+    "ResponseStreamEventBase",
+    "ResponseStreamEvent_ResponseCompleted",
+    "ResponseStreamEvent_ResponseContentPartAdded",
+    "ResponseStreamEvent_ResponseContentPartDone",
+    "ResponseStreamEvent_ResponseCreated",
+    "ResponseStreamEvent_ResponseFailed",
+    "ResponseStreamEvent_ResponseFunctionCallArgumentsDone",
+    "ResponseStreamEvent_ResponseInProgress",
+    "ResponseStreamEvent_ResponseOutputItemAdded",
+    "ResponseStreamEvent_ResponseOutputItemDone",
+    "ResponseStreamEvent_ResponseOutputTextDelta",
+    "ResponseStreamEvent_ResponseOutputTextDone",
+    "ResponseStreamFuncCallArgsDoneEvent",
+    "ResponseStreamOutputItemAddedEvent",
+    "ResponseStreamOutputItemDoneEvent",
+    "ResponseStreamOutputTextDeltaEvent",
+    "ResponseStreamOutputTextDoneEvent",
+    "ResponseStreamResponseEvent",
+    "ResponseUsage",
     "SearchItem",
     "SearchItemClipsItem",
+    "SearchKnowledgeStoreFilter",
+    "SearchKnowledgeStoreHit",
+    "SearchKnowledgeStoreHit_Image",
+    "SearchKnowledgeStoreHit_Video",
+    "SearchKnowledgeStoreOptions",
+    "SearchKnowledgeStoreResponse",
     "SearchPool",
     "SearchResults",
     "SearchResultsPageInfo",
@@ -445,6 +594,12 @@ __all__ = [
     "TextEmbeddingResult",
     "TextImageInputRequest",
     "TextInputRequest",
+    "TextParam",
+    "TextParamFormat",
+    "TextParamFormat_JsonSchema",
+    "TextParamFormat_Text",
+    "TextResponseFormatJsonSchema",
+    "TextResponseFormatText",
     "ThumbnailUrl",
     "TokenUsage",
     "TotalInnerMatches",
@@ -469,6 +624,13 @@ __all__ = [
     "VideoInputRequestEmbeddingOptionItem",
     "VideoInputRequestEmbeddingScopeItem",
     "VideoInputRequestEmbeddingTypeItem",
+    "VideoMatch",
+    "VideoMetadata",
+    "VideoSearchHit",
+    "VideoSearchItemMetadata",
+    "VideoSearchModality",
+    "VideoSearchOptions",
+    "VideoSearchSystemMetadata",
     "VideoSegment",
     "VideoSegmentation",
     "VideoSegmentationDynamic",

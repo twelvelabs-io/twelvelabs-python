@@ -11,8 +11,15 @@ from .embed.client import AsyncEmbedClient, EmbedClient
 from .entity_collections.client import AsyncEntityCollectionsClient, EntityCollectionsClient
 from .environment import TwelveLabsEnvironment
 from .indexes.client import AsyncIndexesClient, IndexesClient
+from .knowledge_store_item_collections.client import (
+    AsyncKnowledgeStoreItemCollectionsClient,
+    KnowledgeStoreItemCollectionsClient,
+)
+from .knowledge_store_items.client import AsyncKnowledgeStoreItemsClient, KnowledgeStoreItemsClient
+from .knowledge_stores.client import AsyncKnowledgeStoresClient, KnowledgeStoresClient
 from .multipart_upload.client import AsyncMultipartUploadClient, MultipartUploadClient
 from .raw_base_client import AsyncRawBaseClient, RawBaseClient
+from .responses.client import AsyncResponsesClient, ResponsesClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
 from .types.analyze_prompt_v_2 import AnalyzePromptV2
@@ -100,8 +107,12 @@ class BaseClient:
         self.assets = AssetsClient(client_wrapper=self._client_wrapper)
         self.multipart_upload = MultipartUploadClient(client_wrapper=self._client_wrapper)
         self.entity_collections = EntityCollectionsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_stores = KnowledgeStoresClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_items = KnowledgeStoreItemsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_item_collections = KnowledgeStoreItemCollectionsClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
+        self.responses = ResponsesClient(client_wrapper=self._client_wrapper)
         self.analyze_async = AnalyzeAsyncClient(client_wrapper=self._client_wrapper)
 
     @property
@@ -449,8 +460,14 @@ class AsyncBaseClient:
         self.assets = AsyncAssetsClient(client_wrapper=self._client_wrapper)
         self.multipart_upload = AsyncMultipartUploadClient(client_wrapper=self._client_wrapper)
         self.entity_collections = AsyncEntityCollectionsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_stores = AsyncKnowledgeStoresClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_items = AsyncKnowledgeStoreItemsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_item_collections = AsyncKnowledgeStoreItemCollectionsClient(
+            client_wrapper=self._client_wrapper
+        )
         self.embed = AsyncEmbedClient(client_wrapper=self._client_wrapper)
         self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
+        self.responses = AsyncResponsesClient(client_wrapper=self._client_wrapper)
         self.analyze_async = AsyncAnalyzeAsyncClient(client_wrapper=self._client_wrapper)
 
     @property

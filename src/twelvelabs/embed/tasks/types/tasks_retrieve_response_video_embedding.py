@@ -9,6 +9,10 @@ from ....types.video_segment import VideoSegment
 
 
 class TasksRetrieveResponseVideoEmbedding(UniversalBaseModel):
+    """
+    An object containing the metadata associated with the embedding.
+    """
+
     metadata: typing.Optional[VideoEmbeddingMetadata] = None
     segments: typing.Optional[typing.List[VideoSegment]] = pydantic.Field(default=None)
     """

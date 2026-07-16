@@ -168,6 +168,7 @@ class IndexedAssetsClient:
             page_limit=10,
             sort_by="created_at",
             sort_option="desc",
+            status=["ready"],
             filename="01.mp4",
             created_at="2024-08-16T16:53:59Z",
             updated_at="2024-08-16T16:53:59Z",
@@ -337,6 +338,7 @@ class IndexedAssetsClient:
         client.indexes.indexed_assets.retrieve(
             index_id="6298d673f1090f1100476d4c",
             indexed_asset_id="6298d673f1090f1100476d4c",
+            embedding_option=["visual"],
             transcription=True,
         )
         """
@@ -643,6 +645,7 @@ class AsyncIndexedAssetsClient:
                 page_limit=10,
                 sort_by="created_at",
                 sort_option="desc",
+                status=["ready"],
                 filename="01.mp4",
                 created_at="2024-08-16T16:53:59Z",
                 updated_at="2024-08-16T16:53:59Z",
@@ -829,6 +832,7 @@ class AsyncIndexedAssetsClient:
             await client.indexes.indexed_assets.retrieve(
                 index_id="6298d673f1090f1100476d4c",
                 indexed_asset_id="6298d673f1090f1100476d4c",
+                embedding_option=["visual"],
                 transcription=True,
             )
 
