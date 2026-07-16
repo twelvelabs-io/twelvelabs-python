@@ -6,5 +6,11 @@ generations:
     timestamp: 2026-05-30T04:11:21.960Z
     cli_version: unknown
     generator_versions: {}
-current_generation: 2663c81195be837e1a95ad2cef9e543e02c304ba
+  - commit_sha: 6954becd41336ee2bb34235ba4953cb894f6d170
+    tree_hash: 096f31d06c2473d5a32f33c1b344d679bc4e63d1
+    timestamp: 2026-07-16T15:07:45.518Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-python-sdk: 4.25.6
+current_generation: 6954becd41336ee2bb34235ba4953cb894f6d170
 patches: []
