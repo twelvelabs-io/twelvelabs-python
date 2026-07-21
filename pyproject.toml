@@ -3,7 +3,7 @@ name = "twelvelabs"
 
 [tool.poetry]
 name = "twelvelabs"
-version = "1.3.0b1"
+version = "1.3.0"
 description = ""
 readme = "README.md"
 authors = []
