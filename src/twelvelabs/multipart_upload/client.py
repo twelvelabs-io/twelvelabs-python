@@ -98,15 +98,18 @@ class MultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAssetUploadResponse:
         """
-        This method creates a multipart upload session for a local video file.
+        This method creates a multipart upload session for a local file.
 
-        **Supported content**: Video
+        **Supported content**: Video, audio, and images.
 
-        **Upload limits**: Local video files up to 10 GB.
+        **Upload limits**:
+        - **Video and audio**: Up to 10 GB
+        - **Images**: Up to 32 MB
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
+        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
         - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
 
         Parameters
@@ -122,6 +125,10 @@ class MultipartUploadClient:
             - Calculate the optimal chunk size.
             - Determine the total number of chunks required
             - Generate the initial set of presigned URLs
+
+            **Upload limits**:
+            - **Video and audio**: Up to 10 GB
+            - **Images**: Up to 32 MB
 
         enable_hls : typing.Optional[bool]
             When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
@@ -422,15 +429,18 @@ class AsyncMultipartUploadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAssetUploadResponse:
         """
-        This method creates a multipart upload session for a local video file.
+        This method creates a multipart upload session for a local file.
 
-        **Supported content**: Video
+        **Supported content**: Video, audio, and images.
 
-        **Upload limits**: Local video files up to 10 GB.
+        **Upload limits**:
+        - **Video and audio**: Up to 10 GB
+        - **Images**: Up to 32 MB
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
+        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
         - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
 
         Parameters
@@ -446,6 +456,10 @@ class AsyncMultipartUploadClient:
             - Calculate the optimal chunk size.
             - Determine the total number of chunks required
             - Generate the initial set of presigned URLs
+
+            **Upload limits**:
+            - **Video and audio**: Up to 10 GB
+            - **Images**: Up to 32 MB
 
         enable_hls : typing.Optional[bool]
             When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.

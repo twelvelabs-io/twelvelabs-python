@@ -2,4 +2,4 @@
 
 import typing
 
-CreateAssetUploadRequestType = typing.Union[typing.Literal["video"], typing.Any]
+CreateAssetUploadRequestType = typing.Union[typing.Literal["video", "audio", "image"], typing.Any]

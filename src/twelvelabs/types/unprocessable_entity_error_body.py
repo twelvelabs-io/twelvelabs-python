@@ -6,7 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class NotFoundErrorBody(UniversalBaseModel):
+class UnprocessableEntityErrorBody(UniversalBaseModel):
     code: typing.Optional[str] = pydantic.Field(default=None)
     """
     A string representing the code associated with the error. See the [Error codes](/v1.3/api-reference/error-codes) page for details.
