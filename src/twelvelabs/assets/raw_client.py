@@ -156,7 +156,7 @@ class RawAssetsClient:
         - **Video and audio, public URLs**: Up to 4 GB
         - **Images**: Up to 32 MB
 
-        Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits when you index or analyze the asset. For details, see the requirements below.
+        Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits. For details, see the requirements below.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -695,7 +695,7 @@ class AsyncRawAssetsClient:
         - **Video and audio, public URLs**: Up to 4 GB
         - **Images**: Up to 32 MB
 
-        Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits when you index or analyze the asset. For details, see the requirements below.
+        Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits. For details, see the requirements below.
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)

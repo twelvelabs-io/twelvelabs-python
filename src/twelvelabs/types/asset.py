@@ -8,6 +8,7 @@ import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .asset_method import AssetMethod
+from .asset_source import AssetSource
 from .asset_status import AssetStatus
 from .user_metadata import UserMetadata
 
@@ -62,6 +63,11 @@ class Asset(UniversalBaseModel):
     user_metadata: typing.Optional[UserMetadata] = pydantic.Field(default=None)
     """
     User-defined metadata for this asset. This field is absent when no metadata has been set.
+    """
+
+    source: typing.Optional[AssetSource] = pydantic.Field(default=None)
+    """
+    Describes where the asset came from. Present only for assets imported through a connector; absent for assets uploaded directly to the `/assets` endpoint.
     """
 
     if IS_PYDANTIC_V2:

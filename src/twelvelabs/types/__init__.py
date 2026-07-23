@@ -49,6 +49,10 @@ from .asset_error import AssetError
 from .asset_hls import AssetHls
 from .asset_hls_status import AssetHlsStatus
 from .asset_method import AssetMethod
+from .asset_source import AssetSource
+from .asset_source_details import AssetSourceDetails
+from .asset_source_details_provider import AssetSourceDetailsProvider
+from .asset_source_type import AssetSourceType
 from .asset_status import AssetStatus
 from .asset_thumbnail import AssetThumbnail
 from .asset_thumbnail_status import AssetThumbnailStatus
@@ -87,6 +91,10 @@ from .chunk_info_status import ChunkInfoStatus
 from .completed_chunk import CompletedChunk
 from .completed_chunk_proof_type import CompletedChunkProofType
 from .conflict_error_body import ConflictErrorBody
+from .connection import Connection
+from .connection_account import ConnectionAccount
+from .connection_provider import ConnectionProvider
+from .connection_status import ConnectionStatus
 from .create_analyze_batch_response import CreateAnalyzeBatchResponse
 from .create_analyze_task_response import CreateAnalyzeTaskResponse
 from .create_asset_upload_response import CreateAssetUploadResponse
@@ -146,6 +154,13 @@ from .image_metadata import ImageMetadata
 from .image_search_hit import ImageSearchHit
 from .image_search_item_metadata import ImageSearchItemMetadata
 from .image_search_system_metadata import ImageSearchSystemMetadata
+from .import_ import Import
+from .import_detail import ImportDetail
+from .import_item import ImportItem
+from .import_item_error import ImportItemError
+from .import_item_status import ImportItemStatus
+from .import_provider import ImportProvider
+from .import_result import ImportResult
 from .incomplete_upload_summary import IncompleteUploadSummary
 from .index_models_item import IndexModelsItem
 from .index_schema import IndexSchema
@@ -196,6 +211,7 @@ from .page_info import PageInfo
 from .presigned_url_chunk import PresignedUrlChunk
 from .prev_page_token import PrevPageToken
 from .rank import Rank
+from .redirect_uri import RedirectUri
 from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
 from .response_create_request import ResponseCreateRequest
@@ -297,6 +313,7 @@ from .total_results import TotalResults
 from .transcription_data import TranscriptionData
 from .transcription_data_item import TranscriptionDataItem
 from .two import Two
+from .unprocessable_entity_error_body import UnprocessableEntityErrorBody
 from .updated_at import UpdatedAt
 from .url import Url
 from .user_metadata import UserMetadata
@@ -368,6 +385,10 @@ __all__ = [
     "AssetHls",
     "AssetHlsStatus",
     "AssetMethod",
+    "AssetSource",
+    "AssetSourceDetails",
+    "AssetSourceDetailsProvider",
+    "AssetSourceType",
     "AssetStatus",
     "AssetThumbnail",
     "AssetThumbnailStatus",
@@ -406,6 +427,10 @@ __all__ = [
     "CompletedChunk",
     "CompletedChunkProofType",
     "ConflictErrorBody",
+    "Connection",
+    "ConnectionAccount",
+    "ConnectionProvider",
+    "ConnectionStatus",
     "CreateAnalyzeBatchResponse",
     "CreateAnalyzeTaskResponse",
     "CreateAssetUploadResponse",
@@ -463,6 +488,13 @@ __all__ = [
     "ImageSearchHit",
     "ImageSearchItemMetadata",
     "ImageSearchSystemMetadata",
+    "Import",
+    "ImportDetail",
+    "ImportItem",
+    "ImportItemError",
+    "ImportItemStatus",
+    "ImportProvider",
+    "ImportResult",
     "IncompleteUploadSummary",
     "IndexModelsItem",
     "IndexSchema",
@@ -511,6 +543,7 @@ __all__ = [
     "PresignedUrlChunk",
     "PrevPageToken",
     "Rank",
+    "RedirectUri",
     "ReportChunkBatchResponse",
     "RequestAdditionalPresignedUrLsResponse",
     "ResponseCreateRequest",
@@ -608,6 +641,7 @@ __all__ = [
     "TranscriptionData",
     "TranscriptionDataItem",
     "Two",
+    "UnprocessableEntityErrorBody",
     "UpdatedAt",
     "Url",
     "UserMetadata",

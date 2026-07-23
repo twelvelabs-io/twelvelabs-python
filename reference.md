@@ -422,6 +422,8 @@ End of the analysis window, as an absolute timestamp in seconds, based on the vi
 <dl>
 <dd>
 
+<Info>This method will be removed in a future version.</Info>
+
 This method returns a list of the video indexing tasks in your account. The platform returns your video indexing tasks sorted by creation date, with the newest at the top of the list.
 </dd>
 </dl>
@@ -635,16 +637,10 @@ status=ready&status=validating
 <dl>
 <dd>
 
+
+<Info>This method will be removed in a future version. New implementations should use [direct](/v1.3/api-reference/upload-content/direct-uploads) or [multipart](/v1.3/api-reference/upload-content/multipart-uploads) uploads followed by [separate indexing](/v1.3/api-reference/index-content/create).</Info>
+
 This method creates a video indexing task that uploads and indexes a video in a single operation.
-
-<Warning title="Legacy endpoint">
-This endpoint bundles two operations (upload and indexing) together. In the next major API release, this endpoint will be removed in favor of a separated workflow:
-1. Upload your video using the [`POST /assets`](/v1.3/api-reference/upload-content/direct-uploads/create) endpoint
-2. Index the uploaded video using the [`POST /indexes/{index-id}/indexed-assets`](/v1.3/api-reference/index-content/create) endpoint
-
-This separation provides better control, reusability of assets, and improved error handling. New implementations should use the new workflow.
-</Warning>
-
 
 Upload options:
 - **Local file**: Use the `video_file` parameter.
@@ -764,6 +760,8 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dl>
 <dd>
 
+<Info>This method will be removed in a future version.</Info>
+
 This method retrieves a video indexing task.
 </dd>
 </dl>
@@ -833,6 +831,8 @@ client.tasks.retrieve(
 
 <dl>
 <dd>
+
+<Info>This method will be removed in a future version.</Info>
 
 This action cannot be undone.
 Note the following about deleting a video indexing task:
@@ -1546,7 +1546,7 @@ The platform processes uploads asynchronously. This method returns immediately w
 - **Video and audio, public URLs**: Up to 4 GB
 - **Images**: Up to 32 MB
 
-Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits when you index or analyze the asset. For details, see the requirements below.
+Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits. For details, see the requirements below.
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
@@ -2192,15 +2192,18 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This method creates a multipart upload session for a local video file.
+This method creates a multipart upload session for a local file.
 
-**Supported content**: Video
+**Supported content**: Video, audio, and images.
 
-**Upload limits**: Local video files up to 10 GB.
+**Upload limits**:
+- **Video and audio**: Up to 10 GB
+- **Images**: Up to 32 MB
 
 **Additional requirements** depend on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
 - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
+- **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
 - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
 </dd>
 </dl>
@@ -2263,6 +2266,10 @@ The total size of the file in bytes. The platform uses this value to:
 - Calculate the optimal chunk size.
 - Determine the total number of chunks required
 - Generate the initial set of presigned URLs
+
+**Upload limits**:
+- **Video and audio**: Up to 10 GB
+- **Images**: Up to 32 MB
     
 </dd>
 </dl>
@@ -5764,6 +5771,888 @@ Selections persist in the session context, and selections sent on later turns ar
 <dd>
 
 **text:** `typing.Optional[TextParam]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Data connectors
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">authorize_connection</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method starts the OAuth authorization flow for a data connector. The platform returns an authorization URL. Redirect the user to this URL so they can grant access to their account.
+
+After the user grants or denies access, the platform redirects them to the redirect URI you provided, with the outcome appended to that URI as query parameters. Read these parameters from the redirect that your application receives:
+
+- `connection_id`: The identifier of the new connection, returned on success. Store this value and pass it as the `connection_id` path parameter in later requests.
+- `status`: The `ok` value, returned on success.
+- `custom_id`: The label you supplied, returned on success when you provided one.
+- `error`: An error code, returned instead of the other parameters when the user denies access or the flow fails.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.authorize_connection(
+    provider="google_drive",
+    redirect_uri="https://app.example.com/oauth/done",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provider:** `AuthorizeConnectionRequestProvider` — The data connector provider to authorize.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**redirect_uri:** `str` — The URI where the user is redirected after granting or denying access. By default, any redirect URI is accepted. If you've authorized specific redirect URIs with the [Register a redirect URI](/v1.3/api-reference/data-connectors/register-a-redirect-uri) method, this URI must be one of them.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**custom_id:** `typing.Optional[str]` — A label you supplied, stored on the connection and returned with it. Use a value that does not identify a person so you can match the connection to your own records.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">list_connections</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns a list of the connections in your account. The platform returns your connections sorted by creation date, with the newest at the top of the list.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.list_connections(
+    page=1,
+    page_limit=10,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">retrieve_connection</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method retrieves details about the specified connection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.retrieve_connection(
+    connection_id="665f0a2c9b1e4d0012a3f7c9",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**connection_id:** `str` — The unique identifier of the connection to retrieve.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">delete_connection</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method disconnects the specified connection. The platform revokes access at the provider and deletes the stored tokens. Assets imported through this connection are retained.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.delete_connection(
+    connection_id="665f0a2c9b1e4d0012a3f7c9",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**connection_id:** `str` — The unique identifier of the connection to delete.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">create_connection_picker_token</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method generates a short-lived, read-only access token that you use with the provider's file picker, such as the Google Drive Picker. The platform never returns the refresh token of the connection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.create_connection_picker_token(
+    connection_id="665f0a2c9b1e4d0012a3f7c9",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**connection_id:** `str` — The unique identifier of the connection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">list_redirect_uris</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns your authorized redirect URIs, sorted by creation date with the newest at the top. Each one is a redirect URI the [Authorize a connection](/v1.3/api-reference/data-connectors/authorize-a-connection) method accepts.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.list_redirect_uris(
+    page=1,
+    page_limit=10,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">create_redirect_uri</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method registers a redirect URI so the [Authorize a connection](/v1.3/api-reference/data-connectors/authorize-a-connection) method accepts it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.create_redirect_uri(
+    redirect_uri="https://app.example.com/oauth/done",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**redirect_uri:** `str` — The redirect URI to register. Must use HTTPS, resolve to a public host, and contain no wildcards. Register it exactly as your application sends it, because the authorization flow requires an exact match.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.data_connectors.<a href="src/twelvelabs/data_connectors/client.py">delete_redirect_uri</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method removes a redirect URI from your authorized redirect URIs. After deletion, the [Authorize a connection](/v1.3/api-reference/data-connectors/authorize-a-connection) method no longer accepts it. This action cannot be undone.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.data_connectors.delete_redirect_uri(
+    redirect_uri_id="665f0a2c9b1e4d0012a3f7c9",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**redirect_uri_id:** `str` — The unique identifier of the redirect URI to delete.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Imports
+<details><summary><code>client.imports.<a href="src/twelvelabs/imports/client.py">list_imports</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns a list of the imports for the specified connection. The platform returns the imports sorted by creation date, with the newest at the top of the list. Each import in the list is a summary that omits the `items` array. To see the status of each file, use the [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.imports.list_imports(
+    connection_id="665f0a2c9b1e4d0012a3f7c9",
+    page=1,
+    page_limit=10,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**connection_id:** `str` — The unique identifier of the connection to list imports for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.imports.<a href="src/twelvelabs/imports/client.py">import_files</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method imports one or more files from the connected provider account into the platform as assets. Video files can be up to 10 GB, audio files up to 4 GB, and images up to 32 MB. Each newly imported file creates an asset in the `processing` status and is downloaded asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, which may be `ready`, without downloading the file again. The response returns one entry per requested file, in request order.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+from twelvelabs.imports import ImportFilesRequestItemsItem
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.imports.import_files(
+    connection_id="665f0a2c9b1e4d0012a3f7c9",
+    items=[
+        ImportFilesRequestItemsItem(
+            source_id="1AbCDef_drive_file_id_x",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**connection_id:** `str` — The unique identifier of the connection to import through.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**items:** `typing.Sequence[ImportFilesRequestItemsItem]` — The files to import. Provide an array of one item for a single import, or multiple items for a batch import. A maximum of 100 items can be imported per request. Each `source_id` must be unique within a request.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.imports.<a href="src/twelvelabs/imports/client.py">retrieve_import</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method retrieves a single import, including the current status of each asset in the import.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.imports.retrieve_import(
+    connection_id="665f0a2c9b1e4d0012a3f7c9",
+    import_id="665f0afe9b1e4d0012a3f7d0",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**connection_id:** `str` — The unique identifier of the connection the import belongs to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**import_id:** `str` — The unique identifier of the import to retrieve.
     
 </dd>
 </dl>

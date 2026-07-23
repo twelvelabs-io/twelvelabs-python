@@ -11,6 +11,7 @@ from .internal_server_error import InternalServerError
 from .not_found_error import NotFoundError
 from .service_unavailable_error import ServiceUnavailableError
 from .too_many_requests_error import TooManyRequestsError
+from .unprocessable_entity_error import UnprocessableEntityError
 
 __all__ = [
     "BadRequestError",
@@ -22,4 +23,5 @@ __all__ = [
     "NotFoundError",
     "ServiceUnavailableError",
     "TooManyRequestsError",
+    "UnprocessableEntityError",
 ]
