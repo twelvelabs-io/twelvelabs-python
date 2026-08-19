@@ -8,10 +8,12 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.asset import Asset
 from ..types.asset_detail import AssetDetail
+from ..types.asset_transcription_response import AssetTranscriptionResponse
 from ..types.user_metadata import UserMetadata
 from .raw_client import AsyncRawAssetsClient, RawAssetsClient
 from .types.assets_create_request_method import AssetsCreateRequestMethod
 from .types.assets_list_request_asset_types_item import AssetsListRequestAssetTypesItem
+from .types.assets_retrieve_transcription_request_include_item import AssetsRetrieveTranscriptionRequestIncludeItem
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -285,6 +287,64 @@ class AssetsClient:
         )
         """
         _response = self._raw_client.delete(asset_id, force=force, request_options=request_options)
+        return _response.data
+
+    def retrieve_transcription(
+        self,
+        asset_id: str,
+        *,
+        include: typing.Optional[
+            typing.Union[
+                AssetsRetrieveTranscriptionRequestIncludeItem,
+                typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AssetTranscriptionResponse:
+        """
+        This method retrieves the transcription of a video or audio asset. An asset that has a transcription returns `200` with the current transcription status. The endpoint returns `404` when the asset cannot be found or has no transcription.
+
+        The platform generates transcriptions asynchronously. Poll this endpoint to monitor the transcription status.
+
+        When the status is `ready`, the response contains the segmentations you requested that the transcription supports. A transcription does not always support every segmentation, so read the segmentations the response returns rather than assuming every requested one is present.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        include : typing.Optional[typing.Union[AssetsRetrieveTranscriptionRequestIncludeItem, typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem]]]
+            Specifies the transcriptions to return. Each value segments the transcription differently:
+
+            - `words`: One entry for each word.
+            - `sentences`: One entry for each chunk the speech recognition model detects as a sentence.
+            - `utterances`: One entry for each speaker turn.
+
+            Send repeated values, such as the `?include=words&include=utterances` query string. The platform also accepts one comma-separated value, such as the `?include=words,utterances` query string.
+
+            **Default**: `words`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AssetTranscriptionResponse
+            The transcription status and the requested transcriptions have been successfully retrieved.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.assets.retrieve_transcription(
+            asset_id="6298d673f1090f1100476d4c",
+            include=["words", "utterances"],
+        )
+        """
+        _response = self._raw_client.retrieve_transcription(asset_id, include=include, request_options=request_options)
         return _response.data
 
     def replace_user_metadata(
@@ -716,6 +776,74 @@ class AsyncAssetsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(asset_id, force=force, request_options=request_options)
+        return _response.data
+
+    async def retrieve_transcription(
+        self,
+        asset_id: str,
+        *,
+        include: typing.Optional[
+            typing.Union[
+                AssetsRetrieveTranscriptionRequestIncludeItem,
+                typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AssetTranscriptionResponse:
+        """
+        This method retrieves the transcription of a video or audio asset. An asset that has a transcription returns `200` with the current transcription status. The endpoint returns `404` when the asset cannot be found or has no transcription.
+
+        The platform generates transcriptions asynchronously. Poll this endpoint to monitor the transcription status.
+
+        When the status is `ready`, the response contains the segmentations you requested that the transcription supports. A transcription does not always support every segmentation, so read the segmentations the response returns rather than assuming every requested one is present.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        include : typing.Optional[typing.Union[AssetsRetrieveTranscriptionRequestIncludeItem, typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem]]]
+            Specifies the transcriptions to return. Each value segments the transcription differently:
+
+            - `words`: One entry for each word.
+            - `sentences`: One entry for each chunk the speech recognition model detects as a sentence.
+            - `utterances`: One entry for each speaker turn.
+
+            Send repeated values, such as the `?include=words&include=utterances` query string. The platform also accepts one comma-separated value, such as the `?include=words,utterances` query string.
+
+            **Default**: `words`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AssetTranscriptionResponse
+            The transcription status and the requested transcriptions have been successfully retrieved.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.assets.retrieve_transcription(
+                asset_id="6298d673f1090f1100476d4c",
+                include=["words", "utterances"],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.retrieve_transcription(
+            asset_id, include=include, request_options=request_options
+        )
         return _response.data
 
     async def replace_user_metadata(

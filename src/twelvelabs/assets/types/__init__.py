@@ -5,5 +5,11 @@
 from .assets_create_request_method import AssetsCreateRequestMethod
 from .assets_list_request_asset_types_item import AssetsListRequestAssetTypesItem
 from .assets_list_response import AssetsListResponse
+from .assets_retrieve_transcription_request_include_item import AssetsRetrieveTranscriptionRequestIncludeItem
 
-__all__ = ["AssetsCreateRequestMethod", "AssetsListRequestAssetTypesItem", "AssetsListResponse"]
+__all__ = [
+    "AssetsCreateRequestMethod",
+    "AssetsListRequestAssetTypesItem",
+    "AssetsListResponse",
+    "AssetsRetrieveTranscriptionRequestIncludeItem",
+]

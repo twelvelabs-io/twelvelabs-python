@@ -1795,6 +1795,104 @@ When set to `true`, the platform deletes the asset even if indexed assets refere
 </dl>
 </details>
 
+<details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">retrieve_transcription</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method retrieves the transcription of a video or audio asset. An asset that has a transcription returns `200` with the current transcription status. The endpoint returns `404` when the asset cannot be found or has no transcription.
+
+The platform generates transcriptions asynchronously. Poll this endpoint to monitor the transcription status.
+
+When the status is `ready`, the response contains the segmentations you requested that the transcription supports. A transcription does not always support every segmentation, so read the segmentations the response returns rather than assuming every requested one is present.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.assets.retrieve_transcription(
+    asset_id="6298d673f1090f1100476d4c",
+    include=["words", "utterances"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include:** `typing.Optional[
+    typing.Union[
+        AssetsRetrieveTranscriptionRequestIncludeItem,
+        typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem],
+    ]
+]` 
+
+Specifies the transcriptions to return. Each value segments the transcription differently:
+
+- `words`: One entry for each word.
+- `sentences`: One entry for each chunk the speech recognition model detects as a sentence.
+- `utterances`: One entry for each speaker turn.
+
+Send repeated values, such as the `?include=words&include=utterances` query string. The platform also accepts one comma-separated value, such as the `?include=words,utterances` query string.
+
+**Default**: `words`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">replace_user_metadata</a>(...)</code></summary>
 <dl>
 <dd>

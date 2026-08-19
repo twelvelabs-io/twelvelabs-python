@@ -2,6 +2,16 @@
 
 # isort: skip_file
 
-from .types import AssetsCreateRequestMethod, AssetsListRequestAssetTypesItem, AssetsListResponse
+from .types import (
+    AssetsCreateRequestMethod,
+    AssetsListRequestAssetTypesItem,
+    AssetsListResponse,
+    AssetsRetrieveTranscriptionRequestIncludeItem,
+)
 
-__all__ = ["AssetsCreateRequestMethod", "AssetsListRequestAssetTypesItem", "AssetsListResponse"]
+__all__ = [
+    "AssetsCreateRequestMethod",
+    "AssetsListRequestAssetTypesItem",
+    "AssetsListResponse",
+    "AssetsRetrieveTranscriptionRequestIncludeItem",
+]

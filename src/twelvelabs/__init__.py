@@ -45,6 +45,11 @@ from .types import (
     AssetStatus,
     AssetThumbnail,
     AssetThumbnailStatus,
+    AssetTranscriptionEntry,
+    AssetTranscriptionError,
+    AssetTranscriptionResponse,
+    AssetTranscriptionStatus,
+    AssetTranscriptionUtterance,
     AssetTypeFilter,
     AsyncResponseFormat,
     AsyncResponseFormatSegmentTimeFormat,
@@ -364,7 +369,12 @@ from . import (
     search,
     tasks,
 )
-from .assets import AssetsCreateRequestMethod, AssetsListRequestAssetTypesItem, AssetsListResponse
+from .assets import (
+    AssetsCreateRequestMethod,
+    AssetsListRequestAssetTypesItem,
+    AssetsListResponse,
+    AssetsRetrieveTranscriptionRequestIncludeItem,
+)
 from .client import AsyncTwelveLabs, TwelveLabs
 from .data_connectors import (
     AuthorizeConnectionRequestProvider,
@@ -460,10 +470,16 @@ __all__ = [
     "AssetStatus",
     "AssetThumbnail",
     "AssetThumbnailStatus",
+    "AssetTranscriptionEntry",
+    "AssetTranscriptionError",
+    "AssetTranscriptionResponse",
+    "AssetTranscriptionStatus",
+    "AssetTranscriptionUtterance",
     "AssetTypeFilter",
     "AssetsCreateRequestMethod",
     "AssetsListRequestAssetTypesItem",
     "AssetsListResponse",
+    "AssetsRetrieveTranscriptionRequestIncludeItem",
     "AsyncResponseFormat",
     "AsyncResponseFormatSegmentTimeFormat",
     "AsyncResponseFormatType",
