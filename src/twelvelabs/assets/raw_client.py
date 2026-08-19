@@ -16,10 +16,12 @@ from ..errors.conflict_error import ConflictError
 from ..errors.not_found_error import NotFoundError
 from ..types.asset import Asset
 from ..types.asset_detail import AssetDetail
+from ..types.asset_transcription_response import AssetTranscriptionResponse
 from ..types.user_metadata import UserMetadata
 from .types.assets_create_request_method import AssetsCreateRequestMethod
 from .types.assets_list_request_asset_types_item import AssetsListRequestAssetTypesItem
 from .types.assets_list_response import AssetsListResponse
+from .types.assets_retrieve_transcription_request_include_item import AssetsRetrieveTranscriptionRequestIncludeItem
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -356,6 +358,94 @@ class RawAssetsClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def retrieve_transcription(
+        self,
+        asset_id: str,
+        *,
+        include: typing.Optional[
+            typing.Union[
+                AssetsRetrieveTranscriptionRequestIncludeItem,
+                typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[AssetTranscriptionResponse]:
+        """
+        This method retrieves the transcription of a video or audio asset. An asset that has a transcription returns `200` with the current transcription status. The endpoint returns `404` when the asset cannot be found or has no transcription.
+
+        The platform generates transcriptions asynchronously. Poll this endpoint to monitor the transcription status.
+
+        When the status is `ready`, the response contains the segmentations you requested that the transcription supports. A transcription does not always support every segmentation, so read the segmentations the response returns rather than assuming every requested one is present.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        include : typing.Optional[typing.Union[AssetsRetrieveTranscriptionRequestIncludeItem, typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem]]]
+            Specifies the transcriptions to return. Each value segments the transcription differently:
+
+            - `words`: One entry for each word.
+            - `sentences`: One entry for each chunk the speech recognition model detects as a sentence.
+            - `utterances`: One entry for each speaker turn.
+
+            Send repeated values, such as the `?include=words&include=utterances` query string. The platform also accepts one comma-separated value, such as the `?include=words,utterances` query string.
+
+            **Default**: `words`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[AssetTranscriptionResponse]
+            The transcription status and the requested transcriptions have been successfully retrieved.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/transcription",
+            method="GET",
+            params={
+                "include": include,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AssetTranscriptionResponse,
+                    parse_obj_as(
+                        type_=AssetTranscriptionResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -895,6 +985,94 @@ class AsyncRawAssetsClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def retrieve_transcription(
+        self,
+        asset_id: str,
+        *,
+        include: typing.Optional[
+            typing.Union[
+                AssetsRetrieveTranscriptionRequestIncludeItem,
+                typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[AssetTranscriptionResponse]:
+        """
+        This method retrieves the transcription of a video or audio asset. An asset that has a transcription returns `200` with the current transcription status. The endpoint returns `404` when the asset cannot be found or has no transcription.
+
+        The platform generates transcriptions asynchronously. Poll this endpoint to monitor the transcription status.
+
+        When the status is `ready`, the response contains the segmentations you requested that the transcription supports. A transcription does not always support every segmentation, so read the segmentations the response returns rather than assuming every requested one is present.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset.
+
+        include : typing.Optional[typing.Union[AssetsRetrieveTranscriptionRequestIncludeItem, typing.Sequence[AssetsRetrieveTranscriptionRequestIncludeItem]]]
+            Specifies the transcriptions to return. Each value segments the transcription differently:
+
+            - `words`: One entry for each word.
+            - `sentences`: One entry for each chunk the speech recognition model detects as a sentence.
+            - `utterances`: One entry for each speaker turn.
+
+            Send repeated values, such as the `?include=words&include=utterances` query string. The platform also accepts one comma-separated value, such as the `?include=words,utterances` query string.
+
+            **Default**: `words`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[AssetTranscriptionResponse]
+            The transcription status and the requested transcriptions have been successfully retrieved.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/transcription",
+            method="GET",
+            params={
+                "include": include,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AssetTranscriptionResponse,
+                    parse_obj_as(
+                        type_=AssetTranscriptionResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
