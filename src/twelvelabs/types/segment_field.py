@@ -13,7 +13,7 @@ class SegmentField(UniversalBaseModel):
     """
     A custom field to extract for each segment.
 
-    **Timestamp fields** (Pegasus 1.5 only)
+    **Timestamp fields**
 
     Set `type` to `timestamp` and provide a `format` to control the format of the returned value on each segment. See the `format` property for supported values.
 
@@ -29,7 +29,7 @@ class SegmentField(UniversalBaseModel):
     """
     The data type of the field.
     
-    When set to `timestamp`, the `format` property is required and controls the format of the returned value. Requires the `model_name` parameter set to `pegasus1.5`.
+    When set to `timestamp`, the `format` property is required and controls the format of the returned value.
     """
 
     description: str = pydantic.Field()

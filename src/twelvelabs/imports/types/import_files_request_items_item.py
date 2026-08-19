@@ -9,7 +9,7 @@ from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 class ImportFilesRequestItemsItem(UniversalBaseModel):
     source_id: str = pydantic.Field()
     """
-    The identifier of the file at the provider. For Google Drive, this is the Drive file identifier.
+    The identifier of the file at the provider. For Google Drive, this is the identifier Google Drive assigns to the file.
     """
 
     if IS_PYDANTIC_V2:

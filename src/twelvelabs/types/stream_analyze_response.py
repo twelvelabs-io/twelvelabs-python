@@ -16,10 +16,10 @@ class StreamAnalyzeResponse_StreamStart(UniversalBaseModel):
     """
     When the value of the `stream` parameter is set to `true`, the platform provides a streaming response in the NDJSON format.
 
-    The stream contains three types of events:
-    1. Stream start
-    2. Text generation
-    3. Stream end
+    The stream contains the following types of events:
+    - Stream start
+    - Text generation
+    - Stream end
 
     To integrate the response into your application, follow the guidelines below:
     - Parse each line of the response as a separate JSON object.
@@ -45,10 +45,10 @@ class StreamAnalyzeResponse_TextGeneration(UniversalBaseModel):
     """
     When the value of the `stream` parameter is set to `true`, the platform provides a streaming response in the NDJSON format.
 
-    The stream contains three types of events:
-    1. Stream start
-    2. Text generation
-    3. Stream end
+    The stream contains the following types of events:
+    - Stream start
+    - Text generation
+    - Stream end
 
     To integrate the response into your application, follow the guidelines below:
     - Parse each line of the response as a separate JSON object.
@@ -74,10 +74,10 @@ class StreamAnalyzeResponse_StreamEnd(UniversalBaseModel):
     """
     When the value of the `stream` parameter is set to `true`, the platform provides a streaming response in the NDJSON format.
 
-    The stream contains three types of events:
-    1. Stream start
-    2. Text generation
-    3. Stream end
+    The stream contains the following types of events:
+    - Stream start
+    - Text generation
+    - Stream end
 
     To integrate the response into your application, follow the guidelines below:
     - Parse each line of the response as a separate JSON object.

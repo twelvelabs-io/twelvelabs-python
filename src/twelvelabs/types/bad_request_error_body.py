@@ -17,11 +17,6 @@ class BadRequestErrorBody(UniversalBaseModel):
     A human-readable string describing the error, intended to be suitable for display in a user interface.
     """
 
-    docs_url: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The URL of the relevant documentation page.
-    """
-
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:

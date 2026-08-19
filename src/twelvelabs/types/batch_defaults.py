@@ -19,7 +19,7 @@ class BatchDefaults(UniversalBaseModel):
     temperature: typing.Optional[AnalyzeTemperature] = None
     max_tokens: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The maximum number of tokens to generate per item. The allowed range depends on the model and analysis mode (see the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint for the per-mode table).
+    The maximum number of tokens to generate per item. The allowed range depends on the analysis mode (see the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint for the per-mode table).
     """
 
     min_segment_duration: typing.Optional[float] = pydantic.Field(default=None)

@@ -22,7 +22,7 @@ class StreamEndResponse(UniversalBaseModel):
 
     error: typing.Optional[AnalyzeTaskError] = pydantic.Field(default=None)
     """
-    A warning. Present when `finish_reason` is `length` — the response reached the maximum response length or the [context window](/v1.3/docs/concepts/models/pegasus#context-window). The partial output is delivered through the preceding `text_generation` events. Pegasus 1.2 also returns this field when `finish_reason` is `length`.
+    A warning. Present when `finish_reason` is `length`, which means the response reached the maximum response length or the [context window](/v1.3/docs/concepts/models/pegasus#context-window). The partial output is delivered through the preceding `text_generation` events.
     """
 
     if IS_PYDANTIC_V2:

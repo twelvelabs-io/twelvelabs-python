@@ -34,7 +34,7 @@ class Connection(UniversalBaseModel):
 
     custom_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The label you supplied when creating the connection. The platform does not interpret this value, and it does not need to be unique. Multiple connections can share the same `custom_id` value.
+    The label you supplied when you [authorized the connection](/v1.3/api-reference/data-connectors/authorize-a-connection). The platform does not interpret this value, and it does not need to be unique. Multiple connections can share the same `custom_id` value.
     """
 
     account: typing.Optional[ConnectionAccount] = pydantic.Field(default=None)

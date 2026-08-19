@@ -44,7 +44,6 @@ class TasksClient:
         status: typing.Optional[AnalyzeTaskStatus] = None,
         video_url: typing.Optional[str] = None,
         asset_id: typing.Optional[str] = None,
-        video_id: typing.Optional[str] = None,
         analysis_mode: typing.Optional[TasksListRequestAnalysisMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksListResponse:
@@ -74,9 +73,6 @@ class TasksClient:
         asset_id : typing.Optional[str]
             Filter tasks by asset ID.
 
-        video_id : typing.Optional[str]
-            Filter tasks by video ID for pre-indexed videos (Pegasus 1.2 only). Deprecated — use `asset_id` instead.
-
         analysis_mode : typing.Optional[TasksListRequestAnalysisMode]
             Filter tasks by the analysis mode used when creating the task.
 
@@ -101,7 +97,6 @@ class TasksClient:
             status="queued",
             video_url="https://example.com/video.mp4",
             asset_id="69abc123def456789012abcd",
-            video_id="6298d673f1090f1100476d4c",
             analysis_mode="general",
         )
         """
@@ -111,7 +106,6 @@ class TasksClient:
             status=status,
             video_url=video_url,
             asset_id=asset_id,
-            video_id=video_id,
             analysis_mode=analysis_mode,
             request_options=request_options,
         )
@@ -136,7 +130,7 @@ class TasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAnalyzeTaskResponse:
         """
-        This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions. Video segmentation requires Pegasus 1.5.
+        This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -148,7 +142,7 @@ class TasksClient:
 
         **When to use this method**:
         - Generate custom text from your video using a prompt (general analysis)
-        - Extract timestamped metadata with custom segment definitions from your video (Pegasus 1.5 only)
+        - Extract timestamped metadata with custom segment definitions from your video
         - Analyze videos longer than 1 hour
         - Process videos asynchronously without blocking your application
 
@@ -173,10 +167,9 @@ class TasksClient:
 
         model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.2`: General analysis (prompt-based text generation).
             - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
-            **Default:** `pegasus1.2`
+            **Default:** `pegasus1.5`
 
         custom_id : typing.Optional[str]
             An optional identifier that you set when you create the task. Use this field to correlate tasks across responses, for example, to distinguish tasks by type or environment.
@@ -191,9 +184,9 @@ class TasksClient:
             This field does not enforce uniqueness. You can submit multiple tasks with the same `custom_id`. To prevent duplicate task creation, use an `Idempotency-Key` header instead.
 
         prompt : typing.Optional[str]
-            Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+            Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
             **Examples**:
 
@@ -201,45 +194,44 @@ class TasksClient:
             - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
             The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
             The analysis approach for this task.
             - `general`: Analyze the video and generate a response based on your prompt. Supports both free-form text and structured output via `response_format`.
-            - `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
+            - `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `response_format.type` set to `segment_definitions`.
 
             **Default:** `general`
 
         temperature : typing.Optional[AnalyzeTemperature]
 
         max_tokens : typing.Optional[int]
-            The maximum response length, in tokens. The allowed range depends on the model and analysis mode:
+            The maximum response length, in tokens. The allowed range depends on the analysis mode:
 
-            | Model | Mode | Min | Max | Default |
-            |-------|------|-----|-----|---------|
-            | Pegasus 1.2 | — | 2 | 4,096 | 4096 |
-            | Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
-            | Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
+            | Mode | Min | Max | Default |
+            |------|-----|-----|---------|
+            | `general` | 512 | 98,304 | 4,096 |
+            | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
         response_format : typing.Optional[AsyncResponseFormat]
 
         min_segment_duration : typing.Optional[float]
-            Minimum duration for each extracted segment, in seconds. Set this value to enforce a minimum segment length. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            Minimum duration for each extracted segment, in seconds. Set this value to enforce a minimum segment length. Requires `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 
             **Min:** 2
 
         max_segment_duration : typing.Optional[float]
-            Maximum duration for each extracted segment, in seconds. Set this value to split long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            Maximum duration for each extracted segment, in seconds. Set this value to split long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 
             **Min:** 2
 
         start_time : typing.Optional[float]
-            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `end_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time.
+            - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
@@ -247,10 +239,10 @@ class TasksClient:
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `start_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time plus its duration.
+            - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
@@ -394,7 +386,6 @@ class AsyncTasksClient:
         status: typing.Optional[AnalyzeTaskStatus] = None,
         video_url: typing.Optional[str] = None,
         asset_id: typing.Optional[str] = None,
-        video_id: typing.Optional[str] = None,
         analysis_mode: typing.Optional[TasksListRequestAnalysisMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TasksListResponse:
@@ -423,9 +414,6 @@ class AsyncTasksClient:
 
         asset_id : typing.Optional[str]
             Filter tasks by asset ID.
-
-        video_id : typing.Optional[str]
-            Filter tasks by video ID for pre-indexed videos (Pegasus 1.2 only). Deprecated — use `asset_id` instead.
 
         analysis_mode : typing.Optional[TasksListRequestAnalysisMode]
             Filter tasks by the analysis mode used when creating the task.
@@ -456,7 +444,6 @@ class AsyncTasksClient:
                 status="queued",
                 video_url="https://example.com/video.mp4",
                 asset_id="69abc123def456789012abcd",
-                video_id="6298d673f1090f1100476d4c",
                 analysis_mode="general",
             )
 
@@ -469,7 +456,6 @@ class AsyncTasksClient:
             status=status,
             video_url=video_url,
             asset_id=asset_id,
-            video_id=video_id,
             analysis_mode=analysis_mode,
             request_options=request_options,
         )
@@ -494,7 +480,7 @@ class AsyncTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateAnalyzeTaskResponse:
         """
-        This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions. Video segmentation requires Pegasus 1.5.
+        This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -506,7 +492,7 @@ class AsyncTasksClient:
 
         **When to use this method**:
         - Generate custom text from your video using a prompt (general analysis)
-        - Extract timestamped metadata with custom segment definitions from your video (Pegasus 1.5 only)
+        - Extract timestamped metadata with custom segment definitions from your video
         - Analyze videos longer than 1 hour
         - Process videos asynchronously without blocking your application
 
@@ -531,10 +517,9 @@ class AsyncTasksClient:
 
         model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.2`: General analysis (prompt-based text generation).
             - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
-            **Default:** `pegasus1.2`
+            **Default:** `pegasus1.5`
 
         custom_id : typing.Optional[str]
             An optional identifier that you set when you create the task. Use this field to correlate tasks across responses, for example, to distinguish tasks by type or environment.
@@ -549,9 +534,9 @@ class AsyncTasksClient:
             This field does not enforce uniqueness. You can submit multiple tasks with the same `custom_id`. To prevent duplicate task creation, use an `Idempotency-Key` header instead.
 
         prompt : typing.Optional[str]
-            Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+            Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
             **Examples**:
 
@@ -559,45 +544,44 @@ class AsyncTasksClient:
             - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
             The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
             The analysis approach for this task.
             - `general`: Analyze the video and generate a response based on your prompt. Supports both free-form text and structured output via `response_format`.
-            - `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `model_name` set to `pegasus1.5` and `response_format.type` set to `segment_definitions`.
+            - `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `response_format.type` set to `segment_definitions`.
 
             **Default:** `general`
 
         temperature : typing.Optional[AnalyzeTemperature]
 
         max_tokens : typing.Optional[int]
-            The maximum response length, in tokens. The allowed range depends on the model and analysis mode:
+            The maximum response length, in tokens. The allowed range depends on the analysis mode:
 
-            | Model | Mode | Min | Max | Default |
-            |-------|------|-----|-----|---------|
-            | Pegasus 1.2 | — | 2 | 4,096 | 4096 |
-            | Pegasus 1.5 | `general` | 512 | 98,304 | 4,096 |
-            | Pegasus 1.5 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
+            | Mode | Min | Max | Default |
+            |------|-----|-----|---------|
+            | `general` | 512 | 98,304 | 4,096 |
+            | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
         response_format : typing.Optional[AsyncResponseFormat]
 
         min_segment_duration : typing.Optional[float]
-            Minimum duration for each extracted segment, in seconds. Set this value to enforce a minimum segment length. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            Minimum duration for each extracted segment, in seconds. Set this value to enforce a minimum segment length. Requires `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 
             **Min:** 2
 
         max_segment_duration : typing.Optional[float]
-            Maximum duration for each extracted segment, in seconds. Set this value to split long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `model_name` set to `pegasus1.5` and `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
+            Maximum duration for each extracted segment, in seconds. Set this value to split long continuous sections into shorter segments. Must be greater than or equal to `min_segment_duration`. Requires `analysis_mode` set to `time_based_metadata`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 
             **Min:** 2
 
         start_time : typing.Optional[float]
-            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `end_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time.
+            - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
@@ -605,10 +589,10 @@ class AsyncTasksClient:
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `start_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time plus its duration.
+            - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.

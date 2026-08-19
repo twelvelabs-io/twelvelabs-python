@@ -8,6 +8,10 @@ from .video_segmentation_dynamic_dynamic import VideoSegmentationDynamicDynamic
 
 
 class VideoSegmentationDynamic(UniversalBaseModel):
+    """
+    Divides the video into segments of variable length that align with scene boundaries. Use this for content-aware segmentation.
+    """
+
     dynamic: VideoSegmentationDynamicDynamic = pydantic.Field()
     """
     Configuration for dynamic segmentation. This object is required when `strategy` is `dynamic`.

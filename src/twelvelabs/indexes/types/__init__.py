@@ -3,7 +3,13 @@
 # isort: skip_file
 
 from .indexes_create_request_models_item import IndexesCreateRequestModelsItem
+from .indexes_create_request_models_item_model_name import IndexesCreateRequestModelsItemModelName
 from .indexes_create_response import IndexesCreateResponse
 from .indexes_list_response import IndexesListResponse
 
-__all__ = ["IndexesCreateRequestModelsItem", "IndexesCreateResponse", "IndexesListResponse"]
+__all__ = [
+    "IndexesCreateRequestModelsItem",
+    "IndexesCreateRequestModelsItemModelName",
+    "IndexesCreateResponse",
+    "IndexesListResponse",
+]

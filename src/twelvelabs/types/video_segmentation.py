@@ -12,7 +12,10 @@ from .video_segmentation_fixed_fixed import VideoSegmentationFixedFixed
 
 class VideoSegmentation_Dynamic(UniversalBaseModel):
     """
-    Specifies how the platform divides the video into segments.
+    Specifies how the platform divides the video into segments. The `strategy` field selects one variant:
+
+    - `strategy: fixed` - Creates segments of equal, predetermined length. Use this for consistent timing.
+    - `strategy: dynamic` - Creates segments of variable length that align with scene boundaries. Use this for content-aware segmentation.
     """
 
     strategy: typing.Literal["dynamic"] = "dynamic"
@@ -30,7 +33,10 @@ class VideoSegmentation_Dynamic(UniversalBaseModel):
 
 class VideoSegmentation_Fixed(UniversalBaseModel):
     """
-    Specifies how the platform divides the video into segments.
+    Specifies how the platform divides the video into segments. The `strategy` field selects one variant:
+
+    - `strategy: fixed` - Creates segments of equal, predetermined length. Use this for consistent timing.
+    - `strategy: dynamic` - Creates segments of variable length that align with scene boundaries. Use this for content-aware segmentation.
     """
 
     strategy: typing.Literal["fixed"] = "fixed"

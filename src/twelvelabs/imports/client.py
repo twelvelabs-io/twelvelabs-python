@@ -38,7 +38,7 @@ class ImportsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ListImportsResponse:
         """
-        This method returns a list of the imports for the specified connection. The platform returns the imports sorted by creation date, with the newest at the top of the list. Each import in the list is a summary that omits the `items` array. To see the status of each file, use the [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint.
+        This method returns a list of the imports for the specified connection. The platform returns the imports sorted by creation date, with the newest at the top of the list. Each import in the list is a summary and does not include the per-file details. To see them, use the [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint.
 
         Parameters
         ----------
@@ -90,7 +90,7 @@ class ImportsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ImportResult:
         """
-        This method imports one or more files from the connected provider account into the platform as assets. Video files can be up to 10 GB, audio files up to 4 GB, and images up to 32 MB. Each newly imported file creates an asset in the `processing` status and is downloaded asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, which may be `ready`, without downloading the file again. The response returns one entry per requested file, in request order.
+        This method imports one or more files from the connected provider account into the platform as assets. Video files can be up to 10 GB, audio files up to 4 GB, and images up to 32 MB. For each newly imported file, the platform creates an asset in the `processing` status and fetches the file asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, without fetching the file again. If the earlier fetch had failed, the platform fetches the file again. The response contains one entry per requested file, in request order. Use the `action` field of each entry to identify which files were newly imported and which were already imported.
 
         Parameters
         ----------
@@ -98,7 +98,7 @@ class ImportsClient:
             The unique identifier of the connection to import through.
 
         items : typing.Sequence[ImportFilesRequestItemsItem]
-            The files to import. Provide an array of one item for a single import, or multiple items for a batch import. A maximum of 100 items can be imported per request. Each `source_id` must be unique within a request.
+            The files to import. Provide an array of one item for a single import, or multiple items for a batch import. A maximum of 100 items can be imported per request. The `source_id` field of each item must be unique within a request.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -106,7 +106,7 @@ class ImportsClient:
         Returns
         -------
         ImportResult
-            The import request has been accepted. The response returns one item per requested file, in request order. An accepted item includes the `asset_id` and `status` fields. A rejected item includes an `error` object instead and omits those fields. The `has_failures` field is `true` when any item was rejected.
+            The import request has been accepted. The response contains one item per requested file, in request order. Use the `action` field of each item to identify which files were newly imported and which were already imported. An accepted item includes the identifier and status of its asset. A rejected item includes an `error` object instead, and omits both. The `has_failures` field is `true` when at least one item was rejected. A rejected item does not fail the request; the response is `202` even when no item is accepted.
 
         Examples
         --------
@@ -132,12 +132,12 @@ class ImportsClient:
         self, connection_id: str, import_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ImportDetail:
         """
-        This method retrieves a single import, including the current status of each asset in the import.
+        This method retrieves a single import. For each file, the response includes the `action` field, which indicates the outcome of the import operation, and the `status` field, which reflects the current status of the asset each time you retrieve the import.
 
         Parameters
         ----------
         connection_id : str
-            The unique identifier of the connection the import belongs to.
+            The unique identifier of the connection to retrieve the import from.
 
         import_id : str
             The unique identifier of the import to retrieve.
@@ -190,7 +190,7 @@ class AsyncImportsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ListImportsResponse:
         """
-        This method returns a list of the imports for the specified connection. The platform returns the imports sorted by creation date, with the newest at the top of the list. Each import in the list is a summary that omits the `items` array. To see the status of each file, use the [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint.
+        This method returns a list of the imports for the specified connection. The platform returns the imports sorted by creation date, with the newest at the top of the list. Each import in the list is a summary and does not include the per-file details. To see them, use the [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint.
 
         Parameters
         ----------
@@ -250,7 +250,7 @@ class AsyncImportsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ImportResult:
         """
-        This method imports one or more files from the connected provider account into the platform as assets. Video files can be up to 10 GB, audio files up to 4 GB, and images up to 32 MB. Each newly imported file creates an asset in the `processing` status and is downloaded asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, which may be `ready`, without downloading the file again. The response returns one entry per requested file, in request order.
+        This method imports one or more files from the connected provider account into the platform as assets. Video files can be up to 10 GB, audio files up to 4 GB, and images up to 32 MB. For each newly imported file, the platform creates an asset in the `processing` status and fetches the file asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, without fetching the file again. If the earlier fetch had failed, the platform fetches the file again. The response contains one entry per requested file, in request order. Use the `action` field of each entry to identify which files were newly imported and which were already imported.
 
         Parameters
         ----------
@@ -258,7 +258,7 @@ class AsyncImportsClient:
             The unique identifier of the connection to import through.
 
         items : typing.Sequence[ImportFilesRequestItemsItem]
-            The files to import. Provide an array of one item for a single import, or multiple items for a batch import. A maximum of 100 items can be imported per request. Each `source_id` must be unique within a request.
+            The files to import. Provide an array of one item for a single import, or multiple items for a batch import. A maximum of 100 items can be imported per request. The `source_id` field of each item must be unique within a request.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -266,7 +266,7 @@ class AsyncImportsClient:
         Returns
         -------
         ImportResult
-            The import request has been accepted. The response returns one item per requested file, in request order. An accepted item includes the `asset_id` and `status` fields. A rejected item includes an `error` object instead and omits those fields. The `has_failures` field is `true` when any item was rejected.
+            The import request has been accepted. The response contains one item per requested file, in request order. Use the `action` field of each item to identify which files were newly imported and which were already imported. An accepted item includes the identifier and status of its asset. A rejected item includes an `error` object instead, and omits both. The `has_failures` field is `true` when at least one item was rejected. A rejected item does not fail the request; the response is `202` even when no item is accepted.
 
         Examples
         --------
@@ -300,12 +300,12 @@ class AsyncImportsClient:
         self, connection_id: str, import_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ImportDetail:
         """
-        This method retrieves a single import, including the current status of each asset in the import.
+        This method retrieves a single import. For each file, the response includes the `action` field, which indicates the outcome of the import operation, and the `status` field, which reflects the current status of the asset each time you retrieve the import.
 
         Parameters
         ----------
         connection_id : str
-            The unique identifier of the connection the import belongs to.
+            The unique identifier of the connection to retrieve the import from.
 
         import_id : str
             The unique identifier of the import to retrieve.

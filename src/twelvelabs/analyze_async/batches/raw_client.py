@@ -150,12 +150,8 @@ class RawBatchesClient:
         """
         Use this method to submit many video analysis requests in a single call. Each request creates an analysis task. The response contains one batch identifier and one task identifier per request. Use the batch identifier to check progress and retrieve results.
 
-        <Note title="Model requirement">
-        You must use Pegasus 1.5 for batch analysis. Set the `model_name` parameter to `pegasus1.5`.
-        </Note>
-
         **When to use this method**:
-        - Run the same model and analysis settings across many videos.
+        - Run the same analysis settings across many videos.
         - Track a single batch instead of many individual analysis tasks.
 
         **Do not use this method for**:
@@ -174,11 +170,11 @@ class RawBatchesClient:
         Parameters
         ----------
         model_name : CreateAnalyzeBatchRequestModelName
-            The video understanding model to use for every item in this batch. Batch analysis requires Pegasus 1.5.
+            The video understanding model to use for every item in this batch.
 
         analysis_mode : CreateAnalyzeBatchRequestAnalysisMode
             The analysis approach for every item in this batch.
-            - `general`: Generate text from each video based on the prompt (the item's `prompt` field if set, otherwise `defaults.prompt`). Supports structured JSON output by using `json_schema` in the `response_format.type` field.
+            - `general`: Generate text from each video based on the prompt (the `prompt` field of the item if set, otherwise `defaults.prompt`). Supports structured JSON output by using `json_schema` in the `response_format.type` field.
             - `time_based_metadata`: Extract timestamped metadata by using `segment_definitions` in the `response_format.type` field.
 
             Batches with mixed modes are not supported.
@@ -676,12 +672,8 @@ class AsyncRawBatchesClient:
         """
         Use this method to submit many video analysis requests in a single call. Each request creates an analysis task. The response contains one batch identifier and one task identifier per request. Use the batch identifier to check progress and retrieve results.
 
-        <Note title="Model requirement">
-        You must use Pegasus 1.5 for batch analysis. Set the `model_name` parameter to `pegasus1.5`.
-        </Note>
-
         **When to use this method**:
-        - Run the same model and analysis settings across many videos.
+        - Run the same analysis settings across many videos.
         - Track a single batch instead of many individual analysis tasks.
 
         **Do not use this method for**:
@@ -700,11 +692,11 @@ class AsyncRawBatchesClient:
         Parameters
         ----------
         model_name : CreateAnalyzeBatchRequestModelName
-            The video understanding model to use for every item in this batch. Batch analysis requires Pegasus 1.5.
+            The video understanding model to use for every item in this batch.
 
         analysis_mode : CreateAnalyzeBatchRequestAnalysisMode
             The analysis approach for every item in this batch.
-            - `general`: Generate text from each video based on the prompt (the item's `prompt` field if set, otherwise `defaults.prompt`). Supports structured JSON output by using `json_schema` in the `response_format.type` field.
+            - `general`: Generate text from each video based on the prompt (the `prompt` field of the item if set, otherwise `defaults.prompt`). Supports structured JSON output by using `json_schema` in the `response_format.type` field.
             - `time_based_metadata`: Extract timestamped metadata by using `segment_definitions` in the `response_format.type` field.
 
             Batches with mixed modes are not supported.

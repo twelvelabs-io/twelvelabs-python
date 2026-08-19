@@ -157,6 +157,7 @@ from .image_search_system_metadata import ImageSearchSystemMetadata
 from .import_ import Import
 from .import_detail import ImportDetail
 from .import_item import ImportItem
+from .import_item_action import ImportItemAction
 from .import_item_error import ImportItemError
 from .import_item_status import ImportItemStatus
 from .import_provider import ImportProvider
@@ -491,6 +492,7 @@ __all__ = [
     "Import",
     "ImportDetail",
     "ImportItem",
+    "ImportItemAction",
     "ImportItemError",
     "ImportItemStatus",
     "ImportProvider",

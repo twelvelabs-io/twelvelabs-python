@@ -4,20 +4,14 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .indexes_create_request_models_item_model_name import IndexesCreateRequestModelsItemModelName
 
 
 class IndexesCreateRequestModelsItem(UniversalBaseModel):
-    model_name: str = pydantic.Field()
+    model_name: IndexesCreateRequestModelsItemModelName = pydantic.Field()
     """
-    The name of the model. The following models are available:
-    
-      - **Embedding**: These models are proficient at performing tasks such as search and classification, enabling enhanced video understanding.
-    
-        - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
-    
-      - **Generative**: These models generate text based on your videos.
-    
-        - `pegasus1.2`: A model that analyzes multiple modalities to generate contextually relevant text based on the content of your videos.
+    The video understanding model to enable for this index.
+    - `marengo3.0`: Enhanced model with sports intelligence and extended content support.
     
     <Note title="Note">
     You cannot change the model configuration once the index has been created.
@@ -26,7 +20,7 @@ class IndexesCreateRequestModelsItem(UniversalBaseModel):
 
     model_options: typing.List[str] = pydantic.Field()
     """
-    An array that specifies which modalities the platform analyzes. For the Marengo and Pegasus models, you can specify one or both of the following model options: `visual` and `audio`. For more details, see the [Model options](/v1.3/docs/concepts/modalities#model-options) section.
+    An array that specifies which modalities the platform analyzes. For the Marengo model, you can specify one or both of the following model options: `visual` and `audio`. For more details, see the [Model options](/v1.3/docs/concepts/modalities#model-options) section.
     """
 
     if IS_PYDANTIC_V2:

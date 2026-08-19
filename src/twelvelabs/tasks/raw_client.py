@@ -203,6 +203,10 @@ class RawTasksClient:
 
         This method creates a video indexing task that uploads and indexes a video in a single operation.
 
+        <Note title="Adding videos to existing indexes">
+        You can no longer add videos to an index that has only Pegasus 1.2 enabled. When you add videos to an index that has both Marengo and Pegasus 1.2 enabled, the platform indexes them with Marengo only.
+        </Note>
+
         Upload options:
         - **Local file**: Use the `video_file` parameter.
         - **Publicly accessible URL**: Use the `video_url` parameter.
@@ -567,6 +571,10 @@ class AsyncRawTasksClient:
         <Info>This method will be removed in a future version. New implementations should use [direct](/v1.3/api-reference/upload-content/direct-uploads) or [multipart](/v1.3/api-reference/upload-content/multipart-uploads) uploads followed by [separate indexing](/v1.3/api-reference/index-content/create).</Info>
 
         This method creates a video indexing task that uploads and indexes a video in a single operation.
+
+        <Note title="Adding videos to existing indexes">
+        You can no longer add videos to an index that has only Pegasus 1.2 enabled. When you add videos to an index that has both Marengo and Pegasus 1.2 enabled, the platform indexes them with Marengo only.
+        </Note>
 
         Upload options:
         - **Local file**: Use the `video_file` parameter.

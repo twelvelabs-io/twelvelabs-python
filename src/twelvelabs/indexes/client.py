@@ -190,11 +190,7 @@ class IndexesClient:
                 IndexesCreateRequestModelsItem(
                     model_name="marengo3.0",
                     model_options=["visual", "audio"],
-                ),
-                IndexesCreateRequestModelsItem(
-                    model_name="pegasus1.2",
-                    model_options=["visual", "audio"],
-                ),
+                )
             ],
             addons=["thumbnail"],
         )
@@ -490,11 +486,7 @@ class AsyncIndexesClient:
                     IndexesCreateRequestModelsItem(
                         model_name="marengo3.0",
                         model_options=["visual", "audio"],
-                    ),
-                    IndexesCreateRequestModelsItem(
-                        model_name="pegasus1.2",
-                        model_options=["visual", "audio"],
-                    ),
+                    )
                 ],
                 addons=["thumbnail"],
             )
