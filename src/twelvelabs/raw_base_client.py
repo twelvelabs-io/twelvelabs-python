@@ -37,7 +37,6 @@ class RawBaseClient:
         self,
         *,
         model_name: typing.Optional[AnalyzeStreamRequestModelName] = OMIT,
-        video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
@@ -49,7 +48,7 @@ class RawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[HttpResponse[typing.Iterator[StreamAnalyzeResponse]]]:
         """
-        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -66,7 +65,7 @@ class RawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -78,25 +77,19 @@ class RawBaseClient:
         ----------
         model_name : typing.Optional[AnalyzeStreamRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.2`: General analysis (prompt-based text generation).
             - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
-            **Default:** `pegasus1.2`
-
-        video_id : typing.Optional[str]
-            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
-
-            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
+            **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
         prompt : typing.Optional[AnalyzeTextPrompt]
-            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+            A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
             The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
@@ -106,27 +99,22 @@ class RawBaseClient:
             Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
         max_tokens : typing.Optional[int]
-            The maximum response length, in tokens. The allowed range depends on the model:
-
-            | Model | Min | Max | Default |
-            |-------|-----|-----|---------|
-            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
-            | Pegasus 1.5 | 512 | 98,304 | 4,096 |
+            The maximum response length, in tokens.
 
         start_time : typing.Optional[float]
-            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `end_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time.
+            - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `start_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time plus its duration.
+            - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
@@ -144,7 +132,6 @@ class RawBaseClient:
             method="POST",
             json={
                 "model_name": model_name,
-                "video_id": video_id,
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
@@ -236,7 +223,6 @@ class RawBaseClient:
         self,
         *,
         model_name: typing.Optional[AnalyzeRequestModelName] = OMIT,
-        video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
@@ -248,7 +234,7 @@ class RawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[NonStreamAnalyzeResponse]:
         """
-        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -265,7 +251,7 @@ class RawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -277,25 +263,19 @@ class RawBaseClient:
         ----------
         model_name : typing.Optional[AnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.2`: General analysis (prompt-based text generation).
             - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
-            **Default:** `pegasus1.2`
-
-        video_id : typing.Optional[str]
-            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
-
-            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
+            **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
         prompt : typing.Optional[AnalyzeTextPrompt]
-            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+            A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
             The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
@@ -305,27 +285,22 @@ class RawBaseClient:
             Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
         max_tokens : typing.Optional[int]
-            The maximum response length, in tokens. The allowed range depends on the model:
-
-            | Model | Min | Max | Default |
-            |-------|-----|-----|---------|
-            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
-            | Pegasus 1.5 | 512 | 98,304 | 4,096 |
+            The maximum response length, in tokens.
 
         start_time : typing.Optional[float]
-            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `end_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time.
+            - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `start_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time plus its duration.
+            - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
@@ -343,7 +318,6 @@ class RawBaseClient:
             method="POST",
             json={
                 "model_name": model_name,
-                "video_id": video_id,
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
@@ -424,7 +398,6 @@ class AsyncRawBaseClient:
         self,
         *,
         model_name: typing.Optional[AnalyzeStreamRequestModelName] = OMIT,
-        video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
@@ -436,7 +409,7 @@ class AsyncRawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[StreamAnalyzeResponse]]]:
         """
-        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -453,7 +426,7 @@ class AsyncRawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -465,25 +438,19 @@ class AsyncRawBaseClient:
         ----------
         model_name : typing.Optional[AnalyzeStreamRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.2`: General analysis (prompt-based text generation).
             - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
-            **Default:** `pegasus1.2`
-
-        video_id : typing.Optional[str]
-            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
-
-            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
+            **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
         prompt : typing.Optional[AnalyzeTextPrompt]
-            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+            A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
             The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
@@ -493,27 +460,22 @@ class AsyncRawBaseClient:
             Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
         max_tokens : typing.Optional[int]
-            The maximum response length, in tokens. The allowed range depends on the model:
-
-            | Model | Min | Max | Default |
-            |-------|-----|-----|---------|
-            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
-            | Pegasus 1.5 | 512 | 98,304 | 4,096 |
+            The maximum response length, in tokens.
 
         start_time : typing.Optional[float]
-            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `end_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time.
+            - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `start_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time plus its duration.
+            - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
@@ -531,7 +493,6 @@ class AsyncRawBaseClient:
             method="POST",
             json={
                 "model_name": model_name,
-                "video_id": video_id,
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
@@ -623,7 +584,6 @@ class AsyncRawBaseClient:
         self,
         *,
         model_name: typing.Optional[AnalyzeRequestModelName] = OMIT,
-        video_id: typing.Optional[str] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
@@ -635,7 +595,7 @@ class AsyncRawBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[NonStreamAnalyzeResponse]:
         """
-        This method analyzes your videos and returns the results directly in the response. It generates text based on your prompts and supports both Pegasus 1.2 and Pegasus 1.5 for general analysis (prompt-based text generation).
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
         - Minimum duration: 4 seconds
@@ -652,7 +612,7 @@ class AsyncRawBaseClient:
 
         **Do not use this method for**:
         - Videos longer than 1 hour. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
-        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint with the `model_name` parameter set to `pegasus1.5` instead.
+        - Video segmentation with custom segment definitions. Use the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint instead.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -664,25 +624,19 @@ class AsyncRawBaseClient:
         ----------
         model_name : typing.Optional[AnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.2`: General analysis (prompt-based text generation).
             - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
-            **Default:** `pegasus1.2`
-
-        video_id : typing.Optional[str]
-            The unique identifier of the video to analyze. Use this parameter when the `model_name` parameter is `pegasus1.2`. Not supported with `pegasus1.5`.
-
-            <Info> This parameter will be deprecated and removed in a future version. Use the [`video`](/v1.3/api-reference/analyze-videos/sync-analysis#request.body.video) parameter instead.</Info>
+            **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
         prompt : typing.Optional[AnalyzeTextPrompt]
-            A text prompt that guides the model on the desired format or content. Works with both Pegasus 1.2 and Pegasus 1.5. To include reference images in your prompt, use the `prompt_v2` parameter instead (Pegasus 1.5 only). Mutually exclusive with the `prompt_v2` parameter.
+            A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. Pegasus 1.2 limits prompts to 2,000 tokens. For Pegasus 1.5, this text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt with `<@name>` placeholders for referencing images. Requires the `model_name` parameter set to `pegasus1.5`. Mutually exclusive with the `prompt` parameter.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
             The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
@@ -692,27 +646,22 @@ class AsyncRawBaseClient:
             Specifies the format of the response. When you omit this parameter, the platform returns unstructured text. Only the `json_schema` type is supported for synchronous analysis.
 
         max_tokens : typing.Optional[int]
-            The maximum response length, in tokens. The allowed range depends on the model:
-
-            | Model | Min | Max | Default |
-            |-------|-----|-----|---------|
-            | Pegasus 1.2 | 2 | 4,096 | 4,096 |
-            | Pegasus 1.5 | 512 | 98,304 | 4,096 |
+            The maximum response length, in tokens.
 
         start_time : typing.Optional[float]
-            Start of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `end_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            Start of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `end_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time.
+            - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
 
         end_time : typing.Optional[float]
-            End of the analysis window, as an absolute timestamp in seconds, based on the video's internal metadata. Use with `start_time` to analyze only a portion of the video. Requires `model_name` set to `pegasus1.5`.
+            End of the analysis window, as an absolute timestamp in seconds, based on the internal metadata of the video. Use with `start_time` to analyze only a portion of the video.
 
             <Note title="Notes">
-            - If omitted, defaults to the video's internal start time plus its duration.
+            - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
             - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
             </Note>
@@ -730,7 +679,6 @@ class AsyncRawBaseClient:
             method="POST",
             json={
                 "model_name": model_name,
-                "video_id": video_id,
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),

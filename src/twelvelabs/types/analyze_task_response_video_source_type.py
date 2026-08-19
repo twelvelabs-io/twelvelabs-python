@@ -2,6 +2,4 @@
 
 import typing
 
-AnalyzeTaskResponseVideoSourceType = typing.Union[
-    typing.Literal["url", "base64_string", "asset_id", "video_id"], typing.Any
-]
+AnalyzeTaskResponseVideoSourceType = typing.Union[typing.Literal["url", "base64_string", "asset_id"], typing.Any]

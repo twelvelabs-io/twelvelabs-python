@@ -144,6 +144,7 @@ from .types import (
     Import,
     ImportDetail,
     ImportItem,
+    ImportItemAction,
     ImportItemError,
     ImportItemStatus,
     ImportProvider,
@@ -375,7 +376,12 @@ from .data_connectors import (
 from .entity_collections import EntityCollectionsListRequestSortBy, EntityCollectionsListResponse
 from .environment import TwelveLabsEnvironment
 from .imports import ImportFilesRequestItemsItem, ListImportsResponse
-from .indexes import IndexesCreateRequestModelsItem, IndexesCreateResponse, IndexesListResponse
+from .indexes import (
+    IndexesCreateRequestModelsItem,
+    IndexesCreateRequestModelsItemModelName,
+    IndexesCreateResponse,
+    IndexesListResponse,
+)
 from .knowledge_store_item_collections import (
     KnowledgeStoreItemCollectionsListItemsResponse,
     KnowledgeStoreItemCollectionsListRequestSortBy,
@@ -569,6 +575,7 @@ __all__ = [
     "ImportDetail",
     "ImportFilesRequestItemsItem",
     "ImportItem",
+    "ImportItemAction",
     "ImportItemError",
     "ImportItemStatus",
     "ImportProvider",
@@ -590,6 +597,7 @@ __all__ = [
     "IndexedAssetsListRequestSize",
     "IndexedAssetsListRequestWidth",
     "IndexesCreateRequestModelsItem",
+    "IndexesCreateRequestModelsItemModelName",
     "IndexesCreateResponse",
     "IndexesListResponse",
     "IngestionConfig",

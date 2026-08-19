@@ -2,7 +2,12 @@
 
 # isort: skip_file
 
-from .types import IndexesCreateRequestModelsItem, IndexesCreateResponse, IndexesListResponse
+from .types import (
+    IndexesCreateRequestModelsItem,
+    IndexesCreateRequestModelsItemModelName,
+    IndexesCreateResponse,
+    IndexesListResponse,
+)
 from . import indexed_assets, videos
 from .indexed_assets import (
     IndexedAssetsCreateResponse,
@@ -30,6 +35,7 @@ __all__ = [
     "IndexedAssetsListResponse",
     "IndexedAssetsRetrieveRequestEmbeddingOptionItem",
     "IndexesCreateRequestModelsItem",
+    "IndexesCreateRequestModelsItemModelName",
     "IndexesCreateResponse",
     "IndexesListResponse",
     "VideosListRequestUserMetadataValue",

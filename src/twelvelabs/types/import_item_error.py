@@ -13,7 +13,7 @@ class ImportItemError(UniversalBaseModel):
 
     code: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A string representing the code associated with the error. See the [Error codes](/v1.3/api-reference/error-codes) page for details. Possible values include `source_unavailable`, `source_not_authorized`, `unsupported_media_type`, `video_filesize_too_large`, `audio_filesize_too_large`, and `media_filesize_too_large`.
+    A string representing the code associated with the error. For the possible values, see the [Error codes](/v1.3/api-reference/error-codes#the-connections-endpoints) page.
     """
 
     message: typing.Optional[str] = pydantic.Field(default=None)

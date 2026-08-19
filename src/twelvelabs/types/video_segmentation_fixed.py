@@ -9,10 +9,13 @@ from .video_segmentation_fixed_fixed import VideoSegmentationFixedFixed
 
 class VideoSegmentationFixed(UniversalBaseModel):
     """
-    Configuration for fixed segmentation. This field is required when `strategy` is `fixed`.
+    Divides the video into segments of equal, predetermined length. Use this for consistent timing.
     """
 
-    fixed: VideoSegmentationFixedFixed
+    fixed: VideoSegmentationFixedFixed = pydantic.Field()
+    """
+    Configuration for fixed segmentation. This object is required when `strategy` is `fixed`.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

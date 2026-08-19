@@ -25,7 +25,7 @@ class NonStreamAnalyzeResponse(UniversalBaseModel):
     usage: typing.Optional[TokenUsage] = None
     error: typing.Optional[AnalyzeTaskError] = pydantic.Field(default=None)
     """
-    A warning. Present when `finish_reason` is `length` — the response reached the maximum response length or the [context window](/v1.3/docs/concepts/models/pegasus#context-window). The partial output is returned in `data`. Pegasus 1.2 also returns this field when `finish_reason` is `length`.
+    A warning. Present when `finish_reason` is `length`, which means the response reached the maximum response length or the [context window](/v1.3/docs/concepts/models/pegasus#context-window). The partial output is returned in `data`.
     """
 
     if IS_PYDANTIC_V2:

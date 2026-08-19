@@ -36,7 +36,7 @@ class SegmentDefinition(UniversalBaseModel):
 
     time_ranges: typing.Optional[typing.List[AnalyzeTimeRange]] = pydantic.Field(default=None)
     """
-    Time windows that limit segment extraction to specific parts of the video. Only supported for Pegasus 1.5 with `analysis_mode` set to `time_based_metadata`.
+    Time windows that limit segment extraction to specific parts of the video. Only supported when `analysis_mode` is set to `time_based_metadata`.
     
     <Note title="Notes">
     - Each range must satisfy `end_time > start_time` with a minimum duration of `2` seconds. Both values must fall within the video duration.

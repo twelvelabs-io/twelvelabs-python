@@ -67,7 +67,7 @@ class V2Client:
           **Images**:
           - Formats: JPEG, PNG
           - Minimum size: 128x128 pixels
-          - Maximum file size: 5 MB
+          - Maximum file size: 32 MB
 
           **Audio and video**:
           - Maximum duration: 10 minutes
@@ -195,7 +195,7 @@ class AsyncV2Client:
           **Images**:
           - Formats: JPEG, PNG
           - Minimum size: 128x128 pixels
-          - Maximum file size: 5 MB
+          - Maximum file size: 32 MB
 
           **Audio and video**:
           - Maximum duration: 10 minutes

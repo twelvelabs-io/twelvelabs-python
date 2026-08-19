@@ -10,12 +10,12 @@ from .import_item import ImportItem
 
 class ImportDetail(Import):
     """
-    An import, including the current status of the asset for each file. Each time you retrieve the import, the platform recomputes these statuses from the current status of each asset. The import itself does not change after it is created.
+    An import, including the `action` value and the current status of the asset for each file. Each time you retrieve the import, the `status` field of each item reflects the current status of its asset. The import itself does not change after it is created.
     """
 
     items: typing.Optional[typing.List[ImportItem]] = pydantic.Field(default=None)
     """
-    One entry per imported file, with the current status of its asset.
+    One entry per requested file, in request order, with its `action` value and the current status of its asset.
     """
 
     if IS_PYDANTIC_V2:

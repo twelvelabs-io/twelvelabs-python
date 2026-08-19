@@ -29,7 +29,7 @@ class SyncResponseFormat(UniversalBaseModel):
     - `number`
     - `object`
     - `string`
-    - `timestamp` (Pegasus 1.5 only)
+    - `timestamp`
     
     **Supported constraints**
     
@@ -37,7 +37,7 @@ class SyncResponseFormat(UniversalBaseModel):
     |------|-------------------|-------|
     | `integer` | `maximum`, `exclusiveMaximum`, `minimum`, `exclusiveMinimum`. | - `maximum`: Sets the highest allowed value (inclusive).<br/>- `exclusiveMaximum`: Sets the highest allowed value (exclusive).<br/>- `minimum`: Sets the lowest allowed value (inclusive).<br/>- `exclusiveMinimum`: Sets the lowest allowed value (exclusive).<br/>These constraints are supported only for the `integer` type. |
     | `string` | `pattern`, `format` | - `pattern`: A regular expression that the string must match.<br/>- `format`: Validates predefined formats. It accepts the following values: `uuid`, `date-time`, `date`, and `time`.<br/>See string limitations below. |
-    | `object` | `properties`, `required` | - `properties`: Defines object properties and their schemas. - `required`: Specifies mandatory properties.<br/>See object limitations below. |
+    | `object` | `properties`, `required` | - `properties`: Defines object properties and their schemas.<br/>- `required`: Specifies mandatory properties.<br/>See object limitations below. |
     | `array` | `items`, `minItems` | `minItems` accepts only `0` or `1`.<br/>See array limitations below. |
     | `timestamp` | `format` | `format` (required): Sets the output format. Accepted values: `seconds`, `hh:mm:ss`, `hh:mm:ss.fff`.<br/>See the **Timestamp type** section below. |
     
@@ -89,7 +89,7 @@ class SyncResponseFormat(UniversalBaseModel):
     For details, see the [JSON Schema documentation on $defs](https://json-schema.org/understanding-json-schema/structuring#defs).
     
     
-    **Timestamp type (Pegasus 1.5 only)**
+    **Timestamp type**
     
     Declare a property as `{"type": "timestamp", "format": "<format>"}` to control the format of the returned value.
     
@@ -123,7 +123,7 @@ class SyncResponseFormat(UniversalBaseModel):
     
     **Reserved property names (`start_time` / `end_time`)**
     
-    For Pegasus 1.5, properties named `start_time` or `end_time` in your response schema receive special type handling at any nesting depth (including inside array `items`). These are unrelated to the top-level `start_time` / `end_time` request parameters. The platform returns the value in a format determined by the declared type:
+    The `start_time` and `end_time` properties in your response schema receive special type handling at any nesting depth (including inside array `items`). These are unrelated to the top-level `start_time` / `end_time` request parameters. The platform returns the value in a format determined by the declared type:
     
     *Allowed declarations:*
     

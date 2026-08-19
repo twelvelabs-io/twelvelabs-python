@@ -2,4 +2,4 @@
 
 import typing
 
-CreateAsyncAnalyzeRequestModelName = typing.Union[typing.Literal["pegasus1.2", "pegasus1.5"], typing.Any]
+CreateAsyncAnalyzeRequestModelName = typing.Union[typing.Literal["pegasus1.5"], typing.Any]

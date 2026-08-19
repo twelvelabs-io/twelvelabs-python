@@ -10,7 +10,7 @@ from .analyze_task_response_video_source_type import AnalyzeTaskResponseVideoSou
 
 class AnalyzeTaskResponseVideoSource(UniversalBaseModel):
     """
-    The video source you provided. Only present for tasks that use direct video input (`url`, `base64_string`, or `asset_id`).
+    The video source you provided.
     """
 
     type: typing.Optional[AnalyzeTaskResponseVideoSourceType] = pydantic.Field(default=None)
@@ -26,16 +26,6 @@ class AnalyzeTaskResponseVideoSource(UniversalBaseModel):
     asset_id: typing.Optional[str] = pydantic.Field(default=None)
     """
     The asset ID. Present when `type` is `asset_id`.
-    """
-
-    video_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The video ID. Present when `type` is `video_id`. Deprecated — use `asset_id` instead.
-    """
-
-    index_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The index ID associated with the video. Present when `type` is `video_id`. Deprecated — will be removed when Pegasus 1.2 is sunset.
     """
 
     system_metadata: typing.Optional[AnalyzeTaskResponseVideoSourceSystemMetadata] = pydantic.Field(default=None)

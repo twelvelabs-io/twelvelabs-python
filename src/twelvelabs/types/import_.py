@@ -32,12 +32,12 @@ class Import(UniversalBaseModel):
 
     custom_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The label you supplied when creating the connection, copied when the import was created. Present only when a value is set for the `custom_id` field.
+    The label you supplied when you [authorized the connection](/v1.3/api-reference/data-connectors/authorize-a-connection), copied when the import was created. Present only when you supplied one.
     """
 
     item_count: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The number of files requested in this import. If an imported asset is later deleted, it is omitted from the `items` array in the Retrieve an import response, so the `items` array can contain fewer entries than `item_count`.
+    The number of files requested in this import. If an imported asset is later deleted, it is omitted from the `items` array returned by the [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint, so the `items` array can contain fewer entries than `item_count`.
     """
 
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)

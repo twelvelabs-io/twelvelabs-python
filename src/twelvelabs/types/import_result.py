@@ -21,12 +21,12 @@ class ImportResult(UniversalBaseModel):
 
     has_failures: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Whether any item was rejected before an asset was created. When `true`, inspect the `error` object of each item to identify the rejected ones.
+    Whether at least one item was rejected before an asset was created. When `true`, inspect the `error` object of each item to identify the rejected ones. An item the platform skipped as a duplicate is not a failure.
     """
 
     items: typing.Optional[typing.List[ImportItem]] = pydantic.Field(default=None)
     """
-    One entry per requested file, in request order.
+    One entry per requested file, in request order, with its `action` value and the current status of its asset.
     """
 
     if IS_PYDANTIC_V2:

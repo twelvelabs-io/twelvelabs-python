@@ -4,23 +4,31 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .import_item_action import ImportItemAction
 from .import_item_error import ImportItemError
 from .import_item_status import ImportItemStatus
 
 
 class ImportItem(UniversalBaseModel):
     """
-    An import item and the current status of its asset. An item rejected before an asset was created has no value in its `status` field; its `error` object describes the reason instead.
+    An import item, including the `action` value and the current status of its asset. The `action` field does not change. The `status` field reflects the current status of the asset. An item rejected before an asset was created has no value in its `status` field; its `error` object describes the reason instead.
     """
 
     source_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The identifier of the file at the provider. For Google Drive, this is the Drive file identifier.
+    The identifier of the file at the provider. For Google Drive, this is the identifier Google Drive assigns to the file.
+    """
+
+    action: typing.Optional[ImportItemAction] = pydantic.Field(default=None)
+    """
+    The action taken for this file: created, skipped, retried, or rejected. The platform sets this value while processing the request, and the value does not change afterward. The [Import files](/v1.3/api-reference/data-connectors/imports/import-files) endpoint always returns this field. The [Retrieve an import](/v1.3/api-reference/data-connectors/imports/retrieve-an-import) endpoint omits it for imports from before this field existed. Treat an absent value as unknown rather than as a specific action.
+    
+    The `skipped` and `retried` values both mean the file was already imported through this account: for the `skipped` action, the platform returns the existing asset; for the `retried` action, the earlier fetch had failed, so the platform fetches the file again. See [The import object](/v1.3/api-reference/data-connectors/imports/the-import-object#item-actions) for the meaning of each value.
     """
 
     asset_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The unique identifier of the asset created for this file. Absent when the item was rejected before an asset was created.
+    The unique identifier of the asset for this file. When the `action` field is `created`, this identifies a new asset; when it is `skipped` or `retried`, this identifies the asset from the earlier import of the same file. Absent when the item was rejected before an asset was created.
     """
 
     status: typing.Optional[ImportItemStatus] = pydantic.Field(default=None)

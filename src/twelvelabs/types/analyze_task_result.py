@@ -23,7 +23,7 @@ class AnalyzeTaskResult(UniversalBaseModel):
     The generated text for this analysis task. The format depends on the `analysis_mode` used when creating the task:
     
     - **When `analysis_mode` is not set**: A plain-text string containing the generated text based on the prompt you provided.
-    - **When `analysis_mode` is `time_based_metadata`** (requires `model_name` set to `pegasus1.5`): A JSON-encoded string containing an object keyed by segment definition (the `id` field). Each key maps to an array of segment objects with the following fields:
+    - **When `analysis_mode` is `time_based_metadata`**: A JSON-encoded string containing an object keyed by segment definition (the `id` field). Each key maps to an array of segment objects with the following fields:
       - `start_time` (number): The start time of the segment in seconds.
       - `end_time` (number): The end time of the segment in seconds.
       - `metadata` (object): The custom fields you defined in the request's `segment_definitions[].fields`.

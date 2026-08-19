@@ -7,6 +7,10 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class VideoSegmentationFixedFixed(UniversalBaseModel):
+    """
+    Configuration for fixed segmentation. This object is required when `strategy` is `fixed`.
+    """
+
     duration_sec: int = pydantic.Field()
     """
     The duration in seconds for each segment.
