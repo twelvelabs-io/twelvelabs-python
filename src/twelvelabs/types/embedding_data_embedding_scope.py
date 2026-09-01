@@ -2,4 +2,4 @@
 
 import typing
 
-EmbeddingDataEmbeddingScope = typing.Union[typing.Literal["clip", "asset"], typing.Any]
+EmbeddingDataEmbeddingScope = typing.Union[typing.Literal["clip", "page", "asset"], typing.Any]

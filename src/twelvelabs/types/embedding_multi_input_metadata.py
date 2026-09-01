@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class EmbeddingMultiInputMetadata(UniversalBaseModel):
     """
-    Metadata for multi-input embeddings
+    Metadata for multi-input embeddings.
     """
 
     if IS_PYDANTIC_V2:

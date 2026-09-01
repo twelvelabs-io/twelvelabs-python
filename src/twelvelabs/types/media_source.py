@@ -17,7 +17,7 @@ class MediaSource(UniversalBaseModel):
         pydantic.Field(default=None)
     )
     """
-    The base64-encoded media data.
+    The base64-encoded media data. The decoded file can be up to 36 MB; encoded, it can be up to 48 MB.
     """
 
     url: typing.Optional[str] = pydantic.Field(default=None)

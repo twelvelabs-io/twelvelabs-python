@@ -9,7 +9,7 @@ from .asset_hls_status import AssetHlsStatus
 
 class AssetHls(UniversalBaseModel):
     """
-    HLS streaming details for the asset. Present only when HLS generation has been requested. Omitted otherwise.
+    HLS streaming details for video and audio assets. Present only when HLS generation has been requested.
     """
 
     manifest_url: typing.Optional[str] = pydantic.Field(default=None)

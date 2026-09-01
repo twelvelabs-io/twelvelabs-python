@@ -611,7 +611,7 @@ Upload options:
 - **Publicly accessible URL**: Use the `video_url` parameter.
 
 Your video files must meet requirements based on your workflow:
-- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
 - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#video-file-requirements).
 - If you want to both search and analyze your videos, the most restrictive requirements apply.
 - This method allows you to upload files up to 2 GB in size. To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
@@ -1390,7 +1390,7 @@ response = client.assets.list(
     page=1,
     page_limit=10,
     asset_ids=["6298d673f1090f1100476d4c", "6298d673f1090f1100476d4d"],
-    asset_types=["image", "video"],
+    asset_types=["image", "video", "document"],
     filename="meeting",
 )
 for item in response:
@@ -1438,7 +1438,7 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-**asset_ids:** `typing.Optional[typing.Union[str, typing.Sequence[str]]]` — Filters the response to include only assets with the specified IDs. Provide one or more asset IDs. When you specify multiple IDs, the platform returns all matching assets.
+**asset_ids:** `typing.Optional[typing.Union[str, typing.Sequence[str]]]` — Filters the response to include only assets with the specified identifiers. Provide one or more asset identifiers. When you specify multiple identifiers, the platform returns all matching assets.
     
 </dd>
 </dl>
@@ -1491,11 +1491,15 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
+This method creates an asset by uploading a file to the platform. Assets are reusable files that you can use in different workflows.
 
-The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to `ready` on success or to `failed` when the file is invalid or corrupt, typically within a few seconds to a few minutes. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
+The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to the `ready` status on success or to the `failed` status when the file is invalid, corrupt, or unreadable. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
 
-**Supported content**: Video, audio, and images.
+**Supported content**:
+- Video, audio, and image files.
+- PDF, text, and Markdown files.
+
+Filename extension matching is case-insensitive; for example, `notes.MD` and `notes.md` are treated the same. The platform rejects unsupported formats. For documents, it also rejects files whose extensions don't match the detected content.
 
 **Upload methods**:
 - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
@@ -1505,14 +1509,16 @@ The platform processes uploads asynchronously. This method returns immediately w
 - **Video and audio, local files**: Up to 200 MB
 - **Video and audio, public URLs**: Up to 4 GB
 - **Images**: Up to 32 MB
+- **Documents, local files**: Up to 200 MB
+- **Documents, public URLs**: Up to 512 MB
 
-Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits. For details, see the requirements below.
+Asset creation does not enforce a maximum duration for video and audio files. Each model applies its own file size and duration limits. For details, see the requirements below.
 
 **Additional requirements** depend on your workflow:
-- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
 - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
-- **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
-- **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+- **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
+- **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
 <Note title="Note">
 This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -1576,7 +1582,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 
 Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB.
+Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. Document URLs support up to 512 MB.
     
 </dd>
 </dl>
@@ -1584,7 +1590,7 @@ Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB.
 <dl>
 <dd>
 
-**filename:** `typing.Optional[str]` — The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
+**filename:** `typing.Optional[str]` — The filename of the asset. If you provide a filename, the platform preserves it. If you omit it, the platform determines one from the file or URL.
     
 </dd>
 </dl>
@@ -1594,7 +1600,7 @@ Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB.
 
 **enable_hls:** `typing.Optional[bool]` 
 
-When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
 **Default**: `false`.
     
@@ -1607,6 +1613,8 @@ When set to `true`, the platform generates an HLS playlist and segments for stre
 **enable_thumbnail:** `typing.Optional[bool]` 
 
 When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+For PDF files, the platform generates a representative thumbnail from the first page. Text and Markdown files do not produce thumbnails; the platform ignores this flag for them.
 
 **Default**: `false`.
     
@@ -2259,10 +2267,10 @@ This method creates a multipart upload session for a local file.
 - **Images**: Up to 32 MB
 
 **Additional requirements** depend on your workflow:
-- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
 - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
-- **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
-- **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+- **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
+- **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 </dd>
 </dl>
 </dd>
@@ -2337,7 +2345,7 @@ The total size of the file in bytes. The platform uses this value to:
 
 **enable_hls:** `typing.Optional[bool]` 
 
-When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
 **Default**: `false`.
     
@@ -4936,8 +4944,8 @@ client.knowledge_store_item_collections.remove_items(
 This method creates embeddings for text, image, and audio content.
 
 Ensure your media files meet the following requirements:
-- [Audio files](/v1.3/docs/concepts/models/marengo#audio-requirements).
-- [Image files](/v1.3/docs/concepts/models/marengo#image-requirements).
+- [Audio files](/v1.3/docs/concepts/models/marengo/marengo-3-0#audio-file-requirements).
+- [Image files](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 
 Parameters for embeddings:
 - **Common parameters**:
@@ -5110,7 +5118,7 @@ Use this endpoint to search for relevant matches in an index using text, media, 
 - To find a specific person in your videos, enclose the unique identifier of the entity you want to find in the `query_text` parameter.
 
 <Note title="Notes">
-- When using images in your search queries (either as media queries or in composed searches), ensure your image files meet the [requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements).
+- When using images in your search queries (either as media queries or in composed searches), ensure your image files meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
 </Note>
 </dd>
@@ -5465,7 +5473,9 @@ Before you use this method, you must create an asset, create a knowledge store, 
 {
   "id": "resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff",
   "type": "response",
+  "object": "response",
   "status": "completed",
+  "incomplete_details": null,
   "session_id": "sess_019f4f2a-b69b-7a01-9018-cc51681121ea",
   "knowledge_store_id": "ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56",
   "output": [
@@ -5474,10 +5484,24 @@ Before you use this method, you must create an asset, create a knowledge store, 
       "id": "msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0",
       "status": "completed",
       "role": "assistant",
+      "phase": "final_answer",
       "content": [
         {
           "type": "output_text",
-          "text": "The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."
+          "text": "The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].",
+          "annotations": [
+            {
+              "type": "video_citation",
+              "start_index": 211,
+              "end_index": 213,
+              "item_id": "ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+              "start_sec": 0.0,
+              "end_sec": 9.0,
+              "title": "Super Bowl LVIII sideline",
+              "thumbnail_url": "https://example.com/thumbnail.jpg",
+              "hls_url": "https://example.com/stream.m3u8"
+            }
+          ]
         }
       ]
     }
@@ -5494,10 +5518,13 @@ Before you use this method, you must create an asset, create a knowledge store, 
 <Accordion title="Example streamed response (SSE)">
 ```
 event: response.created
-data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"in_progress","output":[],"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:47Z"}}
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"in_progress","incomplete_details":null,"output":[],"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:47Z"}}
 
 event: response.output_item.added
-data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"in_progress","role":"assistant","content":[{"type":"output_text","text":""}]}}
+data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"in_progress","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"","annotations":[]}]}}
+
+event: response.content_part.added
+data: {"type":"response.content_part.added","sequence_number":3,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"","annotations":[]}}
 
 event: response.output_text.delta
 data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":"The video captures a heated sideline moment"}
@@ -5506,10 +5533,13 @@ event: response.output_text.delta
 data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":" during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid."}
 
 event: response.output_text.done
-data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}
+data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
+
+event: response.content_part.done
+data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
 event: response.completed
-data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"completed","output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
 data: [DONE]
 ```
@@ -5671,7 +5701,9 @@ Before you use this method, you must create an asset, create a knowledge store, 
 {
   "id": "resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff",
   "type": "response",
+  "object": "response",
   "status": "completed",
+  "incomplete_details": null,
   "session_id": "sess_019f4f2a-b69b-7a01-9018-cc51681121ea",
   "knowledge_store_id": "ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56",
   "output": [
@@ -5680,10 +5712,24 @@ Before you use this method, you must create an asset, create a knowledge store, 
       "id": "msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0",
       "status": "completed",
       "role": "assistant",
+      "phase": "final_answer",
       "content": [
         {
           "type": "output_text",
-          "text": "The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."
+          "text": "The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].",
+          "annotations": [
+            {
+              "type": "video_citation",
+              "start_index": 211,
+              "end_index": 213,
+              "item_id": "ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+              "start_sec": 0.0,
+              "end_sec": 9.0,
+              "title": "Super Bowl LVIII sideline",
+              "thumbnail_url": "https://example.com/thumbnail.jpg",
+              "hls_url": "https://example.com/stream.m3u8"
+            }
+          ]
         }
       ]
     }
@@ -5700,10 +5746,13 @@ Before you use this method, you must create an asset, create a knowledge store, 
 <Accordion title="Example streamed response (SSE)">
 ```
 event: response.created
-data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"in_progress","output":[],"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:47Z"}}
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"in_progress","incomplete_details":null,"output":[],"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:47Z"}}
 
 event: response.output_item.added
-data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"in_progress","role":"assistant","content":[{"type":"output_text","text":""}]}}
+data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"in_progress","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"","annotations":[]}]}}
+
+event: response.content_part.added
+data: {"type":"response.content_part.added","sequence_number":3,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"","annotations":[]}}
 
 event: response.output_text.delta
 data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":"The video captures a heated sideline moment"}
@@ -5712,10 +5761,13 @@ event: response.output_text.delta
 data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"delta":" during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid."}
 
 event: response.output_text.done
-data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}
+data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
+
+event: response.content_part.done
+data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
 event: response.completed
-data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","status":"completed","output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [00:00-00:09]."}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
 data: [DONE]
 ```
@@ -6891,7 +6943,7 @@ This method asynchronously analyzes your videos. It supports two analysis modes:
 
 Analyzing videos asynchronously requires three steps:
 
-1. Create an analysis task using this method. The platform returns a task ID.
+1. Create an analysis task using this method. The platform returns a task identifier.
 2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
 3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
@@ -8074,7 +8126,7 @@ Upload options:
 
 Specify at least one option. If both are provided, `video_url` takes precedence.
 
-Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
 This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
 
 <Note title="Notes">
@@ -8407,36 +8459,14 @@ The platform returns all available embeddings when you omit this parameter.
 <dl>
 <dd>
 
-This endpoint synchronously creates embeddings for multimodal content and returns the results immediately in the response.
+This method synchronously creates embeddings for multimodal content and returns the results immediately in the response.
 
-**When to use this endpoint**:
-- Create embeddings for text, images, audio, or video content
-- Retrieve immediate results without waiting for background processing
-- Process audio or video content up to 10 minutes in duration
+Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-**Do not use this endpoint for**:
-- Audio or video content longer than 10 minutes. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
-
-<Accordion title="Input requirements">
-  **Text**:
-  - Maximum length: 500 tokens
-
-  **Images**:
-  - Formats: JPEG, PNG
-  - Minimum size: 128x128 pixels
-  - Maximum file size: 32 MB
-
-  **Audio and video**:
-  - Maximum duration: 10 minutes
-  - Maximum file size for base64 encoded strings: 36 MB
-  - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
-  - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-  - Video resolution: 360x360 to 5184x2160 pixels
-  - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
-</Accordion>
+The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, or video as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
 <Note title="Note">
-This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
 </Note>
 </dd>
 </dl>
@@ -8452,15 +8482,15 @@ This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get
 <dd>
 
 ```python
-from twelvelabs import TextInputRequest, TwelveLabs
+from twelvelabs import MultiInputRequest, TwelveLabs
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
 client.embed.v_2.create(
-    input_type="text",
-    model_name="marengo3.0",
-    text=TextInputRequest(
+    input_type="multi_input",
+    model_name="marengo3.5",
+    multi_input=MultiInputRequest(
         input_text="man walking a dog",
     ),
 )
@@ -8483,14 +8513,13 @@ client.embed.v_2.create(
 
 The type of content for the embeddings.
 
-
 **Values**:
-- `audio`: Creates embeddings for an audio file
-- `video`: Creates embeddings for a video file
-- `image`: Creates embeddings for an image file
-- `text`: Creates embeddings for text input
-- `text_image`: Creates embeddings for text and an image
-- `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
+- `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+- `audio`: An audio file. Requires Marengo 3.0.
+- `video`: A video file. Requires Marengo 3.0.
+- `image`: An image file. Requires Marengo 3.0.
+- `text`: Text input. Requires Marengo 3.0.
+- `text_image`: Text and an image. Requires Marengo 3.0.
     
 </dd>
 </dl>
@@ -8498,7 +8527,39 @@ The type of content for the embeddings.
 <dl>
 <dd>
 
-**model_name:** `CreateEmbeddingsRequestModelName` — The video understanding model to use. Value: "marengo3.0".
+**model_name:** `CreateEmbeddingsRequestModelName` 
+
+The embedding model to use.
+
+**Values**:
+- `marengo3.5`: For details about this version, see the [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5) page.
+- `marengo3.0`: For details about this version, see the [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0) page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**auto_truncate:** `typing.Optional[bool]` 
+
+Controls the behavior of the platform when the text in your request exceeds 2,000 tokens. Requires Marengo 3.5.
+
+**Values**:
+- `false`: Return a `400` error.
+- `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**embedding_uncertainty:** `typing.Optional[bool]` 
+
+Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+
+Set this parameter to `true` only when your request embeds text only, or media only. Requests that combine text with media sources return a `400` error.
     
 </dd>
 </dl>
@@ -8708,39 +8769,23 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This endpoint creates embeddings for audio and video content asynchronously.
+This method creates embeddings for audio, video, images, and documents asynchronously.
 
-**When to use this endpoint**:
-- Process audio or video files longer than 10 minutes
-- Process files up to 4 hours in duration
+Use this method to embed content at scale, such as long files or the media files you want to make searchable. For a query, or for results you need in the same request, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint instead.
 
-<Accordion title="Input requirements">
-  **Video**:
-  - Minimum duration: 4 seconds
-  - Maximum duration: 4 hours
-  - Maximum file size: 4 GB
-  - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-  - Resolution: 360x360 to 5184x2160 pixels
-  - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
+The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and PDF files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
-  **Audio**:
-  - Minimum duration: 4 seconds
-  - Maximum duration: 4 hours
-  - Maximum file size: 4 GB
-  - Formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
-</Accordion>
+Creating embeddings asynchronously requires three steps:
 
-  Creating embeddings asynchronously requires three steps:
+1. Create a task using this method. The platform returns a task identifier.
+2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
+3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
-  1. Create a task using this endpoint. The platform returns a task ID.
-  2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-  3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
-
-  <Note title="Notes">
-  - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-  - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-  - Embeddings are stored for seven days.
-  </Note>
+<Note title="Notes">
+- Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
+- This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+- Embeddings are stored for seven days.
+</Note>
 </dd>
 </dl>
 </dd>
@@ -8755,7 +8800,13 @@ This endpoint creates embeddings for audio and video content asynchronously.
 <dd>
 
 ```python
-from twelvelabs import MediaSource, TwelveLabs, VideoInputRequest
+from twelvelabs import (
+    AsyncVideoInputRequest,
+    MediaSource,
+    TwelveLabs,
+    VideoSegmentation_Dynamic,
+    VideoSegmentationDynamicDynamic,
+)
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
@@ -8763,13 +8814,19 @@ client = TwelveLabs(
 client.embed.v_2.tasks.create(
     input_type="video",
     model_name="marengo3.0",
-    video=VideoInputRequest(
+    video=AsyncVideoInputRequest(
         media_source=MediaSource(
             url="https://user-bucket.com/video/long-video.mp4",
         ),
-        embedding_option=["visual", "audio"],
+        start_sec=0.0,
+        end_sec=7200.0,
+        segmentation=VideoSegmentation_Dynamic(
+            dynamic=VideoSegmentationDynamicDynamic(
+                min_duration_sec=1,
+            ),
+        ),
+        embedding_option=["visual", "audio", "transcription"],
         embedding_scope=["clip", "asset"],
-        embedding_type=["separate_embedding", "fused_embedding"],
     ),
 )
 
@@ -8792,8 +8849,10 @@ client.embed.v_2.tasks.create(
 The type of content for the embeddings.
 
 **Values**:
-- `audio`: Audio files
-- `video`: Video content
+- `audio`: An audio file.
+- `video`: A video file.
+- `document`: A PDF file. Requires Marengo 3.5.
+- `image`: An image file. Requires Marengo 3.5.
     
 </dd>
 </dl>
@@ -8801,7 +8860,13 @@ The type of content for the embeddings.
 <dl>
 <dd>
 
-**model_name:** `CreateAsyncEmbeddingRequestModelName` — The model you wish to use. Value: `"marengo3.0"`.
+**model_name:** `CreateAsyncEmbeddingRequestModelName` 
+
+The embedding model to use.
+
+**Values**:
+- `marengo3.5`: For details about this version, see the [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5) page.
+- `marengo3.0`: For details about this version, see the [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0) page.
     
 </dd>
 </dl>
@@ -8809,7 +8874,11 @@ The type of content for the embeddings.
 <dl>
 <dd>
 
-**audio:** `typing.Optional[AudioInputRequest]` 
+**embedding_uncertainty:** `typing.Optional[bool]` 
+
+Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+
+To use this parameter with audio or video input, exclude the `asset` scope from the `embedding_scope` field. For example, set `video.embedding_scope` to `["clip"]`. The field defaults to `["clip", "asset"]`, so a request that keeps the default returns a `400` error. This restriction does not apply to `document` and `image` input.
     
 </dd>
 </dl>
@@ -8817,7 +8886,31 @@ The type of content for the embeddings.
 <dl>
 <dd>
 
-**video:** `typing.Optional[VideoInputRequest]` 
+**audio:** `typing.Optional[AsyncAudioInputRequest]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**video:** `typing.Optional[AsyncVideoInputRequest]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**document:** `typing.Optional[AsyncDocumentInputRequest]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**image:** `typing.Optional[AsyncImageInputRequest]` 
     
 </dd>
 </dl>
@@ -10098,7 +10191,7 @@ You can no longer add videos to an index that has only Pegasus 1.2 enabled. When
 </Note>
 
 Your asset must meet the requirements based on your workflow:
-- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+- **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
 - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
 If you want to both search and analyze your videos, the most restrictive requirements apply.

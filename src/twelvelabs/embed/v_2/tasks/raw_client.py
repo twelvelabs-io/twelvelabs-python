@@ -14,10 +14,13 @@ from ....core.serialization import convert_and_respect_annotation_metadata
 from ....errors.bad_request_error import BadRequestError
 from ....errors.internal_server_error import InternalServerError
 from ....errors.not_found_error import NotFoundError
-from ....types.audio_input_request import AudioInputRequest
+from ....errors.too_many_requests_error import TooManyRequestsError
+from ....types.async_audio_input_request import AsyncAudioInputRequest
+from ....types.async_document_input_request import AsyncDocumentInputRequest
+from ....types.async_image_input_request import AsyncImageInputRequest
+from ....types.async_video_input_request import AsyncVideoInputRequest
 from ....types.embedding_task_response import EmbeddingTaskResponse
 from ....types.media_embedding_task import MediaEmbeddingTask
-from ....types.video_input_request import VideoInputRequest
 from .types.create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
 from .types.create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
 from .types.tasks_create_response import TasksCreateResponse
@@ -138,44 +141,31 @@ class RawTasksClient:
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
         model_name: CreateAsyncEmbeddingRequestModelName,
-        audio: typing.Optional[AudioInputRequest] = OMIT,
-        video: typing.Optional[VideoInputRequest] = OMIT,
+        embedding_uncertainty: typing.Optional[bool] = OMIT,
+        audio: typing.Optional[AsyncAudioInputRequest] = OMIT,
+        video: typing.Optional[AsyncVideoInputRequest] = OMIT,
+        document: typing.Optional[AsyncDocumentInputRequest] = OMIT,
+        image: typing.Optional[AsyncImageInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TasksCreateResponse]:
         """
-        This endpoint creates embeddings for audio and video content asynchronously.
+        This method creates embeddings for audio, video, images, and documents asynchronously.
 
-        **When to use this endpoint**:
-        - Process audio or video files longer than 10 minutes
-        - Process files up to 4 hours in duration
+        Use this method to embed content at scale, such as long files or the media files you want to make searchable. For a query, or for results you need in the same request, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint instead.
 
-        <Accordion title="Input requirements">
-          **Video**:
-          - Minimum duration: 4 seconds
-          - Maximum duration: 4 hours
-          - Maximum file size: 4 GB
-          - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Resolution: 360x360 to 5184x2160 pixels
-          - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
+        The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and PDF files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
-          **Audio**:
-          - Minimum duration: 4 seconds
-          - Maximum duration: 4 hours
-          - Maximum file size: 4 GB
-          - Formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
-        </Accordion>
+        Creating embeddings asynchronously requires three steps:
 
-          Creating embeddings asynchronously requires three steps:
+        1. Create a task using this method. The platform returns a task identifier.
+        2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
+        3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
-          1. Create a task using this endpoint. The platform returns a task ID.
-          2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-          3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
-
-          <Note title="Notes">
-          - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-          - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-          - Embeddings are stored for seven days.
-          </Note>
+        <Note title="Notes">
+        - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - Embeddings are stored for seven days.
+        </Note>
 
         Parameters
         ----------
@@ -183,15 +173,30 @@ class RawTasksClient:
             The type of content for the embeddings.
 
             **Values**:
-            - `audio`: Audio files
-            - `video`: Video content
+            - `audio`: An audio file.
+            - `video`: A video file.
+            - `document`: A PDF file. Requires Marengo 3.5.
+            - `image`: An image file. Requires Marengo 3.5.
 
         model_name : CreateAsyncEmbeddingRequestModelName
-            The model you wish to use. Value: `"marengo3.0"`.
+            The embedding model to use.
 
-        audio : typing.Optional[AudioInputRequest]
+            **Values**:
+            - `marengo3.5`: For details about this version, see the [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5) page.
+            - `marengo3.0`: For details about this version, see the [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0) page.
 
-        video : typing.Optional[VideoInputRequest]
+        embedding_uncertainty : typing.Optional[bool]
+            Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+
+            To use this parameter with audio or video input, exclude the `asset` scope from the `embedding_scope` field. For example, set `video.embedding_scope` to `["clip"]`. The field defaults to `["clip", "asset"]`, so a request that keeps the default returns a `400` error. This restriction does not apply to `document` and `image` input.
+
+        audio : typing.Optional[AsyncAudioInputRequest]
+
+        video : typing.Optional[AsyncVideoInputRequest]
+
+        document : typing.Optional[AsyncDocumentInputRequest]
+
+        image : typing.Optional[AsyncImageInputRequest]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -207,11 +212,18 @@ class RawTasksClient:
             json={
                 "input_type": input_type,
                 "model_name": model_name,
+                "embedding_uncertainty": embedding_uncertainty,
                 "audio": convert_and_respect_annotation_metadata(
-                    object_=audio, annotation=AudioInputRequest, direction="write"
+                    object_=audio, annotation=AsyncAudioInputRequest, direction="write"
                 ),
                 "video": convert_and_respect_annotation_metadata(
-                    object_=video, annotation=VideoInputRequest, direction="write"
+                    object_=video, annotation=AsyncVideoInputRequest, direction="write"
+                ),
+                "document": convert_and_respect_annotation_metadata(
+                    object_=document, annotation=AsyncDocumentInputRequest, direction="write"
+                ),
+                "image": convert_and_respect_annotation_metadata(
+                    object_=image, annotation=AsyncImageInputRequest, direction="write"
                 ),
             },
             headers={
@@ -232,6 +244,17 @@ class RawTasksClient:
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -428,44 +451,31 @@ class AsyncRawTasksClient:
         *,
         input_type: CreateAsyncEmbeddingRequestInputType,
         model_name: CreateAsyncEmbeddingRequestModelName,
-        audio: typing.Optional[AudioInputRequest] = OMIT,
-        video: typing.Optional[VideoInputRequest] = OMIT,
+        embedding_uncertainty: typing.Optional[bool] = OMIT,
+        audio: typing.Optional[AsyncAudioInputRequest] = OMIT,
+        video: typing.Optional[AsyncVideoInputRequest] = OMIT,
+        document: typing.Optional[AsyncDocumentInputRequest] = OMIT,
+        image: typing.Optional[AsyncImageInputRequest] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TasksCreateResponse]:
         """
-        This endpoint creates embeddings for audio and video content asynchronously.
+        This method creates embeddings for audio, video, images, and documents asynchronously.
 
-        **When to use this endpoint**:
-        - Process audio or video files longer than 10 minutes
-        - Process files up to 4 hours in duration
+        Use this method to embed content at scale, such as long files or the media files you want to make searchable. For a query, or for results you need in the same request, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint instead.
 
-        <Accordion title="Input requirements">
-          **Video**:
-          - Minimum duration: 4 seconds
-          - Maximum duration: 4 hours
-          - Maximum file size: 4 GB
-          - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Resolution: 360x360 to 5184x2160 pixels
-          - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
+        The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and PDF files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
-          **Audio**:
-          - Minimum duration: 4 seconds
-          - Maximum duration: 4 hours
-          - Maximum file size: 4 GB
-          - Formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
-        </Accordion>
+        Creating embeddings asynchronously requires three steps:
 
-          Creating embeddings asynchronously requires three steps:
+        1. Create a task using this method. The platform returns a task identifier.
+        2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
+        3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
-          1. Create a task using this endpoint. The platform returns a task ID.
-          2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-          3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
-
-          <Note title="Notes">
-          - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-          - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-          - Embeddings are stored for seven days.
-          </Note>
+        <Note title="Notes">
+        - Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - Embeddings are stored for seven days.
+        </Note>
 
         Parameters
         ----------
@@ -473,15 +483,30 @@ class AsyncRawTasksClient:
             The type of content for the embeddings.
 
             **Values**:
-            - `audio`: Audio files
-            - `video`: Video content
+            - `audio`: An audio file.
+            - `video`: A video file.
+            - `document`: A PDF file. Requires Marengo 3.5.
+            - `image`: An image file. Requires Marengo 3.5.
 
         model_name : CreateAsyncEmbeddingRequestModelName
-            The model you wish to use. Value: `"marengo3.0"`.
+            The embedding model to use.
 
-        audio : typing.Optional[AudioInputRequest]
+            **Values**:
+            - `marengo3.5`: For details about this version, see the [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5) page.
+            - `marengo3.0`: For details about this version, see the [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0) page.
 
-        video : typing.Optional[VideoInputRequest]
+        embedding_uncertainty : typing.Optional[bool]
+            Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+
+            To use this parameter with audio or video input, exclude the `asset` scope from the `embedding_scope` field. For example, set `video.embedding_scope` to `["clip"]`. The field defaults to `["clip", "asset"]`, so a request that keeps the default returns a `400` error. This restriction does not apply to `document` and `image` input.
+
+        audio : typing.Optional[AsyncAudioInputRequest]
+
+        video : typing.Optional[AsyncVideoInputRequest]
+
+        document : typing.Optional[AsyncDocumentInputRequest]
+
+        image : typing.Optional[AsyncImageInputRequest]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -497,11 +522,18 @@ class AsyncRawTasksClient:
             json={
                 "input_type": input_type,
                 "model_name": model_name,
+                "embedding_uncertainty": embedding_uncertainty,
                 "audio": convert_and_respect_annotation_metadata(
-                    object_=audio, annotation=AudioInputRequest, direction="write"
+                    object_=audio, annotation=AsyncAudioInputRequest, direction="write"
                 ),
                 "video": convert_and_respect_annotation_metadata(
-                    object_=video, annotation=VideoInputRequest, direction="write"
+                    object_=video, annotation=AsyncVideoInputRequest, direction="write"
+                ),
+                "document": convert_and_respect_annotation_metadata(
+                    object_=document, annotation=AsyncDocumentInputRequest, direction="write"
+                ),
+                "image": convert_and_respect_annotation_metadata(
+                    object_=image, annotation=AsyncImageInputRequest, direction="write"
                 ),
             },
             headers={
@@ -522,6 +554,17 @@ class AsyncRawTasksClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

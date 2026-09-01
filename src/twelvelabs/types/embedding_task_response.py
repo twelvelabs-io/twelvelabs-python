@@ -11,6 +11,7 @@ from .embedding_data import EmbeddingData
 from .embedding_task_media_metadata import EmbeddingTaskMediaMetadata
 from .embedding_task_response_error import EmbeddingTaskResponseError
 from .embedding_task_response_status import EmbeddingTaskResponseStatus
+from .embedding_usage import EmbeddingUsage
 from .updated_at import UpdatedAt
 
 
@@ -40,6 +41,11 @@ class EmbeddingTaskResponse(UniversalBaseModel):
     data: typing.Optional[typing.List[EmbeddingData]] = pydantic.Field(default=None)
     """
     An object containing the embedding results, or `null` otherwise.
+    """
+
+    usage: typing.Optional[EmbeddingUsage] = pydantic.Field(default=None)
+    """
+    Token counts for the request. Only Marengo 3.5 returns this field.
     """
 
     metadata: typing.Optional[EmbeddingTaskMediaMetadata] = None

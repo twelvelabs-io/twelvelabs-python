@@ -22,6 +22,11 @@ class VideoEmbeddingMetadata(BaseEmbeddingMetadata):
     The scope you've specified in the request.
     """
 
+    video_embedding_option: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The `embedding_option` values used to generate the embedding.
+    """
+
     duration: typing.Optional[float] = pydantic.Field(default=None)
     """
     The total duration of the video in seconds.

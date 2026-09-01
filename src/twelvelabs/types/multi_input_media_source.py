@@ -11,33 +11,38 @@ from .multi_input_media_source_media_type import MultiInputMediaSourceMediaType
 
 class MultiInputMediaSource(UniversalBaseModel):
     """
-    An object specifying an image source for multi-input embeddings. You must provide exactly one of `url`, `base64_string`, or `asset_id`.
+    An object specifying a media source for multi-input embeddings. You must provide exactly one of `url`, `base64_string`, or `asset_id`.
+
+    With Marengo 3.5, each media source can be up to 32 MB, whichever of the three fields you use. Audio and video can be up to 30 seconds. Content above either limit returns a `400` error.
     """
 
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     The unique identifier for this media source.
     
-    This field is required when `input_type` references this image.
+    This field is required when `input_text` references this media source.
     """
 
     media_type: MultiInputMediaSourceMediaType = pydantic.Field()
     """
     The type of media.
     
-    **Value**: `image`
+    **Values**:
+    - `image`: An image file. Works with both Marengo 3.0 and Marengo 3.5.
+    - `video`: A video file. Requires Marengo 3.5.
+    - `audio`: An audio file. Requires Marengo 3.5.
     """
 
     url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The publicly accessible URL of the image file  Use direct links to raw image files. Image hosting platforms and cloud storage sharing links are not supported.
+    The publicly accessible URL of the media file. Use direct links to raw files. Media hosting platforms and cloud storage sharing links are not supported.
     """
 
     base_64_string: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="base64_string")] = (
         pydantic.Field(default=None)
     )
     """
-    The base64-encoded image data.
+    The base64-encoded media data.
     """
 
     asset_id: typing.Optional[str] = pydantic.Field(default=None)

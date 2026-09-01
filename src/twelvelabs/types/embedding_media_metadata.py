@@ -12,7 +12,7 @@ from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetada
 
 class EmbeddingMediaMetadata_Image(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
+    Metadata for the media input. Available for the `image`, `text_image`, `audio`, `video`, and `multi_input` input types.
     """
 
     input_type: typing.Literal["image"] = "image"
@@ -31,7 +31,7 @@ class EmbeddingMediaMetadata_Image(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_TextImage(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
+    Metadata for the media input. Available for the `image`, `text_image`, `audio`, `video`, and `multi_input` input types.
     """
 
     input_type: typing.Literal["text_image"] = "text_image"
@@ -50,7 +50,7 @@ class EmbeddingMediaMetadata_TextImage(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_Audio(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
+    Metadata for the media input. Available for the `image`, `text_image`, `audio`, `video`, and `multi_input` input types.
     """
 
     input_type: typing.Literal["audio"] = "audio"
@@ -74,7 +74,7 @@ class EmbeddingMediaMetadata_Audio(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_Video(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
+    Metadata for the media input. Available for the `image`, `text_image`, `audio`, `video`, and `multi_input` input types.
     """
 
     input_type: typing.Literal["video"] = "video"
@@ -99,7 +99,7 @@ class EmbeddingMediaMetadata_Video(UniversalBaseModel):
 
 class EmbeddingMediaMetadata_MultiInput(UniversalBaseModel):
     """
-    Metadata for the media input. Available for image, text_image, audio, video, and multi_input inputs.
+    Metadata for the media input. Available for the `image`, `text_image`, `audio`, `video`, and `multi_input` input types.
     """
 
     input_type: typing.Literal["multi_input"] = "multi_input"

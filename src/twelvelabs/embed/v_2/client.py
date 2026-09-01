@@ -41,6 +41,8 @@ class V2Client:
         *,
         input_type: CreateEmbeddingsRequestInputType,
         model_name: CreateEmbeddingsRequestModelName,
+        auto_truncate: typing.Optional[bool] = OMIT,
+        embedding_uncertainty: typing.Optional[bool] = OMIT,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -50,36 +52,14 @@ class V2Client:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EmbeddingSuccessResponse:
         """
-        This endpoint synchronously creates embeddings for multimodal content and returns the results immediately in the response.
+        This method synchronously creates embeddings for multimodal content and returns the results immediately in the response.
 
-        **When to use this endpoint**:
-        - Create embeddings for text, images, audio, or video content
-        - Retrieve immediate results without waiting for background processing
-        - Process audio or video content up to 10 minutes in duration
+        Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-        **Do not use this endpoint for**:
-        - Audio or video content longer than 10 minutes. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
-
-        <Accordion title="Input requirements">
-          **Text**:
-          - Maximum length: 500 tokens
-
-          **Images**:
-          - Formats: JPEG, PNG
-          - Minimum size: 128x128 pixels
-          - Maximum file size: 32 MB
-
-          **Audio and video**:
-          - Maximum duration: 10 minutes
-          - Maximum file size for base64 encoded strings: 36 MB
-          - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
-          - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 5184x2160 pixels
-          - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
-        </Accordion>
+        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, or video as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
-        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
         </Note>
 
         Parameters
@@ -87,17 +67,32 @@ class V2Client:
         input_type : CreateEmbeddingsRequestInputType
             The type of content for the embeddings.
 
-
             **Values**:
-            - `audio`: Creates embeddings for an audio file
-            - `video`: Creates embeddings for a video file
-            - `image`: Creates embeddings for an image file
-            - `text`: Creates embeddings for text input
-            - `text_image`: Creates embeddings for text and an image
-            - `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
+            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+            - `audio`: An audio file. Requires Marengo 3.0.
+            - `video`: A video file. Requires Marengo 3.0.
+            - `image`: An image file. Requires Marengo 3.0.
+            - `text`: Text input. Requires Marengo 3.0.
+            - `text_image`: Text and an image. Requires Marengo 3.0.
 
         model_name : CreateEmbeddingsRequestModelName
-            The video understanding model to use. Value: "marengo3.0".
+            The embedding model to use.
+
+            **Values**:
+            - `marengo3.5`: For details about this version, see the [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5) page.
+            - `marengo3.0`: For details about this version, see the [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0) page.
+
+        auto_truncate : typing.Optional[bool]
+            Controls the behavior of the platform when the text in your request exceeds 2,000 tokens. Requires Marengo 3.5.
+
+            **Values**:
+            - `false`: Return a `400` error.
+            - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
+
+        embedding_uncertainty : typing.Optional[bool]
+            Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+
+            Set this parameter to `true` only when your request embeds text only, or media only. Requests that combine text with media sources return a `400` error.
 
         text : typing.Optional[TextInputRequest]
 
@@ -117,19 +112,19 @@ class V2Client:
         Returns
         -------
         EmbeddingSuccessResponse
-            Successful request; normal operation
+            The embeddings have been successfully created.
 
         Examples
         --------
-        from twelvelabs import TextInputRequest, TwelveLabs
+        from twelvelabs import MultiInputRequest, TwelveLabs
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
         client.embed.v_2.create(
-            input_type="text",
-            model_name="marengo3.0",
-            text=TextInputRequest(
+            input_type="multi_input",
+            model_name="marengo3.5",
+            multi_input=MultiInputRequest(
                 input_text="man walking a dog",
             ),
         )
@@ -137,6 +132,8 @@ class V2Client:
         _response = self._raw_client.create(
             input_type=input_type,
             model_name=model_name,
+            auto_truncate=auto_truncate,
+            embedding_uncertainty=embedding_uncertainty,
             text=text,
             image=image,
             text_image=text_image,
@@ -169,6 +166,8 @@ class AsyncV2Client:
         *,
         input_type: CreateEmbeddingsRequestInputType,
         model_name: CreateEmbeddingsRequestModelName,
+        auto_truncate: typing.Optional[bool] = OMIT,
+        embedding_uncertainty: typing.Optional[bool] = OMIT,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -178,36 +177,14 @@ class AsyncV2Client:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EmbeddingSuccessResponse:
         """
-        This endpoint synchronously creates embeddings for multimodal content and returns the results immediately in the response.
+        This method synchronously creates embeddings for multimodal content and returns the results immediately in the response.
 
-        **When to use this endpoint**:
-        - Create embeddings for text, images, audio, or video content
-        - Retrieve immediate results without waiting for background processing
-        - Process audio or video content up to 10 minutes in duration
+        Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-        **Do not use this endpoint for**:
-        - Audio or video content longer than 10 minutes. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
-
-        <Accordion title="Input requirements">
-          **Text**:
-          - Maximum length: 500 tokens
-
-          **Images**:
-          - Formats: JPEG, PNG
-          - Minimum size: 128x128 pixels
-          - Maximum file size: 32 MB
-
-          **Audio and video**:
-          - Maximum duration: 10 minutes
-          - Maximum file size for base64 encoded strings: 36 MB
-          - Audio formats: WAV (uncompressed), MP3 (lossy), FLAC (lossless)
-          - Video formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
-          - Video resolution: 360x360 to 5184x2160 pixels
-          - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1
-        </Accordion>
+        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, or video as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
-        This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+        This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
         </Note>
 
         Parameters
@@ -215,17 +192,32 @@ class AsyncV2Client:
         input_type : CreateEmbeddingsRequestInputType
             The type of content for the embeddings.
 
-
             **Values**:
-            - `audio`: Creates embeddings for an audio file
-            - `video`: Creates embeddings for a video file
-            - `image`: Creates embeddings for an image file
-            - `text`: Creates embeddings for text input
-            - `text_image`: Creates embeddings for text and an image
-            - `multi_input`: Creates a single embedding from up to 10 images. You can optionally include text to provide context. To reference specific images in your text, use placeholders in the following format: `<@name>`, where `name` matches the `name` field of a media source
+            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+            - `audio`: An audio file. Requires Marengo 3.0.
+            - `video`: A video file. Requires Marengo 3.0.
+            - `image`: An image file. Requires Marengo 3.0.
+            - `text`: Text input. Requires Marengo 3.0.
+            - `text_image`: Text and an image. Requires Marengo 3.0.
 
         model_name : CreateEmbeddingsRequestModelName
-            The video understanding model to use. Value: "marengo3.0".
+            The embedding model to use.
+
+            **Values**:
+            - `marengo3.5`: For details about this version, see the [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5) page.
+            - `marengo3.0`: For details about this version, see the [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0) page.
+
+        auto_truncate : typing.Optional[bool]
+            Controls the behavior of the platform when the text in your request exceeds 2,000 tokens. Requires Marengo 3.5.
+
+            **Values**:
+            - `false`: Return a `400` error.
+            - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
+
+        embedding_uncertainty : typing.Optional[bool]
+            Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+
+            Set this parameter to `true` only when your request embeds text only, or media only. Requests that combine text with media sources return a `400` error.
 
         text : typing.Optional[TextInputRequest]
 
@@ -245,13 +237,13 @@ class AsyncV2Client:
         Returns
         -------
         EmbeddingSuccessResponse
-            Successful request; normal operation
+            The embeddings have been successfully created.
 
         Examples
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, TextInputRequest
+        from twelvelabs import AsyncTwelveLabs, MultiInputRequest
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -260,9 +252,9 @@ class AsyncV2Client:
 
         async def main() -> None:
             await client.embed.v_2.create(
-                input_type="text",
-                model_name="marengo3.0",
-                text=TextInputRequest(
+                input_type="multi_input",
+                model_name="marengo3.5",
+                multi_input=MultiInputRequest(
                     input_text="man walking a dog",
                 ),
             )
@@ -273,6 +265,8 @@ class AsyncV2Client:
         _response = await self._raw_client.create(
             input_type=input_type,
             model_name=model_name,
+            auto_truncate=auto_truncate,
+            embedding_uncertainty=embedding_uncertainty,
             text=text,
             image=image,
             text_image=text_image,

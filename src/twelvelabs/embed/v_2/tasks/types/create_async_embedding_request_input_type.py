@@ -2,4 +2,4 @@
 
 import typing
 
-CreateAsyncEmbeddingRequestInputType = typing.Union[typing.Literal["audio", "video"], typing.Any]
+CreateAsyncEmbeddingRequestInputType = typing.Union[typing.Literal["audio", "video", "document", "image"], typing.Any]

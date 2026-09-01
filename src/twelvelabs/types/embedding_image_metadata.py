@@ -8,17 +8,17 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class EmbeddingImageMetadata(UniversalBaseModel):
     """
-    Metadata for image embeddings
+    Metadata for image embeddings.
     """
 
     input_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The publicly accessible URL for the image
+    The publicly accessible URL for the image file.
     """
 
     input_filename: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The name of the image file
+    The name of the image file.
     """
 
     if IS_PYDANTIC_V2:

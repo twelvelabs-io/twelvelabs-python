@@ -62,9 +62,32 @@ from .asset_transcription_response import AssetTranscriptionResponse
 from .asset_transcription_status import AssetTranscriptionStatus
 from .asset_transcription_utterance import AssetTranscriptionUtterance
 from .asset_type_filter import AssetTypeFilter
+from .async_audio_input_request import AsyncAudioInputRequest
+from .async_audio_input_request_embedding_option_item import AsyncAudioInputRequestEmbeddingOptionItem
+from .async_audio_input_request_embedding_scope_item import AsyncAudioInputRequestEmbeddingScopeItem
+from .async_audio_input_request_embedding_type_item import AsyncAudioInputRequestEmbeddingTypeItem
+from .async_audio_input_request_segmentation import AsyncAudioInputRequestSegmentation
+from .async_document_input_request import AsyncDocumentInputRequest
+from .async_document_input_request_embedding_option_item import AsyncDocumentInputRequestEmbeddingOptionItem
+from .async_document_input_request_embedding_scope_item import AsyncDocumentInputRequestEmbeddingScopeItem
+from .async_document_input_request_embedding_type_item import AsyncDocumentInputRequestEmbeddingTypeItem
+from .async_document_metadata import AsyncDocumentMetadata
+from .async_document_metadata_embedding_scopes_item import AsyncDocumentMetadataEmbeddingScopesItem
+from .async_image_input_request import AsyncImageInputRequest
+from .async_image_input_request_embedding_option_item import AsyncImageInputRequestEmbeddingOptionItem
+from .async_image_input_request_embedding_scope_item import AsyncImageInputRequestEmbeddingScopeItem
+from .async_image_input_request_embedding_type_item import AsyncImageInputRequestEmbeddingTypeItem
+from .async_image_metadata import AsyncImageMetadata
+from .async_image_metadata_embedding_scopes_item import AsyncImageMetadataEmbeddingScopesItem
 from .async_response_format import AsyncResponseFormat
 from .async_response_format_segment_time_format import AsyncResponseFormatSegmentTimeFormat
 from .async_response_format_type import AsyncResponseFormatType
+from .async_temporal_segmentation import AsyncTemporalSegmentation
+from .async_video_input_request import AsyncVideoInputRequest
+from .async_video_input_request_embedding_option_item import AsyncVideoInputRequestEmbeddingOptionItem
+from .async_video_input_request_embedding_scope_item import AsyncVideoInputRequestEmbeddingScopeItem
+from .async_video_input_request_embedding_type_item import AsyncVideoInputRequestEmbeddingTypeItem
+from .async_video_input_request_segmentation import AsyncVideoInputRequestSegmentation
 from .audio_embedding_metadata import AudioEmbeddingMetadata
 from .audio_embedding_result import AudioEmbeddingResult
 from .audio_input_request import AudioInputRequest
@@ -105,6 +128,7 @@ from .create_analyze_task_response import CreateAnalyzeTaskResponse
 from .create_asset_upload_response import CreateAssetUploadResponse
 from .created_at import CreatedAt
 from .created_batch_item import CreatedBatchItem
+from .document_embedding_metadata import DocumentEmbeddingMetadata
 from .embedding_audio_metadata import EmbeddingAudioMetadata
 from .embedding_audio_metadata_embedding_scopes_item import EmbeddingAudioMetadataEmbeddingScopesItem
 from .embedding_data import EmbeddingData
@@ -125,12 +149,15 @@ from .embedding_success_response import EmbeddingSuccessResponse
 from .embedding_task_media_metadata import (
     EmbeddingTaskMediaMetadata,
     EmbeddingTaskMediaMetadata_Audio,
+    EmbeddingTaskMediaMetadata_Document,
+    EmbeddingTaskMediaMetadata_Image,
     EmbeddingTaskMediaMetadata_Video,
 )
 from .embedding_task_response import EmbeddingTaskResponse
 from .embedding_task_response_error import EmbeddingTaskResponseError
 from .embedding_task_response_status import EmbeddingTaskResponseStatus
 from .embedding_text_image_metadata import EmbeddingTextImageMetadata
+from .embedding_usage import EmbeddingUsage
 from .embedding_video_metadata import EmbeddingVideoMetadata
 from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetadataEmbeddingScopesItem
 from .end_offset_sec import EndOffsetSec
@@ -153,6 +180,7 @@ from .get_upload_status_response import GetUploadStatusResponse
 from .gone_error_body import GoneErrorBody
 from .hls_object import HlsObject
 from .hls_object_status import HlsObjectStatus
+from .image_embedding_metadata import ImageEmbeddingMetadata
 from .image_embedding_result import ImageEmbeddingResult
 from .image_input_request import ImageInputRequest
 from .image_metadata import ImageMetadata
@@ -202,6 +230,8 @@ from .limit_per_page_simple import LimitPerPageSimple
 from .list_incomplete_uploads_response import ListIncompleteUploadsResponse
 from .media_embedding_task import MediaEmbeddingTask
 from .media_embedding_task_audio_embedding import MediaEmbeddingTaskAudioEmbedding
+from .media_embedding_task_document_embedding import MediaEmbeddingTaskDocumentEmbedding
+from .media_embedding_task_image_embedding import MediaEmbeddingTaskImageEmbedding
 from .media_embedding_task_video_embedding import MediaEmbeddingTaskVideoEmbedding
 from .media_source import MediaSource
 from .multi_input_media_source import MultiInputMediaSource
@@ -220,12 +250,16 @@ from .rank import Rank
 from .redirect_uri import RedirectUri
 from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
+from .response_annotation import ResponseAnnotation
+from .response_annotation_type import ResponseAnnotationType
 from .response_create_request import ResponseCreateRequest
 from .response_create_request_include_item import ResponseCreateRequestIncludeItem
+from .response_incomplete_details import ResponseIncompleteDetails
 from .response_input_item import ResponseInputItem
 from .response_input_item_role import ResponseInputItemRole
 from .response_input_item_type import ResponseInputItemType
 from .response_object import ResponseObject
+from .response_object_object import ResponseObjectObject
 from .response_object_type import ResponseObjectType
 from .response_output_content_part import ResponseOutputContentPart
 from .response_output_content_part_type import ResponseOutputContentPartType
@@ -304,6 +338,11 @@ from .summarize_summary_result_summarize_type import SummarizeSummaryResultSumma
 from .sync_response_format import SyncResponseFormat
 from .sync_response_format_type import SyncResponseFormatType
 from .technical_metadata import TechnicalMetadata
+from .temporal_segmentation import TemporalSegmentation, TemporalSegmentation_Dynamic, TemporalSegmentation_Fixed
+from .temporal_segmentation_dynamic import TemporalSegmentationDynamic
+from .temporal_segmentation_dynamic_dynamic import TemporalSegmentationDynamicDynamic
+from .temporal_segmentation_fixed import TemporalSegmentationFixed
+from .temporal_segmentation_fixed_fixed import TemporalSegmentationFixedFixed
 from .text_embedding_result import TextEmbeddingResult
 from .text_image_input_request import TextImageInputRequest
 from .text_input_request import TextInputRequest
@@ -312,6 +351,7 @@ from .text_param_format import TextParamFormat, TextParamFormat_JsonSchema, Text
 from .text_response_format_json_schema import TextResponseFormatJsonSchema
 from .text_response_format_text import TextResponseFormatText
 from .thumbnail_url import ThumbnailUrl
+from .time_based_metadata_entry import TimeBasedMetadataEntry
 from .token_usage import TokenUsage
 from .total_inner_matches import TotalInnerMatches
 from .total_page import TotalPage
@@ -404,9 +444,32 @@ __all__ = [
     "AssetTranscriptionStatus",
     "AssetTranscriptionUtterance",
     "AssetTypeFilter",
+    "AsyncAudioInputRequest",
+    "AsyncAudioInputRequestEmbeddingOptionItem",
+    "AsyncAudioInputRequestEmbeddingScopeItem",
+    "AsyncAudioInputRequestEmbeddingTypeItem",
+    "AsyncAudioInputRequestSegmentation",
+    "AsyncDocumentInputRequest",
+    "AsyncDocumentInputRequestEmbeddingOptionItem",
+    "AsyncDocumentInputRequestEmbeddingScopeItem",
+    "AsyncDocumentInputRequestEmbeddingTypeItem",
+    "AsyncDocumentMetadata",
+    "AsyncDocumentMetadataEmbeddingScopesItem",
+    "AsyncImageInputRequest",
+    "AsyncImageInputRequestEmbeddingOptionItem",
+    "AsyncImageInputRequestEmbeddingScopeItem",
+    "AsyncImageInputRequestEmbeddingTypeItem",
+    "AsyncImageMetadata",
+    "AsyncImageMetadataEmbeddingScopesItem",
     "AsyncResponseFormat",
     "AsyncResponseFormatSegmentTimeFormat",
     "AsyncResponseFormatType",
+    "AsyncTemporalSegmentation",
+    "AsyncVideoInputRequest",
+    "AsyncVideoInputRequestEmbeddingOptionItem",
+    "AsyncVideoInputRequestEmbeddingScopeItem",
+    "AsyncVideoInputRequestEmbeddingTypeItem",
+    "AsyncVideoInputRequestSegmentation",
     "AudioEmbeddingMetadata",
     "AudioEmbeddingResult",
     "AudioInputRequest",
@@ -447,6 +510,7 @@ __all__ = [
     "CreateAssetUploadResponse",
     "CreatedAt",
     "CreatedBatchItem",
+    "DocumentEmbeddingMetadata",
     "EmbeddingAudioMetadata",
     "EmbeddingAudioMetadataEmbeddingScopesItem",
     "EmbeddingData",
@@ -464,11 +528,14 @@ __all__ = [
     "EmbeddingSuccessResponse",
     "EmbeddingTaskMediaMetadata",
     "EmbeddingTaskMediaMetadata_Audio",
+    "EmbeddingTaskMediaMetadata_Document",
+    "EmbeddingTaskMediaMetadata_Image",
     "EmbeddingTaskMediaMetadata_Video",
     "EmbeddingTaskResponse",
     "EmbeddingTaskResponseError",
     "EmbeddingTaskResponseStatus",
     "EmbeddingTextImageMetadata",
+    "EmbeddingUsage",
     "EmbeddingVideoMetadata",
     "EmbeddingVideoMetadataEmbeddingScopesItem",
     "EndOffsetSec",
@@ -493,6 +560,7 @@ __all__ = [
     "GoneErrorBody",
     "HlsObject",
     "HlsObjectStatus",
+    "ImageEmbeddingMetadata",
     "ImageEmbeddingResult",
     "ImageInputRequest",
     "ImageMetadata",
@@ -540,6 +608,8 @@ __all__ = [
     "ListIncompleteUploadsResponse",
     "MediaEmbeddingTask",
     "MediaEmbeddingTaskAudioEmbedding",
+    "MediaEmbeddingTaskDocumentEmbedding",
+    "MediaEmbeddingTaskImageEmbedding",
     "MediaEmbeddingTaskVideoEmbedding",
     "MediaSource",
     "MultiInputMediaSource",
@@ -558,12 +628,16 @@ __all__ = [
     "RedirectUri",
     "ReportChunkBatchResponse",
     "RequestAdditionalPresignedUrLsResponse",
+    "ResponseAnnotation",
+    "ResponseAnnotationType",
     "ResponseCreateRequest",
     "ResponseCreateRequestIncludeItem",
+    "ResponseIncompleteDetails",
     "ResponseInputItem",
     "ResponseInputItemRole",
     "ResponseInputItemType",
     "ResponseObject",
+    "ResponseObjectObject",
     "ResponseObjectType",
     "ResponseOutputContentPart",
     "ResponseOutputContentPartType",
@@ -636,6 +710,13 @@ __all__ = [
     "SyncResponseFormat",
     "SyncResponseFormatType",
     "TechnicalMetadata",
+    "TemporalSegmentation",
+    "TemporalSegmentationDynamic",
+    "TemporalSegmentationDynamicDynamic",
+    "TemporalSegmentationFixed",
+    "TemporalSegmentationFixedFixed",
+    "TemporalSegmentation_Dynamic",
+    "TemporalSegmentation_Fixed",
     "TextEmbeddingResult",
     "TextImageInputRequest",
     "TextInputRequest",
@@ -646,6 +727,7 @@ __all__ = [
     "TextResponseFormatJsonSchema",
     "TextResponseFormatText",
     "ThumbnailUrl",
+    "TimeBasedMetadataEntry",
     "TokenUsage",
     "TotalInnerMatches",
     "TotalPage",

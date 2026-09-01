@@ -16,7 +16,7 @@ class VideoVector(UniversalBaseModel):
 
     id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="_id")] = pydantic.Field(default=None)
     """
-    A string representing the unique identifier of a video. The platform creates a new `video_vector` object and assigns it a unique identifier when the video has successfully been indexed. Note that video IDs are different from task IDs.
+    A string representing the unique identifier of a video. The platform creates a new `video_vector` object and assigns it a unique identifier when the video has successfully been indexed. Note that video identifiers are different from task identifiers.
     """
 
     asset_id: typing.Optional[str] = pydantic.Field(default=None)

@@ -2,4 +2,4 @@
 
 import typing
 
-EmbeddingVideoMetadataEmbeddingScopesItem = typing.Union[typing.Literal["clip", "asset"], typing.Any]
+EmbeddingVideoMetadataEmbeddingScopesItem = typing.Union[typing.Literal["clip", "local", "asset"], typing.Any]

@@ -14,7 +14,7 @@ from .knowledge_store_item_system_metadata import KnowledgeStoreItemSystemMetada
 
 class KnowledgeStoreItem(UniversalBaseModel):
     """
-    A knowledge store item is an asset added to a knowledge store for processing. You can use it in downstream workflows once its `status` is `ready`.
+    A knowledge store item is an asset added to a knowledge store for processing. You can use it in different workflows once its `status` is `ready`.
     """
 
     id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="_id")] = pydantic.Field(default=None)

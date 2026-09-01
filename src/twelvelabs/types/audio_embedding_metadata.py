@@ -12,12 +12,12 @@ class AudioEmbeddingMetadata(BaseEmbeddingMetadata):
     An object containing metadata associated with the embedding.
     """
 
-    audio_embedding_options: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    audio_embedding_option: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     The type of the embedding. It can take one of the following values: ['audio'] or ['transcription'].
     """
 
-    audio_embedding_scopes: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    audio_embedding_scope: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     The scope you've specified in the request.
     """
