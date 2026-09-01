@@ -2,4 +2,4 @@
 
 import typing
 
-AssetsListRequestAssetTypesItem = typing.Union[typing.Literal["image", "video", "audio"], typing.Any]
+AssetsListRequestAssetTypesItem = typing.Union[typing.Literal["image", "video", "audio", "document"], typing.Any]

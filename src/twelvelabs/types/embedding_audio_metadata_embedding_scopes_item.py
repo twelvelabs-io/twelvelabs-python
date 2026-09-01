@@ -2,4 +2,4 @@
 
 import typing
 
-EmbeddingAudioMetadataEmbeddingScopesItem = typing.Union[typing.Literal["clip", "asset"], typing.Any]
+EmbeddingAudioMetadataEmbeddingScopesItem = typing.Union[typing.Literal["clip", "local", "asset"], typing.Any]

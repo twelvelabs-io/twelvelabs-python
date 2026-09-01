@@ -17,6 +17,9 @@ class VideoSegmentationFixedFixed(UniversalBaseModel):
     
     The platform divides the video into segments of this exact length. The final segment may be shorter if the video duration is not evenly divisible.
     
+    **Min**: `2`.
+    **Max**: `10`.
+    
     **Example**: With `duration_sec: 5`, a 12-second video produces segments: [0-5s], [5-10s], [10-12s].
     """
 

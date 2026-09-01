@@ -9,17 +9,17 @@ from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetada
 
 class EmbeddingVideoMetadata(UniversalBaseModel):
     """
-    Metadata for video embeddings
+    Metadata for video embeddings.
     """
 
     input_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The publicly accessible URL for the video file
+    The publicly accessible URL for the video file.
     """
 
     input_filename: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The name of the video file
+    The name of the video file.
     """
 
     clip_length: typing.Optional[int] = pydantic.Field(default=None)
@@ -29,27 +29,27 @@ class EmbeddingVideoMetadata(UniversalBaseModel):
 
     embedding_scopes: typing.List[EmbeddingVideoMetadataEmbeddingScopesItem] = pydantic.Field()
     """
-    Video embedding scopes
+    The `embedding_scope` values used to generate the embedding.
     """
 
     embedding_options: typing.List[str] = pydantic.Field()
     """
-    Video embedding options used for generating the embedding
+    The `embedding_option` values used to generate the embedding.
     """
 
     duration: float = pydantic.Field()
     """
-    Duration of the video in seconds
+    The duration of the video in seconds.
     """
 
     start_offset_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    Start offset in seconds
+    The start offset in seconds.
     """
 
     end_offset_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    End offset in seconds
+    The end offset in seconds.
     """
 
     if IS_PYDANTIC_V2:

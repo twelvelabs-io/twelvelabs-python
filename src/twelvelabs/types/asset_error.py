@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class AssetError(UniversalBaseModel):
     """
-    An object that describes why an asset failed processing.
+    An object that describes why the processing failed.
     """
 
     message: str = pydantic.Field()

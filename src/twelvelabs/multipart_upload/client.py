@@ -107,10 +107,10 @@ class MultipartUploadClient:
         - **Images**: Up to 32 MB
 
         **Additional requirements** depend on your workflow:
-        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
-        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
-        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
+        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
         Parameters
         ----------
@@ -131,7 +131,7 @@ class MultipartUploadClient:
             - **Images**: Up to 32 MB
 
         enable_hls : typing.Optional[bool]
-            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
             **Default**: `false`.
 
@@ -438,10 +438,10 @@ class AsyncMultipartUploadClient:
         - **Images**: Up to 32 MB
 
         **Additional requirements** depend on your workflow:
-        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
-        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
-        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
+        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
         Parameters
         ----------
@@ -462,7 +462,7 @@ class AsyncMultipartUploadClient:
             - **Images**: Up to 32 MB
 
         enable_hls : typing.Optional[bool]
-            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
             **Default**: `false`.
 

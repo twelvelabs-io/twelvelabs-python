@@ -6,6 +6,8 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .async_document_metadata_embedding_scopes_item import AsyncDocumentMetadataEmbeddingScopesItem
+from .async_image_metadata_embedding_scopes_item import AsyncImageMetadataEmbeddingScopesItem
 from .embedding_audio_metadata_embedding_scopes_item import EmbeddingAudioMetadataEmbeddingScopesItem
 from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetadataEmbeddingScopesItem
 
@@ -59,4 +61,51 @@ class EmbeddingTaskMediaMetadata_Video(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-EmbeddingTaskMediaMetadata = typing.Union[EmbeddingTaskMediaMetadata_Audio, EmbeddingTaskMediaMetadata_Video]
+class EmbeddingTaskMediaMetadata_Document(UniversalBaseModel):
+    """
+    Metadata for the media input.
+    """
+
+    input_type: typing.Literal["document"] = "document"
+    input_url: typing.Optional[str] = None
+    input_filename: typing.Optional[str] = None
+    embedding_options: typing.Optional[typing.List[str]] = None
+    embedding_scopes: typing.Optional[typing.List[AsyncDocumentMetadataEmbeddingScopesItem]] = None
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
+class EmbeddingTaskMediaMetadata_Image(UniversalBaseModel):
+    """
+    Metadata for the media input.
+    """
+
+    input_type: typing.Literal["image"] = "image"
+    input_url: typing.Optional[str] = None
+    input_filename: typing.Optional[str] = None
+    embedding_options: typing.Optional[typing.List[str]] = None
+    embedding_scopes: typing.Optional[typing.List[AsyncImageMetadataEmbeddingScopesItem]] = None
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
+EmbeddingTaskMediaMetadata = typing.Union[
+    EmbeddingTaskMediaMetadata_Audio,
+    EmbeddingTaskMediaMetadata_Video,
+    EmbeddingTaskMediaMetadata_Document,
+    EmbeddingTaskMediaMetadata_Image,
+]

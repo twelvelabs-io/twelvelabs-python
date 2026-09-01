@@ -163,7 +163,7 @@ class RawTasksClient:
         
         Specify at least one option. If both are provided, `video_url` takes precedence.
         
-        Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+        Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
         This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
         
         <Note title="Notes">
@@ -543,7 +543,7 @@ class AsyncRawTasksClient:
         
         Specify at least one option. If both are provided, `video_url` takes precedence.
         
-        Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements).
+        Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
         This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
         
         <Note title="Notes">

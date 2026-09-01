@@ -65,7 +65,7 @@ class AssetsClient:
             **Max**: `50`.
 
         asset_ids : typing.Optional[typing.Union[str, typing.Sequence[str]]]
-            Filters the response to include only assets with the specified IDs. Provide one or more asset IDs. When you specify multiple IDs, the platform returns all matching assets.
+            Filters the response to include only assets with the specified identifiers. Provide one or more asset identifiers. When you specify multiple identifiers, the platform returns all matching assets.
 
         asset_types : typing.Optional[typing.Union[AssetsListRequestAssetTypesItem, typing.Sequence[AssetsListRequestAssetTypesItem]]]
             Filters the response to include only assets of the specified types. Provide one or more asset types. When you specify multiple types, the platform returns all matching assets.
@@ -92,7 +92,7 @@ class AssetsClient:
             page=1,
             page_limit=10,
             asset_ids=["6298d673f1090f1100476d4c", "6298d673f1090f1100476d4d"],
-            asset_types=["image", "video"],
+            asset_types=["image", "video", "document"],
             filename="meeting",
         )
         for item in response:
@@ -123,11 +123,15 @@ class AssetsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Asset:
         """
-        This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
+        This method creates an asset by uploading a file to the platform. Assets are reusable files that you can use in different workflows.
 
-        The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to `ready` on success or to `failed` when the file is invalid or corrupt, typically within a few seconds to a few minutes. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
+        The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to the `ready` status on success or to the `failed` status when the file is invalid, corrupt, or unreadable. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
 
-        **Supported content**: Video, audio, and images.
+        **Supported content**:
+        - Video, audio, and image files.
+        - PDF, text, and Markdown files.
+
+        Filename extension matching is case-insensitive; for example, `notes.MD` and `notes.md` are treated the same. The platform rejects unsupported formats. For documents, it also rejects files whose extensions don't match the detected content.
 
         **Upload methods**:
         - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
@@ -137,14 +141,16 @@ class AssetsClient:
         - **Video and audio, local files**: Up to 200 MB
         - **Video and audio, public URLs**: Up to 4 GB
         - **Images**: Up to 32 MB
+        - **Documents, local files**: Up to 200 MB
+        - **Documents, public URLs**: Up to 512 MB
 
-        Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits. For details, see the requirements below.
+        Asset creation does not enforce a maximum duration for video and audio files. Each model applies its own file size and duration limits. For details, see the requirements below.
 
         **Additional requirements** depend on your workflow:
-        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
-        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
-        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
+        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -161,18 +167,20 @@ class AssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB.
+            Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. Document URLs support up to 512 MB.
 
         filename : typing.Optional[str]
-            The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
+            The filename of the asset. If you provide a filename, the platform preserves it. If you omit it, the platform determines one from the file or URL.
 
         enable_hls : typing.Optional[bool]
-            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
             **Default**: `false`.
 
         enable_thumbnail : typing.Optional[bool]
             When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+            For PDF files, the platform generates a representative thumbnail from the first page. Text and Markdown files do not produce thumbnails; the platform ignores this flag for them.
 
             **Default**: `false`.
 
@@ -521,7 +529,7 @@ class AsyncAssetsClient:
             **Max**: `50`.
 
         asset_ids : typing.Optional[typing.Union[str, typing.Sequence[str]]]
-            Filters the response to include only assets with the specified IDs. Provide one or more asset IDs. When you specify multiple IDs, the platform returns all matching assets.
+            Filters the response to include only assets with the specified identifiers. Provide one or more asset identifiers. When you specify multiple identifiers, the platform returns all matching assets.
 
         asset_types : typing.Optional[typing.Union[AssetsListRequestAssetTypesItem, typing.Sequence[AssetsListRequestAssetTypesItem]]]
             Filters the response to include only assets of the specified types. Provide one or more asset types. When you specify multiple types, the platform returns all matching assets.
@@ -553,7 +561,7 @@ class AsyncAssetsClient:
                 page=1,
                 page_limit=10,
                 asset_ids=["6298d673f1090f1100476d4c", "6298d673f1090f1100476d4d"],
-                asset_types=["image", "video"],
+                asset_types=["image", "video", "document"],
                 filename="meeting",
             )
             async for item in response:
@@ -588,11 +596,15 @@ class AsyncAssetsClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Asset:
         """
-        This method creates an asset by uploading a file to the platform. Assets are media files that you can use in downstream workflows, including indexing, analyzing video content, and creating entities.
+        This method creates an asset by uploading a file to the platform. Assets are reusable files that you can use in different workflows.
 
-        The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to `ready` on success or to `failed` when the file is invalid or corrupt, typically within a few seconds to a few minutes. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
+        The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to the `ready` status on success or to the `failed` status when the file is invalid, corrupt, or unreadable. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
 
-        **Supported content**: Video, audio, and images.
+        **Supported content**:
+        - Video, audio, and image files.
+        - PDF, text, and Markdown files.
+
+        Filename extension matching is case-insensitive; for example, `notes.MD` and `notes.md` are treated the same. The platform rejects unsupported formats. For documents, it also rejects files whose extensions don't match the detected content.
 
         **Upload methods**:
         - **Local file**: Set the `method` parameter to `direct` and use the `file` parameter to specify the file.
@@ -602,14 +614,16 @@ class AsyncAssetsClient:
         - **Video and audio, local files**: Up to 200 MB
         - **Video and audio, public URLs**: Up to 4 GB
         - **Images**: Up to 32 MB
+        - **Documents, local files**: Up to 200 MB
+        - **Documents, public URLs**: Up to 512 MB
 
-        Asset creation does not enforce a maximum duration. Each model applies its own file size and duration limits. For details, see the requirements below.
+        Asset creation does not enforce a maximum duration for video and audio files. Each model applies its own file size and duration limits. For details, see the requirements below.
 
         **Additional requirements** depend on your workflow:
-        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#video-file-requirements)
+        - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
         - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
-        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo#image-file-requirements)
-        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo#input-requirements)
+        - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
+        - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
         <Note title="Note">
         This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
@@ -626,18 +640,20 @@ class AsyncAssetsClient:
         url : typing.Optional[str]
             Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
-            Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB.
+            Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. Document URLs support up to 512 MB.
 
         filename : typing.Optional[str]
-            The optional filename of the asset. If not provided, the platform will determine the filename from the file or URL.
+            The filename of the asset. If you provide a filename, the platform preserves it. If you omit it, the platform determines one from the file or URL.
 
         enable_hls : typing.Optional[bool]
-            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only.
+            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
             **Default**: `false`.
 
         enable_thumbnail : typing.Optional[bool]
             When set to `true`, the platform generates thumbnail images from the uploaded content.
+
+            For PDF files, the platform generates a representative thumbnail from the first page. Text and Markdown files do not produce thumbnails; the platform ignores this flag for them.
 
             **Default**: `false`.
 

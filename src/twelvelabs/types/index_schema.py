@@ -33,7 +33,7 @@ class IndexSchema(UniversalBaseModel):
     """
     A string representing the date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when your index will expire.
     
-    If you're on the Free plan, the platform retains your index data for 90 days from creation. After this period, the platform deletes your index data, and this action cannot be undone. To continue using your index beyond this period, consider upgrading to the Developer plan, which offers unlimited index retention. For details, see the [Upgrade your plan](/v1.3/docs/get-started/manage-your-plan#upgrade-your-plan) section.
+    If you're on the Free plan, the platform retains your index data for 90 days from creation. After this period, the platform deletes your index data, and this action cannot be undone. To continue using your index beyond this period, consider upgrading to the Developer plan, which offers unlimited index retention. For details, see the [Upgrade to the Developer plan](/v1.3/docs/get-started/manage-your-plan#upgrade-to-the-developer-plan) section.
     
     If you're on the Developer plan, this field is set to `null`, indicating no expiration.
     """

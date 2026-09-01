@@ -13,7 +13,7 @@ class TextInputRequest(UniversalBaseModel):
 
     input_text: str = pydantic.Field()
     """
-    The text for which you wish to create an embedding. The maximul length is 500 tokens.
+    The text for which you wish to create an embedding. The maximum length is 500 tokens.
     """
 
     if IS_PYDANTIC_V2:

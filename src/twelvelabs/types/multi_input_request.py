@@ -9,22 +9,29 @@ from .multi_input_media_source import MultiInputMediaSource
 
 class MultiInputRequest(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `multi_input`.
+    This field is required if the `input_type` parameter is `multi_input`. It combines text and up to 10 media sources into a single embedding. Provide the `input_text` field, the `media_sources` field, or both.
+
+    Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+
+    Include text in the `input_text` field when you combine media sources of different types. For example, a request that combines an image and a video returns a `400` error without text. Media sources of the same type do not require text.
+
+    With Marengo 3.5, the text cannot exceed 2,000 tokens. Media sources do not count toward this limit. Use the `auto_truncate` parameter to control the behavior of the platform when your text exceeds it.
     """
 
     input_text: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Text to combine with the images when generating the embedding.
+    Text to include in the embedding.
     
     **Usage options**:
-    - Omit this field to create an embedding from images only.
-    - Provide plain text to add context. Example: "A person cooking."
-    - Use image references to describe relationships between specific images. The format is `<@name>`, where `name` matches the `name` field of a media source. Example: "A person wearing <@outfit> and holding <@accessory>."
+    - Provide text without media sources to create a text-only embedding.
+    - Combine text with media sources to add context. Example: "A person cooking."
+    - Use media source references to describe relationships between specific media sources. The format is `<@name>`, where `name` matches the `name` field of a media source. Example: "A person wearing <@outfit> and holding <@accessory>."
+    - Omit this field to create an embedding from media sources only.
     """
 
-    media_sources: typing.List[MultiInputMediaSource] = pydantic.Field()
+    media_sources: typing.Optional[typing.List[MultiInputMediaSource]] = pydantic.Field(default=None)
     """
-    An array of up to 10 images to include in the embedding. The platform processes images in the order they appear in the array. If you use image references in the [`input_text`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#request.body.multi_input.input_text) parameter, each must have a corresponding image with a matching `name` field. If an image reference has no match, the request fails.
+    An array of up to 10 media sources to include in the embedding. Omit it to create a text-only embedding from the `input_text` field. The platform processes media sources in the order they appear in the array. If you use media source references in the [`input_text`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#request.body.multi_input.input_text) parameter, each must have a corresponding media source with a matching `name` field. If a reference has no match, the request fails.
     """
 
     if IS_PYDANTIC_V2:

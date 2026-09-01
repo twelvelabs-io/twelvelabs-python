@@ -28,7 +28,12 @@ class ResponseStreamContentPartAddedEvent(ResponseStreamEventBase):
     The index of the content part within the item.
     """
 
-    part: typing.Optional[ResponseOutputContentPart] = None
+    part: typing.Optional[ResponseOutputContentPart] = pydantic.Field(default=None)
+    """
+    The content part when it starts. No text has been generated yet, so the
+    `annotations` array is empty. This does not mean the content has no
+    citations. You receive them on the `response.content_part.done` event.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

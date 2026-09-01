@@ -2,4 +2,6 @@
 
 import typing
 
-EmbeddingDataEmbeddingOption = typing.Union[typing.Literal["visual", "audio", "transcription", "fused"], typing.Any]
+EmbeddingDataEmbeddingOption = typing.Union[
+    typing.Literal["visual", "audio", "transcription", "text", "fused"], typing.Any
+]

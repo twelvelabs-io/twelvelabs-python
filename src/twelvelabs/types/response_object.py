@@ -5,6 +5,8 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .response_incomplete_details import ResponseIncompleteDetails
+from .response_object_object import ResponseObjectObject
 from .response_object_type import ResponseObjectType
 from .response_output_item import ResponseOutputItem
 from .response_status import ResponseStatus
@@ -37,7 +39,35 @@ class ResponseObject(UniversalBaseModel):
     The object type. Always `response`.
     """
 
+    object: typing.Optional[ResponseObjectObject] = pydantic.Field(default=None)
+    """
+    The object type, always `response`. Carries the same value as `type`, which
+    predates it and which the Open Responses specification does not name.
+    
+    Both fields are permanent; neither will be removed. Read whichever your client
+    already uses.
+    
+    This is the only object with an `object` field. Output items, annotations and
+    stream events are keyed on `type` alone, so do not expect `object` one level
+    down.
+    """
+
     status: typing.Optional[ResponseStatus] = None
+    incomplete_details: typing.Optional[ResponseIncompleteDetails] = pydantic.Field(default=None)
+    """
+    Why the response stopped before the answer was whole. Always sent. Non-null only
+    when `status` is `incomplete`; `null` on every other status, including
+    `in_progress` and `failed` — so `null` means "this answer was not truncated",
+    not "this platform does not report the reason".
+    
+    A `null` on `status: failed` is not a claim that nothing went wrong. This field
+    reports truncation only; a failure is reported by the status itself.
+    
+    Values may be added to `reason` as new ways of truncating an answer are
+    reported. Treat an unrecognized `reason` as "truncated for a reason this client
+    does not know" rather than as an error.
+    """
+
     output: typing.Optional[typing.List[ResponseOutputItem]] = pydantic.Field(default=None)
     """
     The response output items. By default, only the final message is included.

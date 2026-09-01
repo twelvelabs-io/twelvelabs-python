@@ -9,42 +9,42 @@ from .embedding_audio_metadata_embedding_scopes_item import EmbeddingAudioMetada
 
 class EmbeddingAudioMetadata(UniversalBaseModel):
     """
-    Metadata for audio embeddings
+    Metadata for audio embeddings.
     """
 
     input_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The publicly accessible URL for the audio file
+    The publicly accessible URL for the audio file.
     """
 
     input_filename: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The name of the audio file
+    The name of the audio file.
     """
 
     embedding_options: typing.List[str] = pydantic.Field()
     """
-    Audio embedding options used for generating the embedding
+    The `embedding_option` values used to generate the embedding.
     """
 
     embedding_scopes: typing.List[EmbeddingAudioMetadataEmbeddingScopesItem] = pydantic.Field()
     """
-    Audio embedding scopes
+    The `embedding_scope` values used to generate the embedding.
     """
 
     duration: float = pydantic.Field()
     """
-    Duration of the audio in seconds
+    The duration of the audio in seconds.
     """
 
     start_offset_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    Start offset in seconds
+    The start offset in seconds.
     """
 
     end_offset_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    End offset in seconds
+    The end offset in seconds.
     """
 
     if IS_PYDANTIC_V2:

@@ -6,12 +6,18 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .embedding_data import EmbeddingData
 from .embedding_media_metadata import EmbeddingMediaMetadata
+from .embedding_usage import EmbeddingUsage
 
 
 class EmbeddingSuccessResponse(UniversalBaseModel):
     data: typing.List[EmbeddingData] = pydantic.Field()
     """
     Array of embedding results
+    """
+
+    usage: typing.Optional[EmbeddingUsage] = pydantic.Field(default=None)
+    """
+    Token counts for the request. Only Marengo 3.5 returns this field.
     """
 
     metadata: typing.Optional[EmbeddingMediaMetadata] = None

@@ -2,4 +2,4 @@
 
 import typing
 
-CreateEmbeddingsRequestModelName = typing.Union[typing.Literal["marengo3.0"], typing.Any]
+CreateEmbeddingsRequestModelName = typing.Union[typing.Literal["marengo3.0", "marengo3.5"], typing.Any]

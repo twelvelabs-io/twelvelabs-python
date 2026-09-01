@@ -161,7 +161,7 @@ class RawTasksClient:
 
         Analyzing videos asynchronously requires three steps:
 
-        1. Create an analysis task using this method. The platform returns a task ID.
+        1. Create an analysis task using this method. The platform returns a task identifier.
         2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
         3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
@@ -576,7 +576,7 @@ class AsyncRawTasksClient:
 
         Analyzing videos asynchronously requires three steps:
 
-        1. Create an analysis task using this method. The platform returns a task ID.
+        1. Create an analysis task using this method. The platform returns a task identifier.
         2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
         3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 

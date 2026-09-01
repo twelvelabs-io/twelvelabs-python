@@ -31,6 +31,28 @@ class ResponseOutputItem(UniversalBaseModel):
     The role of the message author. Present when `type` is `message`.
     """
 
+    phase: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Which part of the answer this message holds. Present when `type` is `message`.
+    
+    A turn can produce several messages: the model narrating what it is about to
+    do, then the answer itself. `commentary` marks the narration and `final_answer`
+    marks the answer, so picking the answer out of a turn does not mean guessing
+    from item order.
+    
+    **`commentary` reaches you only when `include` is set to
+    `["intermediate_outputs"]`.** That applies to streamed responses as well as
+    non-streamed ones — the default keeps the final answer alone on both. When you
+    do request it, a streamed message carries its `phase` on the
+    `response.output_item.added` event, so a client can route the message before any
+    of its text arrives.
+    
+    Treat a message with no `phase` as `final_answer`.
+    
+    Treat an unrecognized `phase` as narration rather than as the answer, so a
+    phase this client does not know is never mistaken for it.
+    """
+
     content: typing.Optional[typing.List[ResponseOutputContentPart]] = pydantic.Field(default=None)
     """
     The content parts of the message. Present when `type` is `message`.

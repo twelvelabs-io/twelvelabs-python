@@ -52,8 +52,8 @@ class EmbedClient:
         This method creates embeddings for text, image, and audio content.
 
         Ensure your media files meet the following requirements:
-        - [Audio files](/v1.3/docs/concepts/models/marengo#audio-requirements).
-        - [Image files](/v1.3/docs/concepts/models/marengo#image-requirements).
+        - [Audio files](/v1.3/docs/concepts/models/marengo/marengo-3-0#audio-file-requirements).
+        - [Image files](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 
         Parameters for embeddings:
         - **Common parameters**:
@@ -173,8 +173,8 @@ class AsyncEmbedClient:
         This method creates embeddings for text, image, and audio content.
 
         Ensure your media files meet the following requirements:
-        - [Audio files](/v1.3/docs/concepts/models/marengo#audio-requirements).
-        - [Image files](/v1.3/docs/concepts/models/marengo#image-requirements).
+        - [Audio files](/v1.3/docs/concepts/models/marengo/marengo-3-0#audio-file-requirements).
+        - [Image files](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 
         Parameters for embeddings:
         - **Common parameters**:

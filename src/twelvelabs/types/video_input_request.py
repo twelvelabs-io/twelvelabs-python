@@ -39,7 +39,7 @@ class VideoInputRequest(UniversalBaseModel):
     """
     The types of embeddings to generate for the video.
     
-    **Values:**
+    **Values**:
     - `visual`: Generates embeddings based on visual content (scenes, objects, actions)
     - `audio`: Generates embeddings based on audio content (sounds, music, effects)
     - `transcription`: Generates embeddings based on transcribed speech

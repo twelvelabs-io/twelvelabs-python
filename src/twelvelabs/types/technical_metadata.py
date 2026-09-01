@@ -11,29 +11,29 @@ from .video_stream import VideoStream
 
 class TechnicalMetadata(UniversalBaseModel):
     """
-    Technical metadata read from the media file of the asset, covering the container, the individual video and audio streams, image properties, and derived attributes.
+    Technical metadata read from the source file of the asset, covering the container, video and audio streams, image properties, document properties, and derived attributes.
 
-    The platform populates this object asynchronously after the upload completes. It is omitted from the response while the status of the asset is `processing`, and it may be partially populated when the status is `failed`. A field is absent when it does not apply to the media type of the asset, or when the source file did not carry the corresponding information.
+    The platform populates this object asynchronously after the upload completes. It is omitted from the response while the status of the asset is `processing`, and it may be partially populated when the status is `failed`. A field is absent when it does not apply to the type of the asset or when the source file did not contain the corresponding information.
     """
 
     file_size_bytes: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The size of the source media file in bytes.
+    The size of the source file in bytes.
     """
 
     file_mime_type: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The MIME type detected for the source media file.
+    The MIME type detected for the source file.
     """
 
     file_container_format: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The container format of the source media file. When a container maps to several format names, the platform reports them as a comma-separated list.
+    The container format of the source file. When a container maps to several format names, the platform reports them as a comma-separated list.
     """
 
     container_creation_time: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
-    The creation time recorded in the media container, in RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when present.
+    The creation time recorded in the source file container, in RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"), when present.
     """
 
     video_streams: typing.Optional[typing.List[VideoStream]] = pydantic.Field(default=None)
@@ -189,6 +189,81 @@ class TechnicalMetadata(UniversalBaseModel):
     geospatial_altitude_meters: typing.Optional[float] = pydantic.Field(default=None)
     """
     The GPS altitude embedded in the source media, in meters. Present only when the source media carries location metadata.
+    """
+
+    document_page_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The number of pages in the PDF file.
+    """
+
+    document_pdf_version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The PDF version specified in the file.
+    """
+
+    document_page_width_pt: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The width of the first page, in points.
+    """
+
+    document_page_height_pt: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The height of the first page, in points.
+    """
+
+    document_is_tagged: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether the PDF file is tagged for accessibility. An explicit `false` is meaningful.
+    """
+
+    document_is_encrypted: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether the PDF file is encrypted. An explicit `false` is meaningful.
+    """
+
+    document_language: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The language specified in the PDF file, when present.
+    """
+
+    document_title: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The title from the PDF metadata, when present.
+    """
+
+    document_author: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The author from the PDF metadata, when present.
+    """
+
+    document_subject: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The subject from the PDF metadata, when present.
+    """
+
+    document_keywords: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The keywords from the PDF metadata, when present.
+    """
+
+    document_creator_tool: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The application that created the PDF file, when present.
+    """
+
+    document_producer: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The application that produced the PDF file, when present.
+    """
+
+    document_creation_date: typing.Optional[dt.datetime] = pydantic.Field(default=None)
+    """
+    The normalized creation date from the PDF file, in RFC 3339 format, when present.
+    """
+
+    document_modification_date: typing.Optional[dt.datetime] = pydantic.Field(default=None)
+    """
+    The normalized modification date from the PDF file, in RFC 3339 format, when present.
     """
 
     if IS_PYDANTIC_V2:

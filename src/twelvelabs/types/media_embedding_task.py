@@ -8,6 +8,8 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .created_at import CreatedAt
 from .media_embedding_task_audio_embedding import MediaEmbeddingTaskAudioEmbedding
+from .media_embedding_task_document_embedding import MediaEmbeddingTaskDocumentEmbedding
+from .media_embedding_task_image_embedding import MediaEmbeddingTaskImageEmbedding
 from .media_embedding_task_video_embedding import MediaEmbeddingTaskVideoEmbedding
 from .updated_at import UpdatedAt
 
@@ -29,7 +31,7 @@ class MediaEmbeddingTask(UniversalBaseModel):
 
     status: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A string indicating the status of the emedding task. It can take one of the following values: `processing`, `ready` or `failed`.
+    A string indicating the status of the embedding task. It can take one of the following values: `processing`, `ready` or `failed`.
     """
 
     created_at: typing.Optional[CreatedAt] = None
@@ -42,6 +44,16 @@ class MediaEmbeddingTask(UniversalBaseModel):
     audio_embedding: typing.Optional[MediaEmbeddingTaskAudioEmbedding] = pydantic.Field(default=None)
     """
     An object containing the metadata associated with the embedding.
+    """
+
+    document_embedding: typing.Optional[MediaEmbeddingTaskDocumentEmbedding] = pydantic.Field(default=None)
+    """
+    An object containing the metadata associated with the embedding. Present only for `document` tasks created with Marengo 3.5.
+    """
+
+    image_embedding: typing.Optional[MediaEmbeddingTaskImageEmbedding] = pydantic.Field(default=None)
+    """
+    An object containing the metadata associated with the embedding. Present only for `image` tasks created with Marengo 3.5.
     """
 
     if IS_PYDANTIC_V2:
