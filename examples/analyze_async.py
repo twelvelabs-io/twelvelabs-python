@@ -23,11 +23,15 @@ ASSET_ID = os.getenv("ASSET_ID", "<YOUR_ASSET_ID>")
 MODEL = "pegasus1.5"
 
 
+# A task is done once it leaves these states.
+IN_FLIGHT = ("queued", "pending", "processing")
+
+
 def wait_for(client: TwelveLabs, task_id: str, timeout_sec: int = 900):
     deadline = time.time() + timeout_sec
     while time.time() < deadline:
         task = client.analyze_async.tasks.retrieve(task_id)
-        if task.status not in ("queued", "processing"):
+        if task.status not in IN_FLIGHT:
             return task
         time.sleep(5)
     raise TimeoutError(f"task {task_id} did not finish in {timeout_sec}s")

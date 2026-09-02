@@ -77,10 +77,18 @@ with TwelveLabs(api_key=API_KEY) as client:
 
     # --- Transcription ------------------------------------------------------
     # Available for assets with an audio track once processing finishes.
-    # The response carries three granularities: words, sentences and utterances
-    # (utterances add a `speaker` field).
+    # Transcription runs as its own job after the asset is ready, so poll for it.
+    # `include` selects the granularity and defaults to `words`, so request
+    # whichever ones you intend to read. Utterances add a `speaker` field.
     print("\nTranscription:")
-    transcription = client.assets.retrieve_transcription(asset_id=video.id)
+    transcription = client.assets.retrieve_transcription(
+        asset_id=video.id, include=["sentences", "utterances"]
+    )
+    while transcription.status in ("pending", "processing"):
+        time.sleep(5)
+        transcription = client.assets.retrieve_transcription(
+            asset_id=video.id, include=["sentences", "utterances"]
+        )
     print(f"  status={transcription.status}")
     for sentence in (transcription.sentences or [])[:2]:
         print(f"    [{sentence.start}-{sentence.end}] {sentence.value}")
