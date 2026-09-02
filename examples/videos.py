@@ -36,6 +36,6 @@ with TwelveLabs(api_key=API_KEY) as client:
             print(
                 f"  embedding_scope={segment.embedding_scope} embedding_option={segment.embedding_option} start_offset_sec={segment.start_offset_sec} end_offset_sec={segment.end_offset_sec}"
             )
-            # TODO currently embeddings_float does not exist
-            # first_few = segment.embeddings_float[:5]  # Show just first 5 values
-            # print(f"  embeddings: [{', '.join(str(x) for x in first_few)}...] (total: {len(segment.embeddings_float)} values)")
+            if segment.float_:
+                preview = ", ".join(str(x) for x in segment.float_[:5])
+                print(f"  embeddings: [{preview}...] (total: {len(segment.float_)} values)")

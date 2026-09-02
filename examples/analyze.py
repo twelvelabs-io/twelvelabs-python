@@ -1,120 +1,46 @@
-import json
+"""Pegasus 1.5 analysis — synchronous and streaming.
+
+Run:
+    export API_KEY=...
+    export ASSET_ID=...
+    python examples/analyze.py
+"""
+
 import os
 
-from twelvelabs import TwelveLabs
-from twelvelabs.types import StreamAnalyzeResponse_StreamEnd, SyncResponseFormat
+from twelvelabs import TwelveLabs, VideoContext_AssetId
+from twelvelabs.types import StreamAnalyzeResponse_StreamEnd
 
+API_KEY = os.getenv("API_KEY") or os.getenv("TWELVE_LABS_API_KEY")
+assert API_KEY, "Set your API key in the API_KEY environment variable."
 
-API_KEY = os.getenv("API_KEY")
-assert (
-    API_KEY
-), "Your API key should be stored in an environment variable named API_KEY."
-
+ASSET_ID = os.getenv("ASSET_ID", "<YOUR_ASSET_ID>")
 
 with TwelveLabs(api_key=API_KEY) as client:
-    video_id = "<YOUR_VIDEO_ID>"
+    # `video` is a discriminated union — the `type` field is required. The
+    # VideoContext_* constructors set it for you; a plain {"asset_id": ...} dict
+    # omits it and the request fails.
+    video = VideoContext_AssetId(asset_id=ASSET_ID)
+    # Also available: VideoContext_Url(url=...), VideoContext_Base64String(...)
 
-    res = client.summarize(
-        video_id=video_id,
-        type="summary",
-    )
-    if res.summarize_type == "summary":
-        print(f"Summary: {res.summary}")
-
-    res = client.summarize(
-        video_id=video_id,
-        type="chapter",
-    )
-    if res.summarize_type == "chapter":
-        for chapter in res.chapters:
-            print(
-                f"  chapter_number={chapter.chapter_number} chapter_title={chapter.chapter_title} chapter_summary={chapter.chapter_summary} start={chapter.start} end={chapter.end}"
-            )
-
-    res = client.summarize(
-        video_id=video_id,
-        type="highlight",
-    )
-    if res.summarize_type == "highlight":
-        for highlight in res.highlights:
-            print(
-                f"  highlight={highlight.highlight} start={highlight.start} end={highlight.end}"
-            )
-
-    gist = client.gist(
-        video_id=video_id,
-        types=["title", "topic", "hashtag"],
-    )
-    print(f"Gist: title={gist.title} topics={gist.topics} hashtags={gist.hashtags}")
-
-    # Basic analyze example
+    # --- Analyze ------------------------------------------------------------
+    print("Analysis:")
     res = client.analyze(
-        video_id=video_id,
-        prompt="What happened?",
+        model_name="pegasus1.5",
+        video=video,
+        prompt="Describe this video in one sentence.",
     )
-    print("Basic analyze result:")
-    print(json.dumps(res.model_dump(), indent=2))
+    print(f"  {res.data}")
+    print(f"  usage={res.usage}")
 
-    # Advanced analyze with structured output and max_tokens
-    res_structured = client.analyze(
-        video_id=video_id,
-        prompt="I want to generate a description for my video with the following format - Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.",
-        temperature=0.2,
-        response_format=SyncResponseFormat(
-            type="json_schema",
-            json_schema={
-                "type": "object",
-                "properties": {
-                    "title": {"type": "string"},
-                    "summary": {"type": "string"},
-                    "keywords": {"type": "array", "items": {"type": "string"}},
-                },
-            },
-        ),
-        max_tokens=2000,
-    )
-    print("\nStructured analyze result:")
-    print(json.dumps(res_structured.model_dump(), indent=2))
-
-    # Streaming analyze example
-    res_stream = client.analyze_stream(
-        video_id=video_id,
-        prompt="What happened?",
-    )
-    print("\nStreaming analyze result:")
-    for chunk in res_stream:
+    # --- Stream the same analysis -------------------------------------------
+    print("\nStreaming:")
+    for chunk in client.analyze_stream(
+        model_name="pegasus1.5",
+        video=video,
+        prompt="List three facts about this video.",
+    ):
         if chunk.event_type == "text_generation":
             print(chunk.text, end="", flush=True)
         elif isinstance(chunk, StreamAnalyzeResponse_StreamEnd):
-            print(f"\nFinish reason: {chunk.finish_reason}")
-            if chunk.metadata and chunk.metadata.usage:
-                print(f"Usage: {chunk.metadata.usage}")
-    print()  # Add newline after streaming
-
-    # Streaming with structured output
-    res_stream_structured = client.analyze_stream(
-        video_id=video_id,
-        prompt="Analyze this video and provide a structured breakdown of the main topics, key insights, and action items.",
-        temperature=0.3,
-        response_format=SyncResponseFormat(
-            type="json_schema",
-            json_schema={
-                "type": "object",
-                "properties": {
-                    "main_topics": {"type": "array", "items": {"type": "string"}},
-                    "key_insights": {"type": "array", "items": {"type": "string"}},
-                    "action_items": {"type": "array", "items": {"type": "string"}},
-                },
-            },
-        ),
-        max_tokens=1500,
-    )
-    print("\nStreaming structured analyze result:")
-    for chunk in res_stream_structured:
-        if chunk.event_type == "text_generation":
-            print(chunk.text, end="", flush=True)
-        elif isinstance(chunk, StreamAnalyzeResponse_StreamEnd):
-            print(f"\nFinish reason: {chunk.finish_reason}")
-            if chunk.metadata and chunk.metadata.usage:
-                print(f"Usage: {chunk.metadata.usage}")
-    print()  # Add newline after streaming
+            print(f"\n  finish_reason={chunk.finish_reason}")

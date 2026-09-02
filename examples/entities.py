@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from twelvelabs import TwelveLabs
 
@@ -29,8 +30,10 @@ with TwelveLabs(api_key=API_KEY) as client:
     print(f"Asset IDs: {asset_ids}")
 
     # Create entity collection
+    # Collection names must be unique, so suffix it — otherwise a second run of
+    # this example fails with entity_collection_name_already_exists.
     entity_collection = client.entity_collections.create(
-        name="Sample Entity Collection",
+        name=f"Sample Entity Collection {uuid.uuid4().hex[:8]}",
     )
     print(f"Created entity collection: id={entity_collection.id}")
 

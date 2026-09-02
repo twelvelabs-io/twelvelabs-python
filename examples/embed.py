@@ -132,7 +132,7 @@ with TwelveLabs(api_key=API_KEY) as client:
         input_type="video",
         model_name=model_name,
         video=VideoInputRequest(
-            media_source=MediaSource(url="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+            media_source=MediaSource(url="https://github.com/twelvelabs-io/twelvelabs-python/raw/refs/heads/main/examples/assets/example.mp4")
         ),
     )
     print(f"Created video embedding task: id={task.id}")

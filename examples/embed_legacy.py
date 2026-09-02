@@ -33,7 +33,6 @@ with TwelveLabs(api_key=API_KEY) as client:
     res = client.embed.create(
         model_name=model_name,
         text="man walking across the street",
-        text_truncate="start",
     )
     print(f"Created text embedding")
     if res.text_embedding is not None and res.text_embedding.segments is not None:
@@ -73,10 +72,10 @@ with TwelveLabs(api_key=API_KEY) as client:
     status = client.embed.tasks.wait_for_done(task.id, callback=on_task_update)
     print(f"Embedding done: {status.status}")
 
-    # Retrieve the task with the specified embedding option: "visual-text".
+    # Retrieve the task with the specified embedding option: "visual".
     # If you don't specify the embedding option, it will return all available multi-vector embeddings.
     task = client.embed.tasks.retrieve(
-        task_id=task.id, embedding_option=["visual-text"]
+        task_id=task.id, embedding_option=["visual"]
     )
     if task.video_embedding is not None and task.video_embedding.segments is not None:
         print_segments(task.video_embedding.segments)
