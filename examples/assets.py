@@ -102,11 +102,12 @@ with TwelveLabs(api_key=API_KEY) as client:
         file_path=VIDEO_PATH,
         filename="example-multipart.mp4",
     )
-    print(f"  asset_id={large.asset_id if hasattr(large, 'asset_id') else large}")
+    print(f"  asset_id={large.asset_id}")
 
     # --- Clean up -----------------------------------------------------------
-    # `force=True` deletes even when the asset is referenced elsewhere.
+    # Delete everything this example created, otherwise each run leaves assets
+    # behind. `force=True` deletes even when the asset is referenced elsewhere.
     print("\nCleanup:")
-    for asset_id in (image.id,):
+    for asset_id in (video.id, image.id, large.asset_id):
         client.assets.delete(asset_id=asset_id, force=True)
         print(f"  deleted {asset_id}")

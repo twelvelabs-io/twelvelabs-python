@@ -11,6 +11,7 @@ Run:
     python examples/search.py
 """
 
+import itertools
 import os
 import time
 import uuid
@@ -83,11 +84,14 @@ with TwelveLabs(api_key=API_KEY) as client:
 
     # --- Search, ungrouped clips -------------------------------------------
     print("\nSearch (no grouping):")
-    for clip in list(
+    # search.query returns a pager that walks every page, so slice it lazily rather
+    # than calling list() on it and fetching pages you never read.
+    for clip in itertools.islice(
         client.search.query(
             index_id=index.id,
             search_options=["visual", "audio"],
             query_text="A man talking",
-        )
-    )[:5]:
+        ),
+        5,
+    ):
         print(f"  video_id={clip.video_id} rank={clip.rank} start={clip.start} end={clip.end}")
