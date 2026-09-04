@@ -30,7 +30,7 @@ IMAGE_PATH = os.path.join(ASSETS_DIR, "search_sample.png")
 
 # A small, reliably-reachable public sample used for the `method="url"` path.
 PUBLIC_VIDEO_URL = (
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    "https://github.com/twelvelabs-io/twelvelabs-python/raw/refs/heads/main/examples/assets/example.mp4"
 )
 
 

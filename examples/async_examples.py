@@ -1,7 +1,7 @@
 import os
 import asyncio
 
-from twelvelabs import AsyncTwelveLabs
+from twelvelabs import AsyncTwelveLabs, VideoContext_AssetId
 
 
 API_KEY = os.getenv("API_KEY")
@@ -31,15 +31,16 @@ async def search():
         async for item in search_pager:
             print(f"  Video ID: {item.video_id}")
             print(
-                f"  score={item.score} start={item.start} end={item.end} confidence={item.confidence}"
+                f"  rank={item.rank} start={item.start} end={item.end}"
             )
 
 
 async def generate_text():
-    video_id = "<YOUR_VIDEO_ID>"
+    asset_id = "<YOUR_ASSET_ID>"
     async with AsyncTwelveLabs(api_key=API_KEY) as client:
         res = client.analyze_stream(
-            video_id=video_id,
+            model_name="pegasus1.5",
+            video=VideoContext_AssetId(asset_id=asset_id),
             prompt="What happened?",
         )
         async for chunk in res:

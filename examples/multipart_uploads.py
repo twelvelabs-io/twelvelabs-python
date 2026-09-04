@@ -232,17 +232,17 @@ def download_sample_videos():
     """Download video files from Google's sample video URLs to the downloads directory."""
     video_urls = [
         {
-            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "url": "https://github.com/twelvelabs-io/twelvelabs-python/raw/refs/heads/main/examples/assets/example.mp4",
             "filename": "example_video.mp4",
             "title": "For Bigger Blazes"
         },
         {
-            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", 
+            "url": "https://github.com/twelvelabs-io/twelvelabs-python/raw/refs/heads/main/examples/assets/example.mp4", 
             "filename": "video1.mp4",
             "title": "For Bigger Escape"
         },
         {
-            "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+            "url": "https://github.com/twelvelabs-io/twelvelabs-python/raw/refs/heads/main/examples/assets/example.mp4",
             "filename": "video2.mp4", 
             "title": "For Bigger Fun"
         }
@@ -279,11 +279,9 @@ def download_sample_videos():
             print(f"\n✅ Downloaded: {video_path}")
             
         except Exception as e:
-            print(f"\n❌ Failed to download {video_info['filename']}: {e}")
-            # Create a small dummy file as fallback
-            with open(video_path, 'wb') as f:
-                f.write(b'0' * (1024 * 1024))  # 1MB dummy file
-            print(f"📝 Created fallback dummy file: {video_path}")
+            raise RuntimeError(
+                f"Could not download the sample video for {video_info['filename']}: {e}"
+            ) from e
     
     # Also create video3.mp4 as a copy of one of the downloaded files for batch upload example
     video3_path = downloads_dir / "video3.mp4"
