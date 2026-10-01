@@ -7,6 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .async_document_input_request_embedding_option_item import AsyncDocumentInputRequestEmbeddingOptionItem
 from .async_document_input_request_embedding_scope_item import AsyncDocumentInputRequestEmbeddingScopeItem
 from .async_document_input_request_embedding_type_item import AsyncDocumentInputRequestEmbeddingTypeItem
+from .document_segmentation import DocumentSegmentation
 from .media_source import MediaSource
 
 
@@ -14,19 +15,36 @@ class AsyncDocumentInputRequest(UniversalBaseModel):
     """
     This field is required if the `input_type` parameter is `document`. Requires Marengo 3.5.
 
-    The platform embeds the rendered pages of your PDF file, one embedding per page.
+    The platform accepts PDF (`.pdf`), plain text (`.txt`), and Markdown (`.md`) files. The decoded file can be up to 512 MB. It embeds a PDF file from its rendered pages or from its extracted text, and a plain text or Markdown file from its text.
+
+    A PDF file also has a page allowance: 64 pages for each MB of file size. A 0.5 MB file is allowed 64 pages, and a 4 MB file is allowed 256 pages. The `quadrants` strategy counts each page five times against this allowance. The platform checks the page count of the file against the allowance before processing the file. If the file exceeds the allowance, the platform creates the task and sets its `status` field to the `failed` value. The `error.message` field contains the page count and the allowance. Plain text and Markdown files have no page allowance.
+
+    The `embedding_option` and `embedding_scope` fields combine, and the platform supports the following combinations.
+
+    | File type | `embedding_option` | `embedding_scope` | Result |
+    |-----------|--------------------|-------------------|--------|
+    | PDF | `visual` | `local` | One embedding for each rendered page. The default for PDF files. |
+    | PDF | `visual` | `asset` | One embedding for the entire file. |
+    | PDF | `text` | `asset` | One embedding for the extracted text of the entire file. |
+    | Plain text, Markdown | `text` | `asset` | One embedding for the entire file. The default for plain text and Markdown files. |
+    | Plain text, Markdown | `text` | `local` | One embedding for each chunk of whole sentences. Requires the `segmentation.sequential` field. |
+
+    You can request more than one combination at a time. For example, `embedding_scope: ["local", "asset"]` on a PDF file returns the per-page embeddings and the whole-file embedding together. The platform pairs each value in one field with each value in the other. Each pair must appear in this table; if you send a pair outside it, the platform returns a `400` error. If you omit a field, the platform uses its default value. If you embed a PDF file with `embedding_option: ["text"]`, also set `embedding_scope: ["asset"]`. For PDF files, the default `["local"]` pairs with only the `visual` option.
     """
 
     media_source: MediaSource
+    segmentation: typing.Optional[DocumentSegmentation] = None
     embedding_option: typing.Optional[typing.List[AsyncDocumentInputRequestEmbeddingOptionItem]] = pydantic.Field(
         default=None
     )
     """
-    The type of content to embed.
+    The types of embeddings to generate for the document.
     
     **Values**:
-    - `visual`: Embeds the rendered pages. Valid for PDF files.
-    - `text`: Not supported. Returns a `400` error.
+    - `visual`: Generates embeddings from the rendered pages. Valid for PDF files.
+    - `text`: Generates embeddings from the text content. Valid for PDF, plain text, and Markdown files.
+    
+    **Default**: `["visual"]` for PDF files; `["text"]` for plain text and Markdown files.
     """
 
     embedding_type: typing.Optional[typing.List[AsyncDocumentInputRequestEmbeddingTypeItem]] = pydantic.Field(
@@ -37,7 +55,7 @@ class AsyncDocumentInputRequest(UniversalBaseModel):
     
     **Values**:
     - `separate_embedding`: Returns one embedding per requested `embedding_scope`.
-    - `fused_embedding`: Returns a `400` error. Documents have a single modality.
+    - `fused_embedding`: The platform returns a `400` error if you set this value. Documents have a single modality.
     
     **Default**: `separate_embedding`.
     """
@@ -49,8 +67,12 @@ class AsyncDocumentInputRequest(UniversalBaseModel):
     The scope for which you wish to generate embeddings.
     
     **Values**:
-    - `local`: Returns one embedding per page. The only supported scope for PDF files, and the default.
-    - `asset`: Not supported for PDF files.
+    - `local`: Returns one embedding for each part of the file.
+        - For a PDF file, each part is a rendered page. You can divide each page further with the `segmentation.spatial` field.
+        - For a plain text or Markdown file, each part is a chunk of whole sentences. The `segmentation.sequential` field is required.
+    - `asset`: Returns one embedding for the entire file.
+    
+    **Default**: `["local"]` for PDF files; `["asset"]` for plain text and Markdown files.
     """
 
     if IS_PYDANTIC_V2:

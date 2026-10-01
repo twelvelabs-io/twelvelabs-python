@@ -13,7 +13,7 @@ from .video_segmentation import VideoSegmentation
 
 class VideoInputRequest(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `video`.
+    This field is required if the `input_type` parameter is `video`. Requires Marengo 3.0. The decoded file can be up to 36 MB.
     """
 
     media_source: MediaSource
@@ -64,11 +64,11 @@ class VideoInputRequest(UniversalBaseModel):
 
     embedding_type: typing.Optional[typing.List[VideoInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
     """
-    Specifies how to structure the embedding. Include this parameter only when `embedding_option` contains at least two values.
+    Specifies how to structure the embedding. Include this parameter only when the `embedding_option` parameter contains at least two values.
     
     **Values**:
-    - `separate_embedding`: Returns separate embeddings per modality specified in `embedding_option`
-    - `fused_embedding`: Returns a single embedding that combines all modalities into one vector
+    - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.
+    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector.
     
     Specify both values to receive separate and fused embeddings in the same response.
     

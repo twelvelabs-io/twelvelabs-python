@@ -10,9 +10,11 @@ from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pagination import AsyncPager, BaseHttpResponse, SyncPager
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..types.knowledge_store_item import KnowledgeStoreItem
 from ..types.knowledge_store_item_collection import KnowledgeStoreItemCollection
+from ..types.knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .types.knowledge_store_item_collections_list_items_response import KnowledgeStoreItemCollectionsListItemsResponse
 from .types.knowledge_store_item_collections_list_request_sort_by import KnowledgeStoreItemCollectionsListRequestSortBy
 from .types.knowledge_store_item_collections_list_response import KnowledgeStoreItemCollectionsListResponse
@@ -134,7 +136,7 @@ class RawKnowledgeStoreItemCollectionsClient:
         *,
         name: str,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[KnowledgeStoreItemCollection]:
         """
@@ -151,8 +153,8 @@ class RawKnowledgeStoreItemCollectionsClient:
         description : typing.Optional[str]
             An optional description of the item collection.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item collection. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item collection, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -168,7 +170,9 @@ class RawKnowledgeStoreItemCollectionsClient:
             json={
                 "name": name,
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -307,7 +311,7 @@ class RawKnowledgeStoreItemCollectionsClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[KnowledgeStoreItemCollection]:
         """
@@ -327,8 +331,8 @@ class RawKnowledgeStoreItemCollectionsClient:
         description : typing.Optional[str]
             An optional description of the item collection.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item collection. Both keys and values must be strings. To remove all metadata, set this field to an empty object (`{}`).
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item collection, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. The provided object replaces the existing metadata in full, so include every key you want to keep and omit the ones you want to remove. To clear all metadata, set this field to an empty object (`{}`).
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -344,7 +348,9 @@ class RawKnowledgeStoreItemCollectionsClient:
             json={
                 "name": name,
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -710,7 +716,7 @@ class AsyncRawKnowledgeStoreItemCollectionsClient:
         *,
         name: str,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[KnowledgeStoreItemCollection]:
         """
@@ -727,8 +733,8 @@ class AsyncRawKnowledgeStoreItemCollectionsClient:
         description : typing.Optional[str]
             An optional description of the item collection.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item collection. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item collection, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -744,7 +750,9 @@ class AsyncRawKnowledgeStoreItemCollectionsClient:
             json={
                 "name": name,
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -883,7 +891,7 @@ class AsyncRawKnowledgeStoreItemCollectionsClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[KnowledgeStoreItemCollection]:
         """
@@ -903,8 +911,8 @@ class AsyncRawKnowledgeStoreItemCollectionsClient:
         description : typing.Optional[str]
             An optional description of the item collection.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item collection. Both keys and values must be strings. To remove all metadata, set this field to an empty object (`{}`).
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item collection, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. The provided object replaces the existing metadata in full, so include every key you want to keep and omit the ones you want to remove. To clear all metadata, set this field to an empty object (`{}`).
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -920,7 +928,9 @@ class AsyncRawKnowledgeStoreItemCollectionsClient:
             json={
                 "name": name,
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",

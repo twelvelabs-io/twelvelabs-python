@@ -4,6 +4,7 @@
 
 from .bad_request_error import BadRequestError
 from .conflict_error import ConflictError
+from .content_too_large_error import ContentTooLargeError
 from .forbidden_error import ForbiddenError
 from .gateway_timeout_error import GatewayTimeoutError
 from .gone_error import GoneError
@@ -11,11 +12,13 @@ from .internal_server_error import InternalServerError
 from .not_found_error import NotFoundError
 from .service_unavailable_error import ServiceUnavailableError
 from .too_many_requests_error import TooManyRequestsError
+from .unauthorized_error import UnauthorizedError
 from .unprocessable_entity_error import UnprocessableEntityError
 
 __all__ = [
     "BadRequestError",
     "ConflictError",
+    "ContentTooLargeError",
     "ForbiddenError",
     "GatewayTimeoutError",
     "GoneError",
@@ -23,5 +26,6 @@ __all__ = [
     "NotFoundError",
     "ServiceUnavailableError",
     "TooManyRequestsError",
+    "UnauthorizedError",
     "UnprocessableEntityError",
 ]

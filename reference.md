@@ -14,7 +14,7 @@
 This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
 <Accordion title="Input requirements">
-- Minimum duration: 4 seconds
+- Minimum duration: 1 second
 - Maximum duration: 1 hour
 - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
 - Resolution: 360x360 to 5184x2160 pixels
@@ -148,7 +148,7 @@ Start of the analysis window, as an absolute timestamp in seconds, based on the 
 <Note title="Notes">
 - If omitted, defaults to the internal start time of the video.
 - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-- Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Must be less than `end_time` and the video duration. The window (`end_time - start_time`) must be at least 1 second.
 </Note>
     
 </dd>
@@ -164,7 +164,7 @@ End of the analysis window, as an absolute timestamp in seconds, based on the in
 <Note title="Notes">
 - If omitted, defaults to the internal start time of the video plus its duration.
 - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-- Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Must be greater than `start_time` and less than or equal to the video duration. The window (`end_time - start_time`) must be at least 1 second.
 </Note>
     
 </dd>
@@ -200,7 +200,7 @@ End of the analysis window, as an absolute timestamp in seconds, based on the in
 This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
 <Accordion title="Input requirements">
-- Minimum duration: 4 seconds
+- Minimum duration: 1 second
 - Maximum duration: 1 hour
 - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
 - Resolution: 360x360 to 5184x2160 pixels
@@ -332,7 +332,7 @@ Start of the analysis window, as an absolute timestamp in seconds, based on the 
 <Note title="Notes">
 - If omitted, defaults to the internal start time of the video.
 - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-- Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Must be less than `end_time` and the video duration. The window (`end_time - start_time`) must be at least 1 second.
 </Note>
     
 </dd>
@@ -348,7 +348,7 @@ End of the analysis window, as an absolute timestamp in seconds, based on the in
 <Note title="Notes">
 - If omitted, defaults to the internal start time of the video plus its duration.
 - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-- Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Must be greater than `start_time` and less than or equal to the video duration. The window (`end_time - start_time`) must be at least 1 second.
 </Note>
     
 </dd>
@@ -610,7 +610,7 @@ Upload options:
 - **Local file**: Use the `video_file` parameter.
 - **Publicly accessible URL**: Use the `video_url` parameter.
 
-Your video files must meet requirements based on your workflow:
+Your videos must meet requirements based on your workflow:
 - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
 - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#video-file-requirements).
 - If you want to both search and analyze your videos, the most restrictive requirements apply.
@@ -692,7 +692,7 @@ typing.Optional[core.File]` — See core.File for more documentation
 <dl>
 <dd>
 
-**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your videos. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string. Send this value as a JSON-encoded string.
     
 </dd>
 </dl>
@@ -1496,7 +1496,7 @@ This method creates an asset by uploading a file to the platform. Assets are reu
 The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to the `ready` status on success or to the `failed` status when the file is invalid, corrupt, or unreadable. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
 
 **Supported content**:
-- Video, audio, and image files.
+- Video, audio, and images.
 - PDF, text, and Markdown files.
 
 Filename extension matching is case-insensitive; for example, `notes.MD` and `notes.md` are treated the same. The platform rejects unsupported formats. For documents, it also rejects files whose extensions don't match the detected content.
@@ -1583,6 +1583,8 @@ typing.Optional[core.File]` — See core.File for more documentation
 Specify this parameter to upload a file from a publicly accessible URL. This parameter is required when `method` is set to `url`.
 
 Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. Document URLs support up to 512 MB.
+
+The parameter also accepts the URL of an HLS manifest (`.m3u8`) in VOD format. Live video streams are rejected with a `400` error. If the duration cannot be determined from the media, the platform calculates it from the manifest.
     
 </dd>
 </dl>
@@ -1600,9 +1602,9 @@ Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. 
 
 **enable_hls:** `typing.Optional[bool]` 
 
-When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
+The platform generates an HLS playlist and segments for streaming. Set to `false` to disable HLS generation. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
-**Default**: `false`.
+**Default**: `true`.
     
 </dd>
 </dl>
@@ -1612,11 +1614,11 @@ When set to `true`, the platform generates an HLS playlist and segments for stre
 
 **enable_thumbnail:** `typing.Optional[bool]` 
 
-When set to `true`, the platform generates thumbnail images from the uploaded content.
+The platform generates thumbnail images from the uploaded content. Set to `false` to disable thumbnail generation.
 
 For PDF files, the platform generates a representative thumbnail from the first page. Text and Markdown files do not produce thumbnails; the platform ignores this flag for them.
 
-**Default**: `false`.
+**Default**: `true`.
     
 </dd>
 </dl>
@@ -1624,7 +1626,7 @@ For PDF files, the platform generates a representative thumbnail from the first 
 <dl>
 <dd>
 
-**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+**user_metadata:** `typing.Optional[str]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string. Send this value as a JSON-encoded string.
     
 </dd>
 </dl>
@@ -1915,7 +1917,7 @@ Send repeated values, such as the `?include=words&include=utterances` query stri
 
 This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
 - A key with a value creates or replaces that key.
-- A key set to an empty string (`""`) or `null` is ignored.
+- A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
 - A key you omit from the request body is removed.
 
 To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
@@ -1945,6 +1947,7 @@ client.assets.replace_user_metadata(
         "batchNumber": 5,
         "rating": 9.3,
         "needsReview": True,
+        "hashtags": ["summer", "vlog"],
     },
 )
 
@@ -2077,7 +2080,7 @@ client.assets.delete_user_metadata(
 This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
 - A key with a value creates or replaces that key.
 - A key set to `null` deletes that key.
-- A key set to an empty string (`""`) is ignored.
+- A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
 - A key you omit from the request keeps its current value.
 
 To replace all metadata in a single call, use the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint instead.
@@ -2107,6 +2110,7 @@ client.assets.update_user_metadata(
         "batchNumber": 5,
         "rating": 9.3,
         "needsReview": True,
+        "hashtags": ["summer", "vlog"],
     },
 )
 
@@ -2367,7 +2371,7 @@ When set to `true`, the platform generates thumbnail images from the uploaded co
 <dl>
 <dd>
 
-**user_metadata:** `typing.Optional[UserMetadata]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+**user_metadata:** `typing.Optional[UserMetadata]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
     
 </dd>
 </dl>
@@ -3316,7 +3320,7 @@ client.knowledge_stores.create(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the knowledge store. Both keys and values must be strings.
+**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the knowledge store, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
     
 </dd>
 </dl>
@@ -3550,7 +3554,7 @@ client.knowledge_stores.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the knowledge store. Both keys and values must be strings. The provided object replaces the existing metadata in full, so include every key you want to keep. To clear all metadata, set this field to an empty object (`{}`). A null value is stored as an empty string.
+**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the knowledge store, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. The provided object replaces the existing metadata in full, so include every key you want to keep and omit the ones you want to remove. To clear all metadata, set this field to an empty object (`{}`).
     
 </dd>
 </dl>
@@ -3706,7 +3710,7 @@ The maximum number of results per page. A result is one entry in the `data` arra
 
 Pagination token used to retrieve the next page of results. Omit it on the first request. To fetch the next page, set it to the `next_page_token` field returned in the previous response and send the request again.
 
-A malformed or unrecognized token returns a `400` error. A token that has expired returns a `410` error (make a new search request to obtain a fresh page token).
+If a token is malformed or unrecognized, the platform returns a `400` error. If a token has expired, the platform returns a `410` error (make a new search request to obtain a fresh page token).
     
 </dd>
 </dl>
@@ -3906,7 +3910,9 @@ This method adds an asset to a knowledge store for processing.
 The operation is asynchronous. The item is created immediately with the `queued`
 status and processed in the background.
 
-The asset must not exceed 5 GB.
+**Asset size limits**:
+- **Video**: Up to 10 GB
+- **Images**: Up to 32 MB
 </dd>
 </dl>
 </dd>
@@ -3969,7 +3975,7 @@ client.knowledge_store_items.create(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the item. Both keys and values must be strings.
+**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
     
 </dd>
 </dl>
@@ -4356,7 +4362,7 @@ client.knowledge_store_item_collections.create(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the item collection. Both keys and values must be strings.
+**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the item collection, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
     
 </dd>
 </dl>
@@ -4617,7 +4623,7 @@ client.knowledge_store_item_collections.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, str]]` — Custom metadata for the item collection. Both keys and values must be strings. To remove all metadata, set this field to an empty object (`{}`).
+**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the item collection, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. The provided object replaces the existing metadata in full, so include every key you want to keep and omit the ones you want to remove. To clear all metadata, set this field to an empty object (`{}`).
     
 </dd>
 </dl>
@@ -4945,7 +4951,7 @@ This method creates embeddings for text, image, and audio content.
 
 Ensure your media files meet the following requirements:
 - [Audio files](/v1.3/docs/concepts/models/marengo/marengo-3-0#audio-file-requirements).
-- [Image files](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
+- [Images](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 
 Parameters for embeddings:
 - **Common parameters**:
@@ -5118,7 +5124,7 @@ Use this endpoint to search for relevant matches in an index using text, media, 
 - To find a specific person in your videos, enclose the unique identifier of the entity you want to find in the `query_text` parameter.
 
 <Note title="Notes">
-- When using images in your search queries (either as media queries or in composed searches), ensure your image files meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
+- When using images in your search queries (either as media queries or in composed searches), ensure your images meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 - This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
 </Note>
 </dd>
@@ -6631,7 +6637,7 @@ The number of items to return on each page.
 <dl>
 <dd>
 
-This method imports one or more files from the connected provider account into the platform as assets. Video files can be up to 10 GB, audio files up to 4 GB, and images up to 32 MB. For each newly imported file, the platform creates an asset in the `processing` status and fetches the file asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, without fetching the file again. If the earlier fetch had failed, the platform fetches the file again. The response contains one entry per requested file, in request order. Use the `action` field of each entry to identify which files were newly imported and which were already imported.
+This method imports one or more files from the connected provider account into the platform as assets. Videos can be up to 10 GB, audio up to 4 GB, and images up to 32 MB. For each newly imported file, the platform creates an asset in the `processing` status and fetches the file asynchronously. If you import a file that was already imported through this account, the platform returns the existing asset with its current status, without fetching the file again. If the earlier fetch had failed, the platform fetches the file again. The response contains one entry per requested file, in request order. Use the `action` field of each entry to identify which files were newly imported and which were already imported.
 </dd>
 </dl>
 </dd>
@@ -6866,7 +6872,7 @@ The number of items to return on each page.
 **status:** `typing.Optional[AnalyzeTaskStatus]` 
 
 Filter analysis tasks by status.
-Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
+Possible values: `queued`, `pending`, `processing`, `ready`, `failed`, `canceled`.
     
 </dd>
 </dl>
@@ -6925,8 +6931,7 @@ Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
 This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
 <Accordion title="Input requirements">
-- Minimum duration: 4 seconds
-- Maximum duration: 2 hours
+- The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
 - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
 - Resolution: 360x360 to 5184x2160 pixels
 - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
@@ -6935,7 +6940,7 @@ This method asynchronously analyzes your videos. It supports two analysis modes:
 **When to use this method**:
 - Generate custom text from your video using a prompt (general analysis)
 - Extract timestamped metadata with custom segment definitions from your video
-- Analyze videos longer than 1 hour
+- Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
 - Process videos asynchronously without blocking your application
 
 **Do not use this method for**:
@@ -6944,8 +6949,8 @@ This method asynchronously analyzes your videos. It supports two analysis modes:
 Analyzing videos asynchronously requires three steps:
 
 1. Create an analysis task using this method. The platform returns a task identifier.
-2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
+2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
+3. When the status is `ready`, retrieve the results using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
 On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -7047,7 +7052,7 @@ An optional identifier that you set when you create the task. Use this field to 
 The platform stores this value unchanged and returns it in the following responses:
 - The [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint
 - The [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint
-- The `analyze.task.ready` and `analyze.task.failed` webhook payloads
+- The `analyze.task.ready`, `analyze.task.failed`, and `analyze.task.canceled` webhook payloads
 
 **Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
 
@@ -7118,6 +7123,8 @@ The maximum response length, in tokens. The allowed range depends on the analysi
 |------|-----|-----|---------|
 | `general` | 512 | 98,304 | 4,096 |
 | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
+
+With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
     
 </dd>
 </dl>
@@ -7164,7 +7171,8 @@ Start of the analysis window, as an absolute timestamp in seconds, based on the 
 <Note title="Notes">
 - If omitted, defaults to the internal start time of the video.
 - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-- Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Must be less than `end_time` and the video duration.
+- The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
 - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
 </Note>
@@ -7182,7 +7190,8 @@ End of the analysis window, as an absolute timestamp in seconds, based on the in
 <Note title="Notes">
 - If omitted, defaults to the internal start time of the video plus its duration.
 - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-- Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+- Must be greater than `start_time` and less than or equal to the video duration.
+- The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
 - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
 - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
 </Note>
@@ -7224,9 +7233,10 @@ This method retrieves the status and results of an analysis task.
 - `pending`: The task is queued and waiting to start.
 - `processing`: The platform is analyzing the video.
 - `ready`: Processing is complete. Results are available in the response.
-- `failed`: The task failed. No results were generated.
+- `failed`: The task failed. No result is available. The `error` field describes the failure.
+- `canceled`: The task was canceled. No result is available. The `error` field describes the cancellation reason, if available.
 
-Poll this method until `status` is `ready` or `failed`. When `status` is `ready`, use the results from the response.
+Poll this method until `status` is `ready`, `failed`, or `canceled`. When `status` is `ready`, use the results from the response.
 </dd>
 </dl>
 </dd>
@@ -7335,6 +7345,82 @@ client.analyze_async.tasks.delete(
 <dd>
 
 **task_id:** `str` — The unique identifier of the analyze task.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.analyze_async.tasks.<a href="src/twelvelabs/analyze_async/tasks/client.py">cancel</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to cancel an asynchronous analysis task in your account. To cancel a task created as part of a batch, use the [`POST`](/v1.3/api-reference/analyze-videos/batch-analysis/cancel-batch) method of the `/analyze/batches/{batch_id}/cancel` endpoint.
+
+You can cancel a task with the `queued`, `pending`, or `processing` status. This action cannot be undone.
+
+Processing that has already started can continue briefly after cancellation.
+
+When you cancel a task, the platform can send an `analyze.task.canceled` webhook. Delivery is best-effort: a `200` response is not a delivery guarantee. When you receive the event, retrieve the task for its current state.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.analyze_async.tasks.cancel(
+    task_id="64f8d2c7e4a1b37f8a9c5d12",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**task_id:** `str` — The unique identifier of the analysis task you want to cancel.
     
 </dd>
 </dl>
@@ -7508,11 +7594,13 @@ Use this method to submit many video analysis requests in a single call. Each re
 **Retention and retry**:
 - Batches expire 24 hours after creation. You can retrieve results for 30 days after creation.
 - If processing does not finish for some items in time, resubmit them in a new batch.
+- An item whose analysis window exceeds 2 hours fails on its own. The error code is `video_duration_too_long`. The rest of the batch is still submitted.
 
 **Limits**:
 - Up to 1,000 requests per batch.
 - Up to 2,000 total content hours per batch.
 - Up to 5 active batches per account.
+- The duration limits of the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint apply to each item.
 </dd>
 </dl>
 </dd>
@@ -8126,7 +8214,7 @@ Upload options:
 
 Specify at least one option. If both are provided, `video_url` takes precedence.
 
-Your video files must meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
+Your videos must meet the [requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements).
 This endpoint allows you to upload files up to 2 GB in size.  To upload larger files, use the [Multipart Upload API](/v1.3/api-reference/upload-content/multipart-uploads)
 
 <Note title="Notes">
@@ -8463,7 +8551,7 @@ This method synchronously creates embeddings for multimodal content and returns 
 
 Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, or video as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
+The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
 <Note title="Note">
 This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
@@ -8514,7 +8602,7 @@ client.embed.v_2.create(
 The type of content for the embeddings.
 
 **Values**:
-- `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+- `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
 - `audio`: An audio file. Requires Marengo 3.0.
 - `video`: A video file. Requires Marengo 3.0.
 - `image`: An image file. Requires Marengo 3.0.
@@ -8546,7 +8634,7 @@ The embedding model to use.
 Controls the behavior of the platform when the text in your request exceeds 2,000 tokens. Requires Marengo 3.5.
 
 **Values**:
-- `false`: Return a `400` error.
+- `false`: The platform returns a `400` error.
 - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
     
 </dd>
@@ -8557,9 +8645,30 @@ Controls the behavior of the platform when the text in your request exceeds 2,00
 
 **embedding_uncertainty:** `typing.Optional[bool]` 
 
-Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
-Set this parameter to `true` only when your request embeds text only, or media only. Requests that combine text with media sources return a `400` error.
+**Requirements**:
+- Set this parameter to `true` only for a text-only or media-only request. If you combine text with media sources, the platform returns a `400` error.
+- The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**embedding_dimension:** `typing.Optional[int]` 
+
+The number of dimensions for each embedding in the response, including the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) vector.
+
+Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the first values of the full-length embedding. A 256-dimension embedding, for example, is the first 256 values of a 512-dimension embedding of the same content. Shorter embeddings reduce index size and speed up similarity search; longer embeddings produce higher retrieval quality.
+
+**Requirements**:
+- Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
+- Applies to the entire request: you cannot set it for a single input type or embedding.
+- Use the same value across an index.
+
+**Default**: 512
     
 </dd>
 </dl>
@@ -8773,7 +8882,7 @@ This method creates embeddings for audio, video, images, and documents asynchron
 
 Use this method to embed content at scale, such as long files or the media files you want to make searchable. For a query, or for results you need in the same request, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint instead.
 
-The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and PDF files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
+The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and documents: PDF, plain text, and Markdown files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
 Creating embeddings asynchronously requires three steps:
 
@@ -8782,7 +8891,7 @@ Creating embeddings asynchronously requires three steps:
 3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
 
 <Note title="Notes">
-- Creating a task validates only basic metadata and playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
+- Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
 - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
 - Embeddings are stored for seven days.
 </Note>
@@ -8851,7 +8960,7 @@ The type of content for the embeddings.
 **Values**:
 - `audio`: An audio file.
 - `video`: A video file.
-- `document`: A PDF file. Requires Marengo 3.5.
+- `document`: A PDF, plain text, or Markdown file. Requires Marengo 3.5.
 - `image`: An image file. Requires Marengo 3.5.
     
 </dd>
@@ -8876,9 +8985,32 @@ The embedding model to use.
 
 **embedding_uncertainty:** `typing.Optional[bool]` 
 
-Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.embedding-uncertainty) field of the result. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
-To use this parameter with audio or video input, exclude the `asset` scope from the `embedding_scope` field. For example, set `video.embedding_scope` to `["clip"]`. The field defaults to `["clip", "asset"]`, so a request that keeps the default returns a `400` error. This restriction does not apply to `document` and `image` input.
+**Requirements**:
+- For audio or video input, set the `embedding_scope` field to exclude `asset`. For example, set the `video.embedding_scope` field to `["clip"]`. The field defaults to `["clip", "asset"]`, so the platform returns a `400` error if you keep the default. This requirement does not apply to image input.
+- For a PDF document, the platform returns a `400` error regardless of the `document.embedding_scope` value.
+- For a plain text or Markdown document, set the `document.embedding_scope` field to `["local"]`. Any other value returns a `400` error.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**embedding_dimension:** `typing.Optional[int]` 
+
+The number of dimensions for each embedding that the task produces, including the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.embedding-uncertainty) vector.
+
+Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the first values of the full-length embedding. A 256-dimension embedding, for example, is the first 256 values of a 512-dimension embedding of the same content. Shorter embeddings reduce index size and speed up similarity search; longer embeddings produce higher retrieval quality.
+
+**Requirements**:
+- Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
+- Applies to the entire task: you cannot set it for a single input type or embedding.
+- Set it once, when you create the task. To use a different value, create a new task.
+- Use the same value across an index.
+
+**Default**: 512
     
 </dd>
 </dl>
@@ -10048,6 +10180,7 @@ Filter by one or more indexing task statuses. The following options are availabl
 - `pending`: The indexed asset is pending.
 - `queued`: The indexed asset is queued.
 - `indexing`: The indexed asset is being indexed.
+- `validating`: The indexed asset is being validated.
 - `failed`: The indexed asset indexing task failed.
 
 To filter by multiple statuses, specify the `status` parameter for each value:
@@ -10263,7 +10396,7 @@ client.indexes.indexed_assets.create(
 <dl>
 <dd>
 
-**user_metadata:** `typing.Optional[UserMetadata]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+**user_metadata:** `typing.Optional[UserMetadata]` — Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
     
 </dd>
 </dl>
@@ -10528,6 +10661,7 @@ client.indexes.indexed_assets.update(
         "batchNumber": 5,
         "rating": 9.3,
         "needsReview": True,
+        "hashtags": ["summer", "vlog"],
     },
 )
 
@@ -11151,6 +11285,7 @@ client.indexes.videos.update(
         "batchNumber": 5,
         "rating": 9.3,
         "needsReview": True,
+        "hashtags": ["summer", "vlog"],
     },
 )
 

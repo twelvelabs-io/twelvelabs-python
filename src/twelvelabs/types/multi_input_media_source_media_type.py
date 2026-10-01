@@ -2,4 +2,4 @@
 
 import typing
 
-MultiInputMediaSourceMediaType = typing.Union[typing.Literal["image", "video", "audio"], typing.Any]
+MultiInputMediaSourceMediaType = typing.Union[typing.Literal["image", "video", "audio", "document"], typing.Any]

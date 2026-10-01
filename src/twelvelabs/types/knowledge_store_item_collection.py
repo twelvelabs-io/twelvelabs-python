@@ -7,6 +7,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 
 
 class KnowledgeStoreItemCollection(UniversalBaseModel):
@@ -34,9 +35,9 @@ class KnowledgeStoreItemCollection(UniversalBaseModel):
     The description of the item collection.
     """
 
-    metadata: typing.Optional[typing.Dict[str, str]] = pydantic.Field(default=None)
+    metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = pydantic.Field(default=None)
     """
-    Custom metadata for the item collection.
+    Custom metadata for the item collection. Keys are strings; each value is a string, a number, a boolean, or an array of strings.
     """
 
     member_count: typing.Optional[int] = pydantic.Field(default=None)

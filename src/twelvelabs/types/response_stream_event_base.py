@@ -13,7 +13,7 @@ class ResponseStreamEventBase(UniversalBaseModel):
 
     sequence_number: int = pydantic.Field()
     """
-    A monotonically increasing sequence number for ordering events.
+    The event's position in the stream's single monotonic sequence, used to order events.
     """
 
     if IS_PYDANTIC_V2:

@@ -26,7 +26,7 @@ class BatchItemRequest(UniversalBaseModel):
     
     The platform stores this value unchanged. It appears in:
     - **Batch responses**: the array named `items` in the Create a batch response, and each line returned by the [`GET`](/v1.3/api-reference/analyze-videos/batch-analysis/retrieve-batch-results) method of the `/analyze/batches/{batch_id}/results` endpoint.
-    - **Task responses**: each batch request creates an analysis task. The `custom_id` field appears in the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint, the [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint, and the `analyze.task.ready` and `analyze.task.failed` webhook payloads.
+    - **Task responses**: each batch request creates an analysis task. The `custom_id` field appears in the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint and the [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint. Tasks created as part of a batch do not produce per-task webhook events.
     
     **Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
     

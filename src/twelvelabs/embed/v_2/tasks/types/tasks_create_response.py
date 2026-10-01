@@ -7,6 +7,7 @@ import typing_extensions
 from .....core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .....core.serialization import FieldMetadata
 from .....types.embedding_data import EmbeddingData
+from .tasks_create_response_metadata import TasksCreateResponseMetadata
 from .tasks_create_response_status import TasksCreateResponseStatus
 
 
@@ -24,6 +25,11 @@ class TasksCreateResponse(UniversalBaseModel):
     data: typing.Optional[typing.List[EmbeddingData]] = pydantic.Field(default=None)
     """
     An array of embedding results when `status` is `ready`, or `null` when `status` is `processing` or `failed`.
+    """
+
+    metadata: typing.Optional[TasksCreateResponseMetadata] = pydantic.Field(default=None)
+    """
+    Metadata about the task you created. The platform sets the length of your embeddings when it creates the task, and the `embedding_dimension` field contains that length. Only Marengo 3.5 returns it.
     """
 
     if IS_PYDANTIC_V2:

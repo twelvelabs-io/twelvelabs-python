@@ -325,6 +325,7 @@ class VideosClient:
                 "batchNumber": 5,
                 "rating": 9.3,
                 "needsReview": True,
+                "hashtags": ["summer", "vlog"],
             },
         )
         """
@@ -670,6 +671,7 @@ class AsyncVideosClient:
                     "batchNumber": 5,
                     "rating": 9.3,
                     "needsReview": True,
+                    "hashtags": ["summer", "vlog"],
                 },
             )
 

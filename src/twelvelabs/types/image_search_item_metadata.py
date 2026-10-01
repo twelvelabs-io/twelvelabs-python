@@ -5,7 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .image_search_system_metadata import ImageSearchSystemMetadata
-from .user_metadata import UserMetadata
+from .knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 
 
 class ImageSearchItemMetadata(UniversalBaseModel):
@@ -18,7 +18,7 @@ class ImageSearchItemMetadata(UniversalBaseModel):
     System-generated media metadata for the source image.
     """
 
-    user: typing.Optional[UserMetadata] = pydantic.Field(default=None)
+    user: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = pydantic.Field(default=None)
     """
     Caller-supplied key-value pairs attached to the item.
     """

@@ -15,6 +15,8 @@ from .time_based_metadata_entry import TimeBasedMetadataEntry
 class AsyncVideoInputRequest(UniversalBaseModel):
     """
     This field is required if the `input_type` parameter is `video`.
+
+    Base64-encoded video can be up to 36 MB decoded. For a larger file, provide a URL or an asset identifier.
     """
 
     media_source: MediaSource
@@ -45,7 +47,7 @@ class AsyncVideoInputRequest(UniversalBaseModel):
     - **With Marengo 3.5**: Place your settings in the `temporal` object. Both strategies are available: `dynamic` divides the video into variable-length segments that follow scene changes, and `fixed` divides it into equal-length segments. Default: `temporal.dynamic`, `min_duration_sec: 2`.
     - **With Marengo 3.0**: Provide the settings directly in this object. Default: `dynamic`, `min_duration_sec: 4`.
     
-    Using a structure that does not match your model version returns a `400` error.
+    If you use a structure that does not match your model version, the platform returns a `400` error.
     """
 
     embedding_option: typing.Optional[typing.List[AsyncVideoInputRequestEmbeddingOptionItem]] = pydantic.Field(
@@ -86,7 +88,7 @@ class AsyncVideoInputRequest(UniversalBaseModel):
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.
-    - `fused_embedding`: Returns a single embedding that combines all modalities into one vector. With Marengo 3.5, this value requires the `time_based_metadata` field.
+    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. With Marengo 3.5, this value requires the `time_based_metadata` field.
     
     Specify both values to receive separate and fused embeddings in the same response.
     

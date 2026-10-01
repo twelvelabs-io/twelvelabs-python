@@ -41,31 +41,23 @@ class ResponseObject(UniversalBaseModel):
 
     object: typing.Optional[ResponseObjectObject] = pydantic.Field(default=None)
     """
-    The object type, always `response`. Carries the same value as `type`, which
-    predates it and which the Open Responses specification does not name.
+    The object type, always `response`. It has the same value as the `type`
+    field.
     
-    Both fields are permanent; neither will be removed. Read whichever your client
-    already uses.
-    
-    This is the only object with an `object` field. Output items, annotations and
-    stream events are keyed on `type` alone, so do not expect `object` one level
-    down.
+    Only the response itself has an `object` field. Output items, annotations,
+    and stream events are identified by `type` alone and have no `object` field.
     """
 
     status: typing.Optional[ResponseStatus] = None
     incomplete_details: typing.Optional[ResponseIncompleteDetails] = pydantic.Field(default=None)
     """
-    Why the response stopped before the answer was whole. Always sent. Non-null only
-    when `status` is `incomplete`; `null` on every other status, including
-    `in_progress` and `failed` — so `null` means "this answer was not truncated",
-    not "this platform does not report the reason".
+    The reason the response was truncated before the answer was complete. Always
+    present. Contains a value only when the `status` field is `incomplete`; the
+    value is `null` on every other status, including `in_progress` and `failed`.
+    A `null` value means the answer was not truncated.
     
-    A `null` on `status: failed` is not a claim that nothing went wrong. This field
-    reports truncation only; a failure is reported by the status itself.
-    
-    Values may be added to `reason` as new ways of truncating an answer are
-    reported. Treat an unrecognized `reason` as "truncated for a reason this client
-    does not know" rather than as an error.
+    If the `reason` field contains a value you do not recognize, treat the
+    response as truncated for an unknown reason, not as an error.
     """
 
     output: typing.Optional[typing.List[ResponseOutputItem]] = pydantic.Field(default=None)

@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .async_document_metadata_embedding_scopes_item import AsyncDocumentMetadataEmbeddingScopesItem
+from .embedding_dimension import EmbeddingDimension
 
 
 class AsyncDocumentMetadata(UniversalBaseModel):
@@ -33,6 +34,8 @@ class AsyncDocumentMetadata(UniversalBaseModel):
     """
     The `embedding_scope` values used to generate the embedding.
     """
+
+    embedding_dimension: typing.Optional[EmbeddingDimension] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

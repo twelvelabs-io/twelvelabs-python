@@ -3,5 +3,5 @@
 import typing
 
 IndexedAssetsListRequestStatusItem = typing.Union[
-    typing.Literal["ready", "pending", "queued", "indexing", "failed"], typing.Any
+    typing.Literal["ready", "pending", "queued", "indexing", "validating", "failed"], typing.Any
 ]

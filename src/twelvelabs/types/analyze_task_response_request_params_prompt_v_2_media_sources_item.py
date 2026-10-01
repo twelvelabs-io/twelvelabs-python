@@ -16,7 +16,7 @@ class AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem(UniversalBaseMode
 
     asset_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Present when the source was provided as an asset ID.
+    Present when the source was provided as an asset identifier.
     """
 
     if IS_PYDANTIC_V2:

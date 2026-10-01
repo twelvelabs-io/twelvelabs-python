@@ -13,9 +13,11 @@ class Url(UniversalBaseModel):
 
     url: str = pydantic.Field()
     """
-    The publicly accessible URL of the video file.
+    The publicly accessible URL of the video file or HLS manifest.
     
-    Use direct links to raw media files. Video hosting platforms and cloud storage sharing links are not supported.
+    Use direct links to raw media files, or the URL of a VOD HLS manifest. Live video streams are rejected with a `400` error. Video hosting platforms and cloud storage sharing links are not supported.
+    
+    For HLS sources, if the duration cannot be determined from the media, the platform calculates it from the manifest and the duration limits apply to that value.
     """
 
     if IS_PYDANTIC_V2:

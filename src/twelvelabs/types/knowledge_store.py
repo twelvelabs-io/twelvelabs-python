@@ -8,6 +8,7 @@ import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .ingestion_config import IngestionConfig
+from .knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 
 
 class KnowledgeStore(UniversalBaseModel):
@@ -50,9 +51,9 @@ class KnowledgeStore(UniversalBaseModel):
     The date and time when the knowledge store was last updated, in the RFC 3339 format.
     """
 
-    metadata: typing.Optional[typing.Dict[str, str]] = pydantic.Field(default=None)
+    metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = pydantic.Field(default=None)
     """
-    Custom metadata for the knowledge store.
+    Custom metadata for the knowledge store. Keys are strings; each value is a string, a number, a boolean, or an array of strings.
     """
 
     if IS_PYDANTIC_V2:

@@ -2,4 +2,6 @@
 
 import typing
 
-UserMetadata = typing.Dict[str, typing.Optional[typing.Any]]
+from .user_metadata_value import UserMetadataValue
+
+UserMetadata = typing.Dict[str, typing.Optional[UserMetadataValue]]

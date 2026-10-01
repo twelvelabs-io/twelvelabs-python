@@ -387,7 +387,9 @@ class RawVideosClient:
             f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
             method="PATCH",
             json={
-                "user_metadata": user_metadata,
+                "user_metadata": convert_and_respect_annotation_metadata(
+                    object_=user_metadata, annotation=UserMetadata, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -776,7 +778,9 @@ class AsyncRawVideosClient:
             f"indexes/{jsonable_encoder(index_id)}/videos/{jsonable_encoder(video_id)}",
             method="PATCH",
             json={
-                "user_metadata": user_metadata,
+                "user_metadata": convert_and_respect_annotation_metadata(
+                    object_=user_metadata, annotation=UserMetadata, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",

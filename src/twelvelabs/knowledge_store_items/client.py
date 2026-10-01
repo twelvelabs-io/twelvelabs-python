@@ -7,6 +7,7 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.knowledge_store_item import KnowledgeStoreItem
 from ..types.knowledge_store_item_asset_type import KnowledgeStoreItemAssetType
+from ..types.knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .raw_client import AsyncRawKnowledgeStoreItemsClient, RawKnowledgeStoreItemsClient
 from .types.knowledge_store_items_list_request_sort_by import KnowledgeStoreItemsListRequestSortBy
 from .types.knowledge_store_items_list_request_status_item import KnowledgeStoreItemsListRequestStatusItem
@@ -133,7 +134,7 @@ class KnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> KnowledgeStoreItem:
         """
@@ -141,7 +142,9 @@ class KnowledgeStoreItemsClient:
         The operation is asynchronous. The item is created immediately with the `queued`
         status and processed in the background.
 
-        The asset must not exceed 5 GB.
+        **Asset size limits**:
+        - **Video**: Up to 10 GB
+        - **Images**: Up to 32 MB
 
         Parameters
         ----------
@@ -154,8 +157,8 @@ class KnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -387,7 +390,7 @@ class AsyncKnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> KnowledgeStoreItem:
         """
@@ -395,7 +398,9 @@ class AsyncKnowledgeStoreItemsClient:
         The operation is asynchronous. The item is created immediately with the `queued`
         status and processed in the background.
 
-        The asset must not exceed 5 GB.
+        **Asset size limits**:
+        - **Video**: Up to 10 GB
+        - **Images**: Up to 32 MB
 
         Parameters
         ----------
@@ -408,8 +413,8 @@ class AsyncKnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

@@ -10,10 +10,12 @@ from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
+from ...errors.content_too_large_error import ContentTooLargeError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.too_many_requests_error import TooManyRequestsError
 from ...types.audio_input_request import AudioInputRequest
 from ...types.embedding_success_response import EmbeddingSuccessResponse
+from ...types.error_response import ErrorResponse
 from ...types.image_input_request import ImageInputRequest
 from ...types.multi_input_request import MultiInputRequest
 from ...types.text_image_input_request import TextImageInputRequest
@@ -37,6 +39,7 @@ class RawV2Client:
         model_name: CreateEmbeddingsRequestModelName,
         auto_truncate: typing.Optional[bool] = OMIT,
         embedding_uncertainty: typing.Optional[bool] = OMIT,
+        embedding_dimension: typing.Optional[int] = OMIT,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -50,7 +53,7 @@ class RawV2Client:
 
         Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, or video as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
+        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
         This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
@@ -62,7 +65,7 @@ class RawV2Client:
             The type of content for the embeddings.
 
             **Values**:
-            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
             - `audio`: An audio file. Requires Marengo 3.0.
             - `video`: A video file. Requires Marengo 3.0.
             - `image`: An image file. Requires Marengo 3.0.
@@ -80,13 +83,27 @@ class RawV2Client:
             Controls the behavior of the platform when the text in your request exceeds 2,000 tokens. Requires Marengo 3.5.
 
             **Values**:
-            - `false`: Return a `400` error.
+            - `false`: The platform returns a `400` error.
             - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
 
         embedding_uncertainty : typing.Optional[bool]
-            Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+            Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
-            Set this parameter to `true` only when your request embeds text only, or media only. Requests that combine text with media sources return a `400` error.
+            **Requirements**:
+            - Set this parameter to `true` only for a text-only or media-only request. If you combine text with media sources, the platform returns a `400` error.
+            - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
+
+        embedding_dimension : typing.Optional[int]
+            The number of dimensions for each embedding in the response, including the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) vector.
+
+            Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the first values of the full-length embedding. A 256-dimension embedding, for example, is the first 256 values of a 512-dimension embedding of the same content. Shorter embeddings reduce index size and speed up similarity search; longer embeddings produce higher retrieval quality.
+
+            **Requirements**:
+            - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
+            - Applies to the entire request: you cannot set it for a single input type or embedding.
+            - Use the same value across an index.
+
+            **Default**: 512
 
         text : typing.Optional[TextInputRequest]
 
@@ -116,6 +133,7 @@ class RawV2Client:
                 "model_name": model_name,
                 "auto_truncate": auto_truncate,
                 "embedding_uncertainty": embedding_uncertainty,
+                "embedding_dimension": embedding_dimension,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -162,6 +180,17 @@ class RawV2Client:
                         ),
                     ),
                 )
+            if _response.status_code == 413:
+                raise ContentTooLargeError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 429:
                 raise TooManyRequestsError(
                     headers=dict(_response.headers),
@@ -201,6 +230,7 @@ class AsyncRawV2Client:
         model_name: CreateEmbeddingsRequestModelName,
         auto_truncate: typing.Optional[bool] = OMIT,
         embedding_uncertainty: typing.Optional[bool] = OMIT,
+        embedding_dimension: typing.Optional[int] = OMIT,
         text: typing.Optional[TextInputRequest] = OMIT,
         image: typing.Optional[ImageInputRequest] = OMIT,
         text_image: typing.Optional[TextImageInputRequest] = OMIT,
@@ -214,7 +244,7 @@ class AsyncRawV2Client:
 
         Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, or video as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
+        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
         This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
@@ -226,7 +256,7 @@ class AsyncRawV2Client:
             The type of content for the embeddings.
 
             **Values**:
-            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
             - `audio`: An audio file. Requires Marengo 3.0.
             - `video`: A video file. Requires Marengo 3.0.
             - `image`: An image file. Requires Marengo 3.0.
@@ -244,13 +274,27 @@ class AsyncRawV2Client:
             Controls the behavior of the platform when the text in your request exceeds 2,000 tokens. Requires Marengo 3.5.
 
             **Values**:
-            - `false`: Return a `400` error.
+            - `false`: The platform returns a `400` error.
             - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
 
         embedding_uncertainty : typing.Optional[bool]
-            Set this parameter to `true` to receive a [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field in the response, representing a per-dimension uncertainty vector with the same length as the `embedding` array. A higher value shows lower confidence in that dimension. Requires Marengo 3.5.
+            Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
-            Set this parameter to `true` only when your request embeds text only, or media only. Requests that combine text with media sources return a `400` error.
+            **Requirements**:
+            - Set this parameter to `true` only for a text-only or media-only request. If you combine text with media sources, the platform returns a `400` error.
+            - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
+
+        embedding_dimension : typing.Optional[int]
+            The number of dimensions for each embedding in the response, including the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) vector.
+
+            Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the first values of the full-length embedding. A 256-dimension embedding, for example, is the first 256 values of a 512-dimension embedding of the same content. Shorter embeddings reduce index size and speed up similarity search; longer embeddings produce higher retrieval quality.
+
+            **Requirements**:
+            - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
+            - Applies to the entire request: you cannot set it for a single input type or embedding.
+            - Use the same value across an index.
+
+            **Default**: 512
 
         text : typing.Optional[TextInputRequest]
 
@@ -280,6 +324,7 @@ class AsyncRawV2Client:
                 "model_name": model_name,
                 "auto_truncate": auto_truncate,
                 "embedding_uncertainty": embedding_uncertainty,
+                "embedding_dimension": embedding_dimension,
                 "text": convert_and_respect_annotation_metadata(
                     object_=text, annotation=TextInputRequest, direction="write"
                 ),
@@ -322,6 +367,17 @@ class AsyncRawV2Client:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 413:
+                raise ContentTooLargeError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

@@ -9,7 +9,19 @@ from .analyze_max_tokens import AnalyzeMaxTokens
 from .analyze_prompt_v_2 import AnalyzePromptV2
 from .analyze_request_model_name import AnalyzeRequestModelName
 from .analyze_stream_request_model_name import AnalyzeStreamRequestModelName
+from .analyze_task_canceled_webhook_data import AnalyzeTaskCanceledWebhookData
+from .analyze_task_canceled_webhook_data_status import AnalyzeTaskCanceledWebhookDataStatus
+from .analyze_task_canceled_webhook_event import AnalyzeTaskCanceledWebhookEvent
+from .analyze_task_canceled_webhook_event_type import AnalyzeTaskCanceledWebhookEventType
 from .analyze_task_error import AnalyzeTaskError
+from .analyze_task_failed_webhook_data import AnalyzeTaskFailedWebhookData
+from .analyze_task_failed_webhook_data_status import AnalyzeTaskFailedWebhookDataStatus
+from .analyze_task_failed_webhook_event import AnalyzeTaskFailedWebhookEvent
+from .analyze_task_failed_webhook_event_type import AnalyzeTaskFailedWebhookEventType
+from .analyze_task_ready_webhook_data import AnalyzeTaskReadyWebhookData
+from .analyze_task_ready_webhook_data_status import AnalyzeTaskReadyWebhookDataStatus
+from .analyze_task_ready_webhook_event import AnalyzeTaskReadyWebhookEvent
+from .analyze_task_ready_webhook_event_type import AnalyzeTaskReadyWebhookEventType
 from .analyze_task_response import AnalyzeTaskResponse
 from .analyze_task_response_request_params import AnalyzeTaskResponseRequestParams
 from .analyze_task_response_request_params_analysis_mode import AnalyzeTaskResponseRequestParamsAnalysisMode
@@ -39,7 +51,13 @@ from .analyze_task_response_video_source_type import AnalyzeTaskResponseVideoSou
 from .analyze_task_result import AnalyzeTaskResult
 from .analyze_task_result_usage import AnalyzeTaskResultUsage
 from .analyze_task_status import AnalyzeTaskStatus
+from .analyze_task_webhook_data_base import AnalyzeTaskWebhookDataBase
+from .analyze_task_webhook_error import AnalyzeTaskWebhookError
+from .analyze_task_webhook_event_base import AnalyzeTaskWebhookEventBase
 from .analyze_task_webhook_info import AnalyzeTaskWebhookInfo
+from .analyze_task_webhook_video_source import AnalyzeTaskWebhookVideoSource
+from .analyze_task_webhook_video_source_system_metadata import AnalyzeTaskWebhookVideoSourceSystemMetadata
+from .analyze_task_webhook_video_source_type import AnalyzeTaskWebhookVideoSourceType
 from .analyze_temperature import AnalyzeTemperature
 from .analyze_text_prompt import AnalyzeTextPrompt
 from .analyze_time_range import AnalyzeTimeRange
@@ -114,6 +132,8 @@ from .batch_video_context_type import BatchVideoContextType
 from .bulk_create_entity_response import BulkCreateEntityResponse
 from .bulk_create_entity_response_entities_item import BulkCreateEntityResponseEntitiesItem
 from .bulk_create_entity_response_errors_item import BulkCreateEntityResponseErrorsItem
+from .cancel_analyze_task_response import CancelAnalyzeTaskResponse
+from .cancel_analyze_task_response_status import CancelAnalyzeTaskResponseStatus
 from .chunk_info import ChunkInfo
 from .chunk_info_status import ChunkInfoStatus
 from .completed_chunk import CompletedChunk
@@ -129,11 +149,18 @@ from .create_asset_upload_response import CreateAssetUploadResponse
 from .created_at import CreatedAt
 from .created_batch_item import CreatedBatchItem
 from .document_embedding_metadata import DocumentEmbeddingMetadata
+from .document_segmentation import DocumentSegmentation
+from .document_sequential_segmentation import DocumentSequentialSegmentation
+from .document_sequential_segmentation_strategy import DocumentSequentialSegmentationStrategy
+from .document_spatial_segmentation import DocumentSpatialSegmentation
+from .document_spatial_segmentation_strategy import DocumentSpatialSegmentationStrategy
 from .embedding_audio_metadata import EmbeddingAudioMetadata
 from .embedding_audio_metadata_embedding_scopes_item import EmbeddingAudioMetadataEmbeddingScopesItem
 from .embedding_data import EmbeddingData
 from .embedding_data_embedding_option import EmbeddingDataEmbeddingOption
 from .embedding_data_embedding_scope import EmbeddingDataEmbeddingScope
+from .embedding_data_quadrant import EmbeddingDataQuadrant
+from .embedding_dimension import EmbeddingDimension
 from .embedding_image_metadata import EmbeddingImageMetadata
 from .embedding_media_metadata import (
     EmbeddingMediaMetadata,
@@ -158,6 +185,7 @@ from .embedding_task_response_error import EmbeddingTaskResponseError
 from .embedding_task_response_status import EmbeddingTaskResponseStatus
 from .embedding_text_image_metadata import EmbeddingTextImageMetadata
 from .embedding_usage import EmbeddingUsage
+from .embedding_usage_truncation_reason import EmbeddingUsageTruncationReason
 from .embedding_video_metadata import EmbeddingVideoMetadata
 from .embedding_video_metadata_embedding_scopes_item import EmbeddingVideoMetadataEmbeddingScopesItem
 from .end_offset_sec import EndOffsetSec
@@ -174,6 +202,7 @@ from .error_response import ErrorResponse
 from .error_response_error import ErrorResponseError
 from .expires_at import ExpiresAt
 from .finish_reason import FinishReason
+from .flat_error_response import FlatErrorResponse
 from .forbidden_error_body import ForbiddenErrorBody
 from .generated_text_data import GeneratedTextData
 from .get_upload_status_response import GetUploadStatusResponse
@@ -225,6 +254,7 @@ from .knowledge_store_item_system_metadata import (
     KnowledgeStoreItemSystemMetadata_Image,
     KnowledgeStoreItemSystemMetadata_Video,
 )
+from .knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .knowledge_store_search_query import KnowledgeStoreSearchQuery
 from .limit_per_page_simple import LimitPerPageSimple
 from .list_incomplete_uploads_response import ListIncompleteUploadsResponse
@@ -273,6 +303,7 @@ from .response_stream_content_part_added_event import ResponseStreamContentPartA
 from .response_stream_content_part_done_event import ResponseStreamContentPartDoneEvent
 from .response_stream_event import (
     ResponseStreamEvent,
+    ResponseStreamEvent_Keepalive,
     ResponseStreamEvent_ResponseCompleted,
     ResponseStreamEvent_ResponseContentPartAdded,
     ResponseStreamEvent_ResponseContentPartDone,
@@ -287,6 +318,7 @@ from .response_stream_event import (
 )
 from .response_stream_event_base import ResponseStreamEventBase
 from .response_stream_func_call_args_done_event import ResponseStreamFuncCallArgsDoneEvent
+from .response_stream_keep_alive_event import ResponseStreamKeepAliveEvent
 from .response_stream_output_item_added_event import ResponseStreamOutputItemAddedEvent
 from .response_stream_output_item_done_event import ResponseStreamOutputItemDoneEvent
 from .response_stream_output_text_delta_event import ResponseStreamOutputTextDeltaEvent
@@ -363,6 +395,7 @@ from .unprocessable_entity_error_body import UnprocessableEntityErrorBody
 from .updated_at import UpdatedAt
 from .url import Url
 from .user_metadata import UserMetadata
+from .user_metadata_value import UserMetadataValue
 from .video_context import VideoContext, VideoContext_AssetId, VideoContext_Base64String, VideoContext_Url
 from .video_embedding_metadata import VideoEmbeddingMetadata
 from .video_embedding_task import VideoEmbeddingTask
@@ -403,7 +436,19 @@ __all__ = [
     "AnalyzePromptV2",
     "AnalyzeRequestModelName",
     "AnalyzeStreamRequestModelName",
+    "AnalyzeTaskCanceledWebhookData",
+    "AnalyzeTaskCanceledWebhookDataStatus",
+    "AnalyzeTaskCanceledWebhookEvent",
+    "AnalyzeTaskCanceledWebhookEventType",
     "AnalyzeTaskError",
+    "AnalyzeTaskFailedWebhookData",
+    "AnalyzeTaskFailedWebhookDataStatus",
+    "AnalyzeTaskFailedWebhookEvent",
+    "AnalyzeTaskFailedWebhookEventType",
+    "AnalyzeTaskReadyWebhookData",
+    "AnalyzeTaskReadyWebhookDataStatus",
+    "AnalyzeTaskReadyWebhookEvent",
+    "AnalyzeTaskReadyWebhookEventType",
     "AnalyzeTaskResponse",
     "AnalyzeTaskResponseRequestParams",
     "AnalyzeTaskResponseRequestParamsAnalysisMode",
@@ -421,7 +466,13 @@ __all__ = [
     "AnalyzeTaskResult",
     "AnalyzeTaskResultUsage",
     "AnalyzeTaskStatus",
+    "AnalyzeTaskWebhookDataBase",
+    "AnalyzeTaskWebhookError",
+    "AnalyzeTaskWebhookEventBase",
     "AnalyzeTaskWebhookInfo",
+    "AnalyzeTaskWebhookVideoSource",
+    "AnalyzeTaskWebhookVideoSourceSystemMetadata",
+    "AnalyzeTaskWebhookVideoSourceType",
     "AnalyzeTemperature",
     "AnalyzeTextPrompt",
     "AnalyzeTimeRange",
@@ -496,6 +547,8 @@ __all__ = [
     "BulkCreateEntityResponse",
     "BulkCreateEntityResponseEntitiesItem",
     "BulkCreateEntityResponseErrorsItem",
+    "CancelAnalyzeTaskResponse",
+    "CancelAnalyzeTaskResponseStatus",
     "ChunkInfo",
     "ChunkInfoStatus",
     "CompletedChunk",
@@ -511,11 +564,18 @@ __all__ = [
     "CreatedAt",
     "CreatedBatchItem",
     "DocumentEmbeddingMetadata",
+    "DocumentSegmentation",
+    "DocumentSequentialSegmentation",
+    "DocumentSequentialSegmentationStrategy",
+    "DocumentSpatialSegmentation",
+    "DocumentSpatialSegmentationStrategy",
     "EmbeddingAudioMetadata",
     "EmbeddingAudioMetadataEmbeddingScopesItem",
     "EmbeddingData",
     "EmbeddingDataEmbeddingOption",
     "EmbeddingDataEmbeddingScope",
+    "EmbeddingDataQuadrant",
+    "EmbeddingDimension",
     "EmbeddingImageMetadata",
     "EmbeddingMediaMetadata",
     "EmbeddingMediaMetadata_Audio",
@@ -536,6 +596,7 @@ __all__ = [
     "EmbeddingTaskResponseStatus",
     "EmbeddingTextImageMetadata",
     "EmbeddingUsage",
+    "EmbeddingUsageTruncationReason",
     "EmbeddingVideoMetadata",
     "EmbeddingVideoMetadataEmbeddingScopesItem",
     "EndOffsetSec",
@@ -554,6 +615,7 @@ __all__ = [
     "ErrorResponseError",
     "ExpiresAt",
     "FinishReason",
+    "FlatErrorResponse",
     "ForbiddenErrorBody",
     "GeneratedTextData",
     "GetUploadStatusResponse",
@@ -603,6 +665,7 @@ __all__ = [
     "KnowledgeStoreItemSystemMetadata",
     "KnowledgeStoreItemSystemMetadata_Image",
     "KnowledgeStoreItemSystemMetadata_Video",
+    "KnowledgeStoreMetadataValue",
     "KnowledgeStoreSearchQuery",
     "LimitPerPageSimple",
     "ListIncompleteUploadsResponse",
@@ -651,6 +714,7 @@ __all__ = [
     "ResponseStreamContentPartDoneEvent",
     "ResponseStreamEvent",
     "ResponseStreamEventBase",
+    "ResponseStreamEvent_Keepalive",
     "ResponseStreamEvent_ResponseCompleted",
     "ResponseStreamEvent_ResponseContentPartAdded",
     "ResponseStreamEvent_ResponseContentPartDone",
@@ -663,6 +727,7 @@ __all__ = [
     "ResponseStreamEvent_ResponseOutputTextDelta",
     "ResponseStreamEvent_ResponseOutputTextDone",
     "ResponseStreamFuncCallArgsDoneEvent",
+    "ResponseStreamKeepAliveEvent",
     "ResponseStreamOutputItemAddedEvent",
     "ResponseStreamOutputItemDoneEvent",
     "ResponseStreamOutputTextDeltaEvent",
@@ -739,6 +804,7 @@ __all__ = [
     "UpdatedAt",
     "Url",
     "UserMetadata",
+    "UserMetadataValue",
     "VideoContext",
     "VideoContext_AssetId",
     "VideoContext_Base64String",

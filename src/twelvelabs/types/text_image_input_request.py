@@ -9,7 +9,7 @@ from .media_source import MediaSource
 
 class TextImageInputRequest(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `text_image`.
+    This field is required if the `input_type` parameter is `text_image`. Requires Marengo 3.0. The decoded file can be up to 32 MB.
     """
 
     media_source: MediaSource

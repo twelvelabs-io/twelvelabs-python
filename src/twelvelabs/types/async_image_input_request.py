@@ -12,7 +12,7 @@ from .media_source import MediaSource
 
 class AsyncImageInputRequest(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `image`. Requires Marengo 3.5. The image can be up to 32 MB before encoding, whether you provide a URL, an asset identifier, or base64-encoded data. For an image, the `embedding_option`, `embedding_type`, and `embedding_scope` fields each accept a single value; any other value returns a `400` error.
+    This field is required if the `input_type` parameter is `image`. Requires Marengo 3.5. The decoded file can be up to 32 MB. For an image, the `embedding_option`, `embedding_type`, and `embedding_scope` fields each accept a single value; the platform returns a `400` error if you send any other value.
     """
 
     media_source: MediaSource

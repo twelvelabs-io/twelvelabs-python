@@ -11,7 +11,7 @@ class SearchKnowledgeStoreOptions(UniversalBaseModel):
     """
     Specifies how videos are matched. Videos are the only type of item with configurable options, set in the `search_options.video` field. Images are always matched on their visual content and have no options to configure.
 
-    To choose which types of items to search, use the `filter.asset_type` field. Providing options in the `search_options.video` field when the `filter.asset_type` field excludes videos returns a `400` error.
+    To choose which types of items to search, use the `filter.asset_type` field. If you provide options in the `search_options.video` field when the `filter.asset_type` field excludes videos, the platform returns a `400` error.
 
     If you omit this field, videos are matched on their visual content.
     """

@@ -13,7 +13,7 @@ from .media_source import MediaSource
 
 class AudioInputRequest(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `audio`.
+    This field is required if the `input_type` parameter is `audio`. Requires Marengo 3.0. The decoded file can be up to 36 MB.
     """
 
     media_source: MediaSource

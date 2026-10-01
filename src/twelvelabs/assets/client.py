@@ -128,7 +128,7 @@ class AssetsClient:
         The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to the `ready` status on success or to the `failed` status when the file is invalid, corrupt, or unreadable. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
 
         **Supported content**:
-        - Video, audio, and image files.
+        - Video, audio, and images.
         - PDF, text, and Markdown files.
 
         Filename extension matching is case-insensitive; for example, `notes.MD` and `notes.md` are treated the same. The platform rejects unsupported formats. For documents, it also rejects files whose extensions don't match the detected content.
@@ -169,23 +169,25 @@ class AssetsClient:
 
             Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. Document URLs support up to 512 MB.
 
+            The parameter also accepts the URL of an HLS manifest (`.m3u8`) in VOD format. Live video streams are rejected with a `400` error. If the duration cannot be determined from the media, the platform calculates it from the manifest.
+
         filename : typing.Optional[str]
             The filename of the asset. If you provide a filename, the platform preserves it. If you omit it, the platform determines one from the file or URL.
 
         enable_hls : typing.Optional[bool]
-            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
+            The platform generates an HLS playlist and segments for streaming. Set to `false` to disable HLS generation. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
-            **Default**: `false`.
+            **Default**: `true`.
 
         enable_thumbnail : typing.Optional[bool]
-            When set to `true`, the platform generates thumbnail images from the uploaded content.
+            The platform generates thumbnail images from the uploaded content. Set to `false` to disable thumbnail generation.
 
             For PDF files, the platform generates a representative thumbnail from the first page. Text and Markdown files do not produce thumbnails; the platform ignores this flag for them.
 
-            **Default**: `false`.
+            **Default**: `true`.
 
         user_metadata : typing.Optional[str]
-            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string. Send this value as a JSON-encoded string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -361,7 +363,7 @@ class AssetsClient:
         """
         This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
         - A key with a value creates or replaces that key.
-        - A key set to an empty string (`""`) or `null` is ignored.
+        - A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
         - A key you omit from the request body is removed.
 
         To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
@@ -394,6 +396,7 @@ class AssetsClient:
                 "batchNumber": 5,
                 "rating": 9.3,
                 "needsReview": True,
+                "hashtags": ["summer", "vlog"],
             },
         )
         """
@@ -441,7 +444,7 @@ class AssetsClient:
         This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
         - A key with a value creates or replaces that key.
         - A key set to `null` deletes that key.
-        - A key set to an empty string (`""`) is ignored.
+        - A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
         - A key you omit from the request keeps its current value.
 
         To replace all metadata in a single call, use the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint instead.
@@ -474,6 +477,7 @@ class AssetsClient:
                 "batchNumber": 5,
                 "rating": 9.3,
                 "needsReview": True,
+                "hashtags": ["summer", "vlog"],
             },
         )
         """
@@ -601,7 +605,7 @@ class AsyncAssetsClient:
         The platform processes uploads asynchronously. This method returns immediately with the asset in the `processing` status, which then transitions to the `ready` status on success or to the `failed` status when the file is invalid, corrupt, or unreadable. Poll the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) endpoint until the status of the asset is `ready` before you use it. This applies to every upload, including small files.
 
         **Supported content**:
-        - Video, audio, and image files.
+        - Video, audio, and images.
         - PDF, text, and Markdown files.
 
         Filename extension matching is case-insensitive; for example, `notes.MD` and `notes.md` are treated the same. The platform rejects unsupported formats. For documents, it also rejects files whose extensions don't match the detected content.
@@ -642,23 +646,25 @@ class AsyncAssetsClient:
 
             Public video and audio URLs support up to 4 GB. Image URLs support up to 32 MB. Document URLs support up to 512 MB.
 
+            The parameter also accepts the URL of an HLS manifest (`.m3u8`) in VOD format. Live video streams are rejected with a `400` error. If the duration cannot be determined from the media, the platform calculates it from the manifest.
+
         filename : typing.Optional[str]
             The filename of the asset. If you provide a filename, the platform preserves it. If you omit it, the platform determines one from the file or URL.
 
         enable_hls : typing.Optional[bool]
-            When set to `true`, the platform generates an HLS playlist and segments for streaming. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
+            The platform generates an HLS playlist and segments for streaming. Set to `false` to disable HLS generation. Applicable to video and audio assets only. The platform ignores this flag for other asset types.
 
-            **Default**: `false`.
+            **Default**: `true`.
 
         enable_thumbnail : typing.Optional[bool]
-            When set to `true`, the platform generates thumbnail images from the uploaded content.
+            The platform generates thumbnail images from the uploaded content. Set to `false` to disable thumbnail generation.
 
             For PDF files, the platform generates a representative thumbnail from the first page. Text and Markdown files do not produce thumbnails; the platform ignores this flag for them.
 
-            **Default**: `false`.
+            **Default**: `true`.
 
         user_metadata : typing.Optional[str]
-            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`. Send this value as a JSON-encoded string.
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string. Send this value as a JSON-encoded string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -868,7 +874,7 @@ class AsyncAssetsClient:
         """
         This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
         - A key with a value creates or replaces that key.
-        - A key set to an empty string (`""`) or `null` is ignored.
+        - A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
         - A key you omit from the request body is removed.
 
         To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
@@ -906,6 +912,7 @@ class AsyncAssetsClient:
                     "batchNumber": 5,
                     "rating": 9.3,
                     "needsReview": True,
+                    "hashtags": ["summer", "vlog"],
                 },
             )
 
@@ -966,7 +973,7 @@ class AsyncAssetsClient:
         This method updates the user-defined metadata of the specified asset. The platform merges your changes with the existing metadata:
         - A key with a value creates or replaces that key.
         - A key set to `null` deletes that key.
-        - A key set to an empty string (`""`) is ignored.
+        - A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
         - A key you omit from the request keeps its current value.
 
         To replace all metadata in a single call, use the [`PUT`](/v1.3/api-reference/upload-content/direct-uploads/replace-user-metadata) method of the `/assets/{asset_id}/user-metadata` endpoint instead.
@@ -1004,6 +1011,7 @@ class AsyncAssetsClient:
                     "batchNumber": 5,
                     "rating": 9.3,
                     "needsReview": True,
+                    "hashtags": ["summer", "vlog"],
                 },
             )
 

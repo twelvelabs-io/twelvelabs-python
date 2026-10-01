@@ -17,7 +17,9 @@ class MediaSource(UniversalBaseModel):
         pydantic.Field(default=None)
     )
     """
-    The base64-encoded media data. The decoded file can be up to 36 MB; encoded, it can be up to 48 MB.
+    The base64-encoded media data. Encoding grows the payload by about a third, so the string you send is larger than the original file.
+    
+    The maximum size depends on the input type and the model. The description of the field that contains this media source states the limit where it differs; for the formats and sizes each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
     """
 
     url: typing.Optional[str] = pydantic.Field(default=None)

@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .user_metadata import UserMetadata
+from .knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .video_search_system_metadata import VideoSearchSystemMetadata
 
 
@@ -18,7 +18,7 @@ class VideoSearchItemMetadata(UniversalBaseModel):
     System-generated media metadata for the source video.
     """
 
-    user: typing.Optional[UserMetadata] = pydantic.Field(default=None)
+    user: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = pydantic.Field(default=None)
     """
     Caller-supplied key-value pairs attached to the item.
     """

@@ -8,17 +8,16 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class ResponseIncompleteDetails(UniversalBaseModel):
     """
-    Why a response is incomplete. Accompanies `status: incomplete`.
+    Details about why a response is incomplete. Present when the `status` field is
+    `incomplete`.
     """
 
     reason: str = pydantic.Field()
     """
-    What stopped the answer. `max_output_tokens` means the answer reached the
-    output limit before it was finished; the text received is a valid prefix of
-    the answer, not a whole one.
-    
-    Treat a reason you do not recognize as "not a whole answer, for a reason this
-    client does not know" rather than as an error.
+    The reason the answer is incomplete. The `max_output_tokens` value means
+    the answer reached the output token limit. The text in the response is an
+    incomplete answer, not the full one; treat an unrecognized value as an
+    incomplete answer for an unknown reason, not as an error.
     """
 
     if IS_PYDANTIC_V2:

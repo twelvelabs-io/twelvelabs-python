@@ -9,6 +9,7 @@ from ...types.analyze_task_response import AnalyzeTaskResponse
 from ...types.analyze_task_status import AnalyzeTaskStatus
 from ...types.analyze_temperature import AnalyzeTemperature
 from ...types.async_response_format import AsyncResponseFormat
+from ...types.cancel_analyze_task_response import CancelAnalyzeTaskResponse
 from ...types.create_analyze_task_response import CreateAnalyzeTaskResponse
 from ...types.video_context import VideoContext
 from .raw_client import AsyncRawTasksClient, RawTasksClient
@@ -65,7 +66,7 @@ class TasksClient:
 
         status : typing.Optional[AnalyzeTaskStatus]
             Filter analysis tasks by status.
-            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
+            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`, `canceled`.
 
         video_url : typing.Optional[str]
             Filter tasks by exact video source URL.
@@ -133,8 +134,7 @@ class TasksClient:
         This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
-        - Maximum duration: 2 hours
+        - The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
@@ -143,7 +143,7 @@ class TasksClient:
         **When to use this method**:
         - Generate custom text from your video using a prompt (general analysis)
         - Extract timestamped metadata with custom segment definitions from your video
-        - Analyze videos longer than 1 hour
+        - Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
         - Process videos asynchronously without blocking your application
 
         **Do not use this method for**:
@@ -152,8 +152,8 @@ class TasksClient:
         Analyzing videos asynchronously requires three steps:
 
         1. Create an analysis task using this method. The platform returns a task identifier.
-        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-        3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
+        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
+        3. When the status is `ready`, retrieve the results using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -177,7 +177,7 @@ class TasksClient:
             The platform stores this value unchanged and returns it in the following responses:
             - The [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint
             - The [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint
-            - The `analyze.task.ready` and `analyze.task.failed` webhook payloads
+            - The `analyze.task.ready`, `analyze.task.failed`, and `analyze.task.canceled` webhook payloads
 
             **Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
 
@@ -215,6 +215,8 @@ class TasksClient:
             | `general` | 512 | 98,304 | 4,096 |
             | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
+            With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
+
         response_format : typing.Optional[AsyncResponseFormat]
 
         min_segment_duration : typing.Optional[float]
@@ -233,7 +235,8 @@ class TasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -244,7 +247,8 @@ class TasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -301,9 +305,10 @@ class TasksClient:
         - `pending`: The task is queued and waiting to start.
         - `processing`: The platform is analyzing the video.
         - `ready`: Processing is complete. Results are available in the response.
-        - `failed`: The task failed. No results were generated.
+        - `failed`: The task failed. No result is available. The `error` field describes the failure.
+        - `canceled`: The task was canceled. No result is available. The `error` field describes the cancellation reason, if available.
 
-        Poll this method until `status` is `ready` or `failed`. When `status` is `ready`, use the results from the response.
+        Poll this method until `status` is `ready`, `failed`, or `canceled`. When `status` is `ready`, use the results from the response.
 
         Parameters
         ----------
@@ -362,6 +367,45 @@ class TasksClient:
         _response = self._raw_client.delete(task_id, request_options=request_options)
         return _response.data
 
+    def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> CancelAnalyzeTaskResponse:
+        """
+        Use this method to cancel an asynchronous analysis task in your account. To cancel a task created as part of a batch, use the [`POST`](/v1.3/api-reference/analyze-videos/batch-analysis/cancel-batch) method of the `/analyze/batches/{batch_id}/cancel` endpoint.
+
+        You can cancel a task with the `queued`, `pending`, or `processing` status. This action cannot be undone.
+
+        Processing that has already started can continue briefly after cancellation.
+
+        When you cancel a task, the platform can send an `analyze.task.canceled` webhook. Delivery is best-effort: a `200` response is not a delivery guarantee. When you receive the event, retrieve the task for its current state.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the analysis task you want to cancel.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        CancelAnalyzeTaskResponse
+            The task is canceled. This response is also returned when the task was canceled by a previous request.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.analyze_async.tasks.cancel(
+            task_id="64f8d2c7e4a1b37f8a9c5d12",
+        )
+        """
+        _response = self._raw_client.cancel(task_id, request_options=request_options)
+        return _response.data
+
 
 class AsyncTasksClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -407,7 +451,7 @@ class AsyncTasksClient:
 
         status : typing.Optional[AnalyzeTaskStatus]
             Filter analysis tasks by status.
-            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
+            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`, `canceled`.
 
         video_url : typing.Optional[str]
             Filter tasks by exact video source URL.
@@ -483,8 +527,7 @@ class AsyncTasksClient:
         This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
-        - Maximum duration: 2 hours
+        - The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
@@ -493,7 +536,7 @@ class AsyncTasksClient:
         **When to use this method**:
         - Generate custom text from your video using a prompt (general analysis)
         - Extract timestamped metadata with custom segment definitions from your video
-        - Analyze videos longer than 1 hour
+        - Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
         - Process videos asynchronously without blocking your application
 
         **Do not use this method for**:
@@ -502,8 +545,8 @@ class AsyncTasksClient:
         Analyzing videos asynchronously requires three steps:
 
         1. Create an analysis task using this method. The platform returns a task identifier.
-        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-        3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
+        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
+        3. When the status is `ready`, retrieve the results using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -527,7 +570,7 @@ class AsyncTasksClient:
             The platform stores this value unchanged and returns it in the following responses:
             - The [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint
             - The [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint
-            - The `analyze.task.ready` and `analyze.task.failed` webhook payloads
+            - The `analyze.task.ready`, `analyze.task.failed`, and `analyze.task.canceled` webhook payloads
 
             **Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
 
@@ -565,6 +608,8 @@ class AsyncTasksClient:
             | `general` | 512 | 98,304 | 4,096 |
             | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
+            With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
+
         response_format : typing.Optional[AsyncResponseFormat]
 
         min_segment_duration : typing.Optional[float]
@@ -583,7 +628,8 @@ class AsyncTasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -594,7 +640,8 @@ class AsyncTasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -661,9 +708,10 @@ class AsyncTasksClient:
         - `pending`: The task is queued and waiting to start.
         - `processing`: The platform is analyzing the video.
         - `ready`: Processing is complete. Results are available in the response.
-        - `failed`: The task failed. No results were generated.
+        - `failed`: The task failed. No result is available. The `error` field describes the failure.
+        - `canceled`: The task was canceled. No result is available. The `error` field describes the cancellation reason, if available.
 
-        Poll this method until `status` is `ready` or `failed`. When `status` is `ready`, use the results from the response.
+        Poll this method until `status` is `ready`, `failed`, or `canceled`. When `status` is `ready`, use the results from the response.
 
         Parameters
         ----------
@@ -736,4 +784,51 @@ class AsyncTasksClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(task_id, request_options=request_options)
+        return _response.data
+
+    async def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> CancelAnalyzeTaskResponse:
+        """
+        Use this method to cancel an asynchronous analysis task in your account. To cancel a task created as part of a batch, use the [`POST`](/v1.3/api-reference/analyze-videos/batch-analysis/cancel-batch) method of the `/analyze/batches/{batch_id}/cancel` endpoint.
+
+        You can cancel a task with the `queued`, `pending`, or `processing` status. This action cannot be undone.
+
+        Processing that has already started can continue briefly after cancellation.
+
+        When you cancel a task, the platform can send an `analyze.task.canceled` webhook. Delivery is best-effort: a `200` response is not a delivery guarantee. When you receive the event, retrieve the task for its current state.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the analysis task you want to cancel.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        CancelAnalyzeTaskResponse
+            The task is canceled. This response is also returned when the task was canceled by a previous request.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.analyze_async.tasks.cancel(
+                task_id="64f8d2c7e4a1b37f8a9c5d12",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.cancel(task_id, request_options=request_options)
         return _response.data
