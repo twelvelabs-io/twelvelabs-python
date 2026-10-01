@@ -18,7 +18,12 @@ class ResponseStreamOutputItemAddedEvent(ResponseStreamEventBase):
     The index of the output item.
     """
 
-    item: typing.Optional[ResponseOutputItem] = None
+    item: typing.Optional[ResponseOutputItem] = pydantic.Field(default=None)
+    """
+    The output item when it starts. For a message, the `phase` field is
+    already set, so you can identify intermediate output or the answer
+    before any of its text streams in.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

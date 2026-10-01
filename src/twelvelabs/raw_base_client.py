@@ -51,7 +51,7 @@ class RawBaseClient:
         This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
+        - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
@@ -107,7 +107,7 @@ class RawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         end_time : typing.Optional[float]
@@ -116,7 +116,7 @@ class RawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         request_options : typing.Optional[RequestOptions]
@@ -237,7 +237,7 @@ class RawBaseClient:
         This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
+        - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
@@ -293,7 +293,7 @@ class RawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         end_time : typing.Optional[float]
@@ -302,7 +302,7 @@ class RawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         request_options : typing.Optional[RequestOptions]
@@ -412,7 +412,7 @@ class AsyncRawBaseClient:
         This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
+        - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
@@ -468,7 +468,7 @@ class AsyncRawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         end_time : typing.Optional[float]
@@ -477,7 +477,7 @@ class AsyncRawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         request_options : typing.Optional[RequestOptions]
@@ -598,7 +598,7 @@ class AsyncRawBaseClient:
         This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
+        - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
@@ -654,7 +654,7 @@ class AsyncRawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         end_time : typing.Optional[float]
@@ -663,7 +663,7 @@ class AsyncRawBaseClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration. The window (`end_time - start_time`) must be at least 1 second.
             </Note>
 
         request_options : typing.Optional[RequestOptions]

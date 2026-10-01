@@ -10,6 +10,7 @@ from ..core.serialization import FieldMetadata
 from .knowledge_store_item_asset_type import KnowledgeStoreItemAssetType
 from .knowledge_store_item_status import KnowledgeStoreItemStatus
 from .knowledge_store_item_system_metadata import KnowledgeStoreItemSystemMetadata
+from .knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 
 
 class KnowledgeStoreItem(UniversalBaseModel):
@@ -45,9 +46,9 @@ class KnowledgeStoreItem(UniversalBaseModel):
     always matches the item's top-level `asset_type` field.
     """
 
-    metadata: typing.Optional[typing.Dict[str, str]] = pydantic.Field(default=None)
+    metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = pydantic.Field(default=None)
     """
-    Custom metadata for the item.
+    Custom metadata for the item. Keys are strings; each value is a string, a number, a boolean, or an array of strings.
     """
 
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)

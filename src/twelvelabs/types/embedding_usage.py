@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .embedding_usage_truncation_reason import EmbeddingUsageTruncationReason
 
 
 class EmbeddingUsage(UniversalBaseModel):
@@ -14,11 +15,21 @@ class EmbeddingUsage(UniversalBaseModel):
     input_tokens: typing.Dict[str, int] = pydantic.Field()
     """
     The number of tokens the request used. Each key names a type of content the request processed, and each value is the token count for that content.
+    
+    The platform reports the content types your request actually used. Each key is one of the following: `video`, `audio`, `image`, `document`, or `text`. Read the keys the response returns rather than assuming a fixed set.
     """
 
     truncated: bool = pydantic.Field()
     """
     Whether the input was truncated to fit within the token limit.
+    """
+
+    truncation_reason: typing.Optional[EmbeddingUsageTruncationReason] = pydantic.Field(default=None)
+    """
+    The reason the input was truncated. Present only when the `truncated` field is `true`.
+    
+    **Values**:
+    - `model_context_window`: The input exceeded the context window of the model.
     """
 
     if IS_PYDANTIC_V2:

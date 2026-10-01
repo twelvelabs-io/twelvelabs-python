@@ -12,14 +12,18 @@ from ...core.request_options import RequestOptions
 from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
 from ...errors.conflict_error import ConflictError
+from ...errors.forbidden_error import ForbiddenError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
+from ...errors.unauthorized_error import UnauthorizedError
 from ...types.analyze_prompt_v_2 import AnalyzePromptV2
 from ...types.analyze_task_response import AnalyzeTaskResponse
 from ...types.analyze_task_status import AnalyzeTaskStatus
 from ...types.analyze_temperature import AnalyzeTemperature
 from ...types.async_response_format import AsyncResponseFormat
+from ...types.cancel_analyze_task_response import CancelAnalyzeTaskResponse
 from ...types.create_analyze_task_response import CreateAnalyzeTaskResponse
+from ...types.flat_error_response import FlatErrorResponse
 from ...types.video_context import VideoContext
 from .types.create_async_analyze_request_analysis_mode import CreateAsyncAnalyzeRequestAnalysisMode
 from .types.create_async_analyze_request_model_name import CreateAsyncAnalyzeRequestModelName
@@ -63,7 +67,7 @@ class RawTasksClient:
 
         status : typing.Optional[AnalyzeTaskStatus]
             Filter analysis tasks by status.
-            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
+            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`, `canceled`.
 
         video_url : typing.Optional[str]
             Filter tasks by exact video source URL.
@@ -143,8 +147,7 @@ class RawTasksClient:
         This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
-        - Maximum duration: 2 hours
+        - The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
@@ -153,7 +156,7 @@ class RawTasksClient:
         **When to use this method**:
         - Generate custom text from your video using a prompt (general analysis)
         - Extract timestamped metadata with custom segment definitions from your video
-        - Analyze videos longer than 1 hour
+        - Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
         - Process videos asynchronously without blocking your application
 
         **Do not use this method for**:
@@ -162,8 +165,8 @@ class RawTasksClient:
         Analyzing videos asynchronously requires three steps:
 
         1. Create an analysis task using this method. The platform returns a task identifier.
-        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-        3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
+        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
+        3. When the status is `ready`, retrieve the results using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -187,7 +190,7 @@ class RawTasksClient:
             The platform stores this value unchanged and returns it in the following responses:
             - The [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint
             - The [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint
-            - The `analyze.task.ready` and `analyze.task.failed` webhook payloads
+            - The `analyze.task.ready`, `analyze.task.failed`, and `analyze.task.canceled` webhook payloads
 
             **Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
 
@@ -225,6 +228,8 @@ class RawTasksClient:
             | `general` | 512 | 98,304 | 4,096 |
             | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
+            With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
+
         response_format : typing.Optional[AsyncResponseFormat]
 
         min_segment_duration : typing.Optional[float]
@@ -243,7 +248,8 @@ class RawTasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -254,7 +260,8 @@ class RawTasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -345,9 +352,10 @@ class RawTasksClient:
         - `pending`: The task is queued and waiting to start.
         - `processing`: The platform is analyzing the video.
         - `ready`: Processing is complete. Results are available in the response.
-        - `failed`: The task failed. No results were generated.
+        - `failed`: The task failed. No result is available. The `error` field describes the failure.
+        - `canceled`: The task was canceled. No result is available. The `error` field describes the cancellation reason, if available.
 
-        Poll this method until `status` is `ready` or `failed`. When `status` is `ready`, use the results from the response.
+        Poll this method until `status` is `ready`, `failed`, or `canceled`. When `status` is `ready`, use the results from the response.
 
         Parameters
         ----------
@@ -444,6 +452,117 @@ class RawTasksClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[CancelAnalyzeTaskResponse]:
+        """
+        Use this method to cancel an asynchronous analysis task in your account. To cancel a task created as part of a batch, use the [`POST`](/v1.3/api-reference/analyze-videos/batch-analysis/cancel-batch) method of the `/analyze/batches/{batch_id}/cancel` endpoint.
+
+        You can cancel a task with the `queued`, `pending`, or `processing` status. This action cannot be undone.
+
+        Processing that has already started can continue briefly after cancellation.
+
+        When you cancel a task, the platform can send an `analyze.task.canceled` webhook. Delivery is best-effort: a `200` response is not a delivery guarantee. When you receive the event, retrieve the task for its current state.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the analysis task you want to cancel.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[CancelAnalyzeTaskResponse]
+            The task is canceled. This response is also returned when the task was canceled by a previous request.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"analyze/tasks/{jsonable_encoder(task_id)}/cancel",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    CancelAnalyzeTaskResponse,
+                    parse_obj_as(
+                        type_=CancelAnalyzeTaskResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
 
 class AsyncRawTasksClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -478,7 +597,7 @@ class AsyncRawTasksClient:
 
         status : typing.Optional[AnalyzeTaskStatus]
             Filter analysis tasks by status.
-            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`.
+            Possible values: `queued`, `pending`, `processing`, `ready`, `failed`, `canceled`.
 
         video_url : typing.Optional[str]
             Filter tasks by exact video source URL.
@@ -558,8 +677,7 @@ class AsyncRawTasksClient:
         This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
-        - Minimum duration: 4 seconds
-        - Maximum duration: 2 hours
+        - The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
@@ -568,7 +686,7 @@ class AsyncRawTasksClient:
         **When to use this method**:
         - Generate custom text from your video using a prompt (general analysis)
         - Extract timestamped metadata with custom segment definitions from your video
-        - Analyze videos longer than 1 hour
+        - Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
         - Process videos asynchronously without blocking your application
 
         **Do not use this method for**:
@@ -577,8 +695,8 @@ class AsyncRawTasksClient:
         Analyzing videos asynchronously requires three steps:
 
         1. Create an analysis task using this method. The platform returns a task identifier.
-        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-        3. Retrieve the results from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
+        2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
+        3. When the status is `ready`, retrieve the results using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
         On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
 
@@ -602,7 +720,7 @@ class AsyncRawTasksClient:
             The platform stores this value unchanged and returns it in the following responses:
             - The [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint
             - The [`GET`](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks) method of the `/analyze/tasks` endpoint
-            - The `analyze.task.ready` and `analyze.task.failed` webhook payloads
+            - The `analyze.task.ready`, `analyze.task.failed`, and `analyze.task.canceled` webhook payloads
 
             **Format**: 1–64 characters. Alphanumeric, hyphens (`-`), and underscores (`_`) only. An empty string is rejected with a `400 Bad Request`.
 
@@ -640,6 +758,8 @@ class AsyncRawTasksClient:
             | `general` | 512 | 98,304 | 4,096 |
             | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
+            With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
+
         response_format : typing.Optional[AsyncResponseFormat]
 
         min_segment_duration : typing.Optional[float]
@@ -658,7 +778,8 @@ class AsyncRawTasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be less than `end_time` and less than the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be less than `end_time` and the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `end_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -669,7 +790,8 @@ class AsyncRawTasksClient:
             <Note title="Notes">
             - If omitted, defaults to the internal start time of the video plus its duration.
             - Most videos start at 0, but some (for example, from cameras or broadcast recordings) may have a non-zero start time. To find the value, run `ffprobe -v error -show_entries format=start_time,duration -of default=noprint_wrappers=1 your_video.mp4`.
-            - Must be greater than `start_time` and less than or equal to the video duration. The clip (`end_time - start_time`) must be at least `4` seconds.
+            - Must be greater than `start_time` and less than or equal to the video duration.
+            - The window (`end_time - start_time`) must be at least 1 second and at most 2 hours. The video may be up to 4 hours as long as the window stays within that limit.
             - Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
             - Together with `start_time`, this parameter determines the billable video duration. If you omit both, billing uses the full video duration. For details, see the [Frequently asked questions](/v1.3/docs/resources/frequently-asked-questions#how-is-video-segmentation-priced) page.
             </Note>
@@ -760,9 +882,10 @@ class AsyncRawTasksClient:
         - `pending`: The task is queued and waiting to start.
         - `processing`: The platform is analyzing the video.
         - `ready`: Processing is complete. Results are available in the response.
-        - `failed`: The task failed. No results were generated.
+        - `failed`: The task failed. No result is available. The `error` field describes the failure.
+        - `canceled`: The task was canceled. No result is available. The `error` field describes the cancellation reason, if available.
 
-        Poll this method until `status` is `ready` or `failed`. When `status` is `ready`, use the results from the response.
+        Poll this method until `status` is `ready`, `failed`, or `canceled`. When `status` is `ready`, use the results from the response.
 
         Parameters
         ----------
@@ -847,6 +970,117 @@ class AsyncRawTasksClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[CancelAnalyzeTaskResponse]:
+        """
+        Use this method to cancel an asynchronous analysis task in your account. To cancel a task created as part of a batch, use the [`POST`](/v1.3/api-reference/analyze-videos/batch-analysis/cancel-batch) method of the `/analyze/batches/{batch_id}/cancel` endpoint.
+
+        You can cancel a task with the `queued`, `pending`, or `processing` status. This action cannot be undone.
+
+        Processing that has already started can continue briefly after cancellation.
+
+        When you cancel a task, the platform can send an `analyze.task.canceled` webhook. Delivery is best-effort: a `200` response is not a delivery guarantee. When you receive the event, retrieve the task for its current state.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the analysis task you want to cancel.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[CancelAnalyzeTaskResponse]
+            The task is canceled. This response is also returned when the task was canceled by a previous request.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"analyze/tasks/{jsonable_encoder(task_id)}/cancel",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    CancelAnalyzeTaskResponse,
+                    parse_obj_as(
+                        type_=CancelAnalyzeTaskResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

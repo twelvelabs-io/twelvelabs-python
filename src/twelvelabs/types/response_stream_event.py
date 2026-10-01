@@ -28,8 +28,13 @@ class ResponseStreamEvent_ResponseCreated(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.created"] = "response.created"
@@ -63,8 +68,13 @@ class ResponseStreamEvent_ResponseInProgress(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.in_progress"] = "response.in_progress"
@@ -98,8 +108,13 @@ class ResponseStreamEvent_ResponseCompleted(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.completed"] = "response.completed"
@@ -133,8 +148,13 @@ class ResponseStreamEvent_ResponseFailed(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.failed"] = "response.failed"
@@ -168,8 +188,13 @@ class ResponseStreamEvent_ResponseOutputItemAdded(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.output_item.added"] = "response.output_item.added"
@@ -204,8 +229,13 @@ class ResponseStreamEvent_ResponseContentPartAdded(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.content_part.added"] = "response.content_part.added"
@@ -242,8 +272,13 @@ class ResponseStreamEvent_ResponseOutputTextDelta(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.output_text.delta"] = "response.output_text.delta"
@@ -280,8 +315,13 @@ class ResponseStreamEvent_ResponseOutputTextDone(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.output_text.done"] = "response.output_text.done"
@@ -318,8 +358,13 @@ class ResponseStreamEvent_ResponseContentPartDone(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.content_part.done"] = "response.content_part.done"
@@ -356,8 +401,13 @@ class ResponseStreamEvent_ResponseOutputItemDone(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.output_item.done"] = "response.output_item.done"
@@ -392,14 +442,58 @@ class ResponseStreamEvent_ResponseFunctionCallArgumentsDone(UniversalBaseModel):
     - `response.output_item.done` — An output item is finalized.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
 
     The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
     """
 
     type: typing.Literal["response.function_call_arguments.done"] = "response.function_call_arguments.done"
     item_id: typing.Optional[str] = None
     output_index: typing.Optional[int] = None
     arguments: typing.Optional[str] = None
+    sequence_number: int
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
+class ResponseStreamEvent_Keepalive(UniversalBaseModel):
+    """
+    A Server-Sent Event emitted during a streaming response.
+    Events use [Open Responses streaming](https://www.openresponses.org/specification#streaming) conventions.
+
+    The stream consists of events with a `type` field indicating the event kind:
+    - `response.created` — Initial event with the response object in `in_progress` state.
+    - `response.in_progress` — The response is being generated.
+    - `response.output_item.added` — A new output item has started.
+    - `response.content_part.added` — A new content part has started within a message.
+    - `response.output_text.delta` — An incremental text chunk.
+    - `response.output_text.done` — Text streaming for a content part is complete.
+    - `response.content_part.done` — A content part is finalized.
+    - `response.function_call_arguments.done` — Function call arguments are complete.
+    - `response.output_item.done` — An output item is finalized.
+    - `response.completed` — The response is complete.
+    - `response.failed` — The response has failed.
+    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
+    """
+
+    type: typing.Literal["keepalive"] = "keepalive"
     sequence_number: int
 
     if IS_PYDANTIC_V2:
@@ -424,4 +518,5 @@ ResponseStreamEvent = typing.Union[
     ResponseStreamEvent_ResponseContentPartDone,
     ResponseStreamEvent_ResponseOutputItemDone,
     ResponseStreamEvent_ResponseFunctionCallArgumentsDone,
+    ResponseStreamEvent_Keepalive,
 ]

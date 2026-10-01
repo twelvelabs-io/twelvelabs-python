@@ -134,11 +134,13 @@ class BatchesClient:
         **Retention and retry**:
         - Batches expire 24 hours after creation. You can retrieve results for 30 days after creation.
         - If processing does not finish for some items in time, resubmit them in a new batch.
+        - An item whose analysis window exceeds 2 hours fails on its own. The error code is `video_duration_too_long`. The rest of the batch is still submitted.
 
         **Limits**:
         - Up to 1,000 requests per batch.
         - Up to 2,000 total content hours per batch.
         - Up to 5 active batches per account.
+        - The duration limits of the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint apply to each item.
 
         Parameters
         ----------
@@ -511,11 +513,13 @@ class AsyncBatchesClient:
         **Retention and retry**:
         - Batches expire 24 hours after creation. You can retrieve results for 30 days after creation.
         - If processing does not finish for some items in time, resubmit them in a new batch.
+        - An item whose analysis window exceeds 2 hours fails on its own. The error code is `video_duration_too_long`. The rest of the batch is still submitted.
 
         **Limits**:
         - Up to 1,000 requests per batch.
         - Up to 2,000 total content hours per batch.
         - Up to 5 active batches per account.
+        - The duration limits of the [`POST`](/v1.3/api-reference/analyze-videos/create-async-analysis-task) method of the `/analyze/tasks` endpoint apply to each item.
 
         Parameters
         ----------

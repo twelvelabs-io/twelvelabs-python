@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .async_image_metadata_embedding_scopes_item import AsyncImageMetadataEmbeddingScopesItem
+from .embedding_dimension import EmbeddingDimension
 
 
 class AsyncImageMetadata(UniversalBaseModel):
@@ -31,6 +32,8 @@ class AsyncImageMetadata(UniversalBaseModel):
     """
     The `embedding_scope` values used to generate the embedding. Always `["asset"]`.
     """
+
+    embedding_dimension: typing.Optional[EmbeddingDimension] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

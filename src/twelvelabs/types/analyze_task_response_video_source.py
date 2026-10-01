@@ -10,7 +10,7 @@ from .analyze_task_response_video_source_type import AnalyzeTaskResponseVideoSou
 
 class AnalyzeTaskResponseVideoSource(UniversalBaseModel):
     """
-    The video source you provided.
+    The public video source associated with the task. When the video was uploaded using the [`POST`](/v1.3/api-reference/index-content/create) method of the `/tasks` endpoint, the source type is `video_id`. Otherwise, the source type is `url`, `base64_string`, or `asset_id`.
     """
 
     type: typing.Optional[AnalyzeTaskResponseVideoSourceType] = pydantic.Field(default=None)
@@ -28,9 +28,19 @@ class AnalyzeTaskResponseVideoSource(UniversalBaseModel):
     The asset ID. Present when `type` is `asset_id`.
     """
 
+    video_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The video identifier. Present when `type` is `video_id`.
+    """
+
+    index_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The identifier of the index associated with the video. Present on a best-effort basis when `type` is `video_id`.
+    """
+
     system_metadata: typing.Optional[AnalyzeTaskResponseVideoSourceSystemMetadata] = pydantic.Field(default=None)
     """
-    System-extracted video metadata. Present on a best-effort basis once the video has been processed.
+    Video metadata that the platform extracted during processing, such as its duration. Present on a best-effort basis once the video has been processed.
     """
 
     if IS_PYDANTIC_V2:

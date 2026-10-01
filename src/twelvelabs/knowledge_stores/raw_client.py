@@ -18,6 +18,7 @@ from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.gone_error_body import GoneErrorBody
 from ..types.ingestion_config import IngestionConfig
 from ..types.knowledge_store import KnowledgeStore
+from ..types.knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from ..types.knowledge_store_search_query import KnowledgeStoreSearchQuery
 from ..types.search_knowledge_store_filter import SearchKnowledgeStoreFilter
 from ..types.search_knowledge_store_options import SearchKnowledgeStoreOptions
@@ -137,7 +138,7 @@ class RawKnowledgeStoresClient:
         name: str,
         ingestion_config: typing.Optional[IngestionConfig] = OMIT,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[KnowledgeStore]:
         """
@@ -155,8 +156,8 @@ class RawKnowledgeStoresClient:
         description : typing.Optional[str]
             An optional description of the knowledge store.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the knowledge store. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the knowledge store, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -175,7 +176,9 @@ class RawKnowledgeStoresClient:
                     object_=ingestion_config, annotation=IngestionConfig, direction="write"
                 ),
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -307,7 +310,7 @@ class RawKnowledgeStoresClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[KnowledgeStore]:
         """
@@ -324,8 +327,8 @@ class RawKnowledgeStoresClient:
         description : typing.Optional[str]
             An optional description of the knowledge store.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the knowledge store. Both keys and values must be strings. The provided object replaces the existing metadata in full, so include every key you want to keep. To clear all metadata, set this field to an empty object (`{}`). A null value is stored as an empty string.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the knowledge store, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. The provided object replaces the existing metadata in full, so include every key you want to keep and omit the ones you want to remove. To clear all metadata, set this field to an empty object (`{}`).
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -341,7 +344,9 @@ class RawKnowledgeStoresClient:
             json={
                 "name": name,
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -426,7 +431,7 @@ class RawKnowledgeStoresClient:
         page_token : typing.Optional[str]
             Pagination token used to retrieve the next page of results. Omit it on the first request. To fetch the next page, set it to the `next_page_token` field returned in the previous response and send the request again.
 
-            A malformed or unrecognized token returns a `400` error. A token that has expired returns a `410` error (make a new search request to obtain a fresh page token).
+            If a token is malformed or unrecognized, the platform returns a `400` error. If a token has expired, the platform returns a `410` error (make a new search request to obtain a fresh page token).
 
         include_metadata : typing.Optional[bool]
             Set to `true` to include metadata in each result. Each result includes a `metadata` object with a `system` field (platform-derived file properties such as duration and resolution) and a `user` field (metadata you attached to the item).
@@ -633,7 +638,7 @@ class AsyncRawKnowledgeStoresClient:
         name: str,
         ingestion_config: typing.Optional[IngestionConfig] = OMIT,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[KnowledgeStore]:
         """
@@ -651,8 +656,8 @@ class AsyncRawKnowledgeStoresClient:
         description : typing.Optional[str]
             An optional description of the knowledge store.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the knowledge store. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the knowledge store, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -671,7 +676,9 @@ class AsyncRawKnowledgeStoresClient:
                     object_=ingestion_config, annotation=IngestionConfig, direction="write"
                 ),
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -803,7 +810,7 @@ class AsyncRawKnowledgeStoresClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[KnowledgeStore]:
         """
@@ -820,8 +827,8 @@ class AsyncRawKnowledgeStoresClient:
         description : typing.Optional[str]
             An optional description of the knowledge store.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the knowledge store. Both keys and values must be strings. The provided object replaces the existing metadata in full, so include every key you want to keep. To clear all metadata, set this field to an empty object (`{}`). A null value is stored as an empty string.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the knowledge store, as user-defined key-value pairs. Up to 10 pairs, keys up to 128 characters, string values up to 2048 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. The provided object replaces the existing metadata in full, so include every key you want to keep and omit the ones you want to remove. To clear all metadata, set this field to an empty object (`{}`).
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -837,7 +844,9 @@ class AsyncRawKnowledgeStoresClient:
             json={
                 "name": name,
                 "description": description,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -922,7 +931,7 @@ class AsyncRawKnowledgeStoresClient:
         page_token : typing.Optional[str]
             Pagination token used to retrieve the next page of results. Omit it on the first request. To fetch the next page, set it to the `next_page_token` field returned in the previous response and send the request again.
 
-            A malformed or unrecognized token returns a `400` error. A token that has expired returns a `410` error (make a new search request to obtain a fresh page token).
+            If a token is malformed or unrecognized, the platform returns a `400` error. If a token has expired, the platform returns a `410` error (make a new search request to obtain a fresh page token).
 
         include_metadata : typing.Optional[bool]
             Set to `true` to include metadata in each result. Each result includes a `metadata` object with a `system` field (platform-derived file properties such as duration and resolution) and a `user` field (metadata you attached to the item).

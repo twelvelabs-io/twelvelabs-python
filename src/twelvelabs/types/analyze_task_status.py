@@ -2,4 +2,6 @@
 
 import typing
 
-AnalyzeTaskStatus = typing.Union[typing.Literal["queued", "pending", "processing", "ready", "failed"], typing.Any]
+AnalyzeTaskStatus = typing.Union[
+    typing.Literal["queued", "pending", "processing", "ready", "failed", "canceled"], typing.Any
+]

@@ -2,4 +2,6 @@
 
 import typing
 
-IndexedAssetStatus = typing.Union[typing.Literal["ready", "pending", "queued", "indexing", "failed"], typing.Any]
+IndexedAssetStatus = typing.Union[
+    typing.Literal["ready", "pending", "queued", "indexing", "validating", "failed"], typing.Any
+]

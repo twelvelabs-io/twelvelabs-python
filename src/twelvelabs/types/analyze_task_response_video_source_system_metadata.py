@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class AnalyzeTaskResponseVideoSourceSystemMetadata(UniversalBaseModel):
     """
-    System-extracted video metadata. Present on a best-effort basis once the video has been processed.
+    Video metadata that the platform extracted during processing, such as its duration. Present on a best-effort basis once the video has been processed.
     """
 
     duration: typing.Optional[float] = pydantic.Field(default=None)

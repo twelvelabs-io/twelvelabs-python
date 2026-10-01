@@ -13,7 +13,7 @@ class BatchItemError(UniversalBaseModel):
 
     code: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A machine-readable error code identifying the failure category. Omitted until the per-item error catalog is wired through; until then, only `message` is guaranteed.
+    A machine-readable error code identifying the failure category.
     """
 
     message: str = pydantic.Field()

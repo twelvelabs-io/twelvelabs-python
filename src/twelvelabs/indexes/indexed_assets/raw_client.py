@@ -101,6 +101,7 @@ class RawIndexedAssetsClient:
             - `pending`: The indexed asset is pending.
             - `queued`: The indexed asset is queued.
             - `indexing`: The indexed asset is being indexed.
+            - `validating`: The indexed asset is being validated.
             - `failed`: The indexed asset indexing task failed.
 
             To filter by multiple statuses, specify the `status` parameter for each value:
@@ -281,7 +282,7 @@ class RawIndexedAssetsClient:
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[UserMetadata]
-            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -297,7 +298,9 @@ class RawIndexedAssetsClient:
             json={
                 "asset_id": asset_id,
                 "enable_video_stream": enable_video_stream,
-                "user_metadata": user_metadata,
+                "user_metadata": convert_and_respect_annotation_metadata(
+                    object_=user_metadata, annotation=UserMetadata, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -537,7 +540,9 @@ class RawIndexedAssetsClient:
             f"indexes/{jsonable_encoder(index_id)}/indexed-assets/{jsonable_encoder(indexed_asset_id)}",
             method="PATCH",
             json={
-                "user_metadata": user_metadata,
+                "user_metadata": convert_and_respect_annotation_metadata(
+                    object_=user_metadata, annotation=UserMetadata, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -714,6 +719,7 @@ class AsyncRawIndexedAssetsClient:
             - `pending`: The indexed asset is pending.
             - `queued`: The indexed asset is queued.
             - `indexing`: The indexed asset is being indexed.
+            - `validating`: The indexed asset is being validated.
             - `failed`: The indexed asset indexing task failed.
 
             To filter by multiple statuses, specify the `status` parameter for each value:
@@ -897,7 +903,7 @@ class AsyncRawIndexedAssetsClient:
             This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[UserMetadata]
-            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys must be of type `string`, and values can be of the following types: `string`, `integer`, `float`, or `boolean`.
+            Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -913,7 +919,9 @@ class AsyncRawIndexedAssetsClient:
             json={
                 "asset_id": asset_id,
                 "enable_video_stream": enable_video_stream,
-                "user_metadata": user_metadata,
+                "user_metadata": convert_and_respect_annotation_metadata(
+                    object_=user_metadata, annotation=UserMetadata, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1153,7 +1161,9 @@ class AsyncRawIndexedAssetsClient:
             f"indexes/{jsonable_encoder(index_id)}/indexed-assets/{jsonable_encoder(indexed_asset_id)}",
             method="PATCH",
             json={
-                "user_metadata": user_metadata,
+                "user_metadata": convert_and_respect_annotation_metadata(
+                    object_=user_metadata, annotation=UserMetadata, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",

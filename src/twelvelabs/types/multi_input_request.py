@@ -11,16 +11,20 @@ class MultiInputRequest(UniversalBaseModel):
     """
     This field is required if the `input_type` parameter is `multi_input`. It combines text and up to 10 media sources into a single embedding. Provide the `input_text` field, the `media_sources` field, or both.
 
-    Marengo 3.5 accepts images, video, and audio as media sources. Marengo 3.0 accepts images.
+    Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
 
-    Include text in the `input_text` field when you combine media sources of different types. For example, a request that combines an image and a video returns a `400` error without text. Media sources of the same type do not require text.
+    Include text in the `input_text` field when you combine media sources of different types. For example, if you combine an image and a video without text, the platform returns a `400` error. Media sources of the same type do not require text. If any source has no content to embed, the platform returns a `400` error.
 
-    With Marengo 3.5, the text cannot exceed 2,000 tokens. Media sources do not count toward this limit. Use the `auto_truncate` parameter to control the behavior of the platform when your text exceeds it.
+    **Document sources**
+
+    The platform embeds a plain text or Markdown document as text. Combining content into a single embedding requires at least one image, video, or audio source; if the content is all text, the platform returns a `400` error. A plain text or Markdown document combined with `input_text`, and two plain text documents, are both all-text content. Send a single text document as your only source, use `input_text` on its own, or add an image, video, or audio source.
+
+    A PDF document must be your only source. You cannot combine it with any other media source, including another document, or with `input_text`; the platform returns a `400` error if you do. To combine document content with an image, video, or audio source, send a plain text or Markdown document instead of a PDF file.
     """
 
     input_text: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Text to include in the embedding.
+    Text to include in the embedding. With Marengo 3.5, the text cannot exceed 2,000 tokens. Use the `auto_truncate` parameter to control the behavior of the platform when your text exceeds it.
     
     **Usage options**:
     - Provide text without media sources to create a text-only embedding.

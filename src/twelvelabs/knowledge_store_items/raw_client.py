@@ -10,9 +10,11 @@ from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pagination import AsyncPager, BaseHttpResponse, SyncPager
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..types.knowledge_store_item import KnowledgeStoreItem
 from ..types.knowledge_store_item_asset_type import KnowledgeStoreItemAssetType
+from ..types.knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .types.knowledge_store_items_list_request_sort_by import KnowledgeStoreItemsListRequestSortBy
 from .types.knowledge_store_items_list_request_status_item import KnowledgeStoreItemsListRequestStatusItem
 from .types.knowledge_store_items_list_response import KnowledgeStoreItemsListResponse
@@ -150,7 +152,7 @@ class RawKnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[KnowledgeStoreItem]:
         """
@@ -158,7 +160,9 @@ class RawKnowledgeStoreItemsClient:
         The operation is asynchronous. The item is created immediately with the `queued`
         status and processed in the background.
 
-        The asset must not exceed 5 GB.
+        **Asset size limits**:
+        - **Video**: Up to 10 GB
+        - **Images**: Up to 32 MB
 
         Parameters
         ----------
@@ -171,8 +175,8 @@ class RawKnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -188,7 +192,9 @@ class RawKnowledgeStoreItemsClient:
             json={
                 "asset_type": asset_type,
                 "asset_id": asset_id,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -453,7 +459,7 @@ class AsyncRawKnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[KnowledgeStoreItem]:
         """
@@ -461,7 +467,9 @@ class AsyncRawKnowledgeStoreItemsClient:
         The operation is asynchronous. The item is created immediately with the `queued`
         status and processed in the background.
 
-        The asset must not exceed 5 GB.
+        **Asset size limits**:
+        - **Video**: Up to 10 GB
+        - **Images**: Up to 32 MB
 
         Parameters
         ----------
@@ -474,8 +482,8 @@ class AsyncRawKnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
-        metadata : typing.Optional[typing.Dict[str, str]]
-            Custom metadata for the item. Both keys and values must be strings.
+        metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -491,7 +499,9 @@ class AsyncRawKnowledgeStoreItemsClient:
             json={
                 "asset_type": asset_type,
                 "asset_id": asset_id,
-                "metadata": metadata,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",

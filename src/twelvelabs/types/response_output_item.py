@@ -33,24 +33,22 @@ class ResponseOutputItem(UniversalBaseModel):
 
     phase: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Which part of the answer this message holds. Present when `type` is `message`.
+    Which part of the turn this message contains: intermediate output or the
+    answer. Present when the `type` field is `message`.
     
-    A turn can produce several messages: the model narrating what it is about to
-    do, then the answer itself. `commentary` marks the narration and `final_answer`
-    marks the answer, so picking the answer out of a turn does not mean guessing
-    from item order.
+    A turn can produce intermediate messages before the answer, such as a
+    message that describes the steps Jockey is taking. The `commentary` value
+    identifies an intermediate message, and the `final_answer` value
+    identifies the answer.
     
-    **`commentary` reaches you only when `include` is set to
-    `["intermediate_outputs"]`.** That applies to streamed responses as well as
-    non-streamed ones — the default keeps the final answer alone on both. When you
-    do request it, a streamed message carries its `phase` on the
-    `response.output_item.added` event, so a client can route the message before any
-    of its text arrives.
+    The output contains intermediate output only when the request sets the
+    `include` parameter to `["intermediate_outputs"]`. By default, the output
+    contains the answer only.
     
-    Treat a message with no `phase` as `final_answer`.
+    Treat a message without the `phase` field as the final answer.
     
-    Treat an unrecognized `phase` as narration rather than as the answer, so a
-    phase this client does not know is never mistaken for it.
+    Treat an unrecognized `phase` value as intermediate output, not as the
+    answer.
     """
 
     content: typing.Optional[typing.List[ResponseOutputContentPart]] = pydantic.Field(default=None)

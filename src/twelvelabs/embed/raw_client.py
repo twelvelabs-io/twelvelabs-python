@@ -41,7 +41,7 @@ class RawEmbedClient:
 
         Ensure your media files meet the following requirements:
         - [Audio files](/v1.3/docs/concepts/models/marengo/marengo-3-0#audio-file-requirements).
-        - [Image files](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
+        - [Images](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 
         Parameters for embeddings:
         - **Common parameters**:
@@ -169,7 +169,7 @@ class AsyncRawEmbedClient:
 
         Ensure your media files meet the following requirements:
         - [Audio files](/v1.3/docs/concepts/models/marengo/marengo-3-0#audio-file-requirements).
-        - [Image files](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
+        - [Images](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements).
 
         Parameters for embeddings:
         - **Common parameters**:

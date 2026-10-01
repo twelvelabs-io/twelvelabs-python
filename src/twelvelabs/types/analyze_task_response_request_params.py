@@ -33,7 +33,7 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
         typing.Optional[AnalyzeTaskResponseRequestParamsPromptV2], FieldMetadata(alias="prompt_v2")
     ] = pydantic.Field(default=None)
     """
-    The structured prompt for this task. Present only when `analysis_mode` is `general` and the task was created with `prompt_v2`. When present, the response excludes the flat `prompt` field.
+    The structured prompt for this task. Present only when `analysis_mode` is `general` and the task was created with `prompt_v2`. When present, the response excludes the `prompt` field.
     
     - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): `input_text` is truncated to the first 30 characters.
     - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results): Returns the full text.

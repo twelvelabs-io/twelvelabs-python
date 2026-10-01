@@ -152,9 +152,9 @@ class AsyncResponseFormat(UniversalBaseModel):
     
     **Response validation**
     
-    Check the `FinishReason` field to verify your JSON response is complete:
-    - When `FinishReason` is `stop`, the generation completed normally, and the JSON is valid and complete.
-    - When `FinishReason` is `length`, the platform truncates the response at the maximum response length or the context window. This may result in truncated, invalid JSON that fails to parse.
+    Check the `finish_reason` field to verify your JSON response is complete:
+    - When `finish_reason` is `stop`, the generation completed normally, and the JSON is valid and complete.
+    - When `finish_reason` is `length`, the generation reached the maximum response length or the context window. The output may be truncated and fail to parse.
     """
 
     segment_definitions: typing.Optional[typing.List[SegmentDefinition]] = pydantic.Field(default=None)
