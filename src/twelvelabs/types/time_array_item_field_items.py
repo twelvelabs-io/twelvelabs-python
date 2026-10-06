@@ -4,10 +4,18 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .time_array_item_field_items_type import TimeArrayItemFieldItemsType
 
 
-class AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItemItems(UniversalBaseModel):
-    type: typing.Optional[str] = None
+class TimeArrayItemFieldItems(UniversalBaseModel):
+    """
+    The element type for an `array` field. Required when `type` is `array`; not supported on any other type.
+    """
+
+    type: TimeArrayItemFieldItemsType = pydantic.Field()
+    """
+    The type of the array elements. It must be a scalar (`string`, `number`, `boolean`, or `integer`).
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

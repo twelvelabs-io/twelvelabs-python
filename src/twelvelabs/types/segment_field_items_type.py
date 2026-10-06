@@ -2,4 +2,4 @@
 
 import typing
 
-SegmentFieldItemsType = typing.Union[typing.Literal["string", "number", "boolean", "integer"], typing.Any]
+SegmentFieldItemsType = typing.Union[typing.Literal["string", "number", "boolean", "integer", "object"], typing.Any]

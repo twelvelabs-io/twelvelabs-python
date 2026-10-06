@@ -4,9 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .analyze_task_response_request_params_prompt_v_2_media_sources_item import (
-    AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem,
-)
+from .analyze_task_media_source import AnalyzeTaskMediaSource
 
 
 class AnalyzeTaskResponseRequestParamsPromptV2(UniversalBaseModel):
@@ -22,9 +20,7 @@ class AnalyzeTaskResponseRequestParamsPromptV2(UniversalBaseModel):
     The prompt text. May contain `<@name>` placeholders that reference entries in `media_sources`.
     """
 
-    media_sources: typing.Optional[typing.List[AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem]] = (
-        pydantic.Field(default=None)
-    )
+    media_sources: typing.Optional[typing.List[AnalyzeTaskMediaSource]] = pydantic.Field(default=None)
     """
     Reference images linked to `<@name>` placeholders in the prompt.
     """

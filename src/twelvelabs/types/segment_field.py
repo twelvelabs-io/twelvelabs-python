@@ -17,7 +17,7 @@ class SegmentField(UniversalBaseModel):
 
     Set `type` to `timestamp` and provide a `format` to control the format of the returned value on each segment. See the `format` property for supported values.
 
-    Each segment includes automatic `start_time` and `end_time` keys (floats in seconds) that mark the segment boundary. These names, along with `metadata`, are reserved and cannot be used for `timestamp` fields.
+    Each segment includes automatic `start_time` and `end_time` keys (floats in seconds) that mark the segment boundary. These names, along with `metadata`, are reserved and cannot be used as the name of a segment field or as the name of a field inside a `time_array` item.
     """
 
     name: str = pydantic.Field()
@@ -30,6 +30,8 @@ class SegmentField(UniversalBaseModel):
     The data type of the field.
     
     When set to `timestamp`, the `format` property is required and controls the format of the returned value.
+    
+    When set to the `time_array` value, the field extracts a list of events inside each segment. Requires the `items.type` field to be `object` and a non-empty `items.fields` list. Requires Pegasus 1.6. Any other model rejects `time_array` as an invalid type and lists only the types it accepts. The `/analyze/batches` endpoint does not accept Pegasus 1.6, so it does not accept `time_array` either.
     """
 
     description: str = pydantic.Field()
@@ -61,7 +63,7 @@ class SegmentField(UniversalBaseModel):
 
     items: typing.Optional[SegmentFieldItems] = pydantic.Field(default=None)
     """
-    Required when `type` is `array`. Specifies the type of array elements. Not supported when `type` is `timestamp`.
+    Required when `type` is `array` or `time_array`. For `array`, specifies the type of array elements. For `time_array`, set it to `{"type": "object", "fields": [...]}`. Not supported when `type` is `timestamp`.
     """
 
     if IS_PYDANTIC_V2:

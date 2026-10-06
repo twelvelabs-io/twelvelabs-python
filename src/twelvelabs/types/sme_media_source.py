@@ -38,7 +38,7 @@ class SmeMediaSource(UniversalBaseModel):
         pydantic.Field(default=None)
     )
     """
-    Base64-encoded image data. The maximum size is 30MB.
+    Base64-encoded image data. The maximum decoded size is 32 MB.
     """
 
     if IS_PYDANTIC_V2:

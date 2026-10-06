@@ -10,11 +10,12 @@ class AnalyzeTaskError(UniversalBaseModel):
     """
     A message attached to an analysis response. The platform uses this object in the following cases:
 
-    - **Task failure** — when `status` is `failed`. The `message` field describes the failure.
+    - **Task failure** — set on `AnalyzeTaskResponse.error` when `status` is `failed`. The `message` field describes the failure.
     - **Task cancellation** — when `status` is `canceled` and a cancellation reason is available.
-    - **Truncation warning (general analysis)** — set on the response `error` when `finish_reason` is `length`, because either `output_tokens` reached the requested `max_tokens` value or the input and response reached the [context window](/v1.3/docs/concepts/models/pegasus#context-window). To obtain the full output, increase the `max_tokens` value or reduce the input size. The partial output is in `result.data` for asynchronous analysis and in `data` for synchronous analysis.
+    - **Incomplete results warning (video segmentation)** — set on `AnalyzeTaskResponse.error` when `status` is `ready` and the output for some segments could not be recovered. The segments the platform extracted are in `result.data`.
+    - **Truncation warning (general analysis)** — set on the response `error` when `finish_reason` is `length`, because either `output_tokens` reached the requested `max_tokens` value or the input and response reached the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window). To obtain the full output, increase the `max_tokens` value or reduce the input size. The partial output is in `result.data` for asynchronous analysis and in `data` for synchronous analysis.
 
-    - With general analysis, check `finish_reason` instead of parsing the message text. With video segmentation, check `status`.
+    - With general analysis, check `finish_reason` instead of parsing the message text. With video segmentation, check `status` and the `error` field.
     """
 
     code: typing.Optional[str] = pydantic.Field(default=None)
@@ -34,8 +35,9 @@ class AnalyzeTaskError(UniversalBaseModel):
     A human-readable message. One of:
     
     - **Other failures** (async, `status: failed`): the message describes the failure reason. Example: `"Video duration exceeds maximum allowed duration"`.
-    - **Failure: maximum response length reached** (`time_based_metadata`, `status: failed`): `"analysis failed: the time_based_metadata output reached the configured max_tokens before a complete result was produced. Raise max_tokens if it is below the per-model maximum; otherwise narrow the request (fewer segment_definitions or fields, a larger min_segment_duration, or a shorter analysis window)."`.
-    - **Failure: context window reached** (`time_based_metadata`, `status: failed`): `"analysis failed: the time_based_metadata output reached the model's context limit (combined input and output tokens) before a complete result was produced. Narrow the request (fewer segment_definitions or fields, a larger min_segment_duration, a shorter analysis window, fewer media bindings) or lower max_tokens to leave more room for the input."`.
+    - **Failure: maximum response length reached** (`time_based_metadata`, numeric `max_tokens`, `status: failed`): `"analysis failed: the time_based_metadata output reached the configured max_tokens before a complete result was produced. Raise max_tokens if it is below the per-model maximum; otherwise narrow the request (fewer segment_definitions or fields, a larger min_segment_duration, or a shorter analysis window)."`.
+    - **Incomplete results warning** (`time_based_metadata`, `status: ready`): `"partial result: some output for segment_definitions <id> could not be recovered during analysis; returned results may be incomplete."`, where `<id>` is the identifier of a segment definition.
+    - **Failure: context window reached** (`time_based_metadata`, numeric `max_tokens`, `status: failed`): `"analysis failed: the time_based_metadata output reached the model's context limit (combined input and output tokens) before a complete result was produced. Narrow the request (fewer segment_definitions or fields, a larger min_segment_duration, a shorter analysis window, fewer media bindings) or lower max_tokens to leave more room for the input."`.
     - **Cancellation** (async, `status: canceled`): explains why the task was canceled. Example: `"The task was canceled by the user."`.
     - **Truncation: maximum response length reached** (`general`, `finish_reason: length`, `output_tokens >= max_tokens`): `"output truncated: the generation reached the configured max_tokens. The partial output is returned; raise max_tokens if you need a longer response."`.
     - **Truncation: context window reached** (`general`, `finish_reason: length`, model stopped before reaching `max_tokens`): `"output truncated: combined input and output tokens reached the model's context limit. The partial output is returned; consider reducing input size (shorter prompt, smaller video clip, fewer media bindings) or lowering max_tokens."`.

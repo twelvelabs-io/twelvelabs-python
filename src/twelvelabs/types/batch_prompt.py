@@ -14,7 +14,7 @@ class BatchPrompt(UniversalBaseModel):
 
     input_text: str = pydantic.Field()
     """
-    The text of the prompt. Use `<@name>` placeholders to reference images declared in `media_sources` (Example: `"Is there a <@tiger-1> in the video?"`). This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
+    The text of the prompt. Use `<@name>` placeholders to reference images declared in `media_sources` (Example: `"Is there a <@tiger-1> in the video?"`). This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
     """
 
     media_sources: typing.Optional[typing.List[SmeMediaSource]] = pydantic.Field(default=None)

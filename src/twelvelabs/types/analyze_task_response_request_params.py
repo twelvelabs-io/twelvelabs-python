@@ -6,7 +6,9 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .analyze_task_media_source import AnalyzeTaskMediaSource
 from .analyze_task_response_request_params_analysis_mode import AnalyzeTaskResponseRequestParamsAnalysisMode
+from .analyze_task_response_request_params_max_tokens import AnalyzeTaskResponseRequestParamsMaxTokens
 from .analyze_task_response_request_params_prompt_v_2 import AnalyzeTaskResponseRequestParamsPromptV2
 from .analyze_task_response_request_params_response_format import AnalyzeTaskResponseRequestParamsResponseFormat
 
@@ -18,7 +20,7 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
 
     analysis_mode: typing.Optional[AnalyzeTaskResponseRequestParamsAnalysisMode] = pydantic.Field(default=None)
     """
-    The analysis approach for this task.
+    The analysis mode for this task. For a task created with the `image` parameter, the value is `general`.
     """
 
     prompt: typing.Optional[str] = pydantic.Field(default=None)
@@ -39,6 +41,11 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results): Returns the full text.
     """
 
+    image: typing.Optional[typing.List[AnalyzeTaskMediaSource]] = pydantic.Field(default=None)
+    """
+    The image input you provided. Present only when the task was created with the `image` parameter. When present, the response omits `video_source` instead of returning it as `null`.
+    """
+
     response_format: typing.Optional[AnalyzeTaskResponseRequestParamsResponseFormat] = pydantic.Field(default=None)
     """
     The response format for this task. Present only when the request included a response format.
@@ -49,9 +56,9 @@ class AnalyzeTaskResponseRequestParams(UniversalBaseModel):
     The temperature value for this analysis.
     """
 
-    max_tokens: typing.Optional[int] = pydantic.Field(default=None)
+    max_tokens: typing.Optional[AnalyzeTaskResponseRequestParamsMaxTokens] = pydantic.Field(default=None)
     """
-    The maximum response length you set, in tokens.
+    The maximum response length you set. The value is an integer in tokens or the string `unlimited`.
     """
 
     min_segment_duration: typing.Optional[float] = pydantic.Field(default=None)

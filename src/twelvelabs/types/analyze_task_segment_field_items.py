@@ -4,21 +4,22 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .analyze_task_time_array_item_field import AnalyzeTaskTimeArrayItemField
 
 
-class AnalyzeTaskResultUsage(UniversalBaseModel):
+class AnalyzeTaskSegmentFieldItems(UniversalBaseModel):
     """
-    The number of tokens used in the generation.
-    """
-
-    output_tokens: int = pydantic.Field()
-    """
-    The number of tokens in the generated text.
+    The per-item structure of a segment field whose `type` is `array` or `time_array`.
     """
 
-    input_tokens: typing.Optional[int] = pydantic.Field(default=None)
+    type: str = pydantic.Field()
     """
-    The number of tokens the input consumed. Together with `output_tokens`, this value must fit within the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+    The type of the items.
+    """
+
+    fields: typing.Optional[typing.List[AnalyzeTaskTimeArrayItemField]] = pydantic.Field(default=None)
+    """
+    The fields of each event. Present only for `time_array` fields.
     """
 
     if IS_PYDANTIC_V2:
