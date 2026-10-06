@@ -6,17 +6,14 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem(UniversalBaseModel):
-    name: str
-    media_type: str
-    url: typing.Optional[str] = pydantic.Field(default=None)
+class AnalyzeTaskTimeArrayItemFieldItems(UniversalBaseModel):
     """
-    Present when the source was provided as a URL.
+    The element type for an `array` field.
     """
 
-    asset_id: typing.Optional[str] = pydantic.Field(default=None)
+    type: str = pydantic.Field()
     """
-    Present when the source was provided as an asset identifier.
+    The type of the array elements.
     """
 
     if IS_PYDANTIC_V2:

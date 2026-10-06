@@ -5,14 +5,25 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .segment_field_items_type import SegmentFieldItemsType
+from .time_array_item_field import TimeArrayItemField
 
 
 class SegmentFieldItems(UniversalBaseModel):
     """
-    Required when `type` is `array`. Specifies the type of array elements. Not supported when `type` is `timestamp`.
+    The per-item structure of a segment field whose `type` is `array` or `time_array`.
+
+    For an `array` field, the `type` value specifies the scalar element type. For a `time_array` field, use `object` as the `type` value and declare the fields of each event in the `fields` array.
     """
 
-    type: SegmentFieldItemsType
+    type: SegmentFieldItemsType = pydantic.Field()
+    """
+    The item type. For an `array` field, use one of the scalar types (`string`, `number`, `boolean`, `integer`). For a `time_array` field, use `object` and declare the per-event schema in the `fields` array. Setting `object` as the `type` value on a plain `array` field returns a `400` error. Setting the `fields` array on a plain `array` field also returns a `400` error.
+    """
+
+    fields: typing.Optional[typing.List[TimeArrayItemField]] = pydantic.Field(default=None)
+    """
+    The fields to extract from each event. Required when the `type` of the parent field is `time_array`, with at least one entry. Not permitted on any other field type.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

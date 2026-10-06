@@ -5,6 +5,7 @@
 from .analyze_batch_status_response import AnalyzeBatchStatusResponse
 from .analyze_batch_summary import AnalyzeBatchSummary
 from .analyze_batch_summary_analysis_mode import AnalyzeBatchSummaryAnalysisMode
+from .analyze_image_input import AnalyzeImageInput
 from .analyze_max_tokens import AnalyzeMaxTokens
 from .analyze_prompt_v_2 import AnalyzePromptV2
 from .analyze_request_model_name import AnalyzeRequestModelName
@@ -18,6 +19,7 @@ from .analyze_task_failed_webhook_data import AnalyzeTaskFailedWebhookData
 from .analyze_task_failed_webhook_data_status import AnalyzeTaskFailedWebhookDataStatus
 from .analyze_task_failed_webhook_event import AnalyzeTaskFailedWebhookEvent
 from .analyze_task_failed_webhook_event_type import AnalyzeTaskFailedWebhookEventType
+from .analyze_task_media_source import AnalyzeTaskMediaSource
 from .analyze_task_ready_webhook_data import AnalyzeTaskReadyWebhookData
 from .analyze_task_ready_webhook_data_status import AnalyzeTaskReadyWebhookDataStatus
 from .analyze_task_ready_webhook_event import AnalyzeTaskReadyWebhookEvent
@@ -25,22 +27,15 @@ from .analyze_task_ready_webhook_event_type import AnalyzeTaskReadyWebhookEventT
 from .analyze_task_response import AnalyzeTaskResponse
 from .analyze_task_response_request_params import AnalyzeTaskResponseRequestParams
 from .analyze_task_response_request_params_analysis_mode import AnalyzeTaskResponseRequestParamsAnalysisMode
+from .analyze_task_response_request_params_max_tokens import AnalyzeTaskResponseRequestParamsMaxTokens
+from .analyze_task_response_request_params_max_tokens_one import AnalyzeTaskResponseRequestParamsMaxTokensOne
 from .analyze_task_response_request_params_prompt_v_2 import AnalyzeTaskResponseRequestParamsPromptV2
-from .analyze_task_response_request_params_prompt_v_2_media_sources_item import (
-    AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem,
-)
 from .analyze_task_response_request_params_response_format import AnalyzeTaskResponseRequestParamsResponseFormat
 from .analyze_task_response_request_params_response_format_segment_definitions_item import (
     AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem,
 )
-from .analyze_task_response_request_params_response_format_segment_definitions_item_fields_item import (
-    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem,
-)
-from .analyze_task_response_request_params_response_format_segment_definitions_item_fields_item_items import (
-    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItemItems,
-)
-from .analyze_task_response_request_params_response_format_segment_definitions_item_media_sources_item import (
-    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem,
+from .analyze_task_response_request_params_response_format_segment_time_format import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentTimeFormat,
 )
 from .analyze_task_response_request_params_response_format_type import (
     AnalyzeTaskResponseRequestParamsResponseFormatType,
@@ -50,7 +45,12 @@ from .analyze_task_response_video_source_system_metadata import AnalyzeTaskRespo
 from .analyze_task_response_video_source_type import AnalyzeTaskResponseVideoSourceType
 from .analyze_task_result import AnalyzeTaskResult
 from .analyze_task_result_usage import AnalyzeTaskResultUsage
+from .analyze_task_segment_field import AnalyzeTaskSegmentField
+from .analyze_task_segment_field_format import AnalyzeTaskSegmentFieldFormat
+from .analyze_task_segment_field_items import AnalyzeTaskSegmentFieldItems
 from .analyze_task_status import AnalyzeTaskStatus
+from .analyze_task_time_array_item_field import AnalyzeTaskTimeArrayItemField
+from .analyze_task_time_array_item_field_items import AnalyzeTaskTimeArrayItemFieldItems
 from .analyze_task_webhook_data_base import AnalyzeTaskWebhookDataBase
 from .analyze_task_webhook_error import AnalyzeTaskWebhookError
 from .analyze_task_webhook_event_base import AnalyzeTaskWebhookEventBase
@@ -383,6 +383,10 @@ from .text_param_format import TextParamFormat, TextParamFormat_JsonSchema, Text
 from .text_response_format_json_schema import TextResponseFormatJsonSchema
 from .text_response_format_text import TextResponseFormatText
 from .thumbnail_url import ThumbnailUrl
+from .time_array_item_field import TimeArrayItemField
+from .time_array_item_field_items import TimeArrayItemFieldItems
+from .time_array_item_field_items_type import TimeArrayItemFieldItemsType
+from .time_array_item_field_type import TimeArrayItemFieldType
 from .time_based_metadata_entry import TimeBasedMetadataEntry
 from .token_usage import TokenUsage
 from .total_inner_matches import TotalInnerMatches
@@ -432,6 +436,7 @@ __all__ = [
     "AnalyzeBatchStatusResponse",
     "AnalyzeBatchSummary",
     "AnalyzeBatchSummaryAnalysisMode",
+    "AnalyzeImageInput",
     "AnalyzeMaxTokens",
     "AnalyzePromptV2",
     "AnalyzeRequestModelName",
@@ -445,6 +450,7 @@ __all__ = [
     "AnalyzeTaskFailedWebhookDataStatus",
     "AnalyzeTaskFailedWebhookEvent",
     "AnalyzeTaskFailedWebhookEventType",
+    "AnalyzeTaskMediaSource",
     "AnalyzeTaskReadyWebhookData",
     "AnalyzeTaskReadyWebhookDataStatus",
     "AnalyzeTaskReadyWebhookEvent",
@@ -452,20 +458,24 @@ __all__ = [
     "AnalyzeTaskResponse",
     "AnalyzeTaskResponseRequestParams",
     "AnalyzeTaskResponseRequestParamsAnalysisMode",
+    "AnalyzeTaskResponseRequestParamsMaxTokens",
+    "AnalyzeTaskResponseRequestParamsMaxTokensOne",
     "AnalyzeTaskResponseRequestParamsPromptV2",
-    "AnalyzeTaskResponseRequestParamsPromptV2MediaSourcesItem",
     "AnalyzeTaskResponseRequestParamsResponseFormat",
     "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem",
-    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem",
-    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItemItems",
-    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem",
+    "AnalyzeTaskResponseRequestParamsResponseFormatSegmentTimeFormat",
     "AnalyzeTaskResponseRequestParamsResponseFormatType",
     "AnalyzeTaskResponseVideoSource",
     "AnalyzeTaskResponseVideoSourceSystemMetadata",
     "AnalyzeTaskResponseVideoSourceType",
     "AnalyzeTaskResult",
     "AnalyzeTaskResultUsage",
+    "AnalyzeTaskSegmentField",
+    "AnalyzeTaskSegmentFieldFormat",
+    "AnalyzeTaskSegmentFieldItems",
     "AnalyzeTaskStatus",
+    "AnalyzeTaskTimeArrayItemField",
+    "AnalyzeTaskTimeArrayItemFieldItems",
     "AnalyzeTaskWebhookDataBase",
     "AnalyzeTaskWebhookError",
     "AnalyzeTaskWebhookEventBase",
@@ -792,6 +802,10 @@ __all__ = [
     "TextResponseFormatJsonSchema",
     "TextResponseFormatText",
     "ThumbnailUrl",
+    "TimeArrayItemField",
+    "TimeArrayItemFieldItems",
+    "TimeArrayItemFieldItemsType",
+    "TimeArrayItemFieldType",
     "TimeBasedMetadataEntry",
     "TokenUsage",
     "TotalInnerMatches",
