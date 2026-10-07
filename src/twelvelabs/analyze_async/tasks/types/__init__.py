@@ -3,16 +3,12 @@
 # isort: skip_file
 
 from .create_async_analyze_request_analysis_mode import CreateAsyncAnalyzeRequestAnalysisMode
-from .create_async_analyze_request_max_tokens import CreateAsyncAnalyzeRequestMaxTokens
-from .create_async_analyze_request_max_tokens_one import CreateAsyncAnalyzeRequestMaxTokensOne
 from .create_async_analyze_request_model_name import CreateAsyncAnalyzeRequestModelName
 from .tasks_list_request_analysis_mode import TasksListRequestAnalysisMode
 from .tasks_list_response import TasksListResponse
 
 __all__ = [
     "CreateAsyncAnalyzeRequestAnalysisMode",
-    "CreateAsyncAnalyzeRequestMaxTokens",
-    "CreateAsyncAnalyzeRequestMaxTokensOne",
     "CreateAsyncAnalyzeRequestModelName",
     "TasksListRequestAnalysisMode",
     "TasksListResponse",

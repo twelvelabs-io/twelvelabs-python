@@ -4,8 +4,6 @@
 
 from .types import (
     CreateAsyncAnalyzeRequestAnalysisMode,
-    CreateAsyncAnalyzeRequestMaxTokens,
-    CreateAsyncAnalyzeRequestMaxTokensOne,
     CreateAsyncAnalyzeRequestModelName,
     TasksListRequestAnalysisMode,
     TasksListResponse,
@@ -13,8 +11,6 @@ from .types import (
 
 __all__ = [
     "CreateAsyncAnalyzeRequestAnalysisMode",
-    "CreateAsyncAnalyzeRequestMaxTokens",
-    "CreateAsyncAnalyzeRequestMaxTokensOne",
     "CreateAsyncAnalyzeRequestModelName",
     "TasksListRequestAnalysisMode",
     "TasksListResponse",

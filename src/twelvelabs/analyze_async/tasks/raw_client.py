@@ -16,7 +16,6 @@ from ...errors.forbidden_error import ForbiddenError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...errors.unauthorized_error import UnauthorizedError
-from ...types.analyze_image_input import AnalyzeImageInput
 from ...types.analyze_prompt_v_2 import AnalyzePromptV2
 from ...types.analyze_task_response import AnalyzeTaskResponse
 from ...types.analyze_task_status import AnalyzeTaskStatus
@@ -27,7 +26,6 @@ from ...types.create_analyze_task_response import CreateAnalyzeTaskResponse
 from ...types.flat_error_response import FlatErrorResponse
 from ...types.video_context import VideoContext
 from .types.create_async_analyze_request_analysis_mode import CreateAsyncAnalyzeRequestAnalysisMode
-from .types.create_async_analyze_request_max_tokens import CreateAsyncAnalyzeRequestMaxTokens
 from .types.create_async_analyze_request_model_name import CreateAsyncAnalyzeRequestModelName
 from .types.tasks_list_request_analysis_mode import TasksListRequestAnalysisMode
 from .types.tasks_list_response import TasksListResponse
@@ -130,15 +128,14 @@ class RawTasksClient:
     def create(
         self,
         *,
+        video: VideoContext,
         model_name: typing.Optional[CreateAsyncAnalyzeRequestModelName] = OMIT,
         custom_id: typing.Optional[str] = OMIT,
-        video: typing.Optional[VideoContext] = OMIT,
-        image: typing.Optional[typing.Sequence[AnalyzeImageInput]] = OMIT,
         prompt: typing.Optional[str] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         analysis_mode: typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        max_tokens: typing.Optional[CreateAsyncAnalyzeRequestMaxTokens] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         response_format: typing.Optional[AsyncResponseFormat] = OMIT,
         min_segment_duration: typing.Optional[float] = OMIT,
         max_segment_duration: typing.Optional[float] = OMIT,
@@ -147,37 +144,25 @@ class RawTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateAnalyzeTaskResponse]:
         """
-        This method analyzes a video or one or more images asynchronously. Each request must contain a video or one or more images, but not both.
-
-        The method supports two analysis modes:
-
-        - **General analysis**: Prompt-based text generation with a video or one or more images.
-        - **Video segmentation**: Timestamped metadata with custom segment definitions.
+        This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
-        **Videos**
         - The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
-
-        **Images**
-        - You can provide one to twenty images per request.
-        - Formats: JPEG, PNG, WebP, GIF, and BMP.
-        - Maximum size: 20 MB per image.
-        - Maximum pixel count: 16,777,216 pixels per image (width × height).
         </Accordion>
 
         **When to use this method**:
-        - Generate custom text from your video or one or more images using a prompt (general analysis)
+        - Generate custom text from your video using a prompt (general analysis)
         - Extract timestamped metadata with custom segment definitions from your video
         - Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
-        - Process videos or images asynchronously without blocking your application
+        - Process videos asynchronously without blocking your application
 
         **Do not use this method for**:
-        - Videos or images for which you need immediate results or real-time streaming. Use the [`POST`](/v1.3/api-reference/analyze-videos/sync-analysis) method of the `/analyze` endpoint instead.
+        - Videos for which you need immediate results or real-time streaming. Use the [`POST`](/v1.3/api-reference/analyze-videos/sync-analysis) method of the `/analyze` endpoint instead.
 
-        Analyzing content asynchronously requires three steps:
+        Analyzing videos asynchronously requires three steps:
 
         1. Create an analysis task using this method. The platform returns a task identifier.
         2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
@@ -191,10 +176,11 @@ class RawTasksClient:
 
         Parameters
         ----------
+        video : VideoContext
+
         model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.6`: For details about this version, see the [Pegasus 1.6](/v1.3/docs/concepts/models/pegasus/pegasus-1-6) page.
-            - `pegasus1.5`: For details about this version, see the [Pegasus 1.5](/v1.3/docs/concepts/models/pegasus/pegasus-1-5) page.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.5`
 
@@ -210,17 +196,10 @@ class RawTasksClient:
 
             This field does not enforce uniqueness. You can submit multiple tasks with the same `custom_id`. To prevent duplicate task creation, use an `Idempotency-Key` header instead.
 
-        video : typing.Optional[VideoContext]
-
-        image : typing.Optional[typing.Sequence[AnalyzeImageInput]]
-            A list of up to twenty objects containing the images to analyze. For each image, include exactly one source. Requires Pegasus 1.6. Using any other model returns a `parameter_invalid` error.
-
-            Mutually exclusive with the `video` and `prompt_v2` parameters. The `prompt` parameter is required when you provide images.
-
         prompt : typing.Optional[str]
-            Natural-language instructions for analyzing the video or one or more images. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
+            Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
             **Examples**:
 
@@ -228,12 +207,12 @@ class RawTasksClient:
             - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt that uses `<@name>` placeholders to reference images. Mutually exclusive with the `prompt` and `image` parameters.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
-            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
-            The analysis mode for this task.
+            The analysis approach for this task.
             - `general`: Analyze the video and generate a response based on your prompt. Supports both free-form text and structured output via `response_format`.
             - `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `response_format.type` set to `segment_definitions`.
 
@@ -241,20 +220,15 @@ class RawTasksClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        max_tokens : typing.Optional[CreateAsyncAnalyzeRequestMaxTokens]
-            The maximum response length, in tokens. Provide an integer or the `unlimited` value.
-
-            The allowed integer range and default depend on the analysis mode:
+        max_tokens : typing.Optional[int]
+            The maximum response length, in tokens. The allowed range depends on the analysis mode:
 
             | Mode | Min | Max | Default |
             |------|-----|-----|---------|
             | `general` | 512 | 98,304 | 4,096 |
             | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
-            - **Integer**: With video segmentation, the task fails if the output exceeds the limit. No partial output is returned.
-            - **Unlimited**: Removes the token limit from video segmentation. It requires `analysis_mode` set to `time_based_metadata` and `model_name` set to `pegasus1.6`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
-
-              The platform extracts as many segments as it can. If it stops before extracting every segment, the task still completes with the `status` field set to `ready`. The `error` field contains the warning that the results may be incomplete.
+            With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
 
         response_format : typing.Optional[AsyncResponseFormat]
 
@@ -309,18 +283,13 @@ class RawTasksClient:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
-                "image": convert_and_respect_annotation_metadata(
-                    object_=image, annotation=typing.Sequence[AnalyzeImageInput], direction="write"
-                ),
                 "prompt": prompt,
                 "prompt_v2": convert_and_respect_annotation_metadata(
                     object_=prompt_v_2, annotation=AnalyzePromptV2, direction="write"
                 ),
                 "analysis_mode": analysis_mode,
                 "temperature": temperature,
-                "max_tokens": convert_and_respect_annotation_metadata(
-                    object_=max_tokens, annotation=CreateAsyncAnalyzeRequestMaxTokens, direction="write"
-                ),
+                "max_tokens": max_tokens,
                 "response_format": convert_and_respect_annotation_metadata(
                     object_=response_format, annotation=AsyncResponseFormat, direction="write"
                 ),
@@ -689,15 +658,14 @@ class AsyncRawTasksClient:
     async def create(
         self,
         *,
+        video: VideoContext,
         model_name: typing.Optional[CreateAsyncAnalyzeRequestModelName] = OMIT,
         custom_id: typing.Optional[str] = OMIT,
-        video: typing.Optional[VideoContext] = OMIT,
-        image: typing.Optional[typing.Sequence[AnalyzeImageInput]] = OMIT,
         prompt: typing.Optional[str] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         analysis_mode: typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
-        max_tokens: typing.Optional[CreateAsyncAnalyzeRequestMaxTokens] = OMIT,
+        max_tokens: typing.Optional[int] = OMIT,
         response_format: typing.Optional[AsyncResponseFormat] = OMIT,
         min_segment_duration: typing.Optional[float] = OMIT,
         max_segment_duration: typing.Optional[float] = OMIT,
@@ -706,37 +674,25 @@ class AsyncRawTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateAnalyzeTaskResponse]:
         """
-        This method analyzes a video or one or more images asynchronously. Each request must contain a video or one or more images, but not both.
-
-        The method supports two analysis modes:
-
-        - **General analysis**: Prompt-based text generation with a video or one or more images.
-        - **Video segmentation**: Timestamped metadata with custom segment definitions.
+        This method asynchronously analyzes your videos. It supports two analysis modes: general analysis (prompt-based text generation) and video segmentation with custom segment definitions.
 
         <Accordion title="Input requirements">
-        **Videos**
         - The video can be up to 2 hours long, or up to 4 hours when you analyze only a portion of it. You can analyze between 1 second and 2 hours of the video. HLS and base64 videos are limited to 2 hours.
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
-
-        **Images**
-        - You can provide one to twenty images per request.
-        - Formats: JPEG, PNG, WebP, GIF, and BMP.
-        - Maximum size: 20 MB per image.
-        - Maximum pixel count: 16,777,216 pixels per image (width × height).
         </Accordion>
 
         **When to use this method**:
-        - Generate custom text from your video or one or more images using a prompt (general analysis)
+        - Generate custom text from your video using a prompt (general analysis)
         - Extract timestamped metadata with custom segment definitions from your video
         - Analyze videos longer than 1 hour, or a portion of a video up to 4 hours long
-        - Process videos or images asynchronously without blocking your application
+        - Process videos asynchronously without blocking your application
 
         **Do not use this method for**:
-        - Videos or images for which you need immediate results or real-time streaming. Use the [`POST`](/v1.3/api-reference/analyze-videos/sync-analysis) method of the `/analyze` endpoint instead.
+        - Videos for which you need immediate results or real-time streaming. Use the [`POST`](/v1.3/api-reference/analyze-videos/sync-analysis) method of the `/analyze` endpoint instead.
 
-        Analyzing content asynchronously requires three steps:
+        Analyzing videos asynchronously requires three steps:
 
         1. Create an analysis task using this method. The platform returns a task identifier.
         2. Poll the status of the task using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint. Wait until the status is `ready`, `failed`, or `canceled`.
@@ -750,10 +706,11 @@ class AsyncRawTasksClient:
 
         Parameters
         ----------
+        video : VideoContext
+
         model_name : typing.Optional[CreateAsyncAnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.6`: For details about this version, see the [Pegasus 1.6](/v1.3/docs/concepts/models/pegasus/pegasus-1-6) page.
-            - `pegasus1.5`: For details about this version, see the [Pegasus 1.5](/v1.3/docs/concepts/models/pegasus/pegasus-1-5) page.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation. See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.5`
 
@@ -769,17 +726,10 @@ class AsyncRawTasksClient:
 
             This field does not enforce uniqueness. You can submit multiple tasks with the same `custom_id`. To prevent duplicate task creation, use an `Idempotency-Key` header instead.
 
-        video : typing.Optional[VideoContext]
-
-        image : typing.Optional[typing.Sequence[AnalyzeImageInput]]
-            A list of up to twenty objects containing the images to analyze. For each image, include exactly one source. Requires Pegasus 1.6. Using any other model returns a `parameter_invalid` error.
-
-            Mutually exclusive with the `video` and `prompt_v2` parameters. The `prompt` parameter is required when you provide images.
-
         prompt : typing.Optional[str]
-            Natural-language instructions for analyzing the video or one or more images. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
+            Natural-language instructions for analyzing the video. Required for general analysis (prompt-based text generation). Not supported when `analysis_mode` is `time_based_metadata`. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
             **Examples**:
 
@@ -787,12 +737,12 @@ class AsyncRawTasksClient:
             - I want to generate a description for my video with the following format: Title of the video, followed by a summary in 2-3 sentences, highlighting the main topic, key events, and concluding remarks.
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt that uses `<@name>` placeholders to reference images. Mutually exclusive with the `prompt` and `image` parameters.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
-            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         analysis_mode : typing.Optional[CreateAsyncAnalyzeRequestAnalysisMode]
-            The analysis mode for this task.
+            The analysis approach for this task.
             - `general`: Analyze the video and generate a response based on your prompt. Supports both free-form text and structured output via `response_format`.
             - `time_based_metadata`: Segment the video into time-based intervals and extract custom metadata for each segment. Requires `response_format.type` set to `segment_definitions`.
 
@@ -800,20 +750,15 @@ class AsyncRawTasksClient:
 
         temperature : typing.Optional[AnalyzeTemperature]
 
-        max_tokens : typing.Optional[CreateAsyncAnalyzeRequestMaxTokens]
-            The maximum response length, in tokens. Provide an integer or the `unlimited` value.
-
-            The allowed integer range and default depend on the analysis mode:
+        max_tokens : typing.Optional[int]
+            The maximum response length, in tokens. The allowed range depends on the analysis mode:
 
             | Mode | Min | Max | Default |
             |------|-----|-----|---------|
             | `general` | 512 | 98,304 | 4,096 |
             | `time_based_metadata` | 2,048 | 98,304 | 32,768 |
 
-            - **Integer**: With video segmentation, the task fails if the output exceeds the limit. No partial output is returned.
-            - **Unlimited**: Removes the token limit from video segmentation. It requires `analysis_mode` set to `time_based_metadata` and `model_name` set to `pegasus1.6`. Mutually exclusive with `response_format.segment_definitions[].time_ranges`.
-
-              The platform extracts as many segments as it can. If it stops before extracting every segment, the task still completes with the `status` field set to `ready`. The `error` field contains the warning that the results may be incomplete.
+            With video segmentation, if the response needs more tokens than `max_tokens` allows, the task fails and no partial output is returned.
 
         response_format : typing.Optional[AsyncResponseFormat]
 
@@ -868,18 +813,13 @@ class AsyncRawTasksClient:
                 "video": convert_and_respect_annotation_metadata(
                     object_=video, annotation=VideoContext, direction="write"
                 ),
-                "image": convert_and_respect_annotation_metadata(
-                    object_=image, annotation=typing.Sequence[AnalyzeImageInput], direction="write"
-                ),
                 "prompt": prompt,
                 "prompt_v2": convert_and_respect_annotation_metadata(
                     object_=prompt_v_2, annotation=AnalyzePromptV2, direction="write"
                 ),
                 "analysis_mode": analysis_mode,
                 "temperature": temperature,
-                "max_tokens": convert_and_respect_annotation_metadata(
-                    object_=max_tokens, annotation=CreateAsyncAnalyzeRequestMaxTokens, direction="write"
-                ),
+                "max_tokens": max_tokens,
                 "response_format": convert_and_respect_annotation_metadata(
                     object_=response_format, annotation=AsyncResponseFormat, direction="write"
                 ),

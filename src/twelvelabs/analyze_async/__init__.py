@@ -11,8 +11,6 @@ from .batches import (
 )
 from .tasks import (
     CreateAsyncAnalyzeRequestAnalysisMode,
-    CreateAsyncAnalyzeRequestMaxTokens,
-    CreateAsyncAnalyzeRequestMaxTokensOne,
     CreateAsyncAnalyzeRequestModelName,
     TasksListRequestAnalysisMode,
     TasksListResponse,
@@ -24,8 +22,6 @@ __all__ = [
     "CreateAnalyzeBatchRequestAnalysisMode",
     "CreateAnalyzeBatchRequestModelName",
     "CreateAsyncAnalyzeRequestAnalysisMode",
-    "CreateAsyncAnalyzeRequestMaxTokens",
-    "CreateAsyncAnalyzeRequestMaxTokensOne",
     "CreateAsyncAnalyzeRequestModelName",
     "TasksListRequestAnalysisMode",
     "TasksListResponse",

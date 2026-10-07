@@ -7,9 +7,6 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .analyze_task_response_request_params_response_format_segment_definitions_item import (
     AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem,
 )
-from .analyze_task_response_request_params_response_format_segment_time_format import (
-    AnalyzeTaskResponseRequestParamsResponseFormatSegmentTimeFormat,
-)
 from .analyze_task_response_request_params_response_format_type import (
     AnalyzeTaskResponseRequestParamsResponseFormatType,
 )
@@ -27,13 +24,6 @@ class AnalyzeTaskResponseRequestParamsResponseFormat(UniversalBaseModel):
     
     - [List](/v1.3/api-reference/analyze-videos/list-async-analysis-tasks): Omitted.
     - [Retrieve](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results): Returns the full schema.
-    """
-
-    segment_time_format: typing.Optional[AnalyzeTaskResponseRequestParamsResponseFormatSegmentTimeFormat] = (
-        pydantic.Field(default=None)
-    )
-    """
-    The `segment_time_format` value you set. Omitted when you did not set it. Automatic boundaries are then returned as JSON numbers in seconds.
     """
 
     segment_definitions: typing.Optional[

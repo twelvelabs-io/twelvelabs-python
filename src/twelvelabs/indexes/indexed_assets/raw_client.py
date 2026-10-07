@@ -260,7 +260,7 @@ class RawIndexedAssetsClient:
 
         Your asset must meet the requirements based on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
-        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#input-requirements).
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
         If you want to both search and analyze your videos, the most restrictive requirements apply.
 
@@ -881,7 +881,7 @@ class AsyncRawIndexedAssetsClient:
 
         Your asset must meet the requirements based on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
-        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#input-requirements).
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements).
 
         If you want to both search and analyze your videos, the most restrictive requirements apply.
 

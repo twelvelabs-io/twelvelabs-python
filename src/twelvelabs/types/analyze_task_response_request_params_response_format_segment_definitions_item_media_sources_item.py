@@ -4,15 +4,13 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .segment_field_items_type import SegmentFieldItemsType
 
 
-class SegmentFieldItems(UniversalBaseModel):
-    """
-    Required when `type` is `array`. Specifies the type of array elements. Not supported when `type` is `timestamp`.
-    """
-
-    type: SegmentFieldItemsType
+class AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem(UniversalBaseModel):
+    name: str
+    media_type: str
+    url: typing.Optional[str] = None
+    asset_id: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

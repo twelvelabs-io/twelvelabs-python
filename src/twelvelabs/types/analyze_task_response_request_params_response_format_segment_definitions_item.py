@@ -4,16 +4,24 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .analyze_task_media_source import AnalyzeTaskMediaSource
-from .analyze_task_segment_field import AnalyzeTaskSegmentField
+from .analyze_task_response_request_params_response_format_segment_definitions_item_fields_item import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem,
+)
+from .analyze_task_response_request_params_response_format_segment_definitions_item_media_sources_item import (
+    AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem,
+)
 from .analyze_time_range import AnalyzeTimeRange
 
 
 class AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItem(UniversalBaseModel):
     id: str
     description: str
-    fields: typing.Optional[typing.List[AnalyzeTaskSegmentField]] = None
-    media_sources: typing.Optional[typing.List[AnalyzeTaskMediaSource]] = None
+    fields: typing.Optional[
+        typing.List[AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemFieldsItem]
+    ] = None
+    media_sources: typing.Optional[
+        typing.List[AnalyzeTaskResponseRequestParamsResponseFormatSegmentDefinitionsItemMediaSourcesItem]
+    ] = None
     time_ranges: typing.Optional[typing.List[AnalyzeTimeRange]] = pydantic.Field(default=None)
     """
     The time ranges for this segment definition. Present only when the task was created with `time_ranges`.

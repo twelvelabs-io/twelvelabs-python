@@ -12,7 +12,7 @@ from ..core.serialization import FieldMetadata
 
 class VideoContext_Url(UniversalBaseModel):
     """
-    An object specifying the source of the video content. Include exactly one source. Mutually exclusive with the `image` parameter.
+    An object specifying the source of the video content. Include exactly one source.
     """
 
     type: typing.Literal["url"] = "url"
@@ -30,7 +30,7 @@ class VideoContext_Url(UniversalBaseModel):
 
 class VideoContext_AssetId(UniversalBaseModel):
     """
-    An object specifying the source of the video content. Include exactly one source. Mutually exclusive with the `image` parameter.
+    An object specifying the source of the video content. Include exactly one source.
     """
 
     type: typing.Literal["asset_id"] = "asset_id"
@@ -48,7 +48,7 @@ class VideoContext_AssetId(UniversalBaseModel):
 
 class VideoContext_Base64String(UniversalBaseModel):
     """
-    An object specifying the source of the video content. Include exactly one source. Mutually exclusive with the `image` parameter.
+    An object specifying the source of the video content. Include exactly one source.
     """
 
     type: typing.Literal["base64_string"] = "base64_string"

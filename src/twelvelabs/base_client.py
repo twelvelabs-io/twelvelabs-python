@@ -24,7 +24,6 @@ from .raw_base_client import AsyncRawBaseClient, RawBaseClient
 from .responses.client import AsyncResponsesClient, ResponsesClient
 from .search.client import AsyncSearchClient, SearchClient
 from .tasks.client import AsyncTasksClient, TasksClient
-from .types.analyze_image_input import AnalyzeImageInput
 from .types.analyze_prompt_v_2 import AnalyzePromptV2
 from .types.analyze_request_model_name import AnalyzeRequestModelName
 from .types.analyze_stream_request_model_name import AnalyzeStreamRequestModelName
@@ -136,7 +135,6 @@ class BaseClient:
         *,
         model_name: typing.Optional[AnalyzeStreamRequestModelName] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
-        image: typing.Optional[typing.Sequence[AnalyzeImageInput]] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
@@ -147,25 +145,18 @@ class BaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[StreamAnalyzeResponse]:
         """
-        This method analyzes a video or one or more images and returns the results directly in the response. Each request must contain a video or one or more images, but not both. You can use general analysis (prompt-based text generation) with either media type.
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        **Videos**
         - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
-
-        **Images**
-        - You can provide one to twenty images per request.
-        - Formats: JPEG, PNG, WebP, GIF, and BMP.
-        - Maximum size: 20 MB per image.
-        - Maximum pixel count: 16,777,216 pixels per image (width × height).
         </Accordion>
 
         **When to use this method**:
-        - Analyze videos up to 1 hour, or analyze images
+        - Analyze videos up to 1 hour
         - Retrieve immediate results without polling for task completion
         - Stream text fragments in real time for immediate processing and feedback
 
@@ -183,27 +174,21 @@ class BaseClient:
         ----------
         model_name : typing.Optional[AnalyzeStreamRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.6`: For details about this version, see the [Pegasus 1.6](/v1.3/docs/concepts/models/pegasus/pegasus-1-6) page.
-            - `pegasus1.5`: For details about this version, see the [Pegasus 1.5](/v1.3/docs/concepts/models/pegasus/pegasus-1-5) page.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
-        image : typing.Optional[typing.Sequence[AnalyzeImageInput]]
-            A list of up to twenty objects containing the images to analyze. For each image, include exactly one source. Requires Pegasus 1.6. Using any other model returns a `parameter_invalid` error.
-
-            Mutually exclusive with the `video` and `prompt_v2` parameters. The `prompt` parameter is required when you provide images.
-
         prompt : typing.Optional[AnalyzeTextPrompt]
             A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt that uses `<@name>` placeholders to reference images. Mutually exclusive with the `prompt` and `image` parameters.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
-            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         temperature : typing.Optional[AnalyzeTemperature]
 
@@ -253,7 +238,6 @@ class BaseClient:
         with self._raw_client.analyze_stream(
             model_name=model_name,
             video=video,
-            image=image,
             prompt=prompt,
             prompt_v_2=prompt_v_2,
             temperature=temperature,
@@ -270,7 +254,6 @@ class BaseClient:
         *,
         model_name: typing.Optional[AnalyzeRequestModelName] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
-        image: typing.Optional[typing.Sequence[AnalyzeImageInput]] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
@@ -281,25 +264,18 @@ class BaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
         """
-        This method analyzes a video or one or more images and returns the results directly in the response. Each request must contain a video or one or more images, but not both. You can use general analysis (prompt-based text generation) with either media type.
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        **Videos**
         - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
-
-        **Images**
-        - You can provide one to twenty images per request.
-        - Formats: JPEG, PNG, WebP, GIF, and BMP.
-        - Maximum size: 20 MB per image.
-        - Maximum pixel count: 16,777,216 pixels per image (width × height).
         </Accordion>
 
         **When to use this method**:
-        - Analyze videos up to 1 hour, or analyze images
+        - Analyze videos up to 1 hour
         - Retrieve immediate results without polling for task completion
         - Stream text fragments in real time for immediate processing and feedback
 
@@ -317,27 +293,21 @@ class BaseClient:
         ----------
         model_name : typing.Optional[AnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.6`: For details about this version, see the [Pegasus 1.6](/v1.3/docs/concepts/models/pegasus/pegasus-1-6) page.
-            - `pegasus1.5`: For details about this version, see the [Pegasus 1.5](/v1.3/docs/concepts/models/pegasus/pegasus-1-5) page.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
-        image : typing.Optional[typing.Sequence[AnalyzeImageInput]]
-            A list of up to twenty objects containing the images to analyze. For each image, include exactly one source. Requires Pegasus 1.6. Using any other model returns a `parameter_invalid` error.
-
-            Mutually exclusive with the `video` and `prompt_v2` parameters. The `prompt` parameter is required when you provide images.
-
         prompt : typing.Optional[AnalyzeTextPrompt]
             A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt that uses `<@name>` placeholders to reference images. Mutually exclusive with the `prompt` and `image` parameters.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
-            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         temperature : typing.Optional[AnalyzeTemperature]
 
@@ -385,7 +355,6 @@ class BaseClient:
         _response = self._raw_client.analyze(
             model_name=model_name,
             video=video,
-            image=image,
             prompt=prompt,
             prompt_v_2=prompt_v_2,
             temperature=temperature,
@@ -497,7 +466,6 @@ class AsyncBaseClient:
         *,
         model_name: typing.Optional[AnalyzeStreamRequestModelName] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
-        image: typing.Optional[typing.Sequence[AnalyzeImageInput]] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
@@ -508,25 +476,18 @@ class AsyncBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[StreamAnalyzeResponse]:
         """
-        This method analyzes a video or one or more images and returns the results directly in the response. Each request must contain a video or one or more images, but not both. You can use general analysis (prompt-based text generation) with either media type.
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        **Videos**
         - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
-
-        **Images**
-        - You can provide one to twenty images per request.
-        - Formats: JPEG, PNG, WebP, GIF, and BMP.
-        - Maximum size: 20 MB per image.
-        - Maximum pixel count: 16,777,216 pixels per image (width × height).
         </Accordion>
 
         **When to use this method**:
-        - Analyze videos up to 1 hour, or analyze images
+        - Analyze videos up to 1 hour
         - Retrieve immediate results without polling for task completion
         - Stream text fragments in real time for immediate processing and feedback
 
@@ -544,27 +505,21 @@ class AsyncBaseClient:
         ----------
         model_name : typing.Optional[AnalyzeStreamRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.6`: For details about this version, see the [Pegasus 1.6](/v1.3/docs/concepts/models/pegasus/pegasus-1-6) page.
-            - `pegasus1.5`: For details about this version, see the [Pegasus 1.5](/v1.3/docs/concepts/models/pegasus/pegasus-1-5) page.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
-        image : typing.Optional[typing.Sequence[AnalyzeImageInput]]
-            A list of up to twenty objects containing the images to analyze. For each image, include exactly one source. Requires Pegasus 1.6. Using any other model returns a `parameter_invalid` error.
-
-            Mutually exclusive with the `video` and `prompt_v2` parameters. The `prompt` parameter is required when you provide images.
-
         prompt : typing.Optional[AnalyzeTextPrompt]
             A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt that uses `<@name>` placeholders to reference images. Mutually exclusive with the `prompt` and `image` parameters.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
-            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         temperature : typing.Optional[AnalyzeTemperature]
 
@@ -622,7 +577,6 @@ class AsyncBaseClient:
         async with self._raw_client.analyze_stream(
             model_name=model_name,
             video=video,
-            image=image,
             prompt=prompt,
             prompt_v_2=prompt_v_2,
             temperature=temperature,
@@ -640,7 +594,6 @@ class AsyncBaseClient:
         *,
         model_name: typing.Optional[AnalyzeRequestModelName] = OMIT,
         video: typing.Optional[VideoContext] = OMIT,
-        image: typing.Optional[typing.Sequence[AnalyzeImageInput]] = OMIT,
         prompt: typing.Optional[AnalyzeTextPrompt] = OMIT,
         prompt_v_2: typing.Optional[AnalyzePromptV2] = OMIT,
         temperature: typing.Optional[AnalyzeTemperature] = OMIT,
@@ -651,25 +604,18 @@ class AsyncBaseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> NonStreamAnalyzeResponse:
         """
-        This method analyzes a video or one or more images and returns the results directly in the response. Each request must contain a video or one or more images, but not both. You can use general analysis (prompt-based text generation) with either media type.
+        This method analyzes your videos and returns the results directly in the response. It supports general analysis (prompt-based text generation).
 
         <Accordion title="Input requirements">
-        **Videos**
         - Minimum duration: 1 second
         - Maximum duration: 1 hour
         - Formats: [FFmpeg supported formats](https://ffmpeg.org/ffmpeg-formats.html)
         - Resolution: 360x360 to 5184x2160 pixels
         - Aspect ratio: Between 1:1 and 1:2.4, or between 2.4:1 and 1:1.
-
-        **Images**
-        - You can provide one to twenty images per request.
-        - Formats: JPEG, PNG, WebP, GIF, and BMP.
-        - Maximum size: 20 MB per image.
-        - Maximum pixel count: 16,777,216 pixels per image (width × height).
         </Accordion>
 
         **When to use this method**:
-        - Analyze videos up to 1 hour, or analyze images
+        - Analyze videos up to 1 hour
         - Retrieve immediate results without polling for task completion
         - Stream text fragments in real time for immediate processing and feedback
 
@@ -687,27 +633,21 @@ class AsyncBaseClient:
         ----------
         model_name : typing.Optional[AnalyzeRequestModelName]
             The video understanding model to use for analysis.
-            - `pegasus1.6`: For details about this version, see the [Pegasus 1.6](/v1.3/docs/concepts/models/pegasus/pegasus-1-6) page.
-            - `pegasus1.5`: For details about this version, see the [Pegasus 1.5](/v1.3/docs/concepts/models/pegasus/pegasus-1-5) page.
+            - `pegasus1.5`: General analysis (prompt-based text generation) with video clipping, structured prompts with reference images, and video segmentation (async only). See the [Pegasus](/v1.3/docs/concepts/models/pegasus#context-window) page for token limits.
 
             **Default:** `pegasus1.5`
 
         video : typing.Optional[VideoContext]
 
-        image : typing.Optional[typing.Sequence[AnalyzeImageInput]]
-            A list of up to twenty objects containing the images to analyze. For each image, include exactly one source. Requires Pegasus 1.6. Using any other model returns a `parameter_invalid` error.
-
-            Mutually exclusive with the `video` and `prompt_v2` parameters. The `prompt` parameter is required when you provide images.
-
         prompt : typing.Optional[AnalyzeTextPrompt]
             A text prompt that guides the model on the desired format or content. To include reference images in your prompt, use the `prompt_v2` parameter instead. Mutually exclusive with the `prompt_v2` parameter.
 
-            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            Your prompts can be instructive or descriptive, or you can phrase them as questions. This text counts toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         prompt_v_2 : typing.Optional[AnalyzePromptV2]
-            A structured prompt that uses `<@name>` placeholders to reference images. Mutually exclusive with the `prompt` and `image` parameters.
+            A structured prompt with `<@name>` placeholders for referencing images. Mutually exclusive with the `prompt` parameter.
 
-            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+            The prompt text and reference images count toward the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
 
         temperature : typing.Optional[AnalyzeTemperature]
 
@@ -763,7 +703,6 @@ class AsyncBaseClient:
         _response = await self._raw_client.analyze(
             model_name=model_name,
             video=video,
-            image=image,
             prompt=prompt,
             prompt_v_2=prompt_v_2,
             temperature=temperature,

@@ -65,10 +65,9 @@ class AnalyzeTaskResponse(UniversalBaseModel):
     
     - **Task failure**: `status` is `failed`. The `message` field describes the failure reason. With video segmentation, a task can fail because the analysis reached the maximum response length or the context window before it could complete. The response contains no `result` object.
     - **Task cancellation**: `status` is `canceled` and a cancellation reason is available. A task newly canceled through the task cancellation endpoint has `code` set to `user_canceled`; canceling the task again does not change the reason.
-    - **Incomplete results warning** (video segmentation): `status` is `ready` and the output for some segments could not be recovered. The `message` field contains the warning that the results may be incomplete. The segments the platform extracted are in `result.data`.
     - **Truncation warning** (general analysis): `status` is `ready` and `result.finish_reason` is `length`. The `message` field describes the truncation cause (either the maximum response length was reached or the context window was reached). The partial output is in `result.data`.
     
-    Not set when `status` is `ready` and `result.finish_reason` is `stop`, except for the incomplete results warning. A canceled task can omit this field when no cancellation reason is available.
+    Not set when `status` is `ready` and `result.finish_reason` is `stop`. A canceled task can omit this field when no cancellation reason is available.
     """
 
     webhooks: typing.Optional[typing.List[AnalyzeTaskWebhookInfo]] = pydantic.Field(default=None)

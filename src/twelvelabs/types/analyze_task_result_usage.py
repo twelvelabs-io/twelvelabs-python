@@ -18,7 +18,7 @@ class AnalyzeTaskResultUsage(UniversalBaseModel):
 
     input_tokens: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The number of tokens the input consumed. Together with `output_tokens`, this value must fit within the [context window](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#context-window).
+    The number of tokens the input consumed. Together with `output_tokens`, this value must fit within the [context window](/v1.3/docs/concepts/models/pegasus#context-window).
     """
 
     if IS_PYDANTIC_V2:

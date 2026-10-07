@@ -12,8 +12,10 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.not_found_error import NotFoundError
 from ..types.knowledge_store_item import KnowledgeStoreItem
 from ..types.knowledge_store_item_asset_type import KnowledgeStoreItemAssetType
+from ..types.knowledge_store_metadata_edit_value import KnowledgeStoreMetadataEditValue
 from ..types.knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .types.knowledge_store_items_list_request_sort_by import KnowledgeStoreItemsListRequestSortBy
 from .types.knowledge_store_items_list_request_status_item import KnowledgeStoreItemsListRequestStatusItem
@@ -152,6 +154,7 @@ class RawKnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
+        item_metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[KnowledgeStoreItem]:
@@ -175,8 +178,11 @@ class RawKnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
+        item_metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. To change it after you create the item, use the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) or [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint.
+
         metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
-            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+            Deprecated. Use `item_metadata` instead. The item stores the pairs in its `item_metadata` field and not in its `metadata` field. Send `item_metadata` or `metadata`, not both. A request that sets both returns a `400` error.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -192,6 +198,9 @@ class RawKnowledgeStoreItemsClient:
             json={
                 "asset_type": asset_type,
                 "asset_id": asset_id,
+                "item_metadata": convert_and_respect_annotation_metadata(
+                    object_=item_metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
                 "metadata": convert_and_respect_annotation_metadata(
                     object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
                 ),
@@ -312,6 +321,184 @@ class RawKnowledgeStoreItemsClient:
                 return HttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def replace_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[KnowledgeStoreItem]:
+        """
+        This method replaces the entire `item_metadata` of the specified knowledge store item and returns the item. Unlike the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
+        - A key with a value creates or replaces that key.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
+
+        To clear all item metadata, send an empty object (`{}`) in the `item_metadata` field. The `metadata` field of the item does not change.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The complete `item_metadata` of the item after the request. Up to 50 pairs. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, or an array of strings. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[KnowledgeStoreItem]
+            The item metadata has been successfully replaced.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"knowledge-stores/{jsonable_encoder(knowledge_store_id)}/items/{jsonable_encoder(item_id)}/item-metadata",
+            method="PUT",
+            json={
+                "item_metadata": convert_and_respect_annotation_metadata(
+                    object_=item_metadata,
+                    annotation=typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+                    direction="write",
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeStoreItem,
+                    parse_obj_as(
+                        type_=KnowledgeStoreItem,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def update_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[KnowledgeStoreItem]:
+        """
+        This method updates the `item_metadata` of the specified knowledge store item and returns the item. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        The `metadata` field of the item does not change. If the merged result contains more than 50 pairs, the request fails.
+
+        To replace all item metadata in a single call, use the [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint instead.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The keys to change. Send at least one key. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, an array of strings, or `null` to delete the key. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[KnowledgeStoreItem]
+            The item metadata has been successfully updated.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"knowledge-stores/{jsonable_encoder(knowledge_store_id)}/items/{jsonable_encoder(item_id)}/item-metadata",
+            method="PATCH",
+            json={
+                "item_metadata": convert_and_respect_annotation_metadata(
+                    object_=item_metadata,
+                    annotation=typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+                    direction="write",
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeStoreItem,
+                    parse_obj_as(
+                        type_=KnowledgeStoreItem,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -459,6 +646,7 @@ class AsyncRawKnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
+        item_metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[KnowledgeStoreItem]:
@@ -482,8 +670,11 @@ class AsyncRawKnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
+        item_metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. To change it after you create the item, use the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) or [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint.
+
         metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
-            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+            Deprecated. Use `item_metadata` instead. The item stores the pairs in its `item_metadata` field and not in its `metadata` field. Send `item_metadata` or `metadata`, not both. A request that sets both returns a `400` error.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -499,6 +690,9 @@ class AsyncRawKnowledgeStoreItemsClient:
             json={
                 "asset_type": asset_type,
                 "asset_id": asset_id,
+                "item_metadata": convert_and_respect_annotation_metadata(
+                    object_=item_metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
+                ),
                 "metadata": convert_and_respect_annotation_metadata(
                     object_=metadata, annotation=typing.Dict[str, KnowledgeStoreMetadataValue], direction="write"
                 ),
@@ -619,6 +813,184 @@ class AsyncRawKnowledgeStoreItemsClient:
                 return AsyncHttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def replace_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[KnowledgeStoreItem]:
+        """
+        This method replaces the entire `item_metadata` of the specified knowledge store item and returns the item. Unlike the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
+        - A key with a value creates or replaces that key.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
+
+        To clear all item metadata, send an empty object (`{}`) in the `item_metadata` field. The `metadata` field of the item does not change.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The complete `item_metadata` of the item after the request. Up to 50 pairs. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, or an array of strings. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[KnowledgeStoreItem]
+            The item metadata has been successfully replaced.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"knowledge-stores/{jsonable_encoder(knowledge_store_id)}/items/{jsonable_encoder(item_id)}/item-metadata",
+            method="PUT",
+            json={
+                "item_metadata": convert_and_respect_annotation_metadata(
+                    object_=item_metadata,
+                    annotation=typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+                    direction="write",
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeStoreItem,
+                    parse_obj_as(
+                        type_=KnowledgeStoreItem,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def update_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[KnowledgeStoreItem]:
+        """
+        This method updates the `item_metadata` of the specified knowledge store item and returns the item. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        The `metadata` field of the item does not change. If the merged result contains more than 50 pairs, the request fails.
+
+        To replace all item metadata in a single call, use the [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint instead.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The keys to change. Send at least one key. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, an array of strings, or `null` to delete the key. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[KnowledgeStoreItem]
+            The item metadata has been successfully updated.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"knowledge-stores/{jsonable_encoder(knowledge_store_id)}/items/{jsonable_encoder(item_id)}/item-metadata",
+            method="PATCH",
+            json={
+                "item_metadata": convert_and_respect_annotation_metadata(
+                    object_=item_metadata,
+                    annotation=typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+                    direction="write",
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeStoreItem,
+                    parse_obj_as(
+                        type_=KnowledgeStoreItem,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

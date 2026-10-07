@@ -148,7 +148,7 @@ class AssetsClient:
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
-        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#input-requirements)
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
         - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
         - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
@@ -363,8 +363,7 @@ class AssetsClient:
         """
         This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
         - A key with a value creates or replaces that key.
-        - A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
-        - A key you omit from the request body is removed.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
 
         To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
 
@@ -625,7 +624,7 @@ class AsyncAssetsClient:
 
         **Additional requirements** depend on your workflow:
         - **Search**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#video-file-requirements)
-        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus/pegasus-1-6#input-requirements)
+        - **Video analysis**: [Pegasus requirements](/v1.3/docs/concepts/models/pegasus#input-requirements)
         - **Entity search**: [Marengo image requirements](/v1.3/docs/concepts/models/marengo/marengo-3-0#image-file-requirements)
         - **Create embeddings**: [Marengo requirements](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements)
 
@@ -874,8 +873,7 @@ class AsyncAssetsClient:
         """
         This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
         - A key with a value creates or replaces that key.
-        - A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
-        - A key you omit from the request body is removed.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
 
         To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
 

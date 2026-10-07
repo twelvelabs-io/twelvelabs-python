@@ -7,6 +7,7 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.knowledge_store_item import KnowledgeStoreItem
 from ..types.knowledge_store_item_asset_type import KnowledgeStoreItemAssetType
+from ..types.knowledge_store_metadata_edit_value import KnowledgeStoreMetadataEditValue
 from ..types.knowledge_store_metadata_value import KnowledgeStoreMetadataValue
 from .raw_client import AsyncRawKnowledgeStoreItemsClient, RawKnowledgeStoreItemsClient
 from .types.knowledge_store_items_list_request_sort_by import KnowledgeStoreItemsListRequestSortBy
@@ -134,6 +135,7 @@ class KnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
+        item_metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> KnowledgeStoreItem:
@@ -157,8 +159,11 @@ class KnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
+        item_metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. To change it after you create the item, use the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) or [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint.
+
         metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
-            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+            Deprecated. Use `item_metadata` instead. The item stores the pairs in its `item_metadata` field and not in its `metadata` field. Send `item_metadata` or `metadata`, not both. A request that sets both returns a `400` error.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -184,6 +189,7 @@ class KnowledgeStoreItemsClient:
             knowledge_store_id,
             asset_id=asset_id,
             asset_type=asset_type,
+            item_metadata=item_metadata,
             metadata=metadata,
             request_options=request_options,
         )
@@ -260,6 +266,114 @@ class KnowledgeStoreItemsClient:
         )
         """
         _response = self._raw_client.delete(knowledge_store_id, item_id, request_options=request_options)
+        return _response.data
+
+    def replace_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeStoreItem:
+        """
+        This method replaces the entire `item_metadata` of the specified knowledge store item and returns the item. Unlike the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
+        - A key with a value creates or replaces that key.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
+
+        To clear all item metadata, send an empty object (`{}`) in the `item_metadata` field. The `metadata` field of the item does not change.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The complete `item_metadata` of the item after the request. Up to 50 pairs. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, or an array of strings. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeStoreItem
+            The item metadata has been successfully replaced.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.knowledge_store_items.replace_knowledge_store_item_metadata(
+            knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+            item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+            item_metadata={"creator_handle": "@jane.doe", "view_count": 48210},
+        )
+        """
+        _response = self._raw_client.replace_knowledge_store_item_metadata(
+            knowledge_store_id, item_id, item_metadata=item_metadata, request_options=request_options
+        )
+        return _response.data
+
+    def update_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeStoreItem:
+        """
+        This method updates the `item_metadata` of the specified knowledge store item and returns the item. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        The `metadata` field of the item does not change. If the merged result contains more than 50 pairs, the request fails.
+
+        To replace all item metadata in a single call, use the [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint instead.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The keys to change. Send at least one key. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, an array of strings, or `null` to delete the key. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeStoreItem
+            The item metadata has been successfully updated.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.knowledge_store_items.update_knowledge_store_item_metadata(
+            knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+            item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+            item_metadata={"creator_handle": "@jane.doe", "view_count": 48210},
+        )
+        """
+        _response = self._raw_client.update_knowledge_store_item_metadata(
+            knowledge_store_id, item_id, item_metadata=item_metadata, request_options=request_options
+        )
         return _response.data
 
 
@@ -390,6 +504,7 @@ class AsyncKnowledgeStoreItemsClient:
         *,
         asset_id: str,
         asset_type: typing.Optional[KnowledgeStoreItemAssetType] = OMIT,
+        item_metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> KnowledgeStoreItem:
@@ -413,8 +528,11 @@ class AsyncKnowledgeStoreItemsClient:
         asset_type : typing.Optional[KnowledgeStoreItemAssetType]
             The type of item to create.
 
+        item_metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
+            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. To change it after you create the item, use the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) or [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint.
+
         metadata : typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]
-            Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+            Deprecated. Use `item_metadata` instead. The item stores the pairs in its `item_metadata` field and not in its `metadata` field. Send `item_metadata` or `metadata`, not both. A request that sets both returns a `400` error.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -448,6 +566,7 @@ class AsyncKnowledgeStoreItemsClient:
             knowledge_store_id,
             asset_id=asset_id,
             asset_type=asset_type,
+            item_metadata=item_metadata,
             metadata=metadata,
             request_options=request_options,
         )
@@ -540,4 +659,128 @@ class AsyncKnowledgeStoreItemsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(knowledge_store_id, item_id, request_options=request_options)
+        return _response.data
+
+    async def replace_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeStoreItem:
+        """
+        This method replaces the entire `item_metadata` of the specified knowledge store item and returns the item. Unlike the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
+        - A key with a value creates or replaces that key.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
+
+        To clear all item metadata, send an empty object (`{}`) in the `item_metadata` field. The `metadata` field of the item does not change.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The complete `item_metadata` of the item after the request. Up to 50 pairs. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, or an array of strings. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeStoreItem
+            The item metadata has been successfully replaced.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.knowledge_store_items.replace_knowledge_store_item_metadata(
+                knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+                item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+                item_metadata={"creator_handle": "@jane.doe", "view_count": 48210},
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.replace_knowledge_store_item_metadata(
+            knowledge_store_id, item_id, item_metadata=item_metadata, request_options=request_options
+        )
+        return _response.data
+
+    async def update_knowledge_store_item_metadata(
+        self,
+        knowledge_store_id: str,
+        item_id: str,
+        *,
+        item_metadata: typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeStoreItem:
+        """
+        This method updates the `item_metadata` of the specified knowledge store item and returns the item. The platform merges your changes with the existing metadata:
+        - A key with a value creates or replaces that key.
+        - A key set to `null` deletes that key.
+        - A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
+        - A key you omit from the request keeps its current value.
+
+        The `metadata` field of the item does not change. If the merged result contains more than 50 pairs, the request fails.
+
+        To replace all item metadata in a single call, use the [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint instead.
+
+        Parameters
+        ----------
+        knowledge_store_id : str
+            The unique identifier of the knowledge store.
+
+        item_id : str
+            The unique identifier of the knowledge store item.
+
+        item_metadata : typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+            The keys to change. Send at least one key. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, an array of strings, or `null` to delete the key. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeStoreItem
+            The item metadata has been successfully updated.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.knowledge_store_items.update_knowledge_store_item_metadata(
+                knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+                item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+                item_metadata={"creator_handle": "@jane.doe", "view_count": 48210},
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update_knowledge_store_item_metadata(
+            knowledge_store_id, item_id, item_metadata=item_metadata, request_options=request_options
+        )
         return _response.data
