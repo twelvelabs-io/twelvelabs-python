@@ -36,6 +36,8 @@ pip install twelvelabs
 
 The Embed v2 HTTP error payload is a flat object with `code` and `message`. Update custom error handling that expects nested fields. Marengo 3.5 tasks can return `queued` at creation, and response status values can expand over time. Keep a fallback for an unrecognized status.
 
+The generated task error model is now `EmbeddingTaskError`, replacing `EmbeddingTaskResponseError`. It has `message` and optional `code` and `parameter` fields.
+
 Embedding durations use floating-point seconds, including fractional values. Update code that assumes an integer duration.
 
 Use `client.create_embeddings` for the Embedding Batch API. Both `TwelveLabs` and `AsyncTwelveLabs` propagate malformed JSONL records, invalid result models, and transport failures while reading batch results, including through `with_raw_response`. A clean end of the stream does not prove it is complete: compare distinct item identifiers with the batch's `total_items` before treating retrieval as successful.
