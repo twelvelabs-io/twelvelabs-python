@@ -10,7 +10,9 @@ from ..core.serialization import FieldMetadata
 
 class ItemIdFilter(UniversalBaseModel):
     """
-    Narrows results to specific items. Provide exactly one operator: `eq` to match one item, or `in` to match any of the listed items.
+    Narrows results to specific items. Use `eq` to match one item or `in` to match any item in a list. Use `nin` to exclude any item in a list.
+
+    You cannot use `eq` and `in` together. You can use `nin` on its own or with either `eq` or `in`. If an item is listed in `nin` and selected by `eq` or `in`, the platform excludes it.
     """
 
     eq: typing.Optional[str] = pydantic.Field(default=None)
@@ -22,7 +24,12 @@ class ItemIdFilter(UniversalBaseModel):
         default=None
     )
     """
-    Match any item whose identifier is in this list.
+    Match any item with an identifier in this list.
+    """
+
+    nin: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Exclude every clip or image belonging to these items. You can list 1 to 20,000 item IDs.
     """
 
     if IS_PYDANTIC_V2:

@@ -12,9 +12,9 @@ class TemporalSegmentationDynamic(UniversalBaseModel):
     Divides the file into variable-length segments that align with scene or content boundaries. Use this for content-aware segmentation.
     """
 
-    dynamic: TemporalSegmentationDynamicDynamic = pydantic.Field()
+    dynamic: typing.Optional[TemporalSegmentationDynamicDynamic] = pydantic.Field(default=None)
     """
-    Configuration for dynamic segmentation. This object is required when `strategy` is `dynamic`.
+    Configuration for dynamic segmentation. If this object or `min_duration_sec` is omitted, the minimum duration defaults to 2 seconds.
     """
 
     if IS_PYDANTIC_V2:

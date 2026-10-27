@@ -9,8 +9,8 @@ from .enrichment_config_json_schema_json_schema_type import EnrichmentConfigJson
 
 class EnrichmentConfigJsonSchemaJsonSchema(UniversalBaseModel):
     """
-    A JSON Schema (draft 2020-12) that defines the structure of metadata to
-    extract from each video shot. The platform accepts only the JSON Schema keywords
+    A JSON Schema (<a href="https://json-schema.org/draft/2020-12" target="_blank">draft 2020-12</a>) that defines the structure of metadata to
+    extract. The platform accepts only the JSON Schema keywords
     listed below; unknown keywords return a `422` error. Keep schemas
     focused — deeply nested or overly complex schemas may degrade extraction quality.
 
@@ -23,13 +23,15 @@ class EnrichmentConfigJsonSchemaJsonSchema(UniversalBaseModel):
     | Array | `items`, `prefixItems`, `minItems`, `maxItems` |
     | Number | `minimum`, `maximum` |
     | String | `format` |
+    | Extraction | `granularity` |
 
     Notes:
 
     - The root `type` keyword must be `"object"`.
+    - The `granularity` keyword sets how often the platform extracts a top-level property. Use `shot` to extract a value for each shot of a video, `video` to extract one value for each video, or `image` to extract one value for each image. A shot is a continuous part of a video between two scene changes. The default is `shot`. The platform extracts `shot` and `video` properties only from videos, and `image` properties only from images. It returns `video` and `image` values in the [`enriched_metadata`](/v1.3/api-reference/knowledge-store-items/retrieve#response.body.enriched_metadata) field of the item. A `granularity` keyword on a nested property returns a `422` error.
     - Every entry under the `properties` keyword (including nested ones) must include a
       `description` field. This text guides extraction quality.
-    - The `required` keyword behaves as in standard JSON Schema.
+    - The `required` keyword behaves as in standard JSON Schema, at the granularity of each property: a required `shot` property has a value for each shot, and a required `video` property has one for each video.
     - The `additionalProperties` keyword accepts a boolean value (`true` or `false`). Use
       `false` to enforce strict shapes. The platform does not support schema-valued forms.
     - **Unknown keywords return `422` — they are not silently ignored.** If you

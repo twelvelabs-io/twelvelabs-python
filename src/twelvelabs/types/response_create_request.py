@@ -7,6 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .response_create_request_include_item import ResponseCreateRequestIncludeItem
 from .response_input_item import ResponseInputItem
 from .response_selection import ResponseSelection
+from .response_tool_input import ResponseToolInput
 from .text_param import TextParam
 
 
@@ -22,7 +23,8 @@ class ResponseCreateRequest(UniversalBaseModel):
 
     input: typing.List[ResponseInputItem] = pydantic.Field()
     """
-    Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+    User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+    Output items cannot be submitted as input. Use `session_id` to continue a conversation.
     """
 
     session_id: typing.Optional[str] = pydantic.Field(default=None)
@@ -51,6 +53,26 @@ class ResponseCreateRequest(UniversalBaseModel):
     stream: typing.Optional[bool] = pydantic.Field(default=None)
     """
     When `true`, the response is returned as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE).
+    """
+
+    tools: typing.Optional[typing.List[ResponseToolInput]] = pydantic.Field(default=None)
+    """
+    Tools that Jockey can use while it generates the response.
+    Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+    whether to use an available tool, so enabling web search does not guarantee
+    a search. To make a search more likely, explicitly tell Jockey what
+    information to look up in `input` or `instructions`.
+    
+    A prompt that asks Jockey to search the web does not enable web search by
+    itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+    public web sources, even when the prompt requests it. The `tools` setting
+    applies to each request on its own, including requests that continue a
+    session.
+    
+    This list does not control Jockey's built-in knowledge store operations.
+    If a requested tool is unavailable for the request, the request fails
+    with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+    tool from the `tools` array and retry.
     """
 
     selections: typing.Optional[typing.List[ResponseSelection]] = pydantic.Field(default=None)

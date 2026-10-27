@@ -5,12 +5,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .response_billing import ResponseBilling
 from .response_incomplete_details import ResponseIncompleteDetails
 from .response_object_object import ResponseObjectObject
 from .response_object_type import ResponseObjectType
 from .response_output_item import ResponseOutputItem
 from .response_status import ResponseStatus
-from .response_usage import ResponseUsage
 
 
 class ResponseObject(UniversalBaseModel):
@@ -63,10 +63,19 @@ class ResponseObject(UniversalBaseModel):
     output: typing.Optional[typing.List[ResponseOutputItem]] = pydantic.Field(default=None)
     """
     The response output items. By default, only the final message is included.
-    Set `include` to `["intermediate_outputs"]` in the request to receive function call items.
+    Set `include` to `["intermediate_outputs"]` to also receive intermediate
+    messages, function calls and results, and `jockey:web_search` items.
     """
 
-    usage: typing.Optional[ResponseUsage] = None
+    billing: typing.Optional[ResponseBilling] = pydantic.Field(default=None)
+    """
+    The billing information for this response. Only a finished response carries this object:
+    the last event of a stream (`response.completed` or `response.failed`) and the
+    non-streamed response. Earlier stream events do not carry it. This amount is
+    informational: it is the list price, before your plan and any discount on your account.
+    Your invoice is the authoritative record of charges.
+    """
+
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     The timestamp when the response was created.

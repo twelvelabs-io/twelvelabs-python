@@ -348,8 +348,8 @@ while True:
     if task.status == "ready":
         print(f"Embeddings: {len(task.data)}")
         break
-    if task.status == "failed":
-        raise RuntimeError(f"Embedding task failed: id={task.id}")
+    if task.status in ("failed", "canceled"):
+        raise RuntimeError(f"Embedding task {task.status}: id={task.id}")
     time.sleep(5)
 ```
 

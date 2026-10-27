@@ -18,12 +18,12 @@ class TimeBasedMetadataEntry(UniversalBaseModel):
 
     end: float = pydantic.Field()
     """
-    The end time of the entry in seconds, measured from the beginning of the asset.
+    The end time of the entry in seconds, measured from the beginning of the asset. Must be greater than or equal to the value of the `start` field. Equal values represent a point event.
     """
 
     text: str = pydantic.Field()
     """
-    The text to fold into the fused embedding of the overlapping segments.
+    The text to fold into the fused embedding of the overlapping segments. Must contain at least one non-whitespace character.
     """
 
     if IS_PYDANTIC_V2:

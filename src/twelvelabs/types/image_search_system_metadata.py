@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class ImageSearchSystemMetadata(UniversalBaseModel):
     """
-    System-generated media metadata for an image item in search results.
+    System-generated metadata for an image item in search results.
     """
 
     width: typing.Optional[int] = pydantic.Field(default=None)

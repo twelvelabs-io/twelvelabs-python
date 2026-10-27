@@ -12,6 +12,8 @@ from ...core.pagination import AsyncPager, BaseHttpResponse, SyncPager
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
+from ...errors.too_many_requests_error import TooManyRequestsError
+from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.media_embedding_task import MediaEmbeddingTask
 from .types.tasks_create_request_video_embedding_scope_item import TasksCreateRequestVideoEmbeddingScopeItem
 from .types.tasks_create_response import TasksCreateResponse
@@ -52,10 +54,10 @@ class RawTasksClient:
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
             Filter the embedding tasks by their current status.
@@ -269,6 +271,28 @@ class RawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -429,10 +453,10 @@ class AsyncRawTasksClient:
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
             Filter the embedding tasks by their current status.
@@ -640,6 +664,28 @@ class AsyncRawTasksClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

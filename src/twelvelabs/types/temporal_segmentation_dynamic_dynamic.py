@@ -8,15 +8,16 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class TemporalSegmentationDynamicDynamic(UniversalBaseModel):
     """
-    Configuration for dynamic segmentation. This object is required when `strategy` is `dynamic`.
+    Configuration for dynamic segmentation. If this object or `min_duration_sec` is omitted, the minimum duration defaults to 2 seconds.
     """
 
-    min_duration_sec: int = pydantic.Field()
+    min_duration_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
     The minimum duration in seconds for each segment.
     
     The platform divides the file into segments that are at least this long. Segments adapt to scene changes and content boundaries and may be longer than the minimum.
     
+    **Default**: `2`.
     **Min**: `2`.
     **Max**: `5`.
     """

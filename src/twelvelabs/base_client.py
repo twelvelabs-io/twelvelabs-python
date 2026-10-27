@@ -7,6 +7,7 @@ from .analyze_async.client import AnalyzeAsyncClient, AsyncAnalyzeAsyncClient
 from .assets.client import AssetsClient, AsyncAssetsClient
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .core.request_options import RequestOptions
+from .create_embeddings.client import AsyncCreateEmbeddingsClient, CreateEmbeddingsClient
 from .data_connectors.client import AsyncDataConnectorsClient, DataConnectorsClient
 from .embed.client import AsyncEmbedClient, EmbedClient
 from .entity_collections.client import AsyncEntityCollectionsClient, EntityCollectionsClient
@@ -17,6 +18,7 @@ from .knowledge_store_item_collections.client import (
     AsyncKnowledgeStoreItemCollectionsClient,
     KnowledgeStoreItemCollectionsClient,
 )
+from .knowledge_store_item_tags.client import AsyncKnowledgeStoreItemTagsClient, KnowledgeStoreItemTagsClient
 from .knowledge_store_items.client import AsyncKnowledgeStoreItemsClient, KnowledgeStoreItemsClient
 from .knowledge_stores.client import AsyncKnowledgeStoresClient, KnowledgeStoresClient
 from .multipart_upload.client import AsyncMultipartUploadClient, MultipartUploadClient
@@ -112,9 +114,11 @@ class BaseClient:
         self.entity_collections = EntityCollectionsClient(client_wrapper=self._client_wrapper)
         self.knowledge_stores = KnowledgeStoresClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_items = KnowledgeStoreItemsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_item_tags = KnowledgeStoreItemTagsClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_item_collections = KnowledgeStoreItemCollectionsClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
+        self.create_embeddings = CreateEmbeddingsClient(client_wrapper=self._client_wrapper)
         self.responses = ResponsesClient(client_wrapper=self._client_wrapper)
         self.data_connectors = DataConnectorsClient(client_wrapper=self._client_wrapper)
         self.imports = ImportsClient(client_wrapper=self._client_wrapper)
@@ -471,11 +475,13 @@ class AsyncBaseClient:
         self.entity_collections = AsyncEntityCollectionsClient(client_wrapper=self._client_wrapper)
         self.knowledge_stores = AsyncKnowledgeStoresClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_items = AsyncKnowledgeStoreItemsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_item_tags = AsyncKnowledgeStoreItemTagsClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_item_collections = AsyncKnowledgeStoreItemCollectionsClient(
             client_wrapper=self._client_wrapper
         )
         self.embed = AsyncEmbedClient(client_wrapper=self._client_wrapper)
         self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
+        self.create_embeddings = AsyncCreateEmbeddingsClient(client_wrapper=self._client_wrapper)
         self.responses = AsyncResponsesClient(client_wrapper=self._client_wrapper)
         self.data_connectors = AsyncDataConnectorsClient(client_wrapper=self._client_wrapper)
         self.imports = AsyncImportsClient(client_wrapper=self._client_wrapper)

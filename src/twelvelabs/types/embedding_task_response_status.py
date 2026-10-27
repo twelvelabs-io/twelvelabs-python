@@ -2,4 +2,6 @@
 
 import typing
 
-EmbeddingTaskResponseStatus = typing.Union[typing.Literal["processing", "ready", "failed"], typing.Any]
+from .embedding_task_response_status_zero import EmbeddingTaskResponseStatusZero
+
+EmbeddingTaskResponseStatus = typing.Union[EmbeddingTaskResponseStatusZero, str]

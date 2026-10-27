@@ -20,7 +20,7 @@ class DocumentSpatialSegmentation(UniversalBaseModel):
     
     **Values**:
     - `standard`: Returns one embedding for each page.
-    - `quadrants`: Divides each page into a 2×2 grid. Returns five embeddings: one for the whole page, and one for each quarter. The [`data[].quadrant`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.quadrant) field identifies which quarter each embedding represents. This field is `null` on the whole-page embedding. This strategy uses five times as many tokens as the `standard` strategy. It also counts each page five times against the page allowance of the file.
+    - `quadrants`: Divides each page into a 2×2 grid. Returns five embeddings: one for the whole page, and one for each quarter. The [`data[].quadrant`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.data.quadrant) field identifies which quarter each embedding represents. This field is omitted on the whole-page embedding. This strategy uses five times as many tokens as the `standard` strategy. It also counts each page five times against the page allowance of the file.
     
     **Default**: `standard`
     """

@@ -11,7 +11,7 @@ from .embedding_data_quadrant import EmbeddingDataQuadrant
 
 class EmbeddingData(UniversalBaseModel):
     """
-    An embedding with its metadata.
+    An embedding with its metadata. The platform omits an optional field that has no value.
     """
 
     embedding: typing.List[float] = pydantic.Field()
@@ -32,9 +32,10 @@ class EmbeddingData(UniversalBaseModel):
     - `visual`: Embedding based on visual content (a video, a page of a PDF file, or an image embedded asynchronously).
     - `audio`: Embedding based on audio content.
     - `text`: Embedding based on the text content of a PDF, plain text, or Markdown file embedded asynchronously.
-    - `transcription`: Embedding based on transcribed speech. Returned only for content embedded with Marengo 3.0.
+    - `transcription`: Embedding based on transcribed speech. Returned when the request uses Marengo 3.0.
     - `fused`: Embedding based on a combination of the modalities specified in the request. The platform returns this embedding only for video and audio input, and only when the `embedding_type` parameter includes the `fused_embedding` value.
-    - `null`: For text embeddings and images embedded synchronously.
+    
+    This field is omitted for synchronous text and image inputs.
     """
 
     embedding_scope: typing.Optional[EmbeddingDataEmbeddingScope] = pydantic.Field(default=None)
@@ -46,39 +47,40 @@ class EmbeddingData(UniversalBaseModel):
     - `page`: Embedding for one page of a PDF file embedded asynchronously, or for one quadrant of a page when the request sets [`document.segmentation.spatial.strategy`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.document.segmentation.spatial.strategy) to `quadrants`. With that strategy, five entries share the same scope and page numbers, so read the `quadrant` field to tell them apart: the whole-page entry has no `quadrant` value.
     - `chunk`: Embedding for one chunk of whole sentences from a plain text or Markdown file embedded asynchronously. Read the `chunk_index` field for the position of the chunk in the file.
     - `asset`: Embedding for the entire file. For video and audio input, use this scope for content up to 10-30 seconds to maintain optimal performance.
-    - `null`: For text embeddings and images embedded synchronously.
+    
+    This field is omitted for synchronous text and image inputs.
     
     When you request the `local` scope, the platform returns `clip` for audio and video, `page` for PDF files, and `chunk` for plain text and Markdown files. For audio, video, and document input, the `metadata.embedding_scopes` field contains the scopes you requested.
     """
 
     start_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The start time in seconds for this segment. This field is `null` for text and image embeddings.
+    The start time in seconds for this segment. The platform omits this field when no temporal span applies.
     """
 
     end_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The end time in seconds for this segment. This field is `null` for text and image embeddings.
+    The end time in seconds for this segment. The platform omits this field when no temporal span applies.
     """
 
     start_page_number: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The first page this embedding covers, counting from 1. The platform returns this field only for page-level embeddings of a PDF file, and `null` in every other case.
+    The first page this embedding covers, counting from 1. The platform returns this field only for page-level embeddings of a PDF file, and omits it in every other case.
     """
 
     end_page_number: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The last page this embedding covers, counting from 1 and including that page. This field matches the `start_page_number` field when the embedding covers a single page. The platform returns this field only for page-level embeddings of a PDF file, and `null` in every other case.
+    The last page this embedding covers, counting from 1 and including that page. This field matches the `start_page_number` field when the embedding covers a single page. The platform returns this field only for page-level embeddings of a PDF file, and omits it in every other case.
     """
 
     quadrant: typing.Optional[EmbeddingDataQuadrant] = pydantic.Field(default=None)
     """
-    The quarter of the page this embedding covers. The platform returns this field only when the request sets [`document.segmentation.spatial.strategy`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.document.segmentation.spatial.strategy) to `quadrants`, and only on the four quadrant embeddings of a page. This field is `null` on the whole-page embedding and in every other case.
+    The quarter of the page this embedding covers. The platform returns this field only when the request sets [`document.segmentation.spatial.strategy`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.document.segmentation.spatial.strategy) to the `quadrants` value, and only on the four quadrant embeddings of a page. This field is omitted on the whole-page embedding and whenever no quadrant applies.
     """
 
     chunk_index: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The position of this chunk in the file, counting from 0. The platform returns this field only on `chunk`-scope embeddings of a plain text or Markdown file, and `null` in every other case.
+    The position of this chunk in the file, counting from 0. The platform returns this field only for embeddings of a plain text or Markdown file when the `embedding_scope` field is `chunk`, and omits it in every other case.
     
     Read this field rather than the position of the entry in the `data` array, which provides no ordering guarantee.
     """

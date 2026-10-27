@@ -27,7 +27,7 @@ class BatchResultItem(UniversalBaseModel):
     status: BatchItemStatus
     data: typing.Optional[AnalyzeTaskResult] = pydantic.Field(default=None)
     """
-    Contains the analysis result for an item in the `ready` status. The analysis text is in this object's nested `data` field. The envelope uses the same schema as the `result` field in the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
+    Contains the analysis result for an item in the `ready` status. The analysis text is in the nested `data` field of this object. This object uses the same schema as the `result` field in the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
     """
 
     error: typing.Optional[BatchItemError] = None

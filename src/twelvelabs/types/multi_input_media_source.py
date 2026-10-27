@@ -31,9 +31,9 @@ class MultiInputMediaSource(UniversalBaseModel):
     
     **Values**:
     - `image`: An image file. Works with both Marengo 3.0 and Marengo 3.5.
-    - `video`: A video file. Requires Marengo 3.5.
-    - `audio`: An audio file. Requires Marengo 3.5.
-    - `document`: A PDF (`.pdf`), plain text (`.txt`), or Markdown (`.md`) file. Requires Marengo 3.5. For the rules on combining a document with other sources, see the [`multi_input`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#request.body.multi-input) field.
+    - `video`: A video file. Requires the Marengo 3.5 native input format.
+    - `audio`: An audio file. Requires the Marengo 3.5 native input format.
+    - `document`: A PDF (`.pdf`), plain text (`.txt`), or Markdown (`.md`) file. Requires the Marengo 3.5 native input format. For the rules on combining a document with other sources, see the [`multi_input`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#request.body.multi-input) field.
     """
 
     url: typing.Optional[str] = pydantic.Field(default=None)

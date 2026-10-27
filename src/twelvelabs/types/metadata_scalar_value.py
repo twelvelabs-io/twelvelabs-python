@@ -2,4 +2,4 @@
 
 import typing
 
-ResponseOutputItemRole = typing.Union[typing.Literal["assistant"], typing.Any]
+MetadataScalarValue = typing.Union[str, int, float, bool]

@@ -2,4 +2,6 @@
 
 import typing
 
-TasksCreateResponseStatus = typing.Union[typing.Literal["processing"], typing.Any]
+from .tasks_create_response_status_zero import TasksCreateResponseStatusZero
+
+TasksCreateResponseStatus = typing.Union[TasksCreateResponseStatusZero, str]

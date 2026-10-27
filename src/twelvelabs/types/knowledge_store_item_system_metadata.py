@@ -10,7 +10,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class KnowledgeStoreItemSystemMetadata_Video(UniversalBaseModel):
     """
-    System-generated media metadata for the source asset. Its `asset_type` field
+    System-generated metadata for the source asset. Its `asset_type` field
     always matches the item's top-level `asset_type` field.
     """
 
@@ -35,7 +35,7 @@ class KnowledgeStoreItemSystemMetadata_Video(UniversalBaseModel):
 
 class KnowledgeStoreItemSystemMetadata_Image(UniversalBaseModel):
     """
-    System-generated media metadata for the source asset. Its `asset_type` field
+    System-generated metadata for the source asset. Its `asset_type` field
     always matches the item's top-level `asset_type` field.
     """
 

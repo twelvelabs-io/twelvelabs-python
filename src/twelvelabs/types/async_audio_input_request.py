@@ -42,12 +42,12 @@ class AsyncAudioInputRequest(UniversalBaseModel):
     """
     Specifies how the platform divides the audio into segments.
     
-    The structure of this object depends on the model version:
+    The accepted structure depends on the input format applied to the request:
     
-    - **With Marengo 3.5**: Place your settings in the `temporal` object. Both strategies are available: `dynamic` divides the audio into variable-length segments that follow scene changes, and `fixed` divides it into equal-length segments. Default: `temporal.dynamic`, `min_duration_sec: 2`.
-    - **With Marengo 3.0**: Provide the settings directly in this object. Only `fixed` segmentation is available. Default: `fixed`, `duration_sec: 6`.
+    - **Marengo 3.5 native format**: Place your settings in the `temporal` object. Both strategies are available: `dynamic` divides the audio into variable-length segments that follow scene changes, and `fixed` divides it into equal-length segments. Default: `temporal.dynamic`, `min_duration_sec: 2`.
+    - **Marengo 3.0-compatible format, including some Marengo 3.5 requests**: Provide the settings directly in this object. Only `fixed` segmentation is available. Default: `fixed`, `duration_sec: 6`.
     
-    If you use a structure that does not match your model version, the platform returns a `400` error.
+    A structure that does not match the applied input format returns a `400` error. The API does not report which format applies. To send a request that works with either format, omit this field.
     """
 
     embedding_option: typing.Optional[typing.List[AsyncAudioInputRequestEmbeddingOptionItem]] = pydantic.Field(
@@ -58,11 +58,13 @@ class AsyncAudioInputRequest(UniversalBaseModel):
     
     **Values**:
     - `audio`: Generates embeddings based on audio content (sounds, music, effects). With Marengo 3.5, this value includes speech, music, and non-dialog audio.
-    - `transcription`: Generates embeddings based on transcribed speech. Requires Marengo 3.0.
+    - `transcription`: Generates embeddings based on transcribed speech. Supported with Marengo 3.0-compatible input options, including some Marengo 3.5 requests. Unavailable with the Marengo 3.5 native input format.
     
     You can specify multiple values to generate different types of embeddings for the same audio.
     
-    **Default**: `["audio", "transcription"]` for Marengo 3.0; `["audio"]` for Marengo 3.5.
+    **Default**: `["audio", "transcription"]` with Marengo 3.0-compatible input options; `["audio"]` with the Marengo 3.5 native input format.
+    
+    To send a request that works with either format, set this field to `["audio"]`.
     """
 
     embedding_scope: typing.Optional[typing.List[AsyncAudioInputRequestEmbeddingScopeItem]] = pydantic.Field(
@@ -83,20 +85,20 @@ class AsyncAudioInputRequest(UniversalBaseModel):
 
     embedding_type: typing.Optional[typing.List[AsyncAudioInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
     """
-    Specifies how to structure the embedding. Include this parameter only when the `embedding_option` parameter contains at least two values.
+    Specifies how to structure the embeddings. `separate_embedding` accepts one or more embedding options and returns them separately; it does not require multiple options.
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.
-    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. With Marengo 3.5, this value requires the `time_based_metadata` field.
+    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. With the Marengo 3.5 native input format, include `audio` in `embedding_option` and provide `time_based_metadata`. With Marengo 3.0-compatible input options, include both `audio` and `transcription` in `embedding_option`.
     
-    Specify both values to receive separate and fused embeddings in the same response.
+    Specify both values to receive separate and fused embeddings in the same response. To send a request that works with either format, use only the `separate_embedding` value.
     
     **Default**: `separate_embedding`.
     """
 
     time_based_metadata: typing.Optional[typing.List[TimeBasedMetadataEntry]] = pydantic.Field(default=None)
     """
-    Your own time-aligned text, such as a stats feed or scene descriptions. The platform folds each entry into the fused embedding of the segments it overlaps in time, and it affects only that embedding. Requires the `fused_embedding` value in the `embedding_type` field. This field is supported only with Marengo 3.5.
+    Your own time-aligned text, such as a stats feed or scene descriptions. The platform folds each entry into the fused embedding of the segments it overlaps in time, and it affects only that embedding. Requires the `fused_embedding` value in the `embedding_type` field. This field requires the Marengo 3.5 native input format.
     """
 
     if IS_PYDANTIC_V2:
