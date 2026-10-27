@@ -7,6 +7,7 @@ legacy
 
 src/twelvelabs/client.py
 src/twelvelabs/wrapper
+tests/custom/
 
 
 .gitignore
