@@ -82,7 +82,7 @@ class EmbeddingData(UniversalBaseModel):
     """
     The position of this chunk in the file, counting from 0. The platform returns this field only for embeddings of a plain text or Markdown file when the `embedding_scope` field is `chunk`, and omits it in every other case.
     
-    Read this field rather than the position of the entry in the `data` array, which provides no ordering guarantee.
+    Read this field rather than the position of the element in the `data` array, which provides no ordering guarantee.
     """
 
     if IS_PYDANTIC_V2:

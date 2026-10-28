@@ -11,8 +11,46 @@ from ..embed.v_2.batches.raw_client import AsyncRawBatchesClient, RawBatchesClie
 from ..types.embedding_batch_result_item import EmbeddingBatchResultItem
 
 
-def _parse_result(line: str) -> EmbeddingBatchResultItem:
-    return parse_obj_as(EmbeddingBatchResultItem, json.loads(line))
+class _JsonlLineFramer:
+    """Frame JSONL records on LF bytes before decoding their UTF-8 payloads."""
+
+    def __init__(self) -> None:
+        self._partial = bytearray()
+
+    def feed(self, chunk: bytes) -> typing.Iterator[bytes]:
+        start = 0
+        while True:
+            end = chunk.find(b"\n", start)
+            if end < 0:
+                self._partial.extend(chunk[start:])
+                return
+
+            if self._partial:
+                self._partial.extend(chunk[start:end])
+                line = bytes(self._partial)
+                self._partial.clear()
+            else:
+                line = chunk[start:end]
+            start = end + 1
+
+            # A CR immediately before LF is the CRLF line ending. Ignore an
+            # empty record in either LF or CRLF form, matching the API's JSONL
+            # stream handling while leaving all other bytes untouched.
+            if line and line != b"\r":
+                yield line
+
+    def finish(self) -> typing.Iterator[bytes]:
+        # A final record does not require a trailing newline. Do not treat a
+        # lone CR here as CRLF: it is part of the record and must be validated.
+        if self._partial:
+            line = bytes(self._partial)
+            self._partial.clear()
+            yield line
+
+
+def _parse_result(line: bytes) -> EmbeddingBatchResultItem:
+    decoded = line.decode("utf-8", errors="strict")
+    return parse_obj_as(EmbeddingBatchResultItem, json.loads(decoded))
 
 
 class _StrictRawBatchesClient(RawBatchesClient):
@@ -26,9 +64,12 @@ class _StrictRawBatchesClient(RawBatchesClient):
         with super().results(batch_id, request_options=request_options) as response:
 
             def results() -> typing.Iterator[EmbeddingBatchResultItem]:
-                for line in response._response.iter_lines():
-                    if line:
+                framer = _JsonlLineFramer()
+                for chunk in response._response.iter_bytes():
+                    for line in framer.feed(chunk):
                         yield _parse_result(line)
+                for line in framer.finish():
+                    yield _parse_result(line)
 
             yield HttpResponse(response=response._response, data=results())
 
@@ -41,9 +82,12 @@ class _StrictAsyncRawBatchesClient(AsyncRawBatchesClient):
         async with super().results(batch_id, request_options=request_options) as response:
 
             async def results() -> typing.AsyncIterator[EmbeddingBatchResultItem]:
-                async for line in response._response.aiter_lines():
-                    if line:
+                framer = _JsonlLineFramer()
+                async for chunk in response._response.aiter_bytes():
+                    for line in framer.feed(chunk):
                         yield _parse_result(line)
+                for line in framer.finish():
+                    yield _parse_result(line)
 
             yield AsyncHttpResponse(response=response._response, data=results())
 

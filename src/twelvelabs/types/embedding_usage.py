@@ -35,7 +35,7 @@ class EmbeddingUsage(UniversalBaseModel):
 
     service_tier: typing.Optional[EmbeddingServiceTier] = pydantic.Field(default=None)
     """
-    The tier applied for billing a successful Marengo 3.5 async task. Omitted from synchronous embedding responses and older async tasks.
+    The service tier applied for billing. Only Marengo 3.5 returns this field. Tasks created before service tiers were introduced do not return it.
     """
 
     if IS_PYDANTIC_V2:

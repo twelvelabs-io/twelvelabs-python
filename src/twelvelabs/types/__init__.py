@@ -417,13 +417,7 @@ from .response_object_object import ResponseObjectObject
 from .response_object_type import ResponseObjectType
 from .response_output_content_part import ResponseOutputContentPart
 from .response_output_content_part_type import ResponseOutputContentPartType
-from .response_output_item import (
-    ResponseOutputItem,
-    ResponseOutputItem_FunctionCall,
-    ResponseOutputItem_FunctionCallOutput,
-    ResponseOutputItem_JockeyWebSearch,
-    ResponseOutputItem_Message,
-)
+from .response_output_item import ResponseOutputItem
 from .response_output_item_role import ResponseOutputItemRole
 from .response_output_item_type import ResponseOutputItemType
 from .response_selection import ResponseSelection
@@ -431,6 +425,7 @@ from .response_selection_kind import ResponseSelectionKind
 from .response_standard_output_item import ResponseStandardOutputItem
 from .response_standard_output_item_role import ResponseStandardOutputItemRole
 from .response_standard_output_item_status import ResponseStandardOutputItemStatus
+from .response_standard_output_item_type import ResponseStandardOutputItemType
 from .response_status import ResponseStatus
 from .response_stream_content_part_added_event import ResponseStreamContentPartAddedEvent
 from .response_stream_content_part_done_event import ResponseStreamContentPartDoneEvent
@@ -461,6 +456,7 @@ from .response_stream_response_event import ResponseStreamResponseEvent
 from .response_stream_web_search_progress_event import ResponseStreamWebSearchProgressEvent
 from .response_tool_input import ResponseToolInput, ResponseToolInput_JockeyWebSearch
 from .response_web_search_output_item import ResponseWebSearchOutputItem
+from .response_web_search_output_item_type import ResponseWebSearchOutputItemType
 from .search_item import SearchItem
 from .search_item_clips_item import SearchItemClipsItem
 from .search_knowledge_store_filter import SearchKnowledgeStoreFilter
@@ -947,15 +943,12 @@ __all__ = [
     "ResponseOutputItem",
     "ResponseOutputItemRole",
     "ResponseOutputItemType",
-    "ResponseOutputItem_FunctionCall",
-    "ResponseOutputItem_FunctionCallOutput",
-    "ResponseOutputItem_JockeyWebSearch",
-    "ResponseOutputItem_Message",
     "ResponseSelection",
     "ResponseSelectionKind",
     "ResponseStandardOutputItem",
     "ResponseStandardOutputItemRole",
     "ResponseStandardOutputItemStatus",
+    "ResponseStandardOutputItemType",
     "ResponseStatus",
     "ResponseStreamContentPartAddedEvent",
     "ResponseStreamContentPartDoneEvent",
@@ -985,6 +978,7 @@ __all__ = [
     "ResponseToolInput",
     "ResponseToolInput_JockeyWebSearch",
     "ResponseWebSearchOutputItem",
+    "ResponseWebSearchOutputItemType",
     "SearchItem",
     "SearchItemClipsItem",
     "SearchKnowledgeStoreFilter",

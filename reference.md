@@ -62,8 +62,8 @@ client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
 response = client.analyze_stream()
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -459,10 +459,10 @@ response = client.tasks.list(
     updated_at="2024-03-01T00:00:00Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -944,10 +944,10 @@ response = client.indexes.list(
     updated_at="2024-08-16T16:55:59Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -1434,10 +1434,10 @@ response = client.assets.list(
     filename="meeting",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -2332,10 +2332,10 @@ response = client.multipart_upload.list_incomplete_uploads(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -2576,10 +2576,10 @@ response = client.multipart_upload.get_status(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -2863,10 +2863,10 @@ response = client.entity_collections.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -3298,10 +3298,10 @@ response = client.knowledge_stores.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -3936,10 +3936,10 @@ response = client.knowledge_store_items.list(
     ),
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -4615,10 +4615,10 @@ response = client.knowledge_store_item_tags.list(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -5132,10 +5132,10 @@ response = client.knowledge_store_item_collections.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -5620,10 +5620,10 @@ response = client.knowledge_store_item_collections.list_items(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -6525,8 +6525,8 @@ response = client.responses.create_stream(
     include=["intermediate_outputs"],
     tools=[ResponseToolInput_JockeyWebSearch()],
 )
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -8516,10 +8516,10 @@ response = client.analyze_async.batches.list(
     analysis_mode=["general", "time_based_metadata"],
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -8975,8 +8975,8 @@ client = TwelveLabs(
 response = client.analyze_async.batches.results(
     batch_id="68f4ddaf8aaa60d33df0e800",
 )
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -9137,10 +9137,10 @@ response = client.embed.tasks.list(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -9820,10 +9820,10 @@ response = client.embed.v_2.tasks.list(
     page_limit=1,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -10714,8 +10714,6 @@ Use this method to retrieve the results for each item in a batch. You can call i
 
 The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
 
-Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
-
 You can retrieve results for 30 days after batch creation.
 
 **Notes**:
@@ -10744,8 +10742,8 @@ client = TwelveLabs(
 response = client.embed.v_2.batches.results(
     batch_id="68d3ae81c4a8d3697e15b2ef",
 )
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -10900,10 +10898,10 @@ response = client.entity_collections.entities.list_by_asset(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -11006,10 +11004,10 @@ response = client.entity_collections.entities.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -11811,10 +11809,10 @@ response = client.indexes.indexed_assets.list(
     updated_at="2024-08-16T16:53:59Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -12476,10 +12474,10 @@ response = client.indexes.indexed_assets.list_by_asset(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -12586,10 +12584,10 @@ response = client.indexes.videos.list(
     updated_at="2024-08-16T16:53:59Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>

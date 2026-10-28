@@ -9,7 +9,7 @@ from .embedding_task_error import EmbeddingTaskError
 
 class EmbeddingBatchTaskError(EmbeddingTaskError):
     """
-    A failed batch item always has a machine-readable error code.
+    Failure details for an item in the `failed` status.
     """
 
     if IS_PYDANTIC_V2:

@@ -435,3 +435,5 @@ To contribute, follow these steps:
 3. We will transfer any approved changes to the repository where the code generation tool operates.
 
 We welcome contributions to the README file. You can submit pull requests directly.
+
+After regenerating the Python SDK with Fern, normalize the generated reference examples with `poetry run python scripts/normalize_reference.py --write`. CI checks the committed reference with `poetry run python scripts/normalize_reference.py --check` through the custom test suite.

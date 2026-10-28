@@ -316,8 +316,6 @@ class BatchesClient:
 
         The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
 
-        Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
-
         You can retrieve results for 30 days after batch creation.
 
         **Notes**:
@@ -725,8 +723,6 @@ class AsyncBatchesClient:
         Use this method to retrieve the results for each item in a batch. You can call it while the batch has the `pending` or `processing` status.
 
         The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
-
-        Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
 
         You can retrieve results for 30 days after batch creation.
 

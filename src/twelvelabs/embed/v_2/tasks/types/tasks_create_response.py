@@ -27,7 +27,7 @@ class TasksCreateResponse(UniversalBaseModel):
 
     service_tier: typing.Optional[EmbeddingServiceTier] = pydantic.Field(default=None)
     """
-    The tier applied to this Marengo 3.5 task. Omitted for Marengo 3.0 and older tasks.
+    The tier applied to this Marengo 3.5 task. Omitted for Marengo 3.0 and for tasks created before service tiers were introduced.
     """
 
     expires_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)

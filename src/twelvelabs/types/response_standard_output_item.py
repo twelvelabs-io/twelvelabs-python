@@ -7,11 +7,17 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .response_output_content_part import ResponseOutputContentPart
 from .response_standard_output_item_role import ResponseStandardOutputItemRole
 from .response_standard_output_item_status import ResponseStandardOutputItemStatus
+from .response_standard_output_item_type import ResponseStandardOutputItemType
 
 
 class ResponseStandardOutputItem(UniversalBaseModel):
     """
     A message, function call, or function result in the response output.
+    """
+
+    type: ResponseStandardOutputItemType = pydantic.Field()
+    """
+    The type of output item.
     """
 
     id: str = pydantic.Field()
