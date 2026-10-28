@@ -60,7 +60,7 @@ class V2Client:
 
         Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-        With the Marengo 3.5 native input format, this method accepts only `multi_input`; provide text, images, audio, video, or documents as media sources. It does not accept the individual `audio` or `video` fields or a `transcription` embedding option. Marengo 3.0 and Marengo 3.5 requests using the Marengo 3.0-compatible input format accept the individual input types, including their transcription options and defaults. The API does not report which input format applies to a Marengo 3.5 request. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
+        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
         This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
@@ -72,12 +72,12 @@ class V2Client:
             The type of content for the embeddings.
 
             **Values**:
-            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. The Marengo 3.5 native input format accepts images, video, audio, and documents as media sources. Marengo 3.0 and the Marengo 3.0-compatible format for Marengo 3.5 accept images.
-            - `audio`: An audio file. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `video`: A video file. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `image`: An image file. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `text`: Text input. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `text_image`: Text and an image. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
+            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
+            - `audio`: An audio file. Requires Marengo 3.0.
+            - `video`: A video file. Requires Marengo 3.0.
+            - `image`: An image file. Requires Marengo 3.0.
+            - `text`: Text input. Requires Marengo 3.0.
+            - `text_image`: Text and an image. Requires Marengo 3.0.
 
         model_name : CreateEmbeddingsRequestModelName
             The embedding model to use.
@@ -94,7 +94,7 @@ class V2Client:
             - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
 
         embedding_uncertainty : typing.Optional[bool]
-            Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. This requires the Marengo 3.5 native input format. With `model_name: marengo3.0`, setting this parameter to `true` returns `400` (`parameter_invalid`). Marengo 3.5 requests using the compatible format do not return uncertainty vectors.
+            Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
             **Requirements**:
             - Set this parameter to `true` only for a text-only request or a single image. Combining text with media, supplying multiple media sources, or supplying audio/video returns a `400` error.
@@ -106,7 +106,7 @@ class V2Client:
             Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the first values of the full-length embedding. A 256-dimension embedding, for example, is the first 256 values of a 512-dimension embedding of the same content. Shorter embeddings reduce index size and speed up similarity search; longer embeddings produce higher retrieval quality.
 
             **Requirements**:
-            - This field requires the Marengo 3.5 native input format. An explicit value returns `400` (`parameter_invalid`) with Marengo 3.0 or Marengo 3.5 requests using the compatible input format. Those paths omit dimension metadata when this field is omitted.
+            - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
             - Applies to the entire request: you cannot set it for a single input type or embedding.
             - Use the same value across an index.
 
@@ -203,7 +203,7 @@ class AsyncV2Client:
 
         Use this method to embed a query for retrieving matching content. With Marengo 3.5, audio and video can be up to 30 seconds. With Marengo 3.0, they can be up to 10 minutes. For longer content, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
 
-        With the Marengo 3.5 native input format, this method accepts only `multi_input`; provide text, images, audio, video, or documents as media sources. It does not accept the individual `audio` or `video` fields or a `transcription` embedding option. Marengo 3.0 and Marengo 3.5 requests using the Marengo 3.0-compatible input format accept the individual input types, including their transcription options and defaults. The API does not report which input format applies to a Marengo 3.5 request. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
+        The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
         This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
@@ -215,12 +215,12 @@ class AsyncV2Client:
             The type of content for the embeddings.
 
             **Values**:
-            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. The Marengo 3.5 native input format accepts images, video, audio, and documents as media sources. Marengo 3.0 and the Marengo 3.0-compatible format for Marengo 3.5 accept images.
-            - `audio`: An audio file. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `video`: A video file. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `image`: An image file. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `text`: Text input. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
-            - `text_image`: Text and an image. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5.
+            - `multi_input`: Text and up to 10 media sources, combined into a single embedding. To reference a specific media source from your text, use a placeholder in the following format: `<@name>`, where `name` matches the `name` field of a media source. Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
+            - `audio`: An audio file. Requires Marengo 3.0.
+            - `video`: A video file. Requires Marengo 3.0.
+            - `image`: An image file. Requires Marengo 3.0.
+            - `text`: Text input. Requires Marengo 3.0.
+            - `text_image`: Text and an image. Requires Marengo 3.0.
 
         model_name : CreateEmbeddingsRequestModelName
             The embedding model to use.
@@ -237,7 +237,7 @@ class AsyncV2Client:
             - `true`: Truncate your text to fit the limit, and set the [`usage.truncated`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.usage.truncated) field to `true` in the response.
 
         embedding_uncertainty : typing.Optional[bool]
-            Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. This requires the Marengo 3.5 native input format. With `model_name: marengo3.0`, setting this parameter to `true` returns `400` (`parameter_invalid`). Marengo 3.5 requests using the compatible format do not return uncertainty vectors.
+            Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
             **Requirements**:
             - Set this parameter to `true` only for a text-only request or a single image. Combining text with media, supplying multiple media sources, or supplying audio/video returns a `400` error.
@@ -249,7 +249,7 @@ class AsyncV2Client:
             Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the first values of the full-length embedding. A 256-dimension embedding, for example, is the first 256 values of a 512-dimension embedding of the same content. Shorter embeddings reduce index size and speed up similarity search; longer embeddings produce higher retrieval quality.
 
             **Requirements**:
-            - This field requires the Marengo 3.5 native input format. An explicit value returns `400` (`parameter_invalid`) with Marengo 3.0 or Marengo 3.5 requests using the compatible input format. Those paths omit dimension metadata when this field is omitted.
+            - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
             - Applies to the entire request: you cannot set it for a single input type or embedding.
             - Use the same value across an index.
 

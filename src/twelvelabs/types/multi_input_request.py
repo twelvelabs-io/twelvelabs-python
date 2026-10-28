@@ -11,7 +11,7 @@ class MultiInputRequest(UniversalBaseModel):
     """
     This field is required if the `input_type` parameter is `multi_input`. It combines text and up to 10 media sources into a single embedding. Provide the `input_text` field, the `media_sources` field, or both.
 
-    The Marengo 3.5 native input format accepts images, video, audio, and documents as media sources. Marengo 3.0 and the Marengo 3.0-compatible format for Marengo 3.5 accept images. A request that works with either format uses only text and image media sources.
+    Marengo 3.5 accepts images, video, audio, and documents as media sources. Marengo 3.0 accepts images.
 
     Include text in the `input_text` field when you combine media sources of different types. For example, if you combine an image and a video without text, the platform returns a `400` error. Media sources of the same type do not require text. If any source has no content to embed, the platform returns a `400` error.
 

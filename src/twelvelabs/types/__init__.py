@@ -232,6 +232,7 @@ from .embedding_batch_image_input_request_embedding_scope_item import EmbeddingB
 from .embedding_batch_image_input_request_embedding_type_item import EmbeddingBatchImageInputRequestEmbeddingTypeItem
 from .embedding_batch_image_item_request import EmbeddingBatchImageItemRequest
 from .embedding_batch_item import EmbeddingBatchItem
+from .embedding_batch_item_cancellation_reason import EmbeddingBatchItemCancellationReason
 from .embedding_batch_item_custom_id import EmbeddingBatchItemCustomId
 from .embedding_batch_item_request import EmbeddingBatchItemRequest
 from .embedding_batch_item_status import EmbeddingBatchItemStatus
@@ -283,6 +284,7 @@ from .embedding_media_metadata import (
 from .embedding_multi_input_metadata import EmbeddingMultiInputMetadata
 from .embedding_response import EmbeddingResponse
 from .embedding_service_tier import EmbeddingServiceTier
+from .embedding_standalone_task_cancellation_reason import EmbeddingStandaloneTaskCancellationReason
 from .embedding_success_response import EmbeddingSuccessResponse
 from .embedding_task_cancellation_reason import EmbeddingTaskCancellationReason
 from .embedding_task_error import EmbeddingTaskError
@@ -297,6 +299,7 @@ from .embedding_task_response import EmbeddingTaskResponse
 from .embedding_task_response_error import EmbeddingTaskResponseError
 from .embedding_task_response_status import EmbeddingTaskResponseStatus
 from .embedding_task_response_status_zero import EmbeddingTaskResponseStatusZero
+from .embedding_task_usage import EmbeddingTaskUsage
 from .embedding_text_image_metadata import EmbeddingTextImageMetadata
 from .embedding_usage import EmbeddingUsage
 from .embedding_usage_truncation_reason import EmbeddingUsageTruncationReason
@@ -767,6 +770,7 @@ __all__ = [
     "EmbeddingBatchImageInputRequestEmbeddingTypeItem",
     "EmbeddingBatchImageItemRequest",
     "EmbeddingBatchItem",
+    "EmbeddingBatchItemCancellationReason",
     "EmbeddingBatchItemCustomId",
     "EmbeddingBatchItemRequest",
     "EmbeddingBatchItemStatus",
@@ -808,6 +812,7 @@ __all__ = [
     "EmbeddingMultiInputMetadata",
     "EmbeddingResponse",
     "EmbeddingServiceTier",
+    "EmbeddingStandaloneTaskCancellationReason",
     "EmbeddingSuccessResponse",
     "EmbeddingTaskCancellationReason",
     "EmbeddingTaskError",
@@ -820,6 +825,7 @@ __all__ = [
     "EmbeddingTaskResponseError",
     "EmbeddingTaskResponseStatus",
     "EmbeddingTaskResponseStatusZero",
+    "EmbeddingTaskUsage",
     "EmbeddingTextImageMetadata",
     "EmbeddingUsage",
     "EmbeddingUsageTruncationReason",

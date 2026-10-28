@@ -4,7 +4,6 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .embedding_service_tier import EmbeddingServiceTier
 from .embedding_usage_truncation_reason import EmbeddingUsageTruncationReason
 
 
@@ -31,11 +30,6 @@ class EmbeddingUsage(UniversalBaseModel):
     
     **Values**:
     - `model_context_window`: The input exceeded the context window of the model.
-    """
-
-    service_tier: typing.Optional[EmbeddingServiceTier] = pydantic.Field(default=None)
-    """
-    The service tier applied for billing. Only Marengo 3.5 returns this field. Tasks created before service tiers were introduced do not return it.
     """
 
     if IS_PYDANTIC_V2:

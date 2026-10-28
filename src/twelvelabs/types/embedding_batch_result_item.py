@@ -5,11 +5,11 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .embedding_batch_custom_id import EmbeddingBatchCustomId
+from .embedding_batch_item_cancellation_reason import EmbeddingBatchItemCancellationReason
 from .embedding_batch_item_status import EmbeddingBatchItemStatus
 from .embedding_batch_task_error import EmbeddingBatchTaskError
 from .embedding_data import EmbeddingData
-from .embedding_task_cancellation_reason import EmbeddingTaskCancellationReason
-from .embedding_usage import EmbeddingUsage
+from .embedding_task_usage import EmbeddingTaskUsage
 
 
 class EmbeddingBatchResultItem(UniversalBaseModel):
@@ -29,13 +29,13 @@ class EmbeddingBatchResultItem(UniversalBaseModel):
     The embeddings for an item in the `ready` status.
     """
 
-    usage: typing.Optional[EmbeddingUsage] = pydantic.Field(default=None)
+    usage: typing.Optional[EmbeddingTaskUsage] = pydantic.Field(default=None)
     """
     Token counts for an item in the `ready` status.
     """
 
     error: typing.Optional[EmbeddingBatchTaskError] = None
-    cancellation_reason: typing.Optional[EmbeddingTaskCancellationReason] = None
+    cancellation_reason: typing.Optional[EmbeddingBatchItemCancellationReason] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

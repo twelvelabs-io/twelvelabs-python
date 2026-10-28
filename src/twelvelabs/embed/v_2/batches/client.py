@@ -139,7 +139,7 @@ class BatchesClient:
         - A batch contains 1 to 1,000 items.
         - For the formats, resolutions, file sizes, and duration limits of each item, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements).
         - The configured request body limit covers the entire JSON body, including base64 media. It is separate from the size limit of each media file. If the API rejects a body with `413`, its error message reports the configured limit in bytes. Use a URL or supported `asset_id` for media that does not fit.
-        - A limit applies to the number of Flex tasks that are `queued` or `processing` at the same time, including the tasks of a batch. A request that exceeds the limit returns `429`.
+        - A shared limit applies to unfinished Flex tasks in your account, including tasks that are not part of a batch. A canceled task can count until the platform records its final status. A request that exceeds this limit returns `429`.
         - When a request-count limit applies, each request to create a batch counts once, regardless of the number of items it contains. The limit is shared with requests that create a task that is not part of a batch. A request that fails before the platform accepts the batch does not count.
         - Input-token limits count the usage of completed work, and the platform does not reserve the tokens of a batch when you create it. Items already accepted can finish and take usage above a limit, and a later create request can then return `429`.
 
@@ -174,7 +174,7 @@ class BatchesClient:
         EmbeddingBatchResponse
             The batch has been successfully created, and the platform has accepted it for asynchronous processing.
 
-            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
+            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. An item with the `queued` status can also fail later, for example when the page count of a PDF file exceeds the page allowance. If every item fails, the batch has the `completed` status in the response.
 
         Examples
         --------
@@ -515,7 +515,7 @@ class AsyncBatchesClient:
         - A batch contains 1 to 1,000 items.
         - For the formats, resolutions, file sizes, and duration limits of each item, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements).
         - The configured request body limit covers the entire JSON body, including base64 media. It is separate from the size limit of each media file. If the API rejects a body with `413`, its error message reports the configured limit in bytes. Use a URL or supported `asset_id` for media that does not fit.
-        - A limit applies to the number of Flex tasks that are `queued` or `processing` at the same time, including the tasks of a batch. A request that exceeds the limit returns `429`.
+        - A shared limit applies to unfinished Flex tasks in your account, including tasks that are not part of a batch. A canceled task can count until the platform records its final status. A request that exceeds this limit returns `429`.
         - When a request-count limit applies, each request to create a batch counts once, regardless of the number of items it contains. The limit is shared with requests that create a task that is not part of a batch. A request that fails before the platform accepts the batch does not count.
         - Input-token limits count the usage of completed work, and the platform does not reserve the tokens of a batch when you create it. Items already accepted can finish and take usage above a limit, and a later create request can then return `429`.
 
@@ -550,7 +550,7 @@ class AsyncBatchesClient:
         EmbeddingBatchResponse
             The batch has been successfully created, and the platform has accepted it for asynchronous processing.
 
-            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
+            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. An item with the `queued` status can also fail later, for example when the page count of a PDF file exceeds the page allowance. If every item fails, the batch has the `completed` status in the response.
 
         Examples
         --------

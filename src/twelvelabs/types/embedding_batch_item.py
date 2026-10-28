@@ -5,8 +5,8 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .embedding_batch_custom_id import EmbeddingBatchCustomId
+from .embedding_batch_item_cancellation_reason import EmbeddingBatchItemCancellationReason
 from .embedding_batch_item_status import EmbeddingBatchItemStatus
-from .embedding_task_cancellation_reason import EmbeddingTaskCancellationReason
 
 
 class EmbeddingBatchItem(UniversalBaseModel):
@@ -21,7 +21,7 @@ class EmbeddingBatchItem(UniversalBaseModel):
 
     custom_id: EmbeddingBatchCustomId
     status: EmbeddingBatchItemStatus
-    cancellation_reason: typing.Optional[EmbeddingTaskCancellationReason] = pydantic.Field(default=None)
+    cancellation_reason: typing.Optional[EmbeddingBatchItemCancellationReason] = pydantic.Field(default=None)
     """
     The reason the item has the `canceled` status. Present only for a canceled item. For the meaning of each value, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
     """

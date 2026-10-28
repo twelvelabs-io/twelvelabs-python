@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class TemporalSegmentationFixedFixed(UniversalBaseModel):
     """
-    Configuration for fixed segmentation. If this object or `duration_sec` is omitted, the duration defaults to 6 seconds.
+    Configuration for fixed segmentation. If you omit this object or the `duration_sec` field, the duration defaults to 6 seconds.
     """
 
     duration_sec: typing.Optional[float] = pydantic.Field(default=None)

@@ -58,7 +58,7 @@ class EmbeddingBatchAudioInputRequest(UniversalBaseModel):
     media_source: MediaSource
     time_based_metadata: typing.Optional[typing.List[TimeBasedMetadataEntry]] = pydantic.Field(default=None)
     """
-    Your own time-aligned text, such as a stats feed or scene descriptions. The platform folds each entry into the fused embedding of the segments it overlaps in time, and it affects only that embedding. Requires the `fused_embedding` value in the `embedding_type` field. This field requires the Marengo 3.5 native input format.
+    Your own time-aligned text, such as a stats feed or scene descriptions. The platform folds each entry into the fused embedding of the segments it overlaps in time, and it affects only that embedding. Requires the `fused_embedding` value in the `embedding_type` field. This field is supported only with Marengo 3.5.
     """
 
     if IS_PYDANTIC_V2:

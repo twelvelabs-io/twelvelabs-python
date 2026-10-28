@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .cancel_embedding_task_response_status import CancelEmbeddingTaskResponseStatus
 from .client_embedding_task_id import ClientEmbeddingTaskId
-from .embedding_task_cancellation_reason import EmbeddingTaskCancellationReason
+from .embedding_standalone_task_cancellation_reason import EmbeddingStandaloneTaskCancellationReason
 
 
 class CancelEmbeddingTaskResponse(UniversalBaseModel):
@@ -23,7 +23,7 @@ class CancelEmbeddingTaskResponse(UniversalBaseModel):
     """
 
     status: CancelEmbeddingTaskResponseStatus
-    cancellation_reason: typing.Optional[EmbeddingTaskCancellationReason] = None
+    cancellation_reason: typing.Optional[EmbeddingStandaloneTaskCancellationReason] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

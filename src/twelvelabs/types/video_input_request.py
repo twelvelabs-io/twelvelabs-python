@@ -13,7 +13,7 @@ from .video_segmentation import VideoSegmentation
 
 class VideoInputRequest(UniversalBaseModel):
     """
-    This field is required if the `input_type` parameter is `video`. Supported with Marengo 3.0 and the Marengo 3.0-compatible input format for Marengo 3.5. The decoded file can be up to 36 MB.
+    This field is required if the `input_type` parameter is `video`. Requires Marengo 3.0. The decoded file can be up to 36 MB.
     """
 
     media_source: MediaSource
