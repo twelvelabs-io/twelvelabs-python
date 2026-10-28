@@ -36,7 +36,7 @@ pip install twelvelabs
 
 The Embed v2 HTTP error payload is a flat object with `code` and `message`. Update custom error handling that expects nested fields. Marengo 3.5 tasks can return `queued` at creation, and response status values can expand over time. Keep a fallback for an unrecognized status.
 
-The generated task error model is now `EmbeddingTaskError`, replacing `EmbeddingTaskResponseError`. It has `message` and optional `code` and `parameter` fields.
+The task error model is `EmbeddingTaskError`, with `message` and optional `code` and `parameter` fields. Existing `EmbeddingTaskResponseError` imports remain available as an alias; use `EmbeddingTaskError` in new code.
 
 Embedding durations use floating-point seconds, including fractional values. Update code that assumes an integer duration.
 

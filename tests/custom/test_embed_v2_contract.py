@@ -11,6 +11,19 @@ TASK_ID = "task-123"
 REQUEST_ID = "request-embed-v2-1"
 
 
+def test_legacy_task_error_imports_remain_compatible():
+    from twelvelabs import EmbeddingTaskError, EmbeddingTaskResponseError
+    from twelvelabs.types import EmbeddingTaskResponseError as ErrorFromTypes
+    from twelvelabs.types.embedding_task_response_error import EmbeddingTaskResponseError as ErrorFromModule
+
+    assert EmbeddingTaskResponseError is EmbeddingTaskError
+    assert ErrorFromTypes is EmbeddingTaskError
+    assert ErrorFromModule is EmbeddingTaskError
+    error = EmbeddingTaskResponseError(message="The embedding task failed.")
+    assert isinstance(error, EmbeddingTaskError)
+    assert error.message == "The embedding task failed."
+
+
 def _transport(body, *, status_code=200, headers=None, requests=None):
     def handle(request):
         if requests is not None:
