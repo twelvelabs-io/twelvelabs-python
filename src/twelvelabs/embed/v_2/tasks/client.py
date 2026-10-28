@@ -151,7 +151,7 @@ class TasksClient:
 
         Because the status in the creation response varies, handle all five statuses when you poll: `queued`, `processing`, `ready`, `failed`, and `canceled`.
 
-        With Marengo 3.5, set the `service_tier` field to one of these values: `standard`, `priority`, or `flex`. When the platform starts queued tasks, Priority tasks are preferred over Standard tasks, and Flex tasks use otherwise unused capacity. Tiers are best effort. They do not guarantee a start time or a completion time, and they do not preempt running tasks. They do not bypass the rate limits or the account capacity for unfinished Flex tasks. The `flex` tier has a 24-hour processing window that starts when the platform accepts the task. The platform returns the `expires_at` field in creation, retrieval, and list responses. An incomplete Flex task becomes `canceled` when that window expires. Availability depends on your plan. Marengo 3.0 does not accept an explicit value for the `service_tier` field.
+        With Marengo 3.5, set the `service_tier` field to one of these values: `standard`, `priority`, or `flex`. When the platform processes queued tasks, Priority tasks are preferred over Standard tasks, and Flex tasks use otherwise unused capacity. Tiers are best effort. They do not guarantee a start time, a completion time, or the order in which tasks start or finish, and they do not preempt running tasks. They do not bypass the rate limits or the account capacity for unfinished Flex tasks. The `flex` tier has a 24-hour processing window that starts when the platform accepts the task. The platform returns the `expires_at` field in creation, retrieval, and list responses. An incomplete Flex task becomes `canceled` when that window expires. Availability depends on your plan. Marengo 3.0 does not accept an explicit value for the `service_tier` field.
 
         The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and documents: PDF, plain text, and Markdown files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
@@ -270,6 +270,8 @@ class TasksClient:
 
         <Note title="Note">
         Embeddings of a task that is not part of a batch are available through the API for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier. A task created as part of a batch returns the `batch_id` field and a `custom_id` field that is unique only within the batch.
+
+        A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
         </Note>
 
         Parameters
@@ -469,7 +471,7 @@ class AsyncTasksClient:
 
         Because the status in the creation response varies, handle all five statuses when you poll: `queued`, `processing`, `ready`, `failed`, and `canceled`.
 
-        With Marengo 3.5, set the `service_tier` field to one of these values: `standard`, `priority`, or `flex`. When the platform starts queued tasks, Priority tasks are preferred over Standard tasks, and Flex tasks use otherwise unused capacity. Tiers are best effort. They do not guarantee a start time or a completion time, and they do not preempt running tasks. They do not bypass the rate limits or the account capacity for unfinished Flex tasks. The `flex` tier has a 24-hour processing window that starts when the platform accepts the task. The platform returns the `expires_at` field in creation, retrieval, and list responses. An incomplete Flex task becomes `canceled` when that window expires. Availability depends on your plan. Marengo 3.0 does not accept an explicit value for the `service_tier` field.
+        With Marengo 3.5, set the `service_tier` field to one of these values: `standard`, `priority`, or `flex`. When the platform processes queued tasks, Priority tasks are preferred over Standard tasks, and Flex tasks use otherwise unused capacity. Tiers are best effort. They do not guarantee a start time, a completion time, or the order in which tasks start or finish, and they do not preempt running tasks. They do not bypass the rate limits or the account capacity for unfinished Flex tasks. The `flex` tier has a 24-hour processing window that starts when the platform accepts the task. The platform returns the `expires_at` field in creation, retrieval, and list responses. An incomplete Flex task becomes `canceled` when that window expires. Availability depends on your plan. Marengo 3.0 does not accept an explicit value for the `service_tier` field.
 
         The content this method accepts depends on the model. Both models embed audio and video. Marengo 3.5 also embeds images and documents: PDF, plain text, and Markdown files. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
@@ -596,6 +598,8 @@ class AsyncTasksClient:
 
         <Note title="Note">
         Embeddings of a task that is not part of a batch are available through the API for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier. A task created as part of a batch returns the `batch_id` field and a `custom_id` field that is unique only within the batch.
+
+        A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
         </Note>
 
         Parameters

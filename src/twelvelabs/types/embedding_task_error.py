@@ -16,16 +16,12 @@ class EmbeddingTaskError(UniversalBaseModel):
 
     code: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The category of the failure, in uppercase and readable by a program. It differs from the lowercase `code` field in an HTTP error response. The `code` field is present for a task with a `service_tier` field and for every failed batch item. If no specific failure category is recorded, the value is `INTERNAL_SERVER_ERROR`.
-    
-    A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field. The later response can contain only the `message` field when no code is recorded. After the retention period (seven days for a task that is not part of a batch, 30 days for a batch), retrieval returns `404`. Every failed batch result line contains both the `code` and `message` fields. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
-    
-    See [Error codes](/v1.3/api-reference/error-codes) for documented values. Handle unrecognized values as a task failure.
+    The category of the failure, in uppercase and readable by a program. It differs from the lowercase `code` field in an HTTP error response. If no specific failure category is recorded, the value is `INTERNAL_SERVER_ERROR`. Handle unrecognized values as a task failure.
     """
 
     message: str = pydantic.Field()
     """
-    An explanation of the failure. Possible values include:
+    A human-readable explanation of the failure. Possible values include:
     - "The embedding service is temporarily unstable. Please try again later."
     - "The embedding task failed. Please try again later."
     - "The embedding task could not complete processing."
@@ -36,13 +32,16 @@ class EmbeddingTaskError(UniversalBaseModel):
     - "failed to fetch or materialize source media"
     - "We could not process your media for embedding. Please verify the input file and try again." For troubleshooting steps, see [How do I fix a file that could not be processed for embedding?](/v1.3/docs/resources/frequently-asked-questions#how-do-i-fix-a-file-that-could-not-be-processed-for-embedding).
     
-    When the platform can measure the overage in pages, bytes, or seconds,
-    the message includes those numbers in place of a fixed sentence.
+    For a media that exceeds a size or length limit, the message includes the measured
+    value and the limit instead of the fixed sentence. For example:
+    "Document (17 pages) exceeds maximum limit of 6 pages",
+    "File size (33.6 MB) exceeds maximum limit of 32 MB", or
+    "Duration (35.0 seconds) exceeds maximum limit of 30 seconds (0 minutes)".
     """
 
     parameter: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The request field associated with the failure, when available and safe to expose.
+    The request field that caused the failure, when the platform can identify it.
     """
 
     if IS_PYDANTIC_V2:

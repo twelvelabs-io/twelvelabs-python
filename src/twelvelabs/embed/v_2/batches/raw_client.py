@@ -477,12 +477,13 @@ class RawBatchesClient:
 
     def delete(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
         """
-        This method removes a batch with a final status and all its tasks and results from API access. This does not reverse
-        billing for items that completed successfully. A batch with the `pending`,
-        `processing`, or `canceling` status cannot be deleted until it has a final
-        status: `canceled`, `completed`, or `expired`. To end it sooner, cancel it and
-        wait for the final status. Batches and their results are otherwise available
-        through the API for 30 days after creation.
+        Use this method to delete a batch. After you delete a batch, you can no longer retrieve the batch, its tasks, or its results. You can only delete batches with the `completed`, `canceled`, or `expired` status.
+
+        Deleting a batch does not affect billing. You are billed for every item that completed successfully, regardless of whether you delete the batch afterward.
+
+        To stop a batch with the `pending` or `processing` status, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/batches/cancel-batch) method of the `/embed-v2/batches/{batch_id}/cancel` endpoint, and wait for the batch to reach a final status.
+
+        Batches and their results are available through the API for 30 days after creation.
 
         Parameters
         ----------
@@ -711,17 +712,17 @@ class RawBatchesClient:
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[EmbeddingBatchResponse]:
         """
-        This method requests cancellation of a batch that has the `pending` or `processing` status.
+        Use this method to request cancellation of a batch that has the `pending` or `processing` status.
 
-        When you call this method, the platform does the following:
-        - Cancels the items that are `queued`.
-        - Does not stop the items that are `processing`. Each reaches its own final result.
+        When you invoke this method, the platform performs the following steps:
+        - Cancels the items in the `queued` status.
+        - Finishes processing the items in the `processing` status. Each reaches its own final result.
 
-        The batch has the `canceling` status until those items finish, then the `canceled` status. If a running item is still unfinished at the 24-hour deadline, the platform cancels it with the `deadline_exceeded` reason, and the batch has the `expired` status. Wait for the `canceled` or `expired` status.
+        The batch has the `canceling` status until those items finish, then the `canceled` status. If a running item does not finish before the time in the `expires_at` field of the batch, the platform cancels it with the `deadline_exceeded` reason, and the batch has the `expired` status.
 
         **Billing and results**:
         - An item that is processing when you cancel can still become `ready`. You are billed for it, and its result is available with the results that were ready before the cancellation.
-        - An item that finishes after the 24-hour deadline stays canceled and is not billed.
+        - An item that finishes after the time in the `expires_at` field of the batch stays canceled and is not billed.
 
         Parameters
         ----------
@@ -734,7 +735,7 @@ class RawBatchesClient:
         Returns
         -------
         HttpResponse[EmbeddingBatchResponse]
-            The cancellation of the batch has been successfully requested or is already in progress.
+            The cancellation of the batch has been successfully requested or is already in progress. To confirm that the batch has the `canceled` or `expired` status, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
         """
         _response = self._client_wrapper.httpx_client.request(
             f"embed-v2/batches/{jsonable_encoder(batch_id)}/cancel",
@@ -1276,12 +1277,13 @@ class AsyncRawBatchesClient:
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        This method removes a batch with a final status and all its tasks and results from API access. This does not reverse
-        billing for items that completed successfully. A batch with the `pending`,
-        `processing`, or `canceling` status cannot be deleted until it has a final
-        status: `canceled`, `completed`, or `expired`. To end it sooner, cancel it and
-        wait for the final status. Batches and their results are otherwise available
-        through the API for 30 days after creation.
+        Use this method to delete a batch. After you delete a batch, you can no longer retrieve the batch, its tasks, or its results. You can only delete batches with the `completed`, `canceled`, or `expired` status.
+
+        Deleting a batch does not affect billing. You are billed for every item that completed successfully, regardless of whether you delete the batch afterward.
+
+        To stop a batch with the `pending` or `processing` status, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/batches/cancel-batch) method of the `/embed-v2/batches/{batch_id}/cancel` endpoint, and wait for the batch to reach a final status.
+
+        Batches and their results are available through the API for 30 days after creation.
 
         Parameters
         ----------
@@ -1510,17 +1512,17 @@ class AsyncRawBatchesClient:
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[EmbeddingBatchResponse]:
         """
-        This method requests cancellation of a batch that has the `pending` or `processing` status.
+        Use this method to request cancellation of a batch that has the `pending` or `processing` status.
 
-        When you call this method, the platform does the following:
-        - Cancels the items that are `queued`.
-        - Does not stop the items that are `processing`. Each reaches its own final result.
+        When you invoke this method, the platform performs the following steps:
+        - Cancels the items in the `queued` status.
+        - Finishes processing the items in the `processing` status. Each reaches its own final result.
 
-        The batch has the `canceling` status until those items finish, then the `canceled` status. If a running item is still unfinished at the 24-hour deadline, the platform cancels it with the `deadline_exceeded` reason, and the batch has the `expired` status. Wait for the `canceled` or `expired` status.
+        The batch has the `canceling` status until those items finish, then the `canceled` status. If a running item does not finish before the time in the `expires_at` field of the batch, the platform cancels it with the `deadline_exceeded` reason, and the batch has the `expired` status.
 
         **Billing and results**:
         - An item that is processing when you cancel can still become `ready`. You are billed for it, and its result is available with the results that were ready before the cancellation.
-        - An item that finishes after the 24-hour deadline stays canceled and is not billed.
+        - An item that finishes after the time in the `expires_at` field of the batch stays canceled and is not billed.
 
         Parameters
         ----------
@@ -1533,7 +1535,7 @@ class AsyncRawBatchesClient:
         Returns
         -------
         AsyncHttpResponse[EmbeddingBatchResponse]
-            The cancellation of the batch has been successfully requested or is already in progress.
+            The cancellation of the batch has been successfully requested or is already in progress. To confirm that the batch has the `canceled` or `expired` status, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"embed-v2/batches/{jsonable_encoder(batch_id)}/cancel",
