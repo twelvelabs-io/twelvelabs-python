@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from twelvelabs import AsyncTwelveLabs, TwelveLabs
-from twelvelabs.errors import NotFoundError
+from twelvelabs.errors import ForbiddenError, NotFoundError
 
 BASE_URL = "https://api.example.com/v1.3"
 TASK_ID = "task-123"
@@ -182,6 +182,65 @@ def test_sync_embed_v2_retrieve_error_preserves_flat_body_and_headers():
     assert exc.value.status_code == 404
     assert exc.value.body == error_body
     assert exc.value.headers["x-request-id"] == REQUEST_ID
+
+
+LEGACY_FORBIDDEN_BODY = {
+    "code": "read_not_allowed",
+    "message": "Task is outside the account.",
+}
+
+
+@pytest.mark.parametrize(
+    ("operation", "expected_method", "expected_path"),
+    [
+        ("retrieve", "GET", f"/v1.3/embed-v2/tasks/{TASK_ID}"),
+        ("cancel", "POST", f"/v1.3/embed-v2/tasks/{TASK_ID}/cancel"),
+    ],
+)
+def test_sync_embed_v2_task_operations_preserve_legacy_forbidden_error(
+    operation, expected_method, expected_path
+):
+    requests = []
+
+    with httpx.Client(
+        transport=_transport(LEGACY_FORBIDDEN_BODY, status_code=403, requests=requests)
+    ) as http:
+        client = TwelveLabs(api_key="test-key", base_url=BASE_URL, httpx_client=http)
+        with pytest.raises(ForbiddenError) as exc:
+            getattr(client.embed.v_2.tasks, operation)(TASK_ID)
+
+    assert exc.value.status_code == 403
+    assert exc.value.body == LEGACY_FORBIDDEN_BODY
+    assert len(requests) == 1
+    assert requests[0].method == expected_method
+    assert requests[0].url.path == expected_path
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("operation", "expected_method", "expected_path"),
+    [
+        ("retrieve", "GET", f"/v1.3/embed-v2/tasks/{TASK_ID}"),
+        ("cancel", "POST", f"/v1.3/embed-v2/tasks/{TASK_ID}/cancel"),
+    ],
+)
+async def test_async_embed_v2_task_operations_preserve_legacy_forbidden_error(
+    operation, expected_method, expected_path
+):
+    requests = []
+
+    async with httpx.AsyncClient(
+        transport=_transport(LEGACY_FORBIDDEN_BODY, status_code=403, requests=requests)
+    ) as http:
+        client = AsyncTwelveLabs(api_key="test-key", base_url=BASE_URL, httpx_client=http)
+        with pytest.raises(ForbiddenError) as exc:
+            await getattr(client.embed.v_2.tasks, operation)(TASK_ID)
+
+    assert exc.value.status_code == 403
+    assert exc.value.body == LEGACY_FORBIDDEN_BODY
+    assert len(requests) == 1
+    assert requests[0].method == expected_method
+    assert requests[0].url.path == expected_path
 
 
 @pytest.mark.asyncio

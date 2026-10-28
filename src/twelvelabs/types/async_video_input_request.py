@@ -88,7 +88,7 @@ class AsyncVideoInputRequest(UniversalBaseModel):
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.
-    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. With Marengo 3.5, this value requires the `time_based_metadata` field.
+    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. Requires at least two distinct embedding options. With Marengo 3.5, one embedding option is also supported when `time_based_metadata` provides the second fusion signal.
     
     Specify both values to receive separate and fused embeddings in the same response.
     

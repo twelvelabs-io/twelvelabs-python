@@ -27,7 +27,7 @@ class TasksCreateResponse(UniversalBaseModel):
 
     service_tier: typing.Optional[EmbeddingServiceTier] = pydantic.Field(default=None)
     """
-    The tier applied to this Marengo 3.5 task, including default Standard when the platform applies it. A task without an applied tier omits this field.
+    The tier applied to this Marengo 3.5 task. Defaults to `standard` when the request omits `service_tier`. Marengo 3.0 responses omit this field.
     """
 
     expires_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
@@ -37,7 +37,7 @@ class TasksCreateResponse(UniversalBaseModel):
 
     status: TasksCreateResponseStatus = pydantic.Field()
     """
-    The status in the creation response. A task with a `service_tier` field returns `queued`, or `failed` if a source check fails while the platform accepts the task. A task without that field returns `processing`. Retrieve the task for its current status.
+    The status in the creation response. Marengo 3.5 tasks return `queued`, or `failed` if a source check fails while the platform accepts the task. Marengo 3.0 tasks return `processing`. Retrieve the task for its current status.
     """
 
     error: typing.Optional[EmbeddingTaskError] = None
