@@ -1,4 +1,5 @@
 import json
+import typing
 
 import httpx
 import pydantic
@@ -65,18 +66,92 @@ class OneByteAtATimeStream(httpx.SyncByteStream, httpx.AsyncByteStream):
             yield self._payload[index : index + 1]
 
 
-def chunked_transport(payload, responses):
+class StopAfterFirstLineStream(httpx.SyncByteStream, httpx.AsyncByteStream):
+    def __init__(self, payload):
+        self._payload = payload
+        self.read_after_line = False
+
+    def __iter__(self):
+        for index in range(len(self._payload)):
+            chunk = self._payload[index : index + 1]
+            yield chunk
+            if chunk == b"\n":
+                self.read_after_line = True
+                raise AssertionError("read continued after the first JSONL record")
+
+    async def __aiter__(self):
+        for index in range(len(self._payload)):
+            chunk = self._payload[index : index + 1]
+            yield chunk
+            if chunk == b"\n":
+                self.read_after_line = True
+                raise AssertionError("read continued after the first JSONL record")
+
+
+class TrackingResponse(httpx.Response):
+    byte_iterator_closed: bool
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.byte_iterator_closed = False
+
+    def iter_bytes(self, chunk_size: typing.Optional[int] = None) -> typing.Iterator[bytes]:
+        byte_stream = typing.cast(
+            typing.Generator[bytes, None, None], super().iter_bytes(chunk_size=chunk_size)
+        )
+
+        def track() -> typing.Iterator[bytes]:
+            try:
+                yield from byte_stream
+            finally:
+                byte_stream.close()
+                self.byte_iterator_closed = True
+
+        return track()
+
+    def aiter_bytes(self, chunk_size: typing.Optional[int] = None) -> typing.AsyncIterator[bytes]:
+        byte_stream = typing.cast(
+            typing.AsyncGenerator[bytes, None], super().aiter_bytes(chunk_size=chunk_size)
+        )
+
+        async def track() -> typing.AsyncGenerator[bytes, None]:
+            try:
+                async for chunk in byte_stream:
+                    yield chunk
+            finally:
+                await byte_stream.aclose()
+                self.byte_iterator_closed = True
+
+        return track()
+
+
+def chunked_transport(
+    payload,
+    responses,
+    response_class=httpx.Response,
+    stream_class=OneByteAtATimeStream,
+    streams=None,
+):
     def handle(request):
         assert request.url.path == "/v1.3/embed-v2/batches/" + BATCH_ID + "/results"
-        response = httpx.Response(
+        stream = stream_class(payload)
+        if streams is not None:
+            streams.append(stream)
+        response = response_class(
             200,
-            stream=OneByteAtATimeStream(payload),
+            stream=stream,
             headers={"x-request-id": "request-1", "content-type": "application/x-ndjson"},
         )
         responses.append(response)
         return response
 
     return httpx.MockTransport(handle)
+
+
+@pytest.fixture(autouse=True)
+def shutdown_async_generators(event_loop):
+    yield
+    event_loop.run_until_complete(event_loop.shutdown_asyncgens())
 
 
 @pytest.mark.parametrize("raw", [False, True])
@@ -226,12 +301,21 @@ def test_sync_frames_lf_bytes_and_preserves_split_utf8_and_json_line_separator(r
 )
 def test_sync_rejects_malformed_or_truncated_utf8_and_closes_response(raw, payload):
     responses = []
-    with httpx.Client(transport=chunked_transport(payload, responses)) as http:
+    streams = []
+    if payload.endswith(b"\n"):
+        payload += json.dumps(ITEM).encode() + b"\n"
+    with httpx.Client(
+        transport=chunked_transport(
+            payload, responses, TrackingResponse, StopAfterFirstLineStream, streams
+        )
+    ) as http:
         client = TwelveLabs(api_key="test-key", base_url="https://api.example.com/v1.3", httpx_client=http)
         with pytest.raises(UnicodeDecodeError):
             read_results(client, raw)
 
     assert responses[0].is_closed
+    assert typing.cast(TrackingResponse, responses[0]).byte_iterator_closed
+    assert not streams[0].read_after_line
 
 
 @pytest.mark.asyncio
@@ -265,9 +349,88 @@ async def test_async_frames_lf_bytes_and_preserves_split_utf8_and_json_line_sepa
 )
 async def test_async_rejects_malformed_or_truncated_utf8_and_closes_response(raw, payload):
     responses = []
-    async with httpx.AsyncClient(transport=chunked_transport(payload, responses)) as http:
+    streams = []
+    if payload.endswith(b"\n"):
+        payload += json.dumps(ITEM).encode() + b"\n"
+    async with httpx.AsyncClient(
+        transport=chunked_transport(
+            payload, responses, TrackingResponse, StopAfterFirstLineStream, streams
+        )
+    ) as http:
         client = AsyncTwelveLabs(api_key="test-key", base_url="https://api.example.com/v1.3", httpx_client=http)
         with pytest.raises(UnicodeDecodeError):
             await read_results_async(client, raw)
 
     assert responses[0].is_closed
+    assert typing.cast(TrackingResponse, responses[0]).byte_iterator_closed
+    assert not streams[0].read_after_line
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw", [False, True])
+async def test_async_malformed_utf8_closes_uninstrumented_httpx_iterator(raw):
+    responses = []
+    streams = []
+    payload = (
+        b'{"task_id":"task-1","custom_id":"bad\xffid","status":"ready","data":[]}\n'
+        + json.dumps(ITEM).encode()
+        + b"\n"
+    )
+    async with httpx.AsyncClient(
+        transport=chunked_transport(payload, responses, stream_class=StopAfterFirstLineStream, streams=streams)
+    ) as http:
+        client = AsyncTwelveLabs(api_key="test-key", base_url="https://api.example.com/v1.3", httpx_client=http)
+        with pytest.raises(UnicodeDecodeError):
+            await read_results_async(client, raw)
+
+    assert responses[0].is_closed
+    assert not streams[0].read_after_line
+
+
+@pytest.mark.parametrize("raw", [False, True])
+def test_sync_closes_byte_iterator_when_consumer_stops_early(raw):
+    responses = []
+    streams = []
+    payload = (json.dumps(ITEM) + "\n" + json.dumps(dict(ITEM, custom_id="second")) + "\n").encode()
+    with httpx.Client(
+        transport=chunked_transport(payload, responses, TrackingResponse, StopAfterFirstLineStream, streams)
+    ) as http:
+        client = TwelveLabs(api_key="test-key", base_url="https://api.example.com/v1.3", httpx_client=http)
+        if raw:
+            with client.embed.v_2.batches.with_raw_response.results(BATCH_ID) as response:
+                next(response.data)
+        else:
+            results = typing.cast(
+                typing.Generator[typing.Any, None, None], client.embed.v_2.batches.results(BATCH_ID)
+            )
+            next(results)
+            results.close()
+
+    assert responses[0].is_closed
+    assert typing.cast(TrackingResponse, responses[0]).byte_iterator_closed
+    assert not streams[0].read_after_line
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw", [False, True])
+async def test_async_closes_byte_iterator_when_consumer_stops_early(raw):
+    responses = []
+    streams = []
+    payload = (json.dumps(ITEM) + "\n" + json.dumps(dict(ITEM, custom_id="second")) + "\n").encode()
+    async with httpx.AsyncClient(
+        transport=chunked_transport(payload, responses, TrackingResponse, StopAfterFirstLineStream, streams)
+    ) as http:
+        client = AsyncTwelveLabs(api_key="test-key", base_url="https://api.example.com/v1.3", httpx_client=http)
+        if raw:
+            async with client.embed.v_2.batches.with_raw_response.results(BATCH_ID) as response:
+                await response.data.__anext__()
+        else:
+            results = typing.cast(
+                typing.AsyncGenerator[typing.Any, None], client.embed.v_2.batches.results(BATCH_ID)
+            )
+            await results.__anext__()
+            await results.aclose()
+
+    assert responses[0].is_closed
+    assert typing.cast(TrackingResponse, responses[0]).byte_iterator_closed
+    assert not streams[0].read_after_line

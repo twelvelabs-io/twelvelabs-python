@@ -63,15 +63,25 @@ class _StrictRawBatchesClient(RawBatchesClient):
         # are not silently discarded by the generated streaming decoder.
         with super().results(batch_id, request_options=request_options) as response:
 
-            def results() -> typing.Iterator[EmbeddingBatchResultItem]:
+            def results() -> typing.Generator[EmbeddingBatchResultItem, None, None]:
                 framer = _JsonlLineFramer()
-                for chunk in response._response.iter_bytes():
-                    for line in framer.feed(chunk):
+                byte_stream = typing.cast(
+                    typing.Generator[bytes, None, None], response._response.iter_bytes()
+                )
+                try:
+                    for chunk in byte_stream:
+                        for line in framer.feed(chunk):
+                            yield _parse_result(line)
+                    for line in framer.finish():
                         yield _parse_result(line)
-                for line in framer.finish():
-                    yield _parse_result(line)
+                finally:
+                    byte_stream.close()
 
-            yield HttpResponse(response=response._response, data=results())
+            data = results()
+            try:
+                yield HttpResponse(response=response._response, data=data)
+            finally:
+                data.close()
 
 
 class _StrictAsyncRawBatchesClient(AsyncRawBatchesClient):
@@ -81,15 +91,25 @@ class _StrictAsyncRawBatchesClient(AsyncRawBatchesClient):
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[EmbeddingBatchResultItem]]]:
         async with super().results(batch_id, request_options=request_options) as response:
 
-            async def results() -> typing.AsyncIterator[EmbeddingBatchResultItem]:
+            async def results() -> typing.AsyncGenerator[EmbeddingBatchResultItem, None]:
                 framer = _JsonlLineFramer()
-                async for chunk in response._response.aiter_bytes():
-                    for line in framer.feed(chunk):
+                byte_stream = typing.cast(
+                    typing.AsyncGenerator[bytes, None], response._response.aiter_bytes()
+                )
+                try:
+                    async for chunk in byte_stream:
+                        for line in framer.feed(chunk):
+                            yield _parse_result(line)
+                    for line in framer.finish():
                         yield _parse_result(line)
-                for line in framer.finish():
-                    yield _parse_result(line)
+                finally:
+                    await byte_stream.aclose()
 
-            yield AsyncHttpResponse(response=response._response, data=results())
+            data = results()
+            try:
+                yield AsyncHttpResponse(response=response._response, data=data)
+            finally:
+                await data.aclose()
 
 
 class EmbedV2BatchesClientWrapper(BatchesClient):
