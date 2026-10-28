@@ -357,6 +357,39 @@ while True:
 
 This example embeds a video. The method also accepts `"audio"`, `"image"`, and `"document"` for PDF files. For the request each type takes, and for segmentation and scope options, see the [Embed content at scale](https://docs.twelvelabs.io/docs/guides/create-embeddings/at-scale) guide.
 
+**Create a batch**
+
+For Marengo 3.5, use `client.embed.v_2.batches` to create and manage batches. Each request can include fractional `start_sec` and `end_sec` offsets:
+
+```py
+from twelvelabs import EmbeddingBatchVideoInputRequest, EmbeddingBatchVideoItemRequest, MediaSource
+
+batch = client.embed.v_2.batches.create(
+    model_name="marengo3.5",
+    service_tier="flex",
+    input_type="video",
+    requests=[
+        EmbeddingBatchVideoItemRequest(
+            custom_id="clip_001",
+            video=EmbeddingBatchVideoInputRequest(
+                media_source=MediaSource(url="<YOUR_VIDEO_URL>"),
+                start_sec=2.5,
+                end_sec=7.5,
+            ),
+        ),
+        EmbeddingBatchVideoItemRequest(
+            custom_id="clip_002",
+            video=EmbeddingBatchVideoInputRequest(
+                media_source=MediaSource(url="<YOUR_SECOND_VIDEO_URL>"),
+            ),
+        ),
+    ],
+)
+print(f"Created batch: {batch.batch_id}")
+```
+
+Use `client.embed.v_2.batches.retrieve`, `.list`, `.results`, `.cancel`, and `.delete` to manage batch status and JSONL results. Cancel an individual task with `client.embed.v_2.tasks.cancel(task_id)`. For batch limits and lifecycle details, see the [Embed v2 batch API reference](https://docs.twelvelabs.io/v1.3/api-reference/create-embeddings-v2/batches).
+
 ## Error Handling
 
 The SDK includes a set of exceptions that are mapped to specific HTTP status codes, as shown in the table below:
