@@ -25,6 +25,7 @@ from ....types.async_audio_input_request import AsyncAudioInputRequest
 from ....types.async_document_input_request import AsyncDocumentInputRequest
 from ....types.async_image_input_request import AsyncImageInputRequest
 from ....types.async_video_input_request import AsyncVideoInputRequest
+from ....types.cancel_embedding_task_response import CancelEmbeddingTaskResponse
 from ....types.client_embedding_task_id import ClientEmbeddingTaskId
 from ....types.embedding_service_tier import EmbeddingServiceTier
 from ....types.embedding_task_response import EmbeddingTaskResponse
@@ -554,6 +555,133 @@ class RawTasksClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[CancelEmbeddingTaskResponse]:
+        """
+        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the embedding task.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[CancelEmbeddingTaskResponse]
+            The task has been successfully canceled or was already canceled.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"embed-v2/tasks/{jsonable_encoder(task_id)}/cancel",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    CancelEmbeddingTaskResponse,
+                    parse_obj_as(
+                        type_=CancelEmbeddingTaskResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
 
 class AsyncRawTasksClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -1036,6 +1164,133 @@ class AsyncRawTasksClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[CancelEmbeddingTaskResponse]:
+        """
+        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the embedding task.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[CancelEmbeddingTaskResponse]
+            The task has been successfully canceled or was already canceled.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"embed-v2/tasks/{jsonable_encoder(task_id)}/cancel",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    CancelEmbeddingTaskResponse,
+                    parse_obj_as(
+                        type_=CancelEmbeddingTaskResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

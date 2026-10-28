@@ -1,16 +1,21 @@
-import typing
-import time
 import asyncio
-from ..core.client_wrapper import SyncClientWrapper, AsyncClientWrapper
-from ..embed.client import EmbedClient, AsyncEmbedClient
-from ..embed.tasks.client import TasksClient, AsyncTasksClient
-from ..embed.tasks.types.tasks_create_response import TasksCreateResponse
-from ..embed.tasks.types.tasks_status_response import TasksStatusResponse
+import time
+import typing
+
+from .. import core
+from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.request_options import RequestOptions
+from ..embed.client import AsyncEmbedClient, EmbedClient
+from ..embed.tasks.client import AsyncTasksClient, TasksClient
 from ..embed.tasks.types.tasks_create_request_video_embedding_scope_item import (
     TasksCreateRequestVideoEmbeddingScopeItem,
 )
-from ..core.request_options import RequestOptions
-from .. import core
+from ..embed.tasks.types.tasks_create_response import TasksCreateResponse
+from ..embed.tasks.types.tasks_status_response import TasksStatusResponse
+from .embed_v2_batches_client_wrapper import (
+    AsyncEmbedV2BatchesClientWrapper,
+    EmbedV2BatchesClientWrapper,
+)
 
 OMIT = typing.cast(typing.Any, ...)
 
@@ -412,6 +417,7 @@ class EmbedClientWrapper(EmbedClient):
         super().__init__(client_wrapper=client_wrapper)
         # Replace the tasks property with our custom implementation
         self.tasks = EmbedTasksClientWrapper(client_wrapper=client_wrapper)
+        self.v_2.batches = EmbedV2BatchesClientWrapper(client_wrapper=client_wrapper)
 
 
 class AsyncEmbedClientWrapper(AsyncEmbedClient):
@@ -422,3 +428,4 @@ class AsyncEmbedClientWrapper(AsyncEmbedClient):
         super().__init__(client_wrapper=client_wrapper)
         # Replace the tasks property with our custom implementation
         self.tasks = AsyncEmbedTasksClientWrapper(client_wrapper=client_wrapper)
+        self.v_2.batches = AsyncEmbedV2BatchesClientWrapper(client_wrapper=client_wrapper)

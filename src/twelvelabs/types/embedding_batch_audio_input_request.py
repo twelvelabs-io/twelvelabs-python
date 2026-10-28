@@ -19,6 +19,16 @@ class EmbeddingBatchAudioInputRequest(UniversalBaseModel):
     Identifies the audio file to embed. The Base64 size limit is the same as for a task that is not part of a batch. See the [`audio`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
+    start_sec: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Override the `defaults.audio.start_sec` value for this item.
+    """
+
+    end_sec: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Override the `defaults.audio.end_sec` value for this item. The end time must be greater than the start time.
+    """
+
     segmentation: typing.Optional[AsyncTemporalSegmentation] = pydantic.Field(default=None)
     """
     Override the `defaults.audio.segmentation` value for this item. The platform replaces the entire default object.
@@ -46,24 +56,6 @@ class EmbeddingBatchAudioInputRequest(UniversalBaseModel):
     """
 
     media_source: MediaSource
-    start_sec: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    The start time in seconds for processing the audio file.
-    
-    Use this parameter to process a portion of the audio file starting from a specific time.
-    
-    **Default**: 0 (start from the beginning).
-    """
-
-    end_sec: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    The end time in seconds for processing the audio file.
-    
-    Use this parameter to process a portion of the audio file ending at a specific time. The end time must be greater than the start time.
-    
-    **Default**: End of the audio file
-    """
-
     time_based_metadata: typing.Optional[typing.List[TimeBasedMetadataEntry]] = pydantic.Field(default=None)
     """
     Your own time-aligned text, such as a stats feed or scene descriptions. The platform folds each entry into the fused embedding of the segments it overlaps in time, and it affects only that embedding. Requires the `fused_embedding` value in the `embedding_type` field. This field requires the Marengo 3.5 native input format.

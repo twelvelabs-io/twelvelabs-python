@@ -17,40 +17,48 @@ from .embedding_batch_audio_defaults_request_embedding_type_item import (
 
 
 class EmbeddingBatchAudioDefaultsRequest(UniversalBaseModel):
+    """
+    Default values applied to every item when the batch has the `audio` input type.
+    """
+
     start_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The start time in seconds for processing the audio file of every item.
+    Start of the processing window, in seconds, applied to every item. Use with the `end_sec` field to process only a portion of each audio file.
+    
+    **Default**: 0 (start from the beginning).
     """
 
     end_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The end time in seconds for processing the audio file of every item.
+    End of the processing window, in seconds, applied to every item. Use with the `start_sec` field to process only a portion of each audio file. The end time must be greater than the start time.
+    
+    **Default**: End of the audio file.
     """
 
     segmentation: typing.Optional[AsyncTemporalSegmentation] = pydantic.Field(default=None)
     """
-    Specifies how the platform divides the audio into segments for every item.
+    Specifies how the platform divides the audio into segments for every item. For the structure and defaults, see the [`segmentation`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio.segmentation) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_option: typing.Optional[typing.List[EmbeddingBatchAudioDefaultsRequestEmbeddingOptionItem]] = (
         pydantic.Field(default=None)
     )
     """
-    The types of embeddings to generate for every item.
+    The types of embeddings to generate for every item. For the values and defaults, see the [`embedding_option`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio.embedding_option) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_scope: typing.Optional[typing.List[EmbeddingBatchAudioDefaultsRequestEmbeddingScopeItem]] = (
         pydantic.Field(default=None)
     )
     """
-    The scope for which to generate embeddings for every item.
+    The scope for which to generate embeddings for every item. For the values and defaults, see the [`embedding_scope`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio.embedding_scope) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_type: typing.Optional[typing.List[EmbeddingBatchAudioDefaultsRequestEmbeddingTypeItem]] = pydantic.Field(
         default=None
     )
     """
-    Specifies how to structure the embeddings. A fused audio embedding requires the `time_based_metadata` field on each item that uses the `fused_embedding` value.
+    Specifies how to structure the embeddings for every item. A fused audio embedding requires the `time_based_metadata` field on each item that uses the `fused_embedding` value. For the values and defaults, see the [`embedding_type`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio.embedding_type) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     if IS_PYDANTIC_V2:

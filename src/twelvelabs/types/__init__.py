@@ -404,6 +404,7 @@ from .redirect_uri import RedirectUri
 from .report_chunk_batch_response import ReportChunkBatchResponse
 from .request_additional_presigned_ur_ls_response import RequestAdditionalPresignedUrLsResponse
 from .response_annotation import ResponseAnnotation
+from .response_annotation_type import ResponseAnnotationType
 from .response_billing import ResponseBilling
 from .response_create_request import ResponseCreateRequest
 from .response_create_request_include_item import ResponseCreateRequestIncludeItem
@@ -423,6 +424,8 @@ from .response_output_item import (
     ResponseOutputItem_JockeyWebSearch,
     ResponseOutputItem_Message,
 )
+from .response_output_item_role import ResponseOutputItemRole
+from .response_output_item_type import ResponseOutputItemType
 from .response_selection import ResponseSelection
 from .response_selection_kind import ResponseSelectionKind
 from .response_standard_output_item import ResponseStandardOutputItem
@@ -928,6 +931,7 @@ __all__ = [
     "ReportChunkBatchResponse",
     "RequestAdditionalPresignedUrLsResponse",
     "ResponseAnnotation",
+    "ResponseAnnotationType",
     "ResponseBilling",
     "ResponseCreateRequest",
     "ResponseCreateRequestIncludeItem",
@@ -941,6 +945,8 @@ __all__ = [
     "ResponseOutputContentPart",
     "ResponseOutputContentPartType",
     "ResponseOutputItem",
+    "ResponseOutputItemRole",
+    "ResponseOutputItemType",
     "ResponseOutputItem_FunctionCall",
     "ResponseOutputItem_FunctionCallOutput",
     "ResponseOutputItem_JockeyWebSearch",

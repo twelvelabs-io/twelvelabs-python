@@ -12,19 +12,21 @@ from .embedding_batch_video_defaults_request import EmbeddingBatchVideoDefaultsR
 
 class EmbeddingBatchDefaultsRequest(UniversalBaseModel):
     """
-    Default values applied to every item that does not override them. Set the `embedding_dimension` and `embedding_uncertainty` fields only here. Supplying either on an item rejects the entire batch with `400`. Items can override fields inside the object that matches the `input_type` field. The platform merges that object one level deep: an item field replaces the corresponding default field, and other default fields remain. Nested fields, such as the `segmentation` object, are replaced as whole objects rather than merged recursively. Provide only the object that matches the `input_type` field. Media sources and time-based metadata belong on individual items.
+    Default values applied to every item that does not override them. Items in the `requests` array override these values. To override the `segmentation` field, provide the full object on the item. You cannot change only some of its nested fields. Set the `embedding_dimension` and `embedding_uncertainty` fields only here. Setting either field on an item rejects the entire batch with `400`. Provide only the object that matches the `input_type` field.
     """
 
     embedding_dimension: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The number of dimensions for every embedding produced by each item. Audio and video fused embeddings with the `asset` scope require `512`, including when an item also requests separate embeddings or `clip`/`local` scope.
+    The number of dimensions for every embedding produced by each item, including the uncertainty vector.
     
-    If this value is `128` or `256`, an affected item fails with the `UNSUPPORTED_COMBINATION` error code rather than returning only its supported outputs. Other items retain their own outcomes; this combination does not reject the entire batch. Separate embeddings and fused `clip`/`local` embeddings support the `128`, `256`, and `512` values.
+    An audio or video item requires the `512` value when its `embedding_type` field includes the `fused_embedding` value and its `embedding_scope` field includes the `asset` value. With the `128` or `256` value, that item fails with the `UNSUPPORTED_COMBINATION` error code. The other items in the batch are not affected.
+    
+    For all requirements, see the [`embedding_dimension`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.embedding_dimension) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_uncertainty: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Request uncertainty vectors for every item. The [async uncertainty requirements](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.embedding-uncertainty) apply: audio/video must exclude `asset` scope; PDF is unsupported; plain text/Markdown requires only `local` scope. Image input supports this option.
+    Set this field to `true` to include a per-dimension uncertainty vector in the result of every item. For the requirements, see the [`embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.embedding_uncertainty) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     audio: typing.Optional[EmbeddingBatchAudioDefaultsRequest] = None

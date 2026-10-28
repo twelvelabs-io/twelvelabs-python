@@ -9,7 +9,11 @@ from .page_info import PageInfo
 
 
 class ListEmbeddingBatchesResponse(UniversalBaseModel):
-    data: typing.List[EmbeddingBatchSummary]
+    data: typing.List[EmbeddingBatchSummary] = pydantic.Field()
+    """
+    An array of batch objects. Each object includes item counts for each item status.
+    """
+
     page_info: PageInfo
 
     if IS_PYDANTIC_V2:

@@ -1,16 +1,15 @@
-import typing
 import os
+import typing
 
-from .base_client import BaseClient, AsyncBaseClient
-from .wrapper.search_client_wrapper import SearchClientWrapper, AsyncSearchClientWrapper
-from .wrapper.task_client_wrapper import TaskClientWrapper, AsyncTaskClientWrapper
-from .wrapper.embed_client_wrapper import EmbedClientWrapper, AsyncEmbedClientWrapper
+from .base_client import AsyncBaseClient, BaseClient
+from .wrapper.embed_client_wrapper import AsyncEmbedClientWrapper, EmbedClientWrapper
 from .wrapper.index_client_wrapper import (
-    IndexesClientWrapper,
     AsyncIndexesClientWrapper,
+    IndexesClientWrapper,
 )
-from .wrapper.multipart_upload_client_wrapper import MultipartUploadClientWrapper, AsyncMultipartUploadClientWrapper
-from .wrapper.create_embeddings_client_wrapper import CreateEmbeddingsClientWrapper, AsyncCreateEmbeddingsClientWrapper
+from .wrapper.multipart_upload_client_wrapper import AsyncMultipartUploadClientWrapper, MultipartUploadClientWrapper
+from .wrapper.search_client_wrapper import AsyncSearchClientWrapper, SearchClientWrapper
+from .wrapper.task_client_wrapper import AsyncTaskClientWrapper, TaskClientWrapper
 
 OMIT = typing.cast(typing.Any, ...)
 
@@ -46,7 +45,6 @@ class TwelveLabs(BaseClient):
         self.embed = EmbedClientWrapper(client_wrapper=self._client_wrapper)
         self.indexes = IndexesClientWrapper(client_wrapper=self._client_wrapper)
         self.multipart_upload = MultipartUploadClientWrapper(client_wrapper=self._client_wrapper)
-        self.create_embeddings = CreateEmbeddingsClientWrapper(client_wrapper=self._client_wrapper)
 
     def __enter__(self):
         return self
@@ -86,7 +84,6 @@ class AsyncTwelveLabs(AsyncBaseClient):
         self.embed = AsyncEmbedClientWrapper(client_wrapper=self._client_wrapper)
         self.indexes = AsyncIndexesClientWrapper(client_wrapper=self._client_wrapper)
         self.multipart_upload = AsyncMultipartUploadClientWrapper(client_wrapper=self._client_wrapper)
-        self.create_embeddings = AsyncCreateEmbeddingsClientWrapper(client_wrapper=self._client_wrapper)
 
     async def __aenter__(self):
         return self

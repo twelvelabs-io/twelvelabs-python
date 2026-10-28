@@ -2,6 +2,6 @@
 
 import typing
 
-ListEmbeddingBatchesRequestStatus = typing.Union[
+BatchesListRequestStatus = typing.Union[
     typing.Literal["pending", "processing", "canceling", "completed", "canceled", "expired"], typing.Any
 ]

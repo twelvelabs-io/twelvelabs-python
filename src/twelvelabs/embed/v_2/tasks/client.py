@@ -9,6 +9,7 @@ from ....types.async_audio_input_request import AsyncAudioInputRequest
 from ....types.async_document_input_request import AsyncDocumentInputRequest
 from ....types.async_image_input_request import AsyncImageInputRequest
 from ....types.async_video_input_request import AsyncVideoInputRequest
+from ....types.cancel_embedding_task_response import CancelEmbeddingTaskResponse
 from ....types.client_embedding_task_id import ClientEmbeddingTaskId
 from ....types.embedding_service_tier import EmbeddingServiceTier
 from ....types.embedding_task_response import EmbeddingTaskResponse
@@ -296,6 +297,39 @@ class TasksClient:
         )
         """
         _response = self._raw_client.retrieve(task_id, request_options=request_options)
+        return _response.data
+
+    def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> CancelEmbeddingTaskResponse:
+        """
+        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the embedding task.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        CancelEmbeddingTaskResponse
+            The task has been successfully canceled or was already canceled.
+
+        Examples
+        --------
+        from twelvelabs import TwelveLabs
+
+        client = TwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+        client.embed.v_2.tasks.cancel(
+            task_id="64f8d2c7e4a1b37f8a9c5d12",
+        )
+        """
+        _response = self._raw_client.cancel(task_id, request_options=request_options)
         return _response.data
 
 
@@ -597,4 +631,45 @@ class AsyncTasksClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.retrieve(task_id, request_options=request_options)
+        return _response.data
+
+    async def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> CancelEmbeddingTaskResponse:
+        """
+        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the embedding task.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        CancelEmbeddingTaskResponse
+            The task has been successfully canceled or was already canceled.
+
+        Examples
+        --------
+        import asyncio
+
+        from twelvelabs import AsyncTwelveLabs
+
+        client = AsyncTwelveLabs(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.embed.v_2.tasks.cancel(
+                task_id="64f8d2c7e4a1b37f8a9c5d12",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.cancel(task_id, request_options=request_options)
         return _response.data

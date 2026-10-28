@@ -16,25 +16,29 @@ from .embedding_batch_image_defaults_request_embedding_type_item import (
 
 
 class EmbeddingBatchImageDefaultsRequest(UniversalBaseModel):
+    """
+    Default values applied to every item when the batch has the `image` input type.
+    """
+
     embedding_option: typing.Optional[typing.List[EmbeddingBatchImageDefaultsRequestEmbeddingOptionItem]] = (
         pydantic.Field(default=None)
     )
     """
-    The types of embeddings to generate for every item.
+    The types of embeddings to generate for every item. For the values and defaults, see the [`embedding_option`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.image.embedding_option) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_scope: typing.Optional[typing.List[EmbeddingBatchImageDefaultsRequestEmbeddingScopeItem]] = (
         pydantic.Field(default=None)
     )
     """
-    The scope for which to generate embeddings for every item.
+    The scope for which to generate embeddings for every item. For the values and defaults, see the [`embedding_scope`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.image.embedding_scope) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_type: typing.Optional[typing.List[EmbeddingBatchImageDefaultsRequestEmbeddingTypeItem]] = pydantic.Field(
         default=None
     )
     """
-    Specifies how to structure the embeddings for every item.
+    Specifies how to structure the embeddings for every item. For the values and defaults, see the [`embedding_type`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.image.embedding_type) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     if IS_PYDANTIC_V2:

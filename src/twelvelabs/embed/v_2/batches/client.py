@@ -2,71 +2,74 @@
 
 import typing
 
-from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ..core.request_options import RequestOptions
-from ..types.cancel_embedding_task_response import CancelEmbeddingTaskResponse
-from ..types.client_embedding_batch_id import ClientEmbeddingBatchId
-from ..types.embedding_batch_defaults_request import EmbeddingBatchDefaultsRequest
-from ..types.embedding_batch_item_request import EmbeddingBatchItemRequest
-from ..types.embedding_batch_response import EmbeddingBatchResponse
-from ..types.embedding_batch_result_item import EmbeddingBatchResultItem
-from ..types.list_embedding_batches_response import ListEmbeddingBatchesResponse
-from .raw_client import AsyncRawCreateEmbeddingsClient, RawCreateEmbeddingsClient
+from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ....core.request_options import RequestOptions
+from ....types.client_embedding_batch_id import ClientEmbeddingBatchId
+from ....types.embedding_batch_defaults_request import EmbeddingBatchDefaultsRequest
+from ....types.embedding_batch_item_request import EmbeddingBatchItemRequest
+from ....types.embedding_batch_response import EmbeddingBatchResponse
+from ....types.embedding_batch_result_item import EmbeddingBatchResultItem
+from ....types.list_embedding_batches_response import ListEmbeddingBatchesResponse
+from .raw_client import AsyncRawBatchesClient, RawBatchesClient
+from .types.batches_list_request_status import BatchesListRequestStatus
 from .types.create_embedding_batch_request_input_type import CreateEmbeddingBatchRequestInputType
 from .types.create_embedding_batch_request_model_name import CreateEmbeddingBatchRequestModelName
 from .types.create_embedding_batch_request_service_tier import CreateEmbeddingBatchRequestServiceTier
-from .types.list_embedding_batches_request_status import ListEmbeddingBatchesRequestStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class CreateEmbeddingsClient:
+class BatchesClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        self._raw_client = RawCreateEmbeddingsClient(client_wrapper=client_wrapper)
+        self._raw_client = RawBatchesClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> RawCreateEmbeddingsClient:
+    def with_raw_response(self) -> RawBatchesClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        RawCreateEmbeddingsClient
+        RawBatchesClient
         """
         return self._raw_client
 
-    def list_embedding_batches(
+    def list(
         self,
         *,
         client_batch_id: typing.Optional[ClientEmbeddingBatchId] = None,
-        status: typing.Optional[ListEmbeddingBatchesRequestStatus] = None,
+        status: typing.Optional[BatchesListRequestStatus] = None,
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ListEmbeddingBatchesResponse:
         """
-        This method returns a list of the batches in your account, including aggregate status and item
-        counts. Use the `client_batch_id` query parameter to find a batch after a timeout or a `500` or `503` error on creation. The response sorts batches by creation date, with the newest batch first. Filters
-        combine using AND and are applied before pagination. An exact
-        `client_batch_id` value with no match returns `200` with an empty `data` array
-        and a `page_info.total_results` value of `0`. To get the status and the `task_id` of each item, use the `GET` method of the
-        `/embed-v2/batches/{batch_id}` endpoint. To get the embeddings, use the `GET`
-        method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+        Use this method to list your batches. The response sorts batches by creation date, with the newest batch first. Each batch includes its status and item counts.
+
+        **Notes**:
+        - Filters combine using AND.
+        - To retrieve the status and the task identifier of each item in a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
+        - To retrieve the embeddings of a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
 
         Parameters
         ----------
         client_batch_id : typing.Optional[ClientEmbeddingBatchId]
             Filter batches by the identifier you set when you created the batch. The match is exact.
 
-        status : typing.Optional[ListEmbeddingBatchesRequestStatus]
-            Filter batches by status.
+        status : typing.Optional[BatchesListRequestStatus]
+            Filter batches by status. For the meaning of each value, see the [Batch statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#batch-statuses) section on the **The batch object** page. If you omit this parameter, the response includes batches in all statuses.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve, after the filters are applied.
 
+            **Default**: `1`.
+
         page_limit : typing.Optional[int]
             The number of batches to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -83,14 +86,14 @@ class CreateEmbeddingsClient:
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        client.create_embeddings.list_embedding_batches(
+        client.embed.v_2.batches.list(
             client_batch_id="reports_2026_10",
             status="pending",
             page=1,
             page_limit=1,
         )
         """
-        _response = self._raw_client.list_embedding_batches(
+        _response = self._raw_client.list(
             client_batch_id=client_batch_id,
             status=status,
             page=page,
@@ -99,7 +102,7 @@ class CreateEmbeddingsClient:
         )
         return _response.data
 
-    def create_embedding_batch(
+    def create(
         self,
         *,
         model_name: CreateEmbeddingBatchRequestModelName,
@@ -169,9 +172,9 @@ class CreateEmbeddingsClient:
         Returns
         -------
         EmbeddingBatchResponse
-            The batch has been successfully created, and every item has been accepted for asynchronous processing.
+            The batch has been successfully created, and the platform has accepted it for asynchronous processing.
 
-            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. A failed item does not stop the rest of the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
+            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
 
         Examples
         --------
@@ -187,7 +190,7 @@ class CreateEmbeddingsClient:
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        client.create_embeddings.create_embedding_batch(
+        client.embed.v_2.batches.create(
             client_batch_id="reports_2026_10",
             model_name="marengo3.5",
             service_tier="flex",
@@ -207,11 +210,20 @@ class CreateEmbeddingsClient:
                             url="https://example.com/report.pdf",
                         ),
                     ),
-                )
+                ),
+                EmbeddingBatchDocumentItemRequest(
+                    custom_id="report_002",
+                    document=EmbeddingBatchDocumentInputRequest(
+                        media_source=MediaSource(
+                            url="https://example.com/notes.txt",
+                        ),
+                        embedding_option=["text"],
+                    ),
+                ),
             ],
         )
         """
-        _response = self._raw_client.create_embedding_batch(
+        _response = self._raw_client.create(
             model_name=model_name,
             service_tier=service_tier,
             input_type=input_type,
@@ -222,16 +234,17 @@ class CreateEmbeddingsClient:
         )
         return _response.data
 
-    def retrieve_embedding_batch(
+    def retrieve(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EmbeddingBatchResponse:
         """
-        This method retrieves the status of a batch, the item counts, and the mapping from the `custom_id` field of each item to its `task_id` field. Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status.
-        A batch can contain ready, failed, and canceled items at the same
-        time. `completed` means all items reached a final status, not that all
-        succeeded. The batch and its tasks can be read for 30 days after batch creation,
-        regardless of their statuses. At the end of that period, batch, results,
-        and task reads return `404`. Deletion ends access earlier.
+        Use this method to monitor a batch. The response includes the batch status, the item counts, and one entry for each item with its `custom_id` value and task identifier.
+
+        Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status. To retrieve the embeddings, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+
+        Do not treat the `completed` status as a success signal. It means that every item reached a final status, not that every embedding succeeded. To see how many items succeeded, failed, or were canceled, check the `ready_items`, `failed_items`, and `canceled_items` fields.
+
+        The platform keeps a batch and its tasks readable for 30 days after batch creation, regardless of their statuses. After that period, reads of the batch, its results, and its tasks return `404`. Deletion ends access earlier.
 
         Parameters
         ----------
@@ -253,14 +266,14 @@ class CreateEmbeddingsClient:
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        client.create_embeddings.retrieve_embedding_batch(
+        client.embed.v_2.batches.retrieve(
             batch_id="68d3ae81c4a8d3697e15b2ef",
         )
         """
-        _response = self._raw_client.retrieve_embedding_batch(batch_id, request_options=request_options)
+        _response = self._raw_client.retrieve(batch_id, request_options=request_options)
         return _response.data
 
-    def delete_embedding_batch(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def delete(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         This method removes a batch with a final status and all its tasks and results from API access. This does not reverse
         billing for items that completed successfully. A batch with the `pending`,
@@ -288,30 +301,29 @@ class CreateEmbeddingsClient:
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        client.create_embeddings.delete_embedding_batch(
+        client.embed.v_2.batches.delete(
             batch_id="68d3ae81c4a8d3697e15b2ef",
         )
         """
-        _response = self._raw_client.delete_embedding_batch(batch_id, request_options=request_options)
+        _response = self._raw_client.delete(batch_id, request_options=request_options)
         return _response.data
 
-    def retrieve_embedding_batch_results(
+    def results(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.Iterator[EmbeddingBatchResultItem]:
         """
-        This method streams one JSON Lines entry for each item in a batch. Each line contains the
-        `custom_id` and `task_id` fields and the current item status. Ready lines contain
-        the `data` field with the embeddings and the `usage` field; failed lines contain the `error` field; canceled lines
-        contain no `error` field and can contain a `cancellation_reason` field. Results can be
-        read while the batch is still processing and for 30 days after creation.
-        Result lines are not guaranteed to appear in submission order. A complete stream
-        contains exactly one line for each current batch item. Once the batch has a final status, each line has a final item status: `ready`, `failed`, or `canceled`. The task identifier, custom identifier, status, and result or error of each line match the corresponding task read. Reads made during processing are separate snapshots and can show different statuses as processing progresses.
+        Use this method to retrieve the results for each item in a batch. You can call it while the batch has the `pending` or `processing` status.
 
-        A `200` status alone does not confirm a complete stream. To verify it, count the distinct `custom_id` values in the lines. Compare the count with the `total_items` field of the batch. If the connection ends early, retry the retrieval and verify the item count again.
+        The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
 
-        If an error occurs after streaming starts, the response is truncated, and the platform does not add a failed-item line. The `X-Stream-Error` trailer then contains this JSON: `{"code":"stream_error","message":"Incomplete embedding result stream. Retry and verify the expected item count."}`. Retry the retrieval and verify the item count.
+        Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
 
-        Before streaming starts, failures use the documented HTTP error responses. Whether the trailer reaches you depends on the HTTP client and any intermediary. A missing trailer does not replace the item-count check.
+        You can retrieve results for 30 days after batch creation.
+
+        **Notes**:
+        - Result entries are not guaranteed to appear in submission order.
+        - A `200` status does not confirm a complete stream. To verify it, count the distinct `custom_id` values and compare the count with the `total_items` field of the batch. If the connection ends early, retry and verify the count again.
+        - If an error occurs after the stream starts, the response ends early and the platform sends the `X-Stream-Error` trailer. A trailer is an HTTP header that the platform sends after the response body. The trailer contains the `stream_error` code. Many HTTP clients do not show trailers, so always compare the number of result entries with the `total_items` field.
 
         Parameters
         ----------
@@ -324,7 +336,7 @@ class CreateEmbeddingsClient:
         Yields
         ------
         typing.Iterator[EmbeddingBatchResultItem]
-            The results of the batch have been successfully streamed as JSON Lines, with one entry for each item.
+            The results of the batch have been successfully streamed as JSON Lines.
 
         Examples
         --------
@@ -333,16 +345,16 @@ class CreateEmbeddingsClient:
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        response = client.create_embeddings.retrieve_embedding_batch_results(
+        response = client.embed.v_2.batches.results(
             batch_id="68d3ae81c4a8d3697e15b2ef",
         )
         for chunk in response:
             yield chunk
         """
-        with self._raw_client.retrieve_embedding_batch_results(batch_id, request_options=request_options) as r:
+        with self._raw_client.results(batch_id, request_options=request_options) as r:
             yield from r.data
 
-    def cancel_embedding_batch(
+    def cancel(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EmbeddingBatchResponse:
         """
@@ -378,93 +390,64 @@ class CreateEmbeddingsClient:
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
         )
-        client.create_embeddings.cancel_embedding_batch(
+        client.embed.v_2.batches.cancel(
             batch_id="68d3ae81c4a8d3697e15b2ef",
         )
         """
-        _response = self._raw_client.cancel_embedding_batch(batch_id, request_options=request_options)
-        return _response.data
-
-    def cancel_async_embedding_task(
-        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> CancelEmbeddingTaskResponse:
-        """
-        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
-
-        Parameters
-        ----------
-        task_id : str
-            The unique identifier of the embedding task.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        CancelEmbeddingTaskResponse
-            The task has been successfully canceled or was already canceled.
-
-        Examples
-        --------
-        from twelvelabs import TwelveLabs
-
-        client = TwelveLabs(
-            api_key="YOUR_API_KEY",
-        )
-        client.create_embeddings.cancel_async_embedding_task(
-            task_id="64f8d2c7e4a1b37f8a9c5d12",
-        )
-        """
-        _response = self._raw_client.cancel_async_embedding_task(task_id, request_options=request_options)
+        _response = self._raw_client.cancel(batch_id, request_options=request_options)
         return _response.data
 
 
-class AsyncCreateEmbeddingsClient:
+class AsyncBatchesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawCreateEmbeddingsClient(client_wrapper=client_wrapper)
+        self._raw_client = AsyncRawBatchesClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> AsyncRawCreateEmbeddingsClient:
+    def with_raw_response(self) -> AsyncRawBatchesClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        AsyncRawCreateEmbeddingsClient
+        AsyncRawBatchesClient
         """
         return self._raw_client
 
-    async def list_embedding_batches(
+    async def list(
         self,
         *,
         client_batch_id: typing.Optional[ClientEmbeddingBatchId] = None,
-        status: typing.Optional[ListEmbeddingBatchesRequestStatus] = None,
+        status: typing.Optional[BatchesListRequestStatus] = None,
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ListEmbeddingBatchesResponse:
         """
-        This method returns a list of the batches in your account, including aggregate status and item
-        counts. Use the `client_batch_id` query parameter to find a batch after a timeout or a `500` or `503` error on creation. The response sorts batches by creation date, with the newest batch first. Filters
-        combine using AND and are applied before pagination. An exact
-        `client_batch_id` value with no match returns `200` with an empty `data` array
-        and a `page_info.total_results` value of `0`. To get the status and the `task_id` of each item, use the `GET` method of the
-        `/embed-v2/batches/{batch_id}` endpoint. To get the embeddings, use the `GET`
-        method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+        Use this method to list your batches. The response sorts batches by creation date, with the newest batch first. Each batch includes its status and item counts.
+
+        **Notes**:
+        - Filters combine using AND.
+        - To retrieve the status and the task identifier of each item in a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
+        - To retrieve the embeddings of a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
 
         Parameters
         ----------
         client_batch_id : typing.Optional[ClientEmbeddingBatchId]
             Filter batches by the identifier you set when you created the batch. The match is exact.
 
-        status : typing.Optional[ListEmbeddingBatchesRequestStatus]
-            Filter batches by status.
+        status : typing.Optional[BatchesListRequestStatus]
+            Filter batches by status. For the meaning of each value, see the [Batch statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#batch-statuses) section on the **The batch object** page. If you omit this parameter, the response includes batches in all statuses.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve, after the filters are applied.
 
+            **Default**: `1`.
+
         page_limit : typing.Optional[int]
             The number of batches to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -486,7 +469,7 @@ class AsyncCreateEmbeddingsClient:
 
 
         async def main() -> None:
-            await client.create_embeddings.list_embedding_batches(
+            await client.embed.v_2.batches.list(
                 client_batch_id="reports_2026_10",
                 status="pending",
                 page=1,
@@ -496,7 +479,7 @@ class AsyncCreateEmbeddingsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list_embedding_batches(
+        _response = await self._raw_client.list(
             client_batch_id=client_batch_id,
             status=status,
             page=page,
@@ -505,7 +488,7 @@ class AsyncCreateEmbeddingsClient:
         )
         return _response.data
 
-    async def create_embedding_batch(
+    async def create(
         self,
         *,
         model_name: CreateEmbeddingBatchRequestModelName,
@@ -575,9 +558,9 @@ class AsyncCreateEmbeddingsClient:
         Returns
         -------
         EmbeddingBatchResponse
-            The batch has been successfully created, and every item has been accepted for asynchronous processing.
+            The batch has been successfully created, and the platform has accepted it for asynchronous processing.
 
-            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. A failed item does not stop the rest of the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
+            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
 
         Examples
         --------
@@ -598,7 +581,7 @@ class AsyncCreateEmbeddingsClient:
 
 
         async def main() -> None:
-            await client.create_embeddings.create_embedding_batch(
+            await client.embed.v_2.batches.create(
                 client_batch_id="reports_2026_10",
                 model_name="marengo3.5",
                 service_tier="flex",
@@ -618,14 +601,23 @@ class AsyncCreateEmbeddingsClient:
                                 url="https://example.com/report.pdf",
                             ),
                         ),
-                    )
+                    ),
+                    EmbeddingBatchDocumentItemRequest(
+                        custom_id="report_002",
+                        document=EmbeddingBatchDocumentInputRequest(
+                            media_source=MediaSource(
+                                url="https://example.com/notes.txt",
+                            ),
+                            embedding_option=["text"],
+                        ),
+                    ),
                 ],
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create_embedding_batch(
+        _response = await self._raw_client.create(
             model_name=model_name,
             service_tier=service_tier,
             input_type=input_type,
@@ -636,16 +628,17 @@ class AsyncCreateEmbeddingsClient:
         )
         return _response.data
 
-    async def retrieve_embedding_batch(
+    async def retrieve(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EmbeddingBatchResponse:
         """
-        This method retrieves the status of a batch, the item counts, and the mapping from the `custom_id` field of each item to its `task_id` field. Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status.
-        A batch can contain ready, failed, and canceled items at the same
-        time. `completed` means all items reached a final status, not that all
-        succeeded. The batch and its tasks can be read for 30 days after batch creation,
-        regardless of their statuses. At the end of that period, batch, results,
-        and task reads return `404`. Deletion ends access earlier.
+        Use this method to monitor a batch. The response includes the batch status, the item counts, and one entry for each item with its `custom_id` value and task identifier.
+
+        Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status. To retrieve the embeddings, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+
+        Do not treat the `completed` status as a success signal. It means that every item reached a final status, not that every embedding succeeded. To see how many items succeeded, failed, or were canceled, check the `ready_items`, `failed_items`, and `canceled_items` fields.
+
+        The platform keeps a batch and its tasks readable for 30 days after batch creation, regardless of their statuses. After that period, reads of the batch, its results, and its tasks return `404`. Deletion ends access earlier.
 
         Parameters
         ----------
@@ -672,19 +665,17 @@ class AsyncCreateEmbeddingsClient:
 
 
         async def main() -> None:
-            await client.create_embeddings.retrieve_embedding_batch(
+            await client.embed.v_2.batches.retrieve(
                 batch_id="68d3ae81c4a8d3697e15b2ef",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.retrieve_embedding_batch(batch_id, request_options=request_options)
+        _response = await self._raw_client.retrieve(batch_id, request_options=request_options)
         return _response.data
 
-    async def delete_embedding_batch(
-        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    async def delete(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         This method removes a batch with a final status and all its tasks and results from API access. This does not reverse
         billing for items that completed successfully. A batch with the `pending`,
@@ -717,33 +708,32 @@ class AsyncCreateEmbeddingsClient:
 
 
         async def main() -> None:
-            await client.create_embeddings.delete_embedding_batch(
+            await client.embed.v_2.batches.delete(
                 batch_id="68d3ae81c4a8d3697e15b2ef",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete_embedding_batch(batch_id, request_options=request_options)
+        _response = await self._raw_client.delete(batch_id, request_options=request_options)
         return _response.data
 
-    async def retrieve_embedding_batch_results(
+    async def results(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.AsyncIterator[EmbeddingBatchResultItem]:
         """
-        This method streams one JSON Lines entry for each item in a batch. Each line contains the
-        `custom_id` and `task_id` fields and the current item status. Ready lines contain
-        the `data` field with the embeddings and the `usage` field; failed lines contain the `error` field; canceled lines
-        contain no `error` field and can contain a `cancellation_reason` field. Results can be
-        read while the batch is still processing and for 30 days after creation.
-        Result lines are not guaranteed to appear in submission order. A complete stream
-        contains exactly one line for each current batch item. Once the batch has a final status, each line has a final item status: `ready`, `failed`, or `canceled`. The task identifier, custom identifier, status, and result or error of each line match the corresponding task read. Reads made during processing are separate snapshots and can show different statuses as processing progresses.
+        Use this method to retrieve the results for each item in a batch. You can call it while the batch has the `pending` or `processing` status.
 
-        A `200` status alone does not confirm a complete stream. To verify it, count the distinct `custom_id` values in the lines. Compare the count with the `total_items` field of the batch. If the connection ends early, retry the retrieval and verify the item count again.
+        The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
 
-        If an error occurs after streaming starts, the response is truncated, and the platform does not add a failed-item line. The `X-Stream-Error` trailer then contains this JSON: `{"code":"stream_error","message":"Incomplete embedding result stream. Retry and verify the expected item count."}`. Retry the retrieval and verify the item count.
+        Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
 
-        Before streaming starts, failures use the documented HTTP error responses. Whether the trailer reaches you depends on the HTTP client and any intermediary. A missing trailer does not replace the item-count check.
+        You can retrieve results for 30 days after batch creation.
+
+        **Notes**:
+        - Result entries are not guaranteed to appear in submission order.
+        - A `200` status does not confirm a complete stream. To verify it, count the distinct `custom_id` values and compare the count with the `total_items` field of the batch. If the connection ends early, retry and verify the count again.
+        - If an error occurs after the stream starts, the response ends early and the platform sends the `X-Stream-Error` trailer. A trailer is an HTTP header that the platform sends after the response body. The trailer contains the `stream_error` code. Many HTTP clients do not show trailers, so always compare the number of result entries with the `total_items` field.
 
         Parameters
         ----------
@@ -756,7 +746,7 @@ class AsyncCreateEmbeddingsClient:
         Yields
         ------
         typing.AsyncIterator[EmbeddingBatchResultItem]
-            The results of the batch have been successfully streamed as JSON Lines, with one entry for each item.
+            The results of the batch have been successfully streamed as JSON Lines.
 
         Examples
         --------
@@ -770,7 +760,7 @@ class AsyncCreateEmbeddingsClient:
 
 
         async def main() -> None:
-            response = await client.create_embeddings.retrieve_embedding_batch_results(
+            response = await client.embed.v_2.batches.results(
                 batch_id="68d3ae81c4a8d3697e15b2ef",
             )
             async for chunk in response:
@@ -779,11 +769,11 @@ class AsyncCreateEmbeddingsClient:
 
         asyncio.run(main())
         """
-        async with self._raw_client.retrieve_embedding_batch_results(batch_id, request_options=request_options) as r:
+        async with self._raw_client.results(batch_id, request_options=request_options) as r:
             async for _chunk in r.data:
                 yield _chunk
 
-    async def cancel_embedding_batch(
+    async def cancel(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EmbeddingBatchResponse:
         """
@@ -824,53 +814,12 @@ class AsyncCreateEmbeddingsClient:
 
 
         async def main() -> None:
-            await client.create_embeddings.cancel_embedding_batch(
+            await client.embed.v_2.batches.cancel(
                 batch_id="68d3ae81c4a8d3697e15b2ef",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.cancel_embedding_batch(batch_id, request_options=request_options)
-        return _response.data
-
-    async def cancel_async_embedding_task(
-        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> CancelEmbeddingTaskResponse:
-        """
-        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
-
-        Parameters
-        ----------
-        task_id : str
-            The unique identifier of the embedding task.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        CancelEmbeddingTaskResponse
-            The task has been successfully canceled or was already canceled.
-
-        Examples
-        --------
-        import asyncio
-
-        from twelvelabs import AsyncTwelveLabs
-
-        client = AsyncTwelveLabs(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.create_embeddings.cancel_async_embedding_task(
-                task_id="64f8d2c7e4a1b37f8a9c5d12",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.cancel_async_embedding_task(task_id, request_options=request_options)
+        _response = await self._raw_client.cancel(batch_id, request_options=request_options)
         return _response.data

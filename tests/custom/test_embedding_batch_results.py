@@ -13,18 +13,18 @@ ITEM = {"task_id": "task-1", "custom_id": "first", "status": "ready", "data": []
 
 def read_results(client, raw):
     if raw:
-        with client.create_embeddings.with_raw_response.retrieve_embedding_batch_results(BATCH_ID) as response:
+        with client.embed.v_2.batches.with_raw_response.results(BATCH_ID) as response:
             assert response.headers["x-request-id"] == "request-1"
             return list(response.data)
-    return list(client.create_embeddings.retrieve_embedding_batch_results(BATCH_ID))
+    return list(client.embed.v_2.batches.results(BATCH_ID))
 
 
 async def read_results_async(client, raw):
     if raw:
-        async with client.create_embeddings.with_raw_response.retrieve_embedding_batch_results(BATCH_ID) as response:
+        async with client.embed.v_2.batches.with_raw_response.results(BATCH_ID) as response:
             assert response.headers["x-request-id"] == "request-1"
             return [item async for item in response.data]
-    return [item async for item in client.create_embeddings.retrieve_embedding_batch_results(BATCH_ID)]
+    return [item async for item in client.embed.v_2.batches.results(BATCH_ID)]
 
 
 def transport(payload, responses, status=200):

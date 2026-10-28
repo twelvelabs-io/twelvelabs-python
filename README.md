@@ -40,7 +40,7 @@ The task error model is `EmbeddingTaskError`, with `message` and optional `code`
 
 Embedding durations use floating-point seconds, including fractional values. Update code that assumes an integer duration.
 
-Use `client.create_embeddings` for the Embedding Batch API. Both `TwelveLabs` and `AsyncTwelveLabs` propagate malformed JSONL records, invalid result models, and transport failures while reading batch results, including through `with_raw_response`. A clean end of the stream does not prove it is complete: compare distinct item identifiers with the batch's `total_items` before treating retrieval as successful.
+Use `client.embed.v_2.batches` for the Embed v2 Batch API and `client.embed.v_2.tasks.cancel` to cancel a standalone task. Both `TwelveLabs` and `AsyncTwelveLabs` propagate malformed JSONL records, invalid result models, and transport failures while reading batch results, including through `with_raw_response`. A clean end of the stream does not prove it is complete: compare distinct item identifiers with the batch's `total_items` before treating retrieval as successful.
 
 # Initialize the SDK
 

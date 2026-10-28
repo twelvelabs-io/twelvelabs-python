@@ -2,14 +2,14 @@
 
 # isort: skip_file
 
+from .batches_list_request_status import BatchesListRequestStatus
 from .create_embedding_batch_request_input_type import CreateEmbeddingBatchRequestInputType
 from .create_embedding_batch_request_model_name import CreateEmbeddingBatchRequestModelName
 from .create_embedding_batch_request_service_tier import CreateEmbeddingBatchRequestServiceTier
-from .list_embedding_batches_request_status import ListEmbeddingBatchesRequestStatus
 
 __all__ = [
+    "BatchesListRequestStatus",
     "CreateEmbeddingBatchRequestInputType",
     "CreateEmbeddingBatchRequestModelName",
     "CreateEmbeddingBatchRequestServiceTier",
-    "ListEmbeddingBatchesRequestStatus",
 ]

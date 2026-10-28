@@ -5,74 +5,77 @@ import json
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
-from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
-from ..core.pydantic_utilities import parse_obj_as
-from ..core.request_options import RequestOptions
-from ..core.serialization import convert_and_respect_annotation_metadata
-from ..errors.bad_request_error import BadRequestError
-from ..errors.conflict_error import ConflictError
-from ..errors.content_too_large_error import ContentTooLargeError
-from ..errors.forbidden_error import ForbiddenError
-from ..errors.internal_server_error import InternalServerError
-from ..errors.not_found_error import NotFoundError
-from ..errors.service_unavailable_error import ServiceUnavailableError
-from ..errors.too_many_requests_error import TooManyRequestsError
-from ..errors.unauthorized_error import UnauthorizedError
-from ..types.cancel_embedding_task_response import CancelEmbeddingTaskResponse
-from ..types.client_embedding_batch_id import ClientEmbeddingBatchId
-from ..types.embedding_batch_defaults_request import EmbeddingBatchDefaultsRequest
-from ..types.embedding_batch_item_request import EmbeddingBatchItemRequest
-from ..types.embedding_batch_response import EmbeddingBatchResponse
-from ..types.embedding_batch_result_item import EmbeddingBatchResultItem
-from ..types.flat_error_response import FlatErrorResponse
-from ..types.list_embedding_batches_response import ListEmbeddingBatchesResponse
+from ....core.api_error import ApiError
+from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ....core.http_response import AsyncHttpResponse, HttpResponse
+from ....core.jsonable_encoder import jsonable_encoder
+from ....core.pydantic_utilities import parse_obj_as
+from ....core.request_options import RequestOptions
+from ....core.serialization import convert_and_respect_annotation_metadata
+from ....errors.bad_request_error import BadRequestError
+from ....errors.conflict_error import ConflictError
+from ....errors.content_too_large_error import ContentTooLargeError
+from ....errors.forbidden_error import ForbiddenError
+from ....errors.internal_server_error import InternalServerError
+from ....errors.not_found_error import NotFoundError
+from ....errors.service_unavailable_error import ServiceUnavailableError
+from ....errors.too_many_requests_error import TooManyRequestsError
+from ....errors.unauthorized_error import UnauthorizedError
+from ....types.client_embedding_batch_id import ClientEmbeddingBatchId
+from ....types.embedding_batch_defaults_request import EmbeddingBatchDefaultsRequest
+from ....types.embedding_batch_item_request import EmbeddingBatchItemRequest
+from ....types.embedding_batch_response import EmbeddingBatchResponse
+from ....types.embedding_batch_result_item import EmbeddingBatchResultItem
+from ....types.flat_error_response import FlatErrorResponse
+from ....types.list_embedding_batches_response import ListEmbeddingBatchesResponse
+from .types.batches_list_request_status import BatchesListRequestStatus
 from .types.create_embedding_batch_request_input_type import CreateEmbeddingBatchRequestInputType
 from .types.create_embedding_batch_request_model_name import CreateEmbeddingBatchRequestModelName
 from .types.create_embedding_batch_request_service_tier import CreateEmbeddingBatchRequestServiceTier
-from .types.list_embedding_batches_request_status import ListEmbeddingBatchesRequestStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawCreateEmbeddingsClient:
+class RawBatchesClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_embedding_batches(
+    def list(
         self,
         *,
         client_batch_id: typing.Optional[ClientEmbeddingBatchId] = None,
-        status: typing.Optional[ListEmbeddingBatchesRequestStatus] = None,
+        status: typing.Optional[BatchesListRequestStatus] = None,
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ListEmbeddingBatchesResponse]:
         """
-        This method returns a list of the batches in your account, including aggregate status and item
-        counts. Use the `client_batch_id` query parameter to find a batch after a timeout or a `500` or `503` error on creation. The response sorts batches by creation date, with the newest batch first. Filters
-        combine using AND and are applied before pagination. An exact
-        `client_batch_id` value with no match returns `200` with an empty `data` array
-        and a `page_info.total_results` value of `0`. To get the status and the `task_id` of each item, use the `GET` method of the
-        `/embed-v2/batches/{batch_id}` endpoint. To get the embeddings, use the `GET`
-        method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+        Use this method to list your batches. The response sorts batches by creation date, with the newest batch first. Each batch includes its status and item counts.
+
+        **Notes**:
+        - Filters combine using AND.
+        - To retrieve the status and the task identifier of each item in a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
+        - To retrieve the embeddings of a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
 
         Parameters
         ----------
         client_batch_id : typing.Optional[ClientEmbeddingBatchId]
             Filter batches by the identifier you set when you created the batch. The match is exact.
 
-        status : typing.Optional[ListEmbeddingBatchesRequestStatus]
-            Filter batches by status.
+        status : typing.Optional[BatchesListRequestStatus]
+            Filter batches by status. For the meaning of each value, see the [Batch statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#batch-statuses) section on the **The batch object** page. If you omit this parameter, the response includes batches in all statuses.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve, after the filters are applied.
 
+            **Default**: `1`.
+
         page_limit : typing.Optional[int]
             The number of batches to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -163,7 +166,7 @@ class RawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def create_embedding_batch(
+    def create(
         self,
         *,
         model_name: CreateEmbeddingBatchRequestModelName,
@@ -233,9 +236,9 @@ class RawCreateEmbeddingsClient:
         Returns
         -------
         HttpResponse[EmbeddingBatchResponse]
-            The batch has been successfully created, and every item has been accepted for asynchronous processing.
+            The batch has been successfully created, and the platform has accepted it for asynchronous processing.
 
-            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. A failed item does not stop the rest of the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
+            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
         """
         _response = self._client_wrapper.httpx_client.request(
             "embed-v2/batches",
@@ -361,16 +364,17 @@ class RawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def retrieve_embedding_batch(
+    def retrieve(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[EmbeddingBatchResponse]:
         """
-        This method retrieves the status of a batch, the item counts, and the mapping from the `custom_id` field of each item to its `task_id` field. Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status.
-        A batch can contain ready, failed, and canceled items at the same
-        time. `completed` means all items reached a final status, not that all
-        succeeded. The batch and its tasks can be read for 30 days after batch creation,
-        regardless of their statuses. At the end of that period, batch, results,
-        and task reads return `404`. Deletion ends access earlier.
+        Use this method to monitor a batch. The response includes the batch status, the item counts, and one entry for each item with its `custom_id` value and task identifier.
+
+        Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status. To retrieve the embeddings, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+
+        Do not treat the `completed` status as a success signal. It means that every item reached a final status, not that every embedding succeeded. To see how many items succeeded, failed, or were canceled, check the `ready_items`, `failed_items`, and `canceled_items` fields.
+
+        The platform keeps a batch and its tasks readable for 30 days after batch creation, regardless of their statuses. After that period, reads of the batch, its results, and its tasks return `404`. Deletion ends access earlier.
 
         Parameters
         ----------
@@ -471,9 +475,7 @@ class RawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def delete_embedding_batch(
-        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[None]:
+    def delete(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
         """
         This method removes a batch with a final status and all its tasks and results from API access. This does not reverse
         billing for items that completed successfully. A batch with the `pending`,
@@ -574,23 +576,22 @@ class RawCreateEmbeddingsClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     @contextlib.contextmanager
-    def retrieve_embedding_batch_results(
+    def results(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.Iterator[HttpResponse[typing.Iterator[EmbeddingBatchResultItem]]]:
         """
-        This method streams one JSON Lines entry for each item in a batch. Each line contains the
-        `custom_id` and `task_id` fields and the current item status. Ready lines contain
-        the `data` field with the embeddings and the `usage` field; failed lines contain the `error` field; canceled lines
-        contain no `error` field and can contain a `cancellation_reason` field. Results can be
-        read while the batch is still processing and for 30 days after creation.
-        Result lines are not guaranteed to appear in submission order. A complete stream
-        contains exactly one line for each current batch item. Once the batch has a final status, each line has a final item status: `ready`, `failed`, or `canceled`. The task identifier, custom identifier, status, and result or error of each line match the corresponding task read. Reads made during processing are separate snapshots and can show different statuses as processing progresses.
+        Use this method to retrieve the results for each item in a batch. You can call it while the batch has the `pending` or `processing` status.
 
-        A `200` status alone does not confirm a complete stream. To verify it, count the distinct `custom_id` values in the lines. Compare the count with the `total_items` field of the batch. If the connection ends early, retry the retrieval and verify the item count again.
+        The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
 
-        If an error occurs after streaming starts, the response is truncated, and the platform does not add a failed-item line. The `X-Stream-Error` trailer then contains this JSON: `{"code":"stream_error","message":"Incomplete embedding result stream. Retry and verify the expected item count."}`. Retry the retrieval and verify the item count.
+        Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
 
-        Before streaming starts, failures use the documented HTTP error responses. Whether the trailer reaches you depends on the HTTP client and any intermediary. A missing trailer does not replace the item-count check.
+        You can retrieve results for 30 days after batch creation.
+
+        **Notes**:
+        - Result entries are not guaranteed to appear in submission order.
+        - A `200` status does not confirm a complete stream. To verify it, count the distinct `custom_id` values and compare the count with the `total_items` field of the batch. If the connection ends early, retry and verify the count again.
+        - If an error occurs after the stream starts, the response ends early and the platform sends the `X-Stream-Error` trailer. A trailer is an HTTP header that the platform sends after the response body. The trailer contains the `stream_error` code. Many HTTP clients do not show trailers, so always compare the number of result entries with the `total_items` field.
 
         Parameters
         ----------
@@ -603,7 +604,7 @@ class RawCreateEmbeddingsClient:
         Yields
         ------
         typing.Iterator[HttpResponse[typing.Iterator[EmbeddingBatchResultItem]]]
-            The results of the batch have been successfully streamed as JSON Lines, with one entry for each item.
+            The results of the batch have been successfully streamed as JSON Lines.
         """
         with self._client_wrapper.httpx_client.stream(
             f"embed-v2/batches/{jsonable_encoder(batch_id)}/results",
@@ -708,7 +709,7 @@ class RawCreateEmbeddingsClient:
 
             yield _stream()
 
-    def cancel_embedding_batch(
+    def cancel(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[EmbeddingBatchResponse]:
         """
@@ -834,169 +835,46 @@ class RawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def cancel_async_embedding_task(
-        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[CancelEmbeddingTaskResponse]:
-        """
-        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
 
-        Parameters
-        ----------
-        task_id : str
-            The unique identifier of the embedding task.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[CancelEmbeddingTaskResponse]
-            The task has been successfully canceled or was already canceled.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"embed-v2/tasks/{jsonable_encoder(task_id)}/cancel",
-            method="POST",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CancelEmbeddingTaskResponse,
-                    parse_obj_as(
-                        type_=CancelEmbeddingTaskResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        FlatErrorResponse,
-                        parse_obj_as(
-                            type_=FlatErrorResponse,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 503:
-                raise ServiceUnavailableError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-
-class AsyncRawCreateEmbeddingsClient:
+class AsyncRawBatchesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_embedding_batches(
+    async def list(
         self,
         *,
         client_batch_id: typing.Optional[ClientEmbeddingBatchId] = None,
-        status: typing.Optional[ListEmbeddingBatchesRequestStatus] = None,
+        status: typing.Optional[BatchesListRequestStatus] = None,
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ListEmbeddingBatchesResponse]:
         """
-        This method returns a list of the batches in your account, including aggregate status and item
-        counts. Use the `client_batch_id` query parameter to find a batch after a timeout or a `500` or `503` error on creation. The response sorts batches by creation date, with the newest batch first. Filters
-        combine using AND and are applied before pagination. An exact
-        `client_batch_id` value with no match returns `200` with an empty `data` array
-        and a `page_info.total_results` value of `0`. To get the status and the `task_id` of each item, use the `GET` method of the
-        `/embed-v2/batches/{batch_id}` endpoint. To get the embeddings, use the `GET`
-        method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+        Use this method to list your batches. The response sorts batches by creation date, with the newest batch first. Each batch includes its status and item counts.
+
+        **Notes**:
+        - Filters combine using AND.
+        - To retrieve the status and the task identifier of each item in a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
+        - To retrieve the embeddings of a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
 
         Parameters
         ----------
         client_batch_id : typing.Optional[ClientEmbeddingBatchId]
             Filter batches by the identifier you set when you created the batch. The match is exact.
 
-        status : typing.Optional[ListEmbeddingBatchesRequestStatus]
-            Filter batches by status.
+        status : typing.Optional[BatchesListRequestStatus]
+            Filter batches by status. For the meaning of each value, see the [Batch statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#batch-statuses) section on the **The batch object** page. If you omit this parameter, the response includes batches in all statuses.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve, after the filters are applied.
 
+            **Default**: `1`.
+
         page_limit : typing.Optional[int]
             The number of batches to return on each page.
+
+            **Default**: `10`.
+            **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1087,7 +965,7 @@ class AsyncRawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def create_embedding_batch(
+    async def create(
         self,
         *,
         model_name: CreateEmbeddingBatchRequestModelName,
@@ -1157,9 +1035,9 @@ class AsyncRawCreateEmbeddingsClient:
         Returns
         -------
         AsyncHttpResponse[EmbeddingBatchResponse]
-            The batch has been successfully created, and every item has been accepted for asynchronous processing.
+            The batch has been successfully created, and the platform has accepted it for asynchronous processing.
 
-            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. A failed item does not stop the rest of the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
+            Each item in the response is `queued`, or `failed` if the platform finds a problem with its media when it accepts the batch. Failures include a decoded file that exceeds a size limit, an inaccessible image or document URL, an unsupported detected file type, and document options that do not fit the file type. For example, a plain text file with `document.embedding_option: [visual]` fails with the `UNSUPPORTED_COMBINATION` code. If every item fails, the batch has the `completed` status in the response.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "embed-v2/batches",
@@ -1285,16 +1163,17 @@ class AsyncRawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def retrieve_embedding_batch(
+    async def retrieve(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[EmbeddingBatchResponse]:
         """
-        This method retrieves the status of a batch, the item counts, and the mapping from the `custom_id` field of each item to its `task_id` field. Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status.
-        A batch can contain ready, failed, and canceled items at the same
-        time. `completed` means all items reached a final status, not that all
-        succeeded. The batch and its tasks can be read for 30 days after batch creation,
-        regardless of their statuses. At the end of that period, batch, results,
-        and task reads return `404`. Deletion ends access earlier.
+        Use this method to monitor a batch. The response includes the batch status, the item counts, and one entry for each item with its `custom_id` value and task identifier.
+
+        Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status. To retrieve the embeddings, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+
+        Do not treat the `completed` status as a success signal. It means that every item reached a final status, not that every embedding succeeded. To see how many items succeeded, failed, or were canceled, check the `ready_items`, `failed_items`, and `canceled_items` fields.
+
+        The platform keeps a batch and its tasks readable for 30 days after batch creation, regardless of their statuses. After that period, reads of the batch, its results, and its tasks return `404`. Deletion ends access earlier.
 
         Parameters
         ----------
@@ -1395,7 +1274,7 @@ class AsyncRawCreateEmbeddingsClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def delete_embedding_batch(
+    async def delete(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
@@ -1498,23 +1377,22 @@ class AsyncRawCreateEmbeddingsClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     @contextlib.asynccontextmanager
-    async def retrieve_embedding_batch_results(
+    async def results(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[EmbeddingBatchResultItem]]]:
         """
-        This method streams one JSON Lines entry for each item in a batch. Each line contains the
-        `custom_id` and `task_id` fields and the current item status. Ready lines contain
-        the `data` field with the embeddings and the `usage` field; failed lines contain the `error` field; canceled lines
-        contain no `error` field and can contain a `cancellation_reason` field. Results can be
-        read while the batch is still processing and for 30 days after creation.
-        Result lines are not guaranteed to appear in submission order. A complete stream
-        contains exactly one line for each current batch item. Once the batch has a final status, each line has a final item status: `ready`, `failed`, or `canceled`. The task identifier, custom identifier, status, and result or error of each line match the corresponding task read. Reads made during processing are separate snapshots and can show different statuses as processing progresses.
+        Use this method to retrieve the results for each item in a batch. You can call it while the batch has the `pending` or `processing` status.
 
-        A `200` status alone does not confirm a complete stream. To verify it, count the distinct `custom_id` values in the lines. Compare the count with the `total_items` field of the batch. If the connection ends early, retry the retrieval and verify the item count again.
+        The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
 
-        If an error occurs after streaming starts, the response is truncated, and the platform does not add a failed-item line. The `X-Stream-Error` trailer then contains this JSON: `{"code":"stream_error","message":"Incomplete embedding result stream. Retry and verify the expected item count."}`. Retry the retrieval and verify the item count.
+        Each result entry includes a task identifier in the `task_id` field. Use this value with the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint if you need more details about the item, such as the `metadata` object for the media input and the `created_at` and `updated_at` timestamps.
 
-        Before streaming starts, failures use the documented HTTP error responses. Whether the trailer reaches you depends on the HTTP client and any intermediary. A missing trailer does not replace the item-count check.
+        You can retrieve results for 30 days after batch creation.
+
+        **Notes**:
+        - Result entries are not guaranteed to appear in submission order.
+        - A `200` status does not confirm a complete stream. To verify it, count the distinct `custom_id` values and compare the count with the `total_items` field of the batch. If the connection ends early, retry and verify the count again.
+        - If an error occurs after the stream starts, the response ends early and the platform sends the `X-Stream-Error` trailer. A trailer is an HTTP header that the platform sends after the response body. The trailer contains the `stream_error` code. Many HTTP clients do not show trailers, so always compare the number of result entries with the `total_items` field.
 
         Parameters
         ----------
@@ -1527,7 +1405,7 @@ class AsyncRawCreateEmbeddingsClient:
         Yields
         ------
         typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[EmbeddingBatchResultItem]]]
-            The results of the batch have been successfully streamed as JSON Lines, with one entry for each item.
+            The results of the batch have been successfully streamed as JSON Lines.
         """
         async with self._client_wrapper.httpx_client.stream(
             f"embed-v2/batches/{jsonable_encoder(batch_id)}/results",
@@ -1632,7 +1510,7 @@ class AsyncRawCreateEmbeddingsClient:
 
             yield await _stream()
 
-    async def cancel_embedding_batch(
+    async def cancel(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[EmbeddingBatchResponse]:
         """
@@ -1694,133 +1572,6 @@ class AsyncRawCreateEmbeddingsClient:
                         FlatErrorResponse,
                         parse_obj_as(
                             type_=FlatErrorResponse,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 503:
-                raise ServiceUnavailableError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def cancel_async_embedding_task(
-        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[CancelEmbeddingTaskResponse]:
-        """
-        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
-
-        Parameters
-        ----------
-        task_id : str
-            The unique identifier of the embedding task.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[CancelEmbeddingTaskResponse]
-            The task has been successfully canceled or was already canceled.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"embed-v2/tasks/{jsonable_encoder(task_id)}/cancel",
-            method="POST",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CancelEmbeddingTaskResponse,
-                    parse_obj_as(
-                        type_=CancelEmbeddingTaskResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        FlatErrorResponse,
-                        parse_obj_as(
-                            type_=FlatErrorResponse,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

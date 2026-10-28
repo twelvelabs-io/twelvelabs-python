@@ -3,15 +3,15 @@
 # isort: skip_file
 
 from .types import (
+    BatchesListRequestStatus,
     CreateEmbeddingBatchRequestInputType,
     CreateEmbeddingBatchRequestModelName,
     CreateEmbeddingBatchRequestServiceTier,
-    ListEmbeddingBatchesRequestStatus,
 )
 
 __all__ = [
+    "BatchesListRequestStatus",
     "CreateEmbeddingBatchRequestInputType",
     "CreateEmbeddingBatchRequestModelName",
     "CreateEmbeddingBatchRequestServiceTier",
-    "ListEmbeddingBatchesRequestStatus",
 ]

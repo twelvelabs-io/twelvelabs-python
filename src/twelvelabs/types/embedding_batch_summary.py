@@ -20,7 +20,7 @@ class EmbeddingBatchSummary(UniversalBaseModel):
 
     batch_id: str = pydantic.Field()
     """
-    The unique identifier of the batch.
+    The unique identifier of the batch. Use this value to retrieve the batch status or results.
     """
 
     client_batch_id: typing.Optional[ClientEmbeddingBatchId] = pydantic.Field(default=None)
@@ -28,13 +28,25 @@ class EmbeddingBatchSummary(UniversalBaseModel):
     The identifier you set when you created the batch. Present only if you set one.
     """
 
-    model_name: EmbeddingBatchSummaryModelName
-    service_tier: EmbeddingBatchSummaryServiceTier
-    input_type: EmbeddingBatchSummaryInputType
+    model_name: EmbeddingBatchSummaryModelName = pydantic.Field()
+    """
+    The model used for every item in this batch.
+    """
+
+    service_tier: EmbeddingBatchSummaryServiceTier = pydantic.Field()
+    """
+    The service tier applied to every item in this batch.
+    """
+
+    input_type: EmbeddingBatchSummaryInputType = pydantic.Field()
+    """
+    The input type of every item in this batch.
+    """
+
     status: EmbeddingBatchStatus
     total_items: int = pydantic.Field()
     """
-    The number of submitted items, equal to the sum of the five status counts.
+    The number of items submitted in the batch. The value equals the sum of the five status counts.
     """
 
     queued_items: int = pydantic.Field()
@@ -59,37 +71,37 @@ class EmbeddingBatchSummary(UniversalBaseModel):
 
     canceled_items: int = pydantic.Field()
     """
-    The number of canceled items, including items with an expired processing window.
+    The number of items that were canceled, either because the batch was canceled before the item started, or because the batch expired before the item finished processing.
     """
 
     created_at: dt.datetime = pydantic.Field()
     """
-    The date and time, in RFC 3339 format, when the platform accepted the batch.
+    The date and time, in the RFC 3339 format, when the batch was created.
     """
 
     expires_at: dt.datetime = pydantic.Field()
     """
-    The date and time, in RFC 3339 format, when the 24-hour processing window for the batch ends.
+    The date and time, in the RFC 3339 format, when the 24-hour processing window for the batch ends. Unfinished items at expiration do not complete. Items that finished before then remain retrievable for 30 days after creation.
     """
 
     completed_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
-    The date and time, in RFC 3339 format, when the batch reached the `completed` status. Present only for a batch with that status.
+    The date and time, in the RFC 3339 format, when the batch status became `completed`. Present only when the status is `completed`.
     """
 
     canceled_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
-    The date and time, in RFC 3339 format, when the batch reached the `canceled` status. Present only for a batch with that status.
+    The date and time, in the RFC 3339 format, when the batch status became `canceled`. Present only when the status is `canceled`.
     """
 
     expired_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
-    The date and time, in RFC 3339 format, when the batch reached the `expired` status. Present only for a batch with that status.
+    The date and time, in the RFC 3339 format, when the batch status became `expired`. Present only when the status is `expired`.
     """
 
     webhooks: typing.Optional[typing.List[WebhookDeliveryInfo]] = pydantic.Field(default=None)
     """
-    The delivery status of each webhook endpoint for the batch notification. Present only after the platform sends the notification. To register webhooks, see the [Register a webhook](/v1.3/docs/advanced/webhooks/manage#register-a-webhook) section.
+    The delivery status of each webhook endpoint for the batch notification. The notification is sent when the batch reaches the `completed`, `canceled`, or `expired` status. Present only after the platform sends the notification. To register webhooks, see the [Register a webhook](/v1.3/docs/advanced/webhooks/manage#register-a-webhook) section.
     """
 
     if IS_PYDANTIC_V2:

@@ -11,6 +11,7 @@ from ...types.multi_input_request import MultiInputRequest
 from ...types.text_image_input_request import TextImageInputRequest
 from ...types.text_input_request import TextInputRequest
 from ...types.video_input_request import VideoInputRequest
+from .batches.client import AsyncBatchesClient, BatchesClient
 from .raw_client import AsyncRawV2Client, RawV2Client
 from .tasks.client import AsyncTasksClient, TasksClient
 from .types.create_embeddings_request_input_type import CreateEmbeddingsRequestInputType
@@ -24,6 +25,8 @@ class V2Client:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawV2Client(client_wrapper=client_wrapper)
         self.tasks = TasksClient(client_wrapper=client_wrapper)
+
+        self.batches = BatchesClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawV2Client:
@@ -165,6 +168,8 @@ class AsyncV2Client:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawV2Client(client_wrapper=client_wrapper)
         self.tasks = AsyncTasksClient(client_wrapper=client_wrapper)
+
+        self.batches = AsyncBatchesClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawV2Client:
