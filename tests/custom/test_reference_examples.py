@@ -1,13 +1,12 @@
+import runpy
 from pathlib import Path
-
-from scripts.normalize_reference import (
-    PublicClientResolver,
-    _fenced_python_blocks,
-    normalize_reference,
-)
 
 SDK_ROOT = Path(__file__).resolve().parents[2]
 REFERENCE_PATH = SDK_ROOT / "reference.md"
+NORMALIZER = runpy.run_path(str(SDK_ROOT / "scripts" / "normalize_reference.py"))
+PublicClientResolver = NORMALIZER["PublicClientResolver"]
+normalize_reference = NORMALIZER["normalize_reference"]
+_fenced_python_blocks = NORMALIZER["_fenced_python_blocks"]
 
 
 def test_generated_reference_is_normalized_and_idempotent():
