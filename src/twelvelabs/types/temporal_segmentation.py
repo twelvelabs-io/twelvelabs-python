@@ -19,7 +19,7 @@ class TemporalSegmentation_Dynamic(UniversalBaseModel):
     """
 
     strategy: typing.Literal["dynamic"] = "dynamic"
-    dynamic: TemporalSegmentationDynamicDynamic
+    dynamic: typing.Optional[TemporalSegmentationDynamicDynamic] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
@@ -40,7 +40,7 @@ class TemporalSegmentation_Fixed(UniversalBaseModel):
     """
 
     strategy: typing.Literal["fixed"] = "fixed"
-    fixed: TemporalSegmentationFixedFixed
+    fixed: typing.Optional[TemporalSegmentationFixedFixed] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

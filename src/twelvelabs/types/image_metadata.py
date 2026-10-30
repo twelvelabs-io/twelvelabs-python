@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class ImageMetadata(UniversalBaseModel):
     """
-    System-generated media metadata for an image item.
+    System-generated metadata for an image item.
     """
 
     filename: typing.Optional[str] = pydantic.Field(default=None)

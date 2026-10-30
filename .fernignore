@@ -7,6 +7,9 @@ legacy
 
 src/twelvelabs/client.py
 src/twelvelabs/wrapper
+tests/custom/
+scripts/normalize_reference.py
+scripts/__init__.py
 
 
 .gitignore

@@ -20,23 +20,29 @@ class ResponseOutputContentPart(UniversalBaseModel):
 
     text: str = pydantic.Field()
     """
-    The text content. It may contain citation markers, each a number in square
-    brackets such as `[1]`. The `start_index` and `end_index` fields of a citation
-    indicate the location of its marker. To resolve a marker, find the citation at
-    that location. Not every marker has a matching citation; when a marker has
-    none, treat it as a citation you cannot display, not as an error.
+    The text content. Media citations use numbered markers such as `[1]`.
+    A web citation can cover text that is not a marker. Its span can also
+    cover a provider marker, such as `\ue200cite\ue202turn0search1\ue201`
+    (shown with Unicode escapes). Use the `start_index` and `end_index`
+    fields of an annotation to locate the text that it covers, and its
+    `url` to render a web source link. The annotation identifies the
+    source; the marker text does not. Treat a marker without a matching
+    annotation as a citation you cannot display, not as a response error.
     """
 
     annotations: typing.List[ResponseAnnotation] = pydantic.Field()
     """
-    Citations that tie spans of the `text` field to what they cite, in order of
-    appearance. Always present, and may be empty.
+    Contains the citations. Each citation identifies a span of the `text`
+    field and the source it cites. Always present, and may be empty.
     
-    The `start_index` and `end_index` fields locate the marker within the
-    `text` field of this content part, not within the whole response.
+    The `start_index` and `end_index` fields locate the cited span within the
+    `text` field of this content part, not within the whole response. Both
+    bounds are inclusive and count Unicode code points.
     
-    Different citations can cover the same or overlapping video ranges. Each
-    marker in the `text` field still resolves to at most one citation.
+    Text spans can overlap or be identical, including across citation types.
+    A web citation can cover a numbered media marker. Resolve each annotation
+    independently; do not assume disjoint spans or array order by offset.
+    Different video citations can also cover overlapping video time ranges.
     """
 
     if IS_PYDANTIC_V2:

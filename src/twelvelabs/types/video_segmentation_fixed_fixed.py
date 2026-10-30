@@ -11,7 +11,7 @@ class VideoSegmentationFixedFixed(UniversalBaseModel):
     Configuration for fixed segmentation. This object is required when `strategy` is `fixed`.
     """
 
-    duration_sec: int = pydantic.Field()
+    duration_sec: float = pydantic.Field()
     """
     The duration in seconds for each segment.
     

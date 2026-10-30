@@ -4,7 +4,6 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .response_annotation_type import ResponseAnnotationType
 
 
 class ResponseAnnotation(UniversalBaseModel):
@@ -13,38 +12,49 @@ class ResponseAnnotation(UniversalBaseModel):
 
     One object covers all citation kinds. Read the `type` field to tell them apart.
 
-    The fields fall into two groups that behave differently:
+    `title`, `thumbnail_url` and `hls_url` are omitted when the platform cannot
+    resolve a value or the field does not apply to the citation kind. When present,
+    these fields contain strings, including an empty string if that is the resolved value.
 
-    `title`, `thumbnail_url` and `hls_url` are always present and nullable: `null`
-    reports a value the platform could not resolve, or one that does not apply to this
-    citation kind (an image has no video to play).
+    `url`, `item_id`, `collection_id`, `start_sec` and `end_sec` are absent when
+    they do not apply, never null. `start_sec` and `end_sec` are absent together,
+    never one alone: absent on a `video_citation` means the citation covers the
+    whole video.
 
-    `item_id`, `collection_id`, `start_sec` and `end_sec` are absent when they do
-    not apply, never null. `start_sec` and `end_sec` are absent together, never one
-    alone: absent on a `video_citation` means the citation covers the whole video.
+    A `url_citation` includes `url` and a string `title`. Its `thumbnail_url` and
+    `hls_url` are absent. Web sources are not knowledge store items and have no
+    `item_id`, `collection_id`, `start_sec`, or `end_sec`.
     """
 
-    type: ResponseAnnotationType = pydantic.Field()
+    type: str = pydantic.Field()
     """
     What this citation refers to:
     
     - `video_citation`: a time range within a video item.
     - `image_citation`: a whole image item.
     - `collection_citation`: an item collection.
+    - `url_citation`: a web source.
+    
+    Treat an unrecognized type as a citation you cannot display. Preserve
+    the response text and other annotations instead of rejecting the response.
     """
 
     start_index: int = pydantic.Field()
     """
-    Start of the marker, as a zero-based offset into the `text` field,
-    counted in Unicode code points.
+    Start of the cited span, inclusive, as a zero-based offset into the
+    containing content part's `text` field, counted in Unicode code points.
     """
 
     end_index: int = pydantic.Field()
     """
-    End of the marker, inclusive, in the same units as the `start_index` field.
+    End of the cited span, inclusive, in the same units as `start_index`.
+    This convention applies to every citation type, including `url_citation`.
     
-    Most languages slice up to but not including the end. To read the marker
-    in Go, Python, or JavaScript, use `text[start_index : end_index + 1]`.
+    To extract the span, use `text[start_index:end_index + 1]` in Python,
+    `string([]rune(text)[start_index:end_index + 1])` in Go, or
+    `Array.from(text).slice(start_index, end_index + 1).join("")` in JavaScript.
+    Go string offsets count bytes and JavaScript string offsets count UTF-16
+    code units, so convert to Unicode code points before slicing.
     """
 
     item_id: typing.Optional[str] = pydantic.Field(default=None)
@@ -74,13 +84,20 @@ class ResponseAnnotation(UniversalBaseModel):
 
     title: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Display title of the cited item or collection. Always present; `null` when it could not be resolved.
+    Display title of the cited item, collection, or web source. Present for
+    `url_citation`; omitted when an item or collection title cannot be resolved.
+    """
+
+    url: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The source URL. Present when `type` is `url_citation`; absent on media and collection citations.
     """
 
     thumbnail_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A signed URL for a preview image. Always present. It is `null` when the image
-    could not be resolved, and on a `collection_citation`, which has no preview.
+    A signed URL for a preview image. Omitted when the image cannot be
+    resolved, and on `collection_citation` and `url_citation`,
+    which have no preview.
     
     What it shows depends on the value of the `type` field:
     
@@ -90,8 +107,8 @@ class ResponseAnnotation(UniversalBaseModel):
 
     hls_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    A signed URL for video playback, in HLS format (`.m3u8`). Always present. It is
-    `null` when the video could not be resolved, and on every kind except
+    A signed URL for video playback, in HLS format (`.m3u8`). Omitted when
+    the video cannot be resolved, and on every kind except
     `video_citation`.
     """
 

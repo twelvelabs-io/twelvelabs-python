@@ -7,6 +7,8 @@ from .create_async_embedding_request_model_name import CreateAsyncEmbeddingReque
 from .tasks_create_response import TasksCreateResponse
 from .tasks_create_response_metadata import TasksCreateResponseMetadata
 from .tasks_create_response_status import TasksCreateResponseStatus
+from .tasks_create_response_status_zero import TasksCreateResponseStatusZero
+from .tasks_list_request_status import TasksListRequestStatus
 from .tasks_list_response import TasksListResponse
 from .tasks_list_response_page_info import TasksListResponsePageInfo
 
@@ -16,6 +18,8 @@ __all__ = [
     "TasksCreateResponse",
     "TasksCreateResponseMetadata",
     "TasksCreateResponseStatus",
+    "TasksCreateResponseStatusZero",
+    "TasksListRequestStatus",
     "TasksListResponse",
     "TasksListResponsePageInfo",
 ]

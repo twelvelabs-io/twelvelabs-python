@@ -15,8 +15,11 @@ from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
 from ..errors.not_found_error import NotFoundError
+from ..errors.too_many_requests_error import TooManyRequestsError
+from ..errors.unprocessable_entity_error import UnprocessableEntityError
 from ..types.asset import Asset
 from ..types.asset_detail import AssetDetail
+from ..types.asset_storage_accounting import AssetStorageAccounting
 from ..types.asset_transcription_response import AssetTranscriptionResponse
 from ..types.user_metadata import UserMetadata
 from .types.assets_create_request_method import AssetsCreateRequestMethod
@@ -257,6 +260,17 @@ class RawAssetsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -333,11 +347,13 @@ class RawAssetsClient:
         """
         This method deletes the specified asset. This action cannot be undone.
 
-        By default, the platform checks whether any indexed assets reference the asset. If references exist, the platform rejects the request with a `409 Conflict` error. To skip this check and delete the asset anyway, set the `force` query parameter to `true`. The platform unlinks any entity associations.
+        The delete fails with a `409 Conflict` error if other resources depend on the asset.
 
-        Before deleting, you can inspect existing references:
-        - [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) `/assets/{asset_id}/indexed-assets` returns a list of the indexed assets that will block deletion unless the `force` query parameter is set to `true`.
-        - [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) `/assets/{asset_id}/entities` returns a list of the entities whose associations the platform will unlink.
+        - **If knowledge store items use the asset**, in any status: the error code is `asset_has_knowledge_store_items`. The request fails even when you set the `force` query parameter to `true`. First delete the items with the [`DELETE`](/v1.3/api-reference/knowledge-store-items/delete) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}` endpoint. Then delete the asset.
+        - **If indexed assets reference the asset**: the error code is `asset_has_linked_resources`. To delete the asset and these indexed assets together, set the `force` query parameter to `true`. To list the indexed assets first, use the [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) method of the `/assets/{asset_id}/indexed-assets` endpoint.
+        - **If both apply**: the error code is `asset_has_knowledge_store_items`.
+
+        **If entities use the asset**, a successful delete removes the asset from the `asset_ids` array of each entity. To list these entities, use the [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) method of the `/assets/{asset_id}/entities` endpoint.
 
         Parameters
         ----------
@@ -345,7 +361,12 @@ class RawAssetsClient:
             The unique identifier of the asset to delete.
 
         force : typing.Optional[bool]
-            When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
+            Use this parameter to choose how the delete handles indexed assets that reference the asset:
+
+            - `true`: Deletes the asset and the indexed assets that reference it.
+            - `false` or omitted: Fails with `409 Conflict` if indexed assets reference the asset.
+
+            If knowledge store items use the asset, the request fails with `409 Conflict` for either value. Delete the items first.
 
             **Default**: `false`.
 
@@ -369,6 +390,17 @@ class RawAssetsClient:
                 return HttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -488,8 +520,7 @@ class RawAssetsClient:
         """
         This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
         - A key with a value creates or replaces that key.
-        - A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
-        - A key you omit from the request body is removed.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
 
         To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
 
@@ -662,6 +693,112 @@ class RawAssetsClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def enable_storage_accounting(
+        self, asset_id: str, *, enabled: bool, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[AssetStorageAccounting]:
+        """
+        This method enables storage accounting for the specified asset. Storage accounting makes an asset count toward your Managed Intelligence allowance.
+
+        **When to use this method**: Call it once for each asset that you uploaded before your plan moved to the new billing (a pre-migration asset). Enable storage accounting before you do either of the following:
+        - Add the asset to a knowledge store.
+        - Index the asset in an index for which Marengo is enabled.
+
+        An asset that you upload after your plan moves already counts toward your Managed Intelligence allowance. You do not need to call this method for it.
+
+        **Before you call this method**: The asset must have the `ready` status and a recorded size. To check, use the [`GET`](/v1.3/api-reference/manage-assets/retrieve) method of the `/assets/{asset_id}` endpoint and read the `status` and `size` fields.
+
+        **After you call this method**:
+        - The asset counts toward your Managed Intelligence allowance from the moment of the call.
+        - Enabling storage accounting is permanent. You cannot turn it off.
+        - If storage accounting is already on, the method returns the same response and changes nothing.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset for which to enable storage accounting.
+
+        enabled : bool
+            Enables storage accounting for the asset. The only accepted value is `true`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[AssetStorageAccounting]
+            Storage accounting has been successfully enabled for the asset.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/storage-accounting",
+            method="PUT",
+            json={
+                "enabled": enabled,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AssetStorageAccounting,
+                    parse_obj_as(
+                        type_=AssetStorageAccounting,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -909,6 +1046,17 @@ class AsyncRawAssetsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -985,11 +1133,13 @@ class AsyncRawAssetsClient:
         """
         This method deletes the specified asset. This action cannot be undone.
 
-        By default, the platform checks whether any indexed assets reference the asset. If references exist, the platform rejects the request with a `409 Conflict` error. To skip this check and delete the asset anyway, set the `force` query parameter to `true`. The platform unlinks any entity associations.
+        The delete fails with a `409 Conflict` error if other resources depend on the asset.
 
-        Before deleting, you can inspect existing references:
-        - [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) `/assets/{asset_id}/indexed-assets` returns a list of the indexed assets that will block deletion unless the `force` query parameter is set to `true`.
-        - [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) `/assets/{asset_id}/entities` returns a list of the entities whose associations the platform will unlink.
+        - **If knowledge store items use the asset**, in any status: the error code is `asset_has_knowledge_store_items`. The request fails even when you set the `force` query parameter to `true`. First delete the items with the [`DELETE`](/v1.3/api-reference/knowledge-store-items/delete) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}` endpoint. Then delete the asset.
+        - **If indexed assets reference the asset**: the error code is `asset_has_linked_resources`. To delete the asset and these indexed assets together, set the `force` query parameter to `true`. To list the indexed assets first, use the [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) method of the `/assets/{asset_id}/indexed-assets` endpoint.
+        - **If both apply**: the error code is `asset_has_knowledge_store_items`.
+
+        **If entities use the asset**, a successful delete removes the asset from the `asset_ids` array of each entity. To list these entities, use the [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) method of the `/assets/{asset_id}/entities` endpoint.
 
         Parameters
         ----------
@@ -997,7 +1147,12 @@ class AsyncRawAssetsClient:
             The unique identifier of the asset to delete.
 
         force : typing.Optional[bool]
-            When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
+            Use this parameter to choose how the delete handles indexed assets that reference the asset:
+
+            - `true`: Deletes the asset and the indexed assets that reference it.
+            - `false` or omitted: Fails with `409 Conflict` if indexed assets reference the asset.
+
+            If knowledge store items use the asset, the request fails with `409 Conflict` for either value. Delete the items first.
 
             **Default**: `false`.
 
@@ -1021,6 +1176,17 @@ class AsyncRawAssetsClient:
                 return AsyncHttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -1140,8 +1306,7 @@ class AsyncRawAssetsClient:
         """
         This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
         - A key with a value creates or replaces that key.
-        - A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
-        - A key you omit from the request body is removed.
+        - A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
 
         To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
 
@@ -1314,6 +1479,112 @@ class AsyncRawAssetsClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def enable_storage_accounting(
+        self, asset_id: str, *, enabled: bool, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[AssetStorageAccounting]:
+        """
+        This method enables storage accounting for the specified asset. Storage accounting makes an asset count toward your Managed Intelligence allowance.
+
+        **When to use this method**: Call it once for each asset that you uploaded before your plan moved to the new billing (a pre-migration asset). Enable storage accounting before you do either of the following:
+        - Add the asset to a knowledge store.
+        - Index the asset in an index for which Marengo is enabled.
+
+        An asset that you upload after your plan moves already counts toward your Managed Intelligence allowance. You do not need to call this method for it.
+
+        **Before you call this method**: The asset must have the `ready` status and a recorded size. To check, use the [`GET`](/v1.3/api-reference/manage-assets/retrieve) method of the `/assets/{asset_id}` endpoint and read the `status` and `size` fields.
+
+        **After you call this method**:
+        - The asset counts toward your Managed Intelligence allowance from the moment of the call.
+        - Enabling storage accounting is permanent. You cannot turn it off.
+        - If storage accounting is already on, the method returns the same response and changes nothing.
+
+        Parameters
+        ----------
+        asset_id : str
+            The unique identifier of the asset for which to enable storage accounting.
+
+        enabled : bool
+            Enables storage accounting for the asset. The only accepted value is `true`.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[AssetStorageAccounting]
+            Storage accounting has been successfully enabled for the asset.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"assets/{jsonable_encoder(asset_id)}/storage-accounting",
+            method="PUT",
+            json={
+                "enabled": enabled,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AssetStorageAccounting,
+                    parse_obj_as(
+                        type_=AssetStorageAccounting,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

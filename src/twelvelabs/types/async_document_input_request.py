@@ -17,7 +17,7 @@ class AsyncDocumentInputRequest(UniversalBaseModel):
 
     The platform accepts PDF (`.pdf`), plain text (`.txt`), and Markdown (`.md`) files. The decoded file can be up to 512 MB. It embeds a PDF file from its rendered pages or from its extracted text, and a plain text or Markdown file from its text.
 
-    A PDF file also has a page allowance: 64 pages for each MB of file size. A 0.5 MB file is allowed 64 pages, and a 4 MB file is allowed 256 pages. The `quadrants` strategy counts each page five times against this allowance. The platform checks the page count of the file against the allowance before processing the file. If the file exceeds the allowance, the platform creates the task and sets its `status` field to the `failed` value. The `error.message` field contains the page count and the allowance. Plain text and Markdown files have no page allowance.
+    A PDF file also has a page allowance: 64 pages for each MB of file size. A 0.5 MB file is allowed 64 pages, and a 4 MB file is allowed 256 pages. The `quadrants` strategy counts each page five times against this allowance. The platform checks the page count after it accepts the task. If the file exceeds the allowance, the task reaches the `failed` status. The `error.message` field contains the page count and the allowance. Plain text and Markdown files have no page allowance.
 
     The `embedding_option` and `embedding_scope` fields combine, and the platform supports the following combinations.
 

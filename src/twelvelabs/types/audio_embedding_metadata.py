@@ -14,7 +14,7 @@ class AudioEmbeddingMetadata(BaseEmbeddingMetadata):
 
     audio_embedding_option: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    The type of the embedding. It can take one of the following values: ['audio'] or ['transcription'].
+    The types of embeddings generated for the audio. The array can contain `audio`, `transcription`, or both.
     """
 
     audio_embedding_scope: typing.Optional[typing.List[str]] = pydantic.Field(default=None)

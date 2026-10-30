@@ -9,7 +9,7 @@ from .embedding_usage_truncation_reason import EmbeddingUsageTruncationReason
 
 class EmbeddingUsage(UniversalBaseModel):
     """
-    Token counts for the request. Only Marengo 3.5 returns this object.
+    Token counts for the request. Only Marengo 3.5 returns this field.
     """
 
     input_tokens: typing.Dict[str, int] = pydantic.Field()

@@ -17,6 +17,7 @@ from .knowledge_store_item_collections.client import (
     AsyncKnowledgeStoreItemCollectionsClient,
     KnowledgeStoreItemCollectionsClient,
 )
+from .knowledge_store_item_tags.client import AsyncKnowledgeStoreItemTagsClient, KnowledgeStoreItemTagsClient
 from .knowledge_store_items.client import AsyncKnowledgeStoreItemsClient, KnowledgeStoreItemsClient
 from .knowledge_stores.client import AsyncKnowledgeStoresClient, KnowledgeStoresClient
 from .multipart_upload.client import AsyncMultipartUploadClient, MultipartUploadClient
@@ -112,6 +113,7 @@ class BaseClient:
         self.entity_collections = EntityCollectionsClient(client_wrapper=self._client_wrapper)
         self.knowledge_stores = KnowledgeStoresClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_items = KnowledgeStoreItemsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_item_tags = KnowledgeStoreItemTagsClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_item_collections = KnowledgeStoreItemCollectionsClient(client_wrapper=self._client_wrapper)
         self.embed = EmbedClient(client_wrapper=self._client_wrapper)
         self.search = SearchClient(client_wrapper=self._client_wrapper)
@@ -471,6 +473,7 @@ class AsyncBaseClient:
         self.entity_collections = AsyncEntityCollectionsClient(client_wrapper=self._client_wrapper)
         self.knowledge_stores = AsyncKnowledgeStoresClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_items = AsyncKnowledgeStoreItemsClient(client_wrapper=self._client_wrapper)
+        self.knowledge_store_item_tags = AsyncKnowledgeStoreItemTagsClient(client_wrapper=self._client_wrapper)
         self.knowledge_store_item_collections = AsyncKnowledgeStoreItemCollectionsClient(
             client_wrapper=self._client_wrapper
         )

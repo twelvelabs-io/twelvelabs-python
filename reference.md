@@ -62,8 +62,8 @@ client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
 response = client.analyze_stream()
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -459,10 +459,10 @@ response = client.tasks.list(
     updated_at="2024-03-01T00:00:00Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -944,10 +944,10 @@ response = client.indexes.list(
     updated_at="2024-08-16T16:55:59Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -1434,10 +1434,10 @@ response = client.assets.list(
     filename="meeting",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -1770,11 +1770,13 @@ client.assets.retrieve(
 
 This method deletes the specified asset. This action cannot be undone.
 
-By default, the platform checks whether any indexed assets reference the asset. If references exist, the platform rejects the request with a `409 Conflict` error. To skip this check and delete the asset anyway, set the `force` query parameter to `true`. The platform unlinks any entity associations.
+The delete fails with a `409 Conflict` error if other resources depend on the asset.
 
-Before deleting, you can inspect existing references:
-- [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) `/assets/{asset_id}/indexed-assets` returns a list of the indexed assets that will block deletion unless the `force` query parameter is set to `true`.
-- [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) `/assets/{asset_id}/entities` returns a list of the entities whose associations the platform will unlink.
+- **If knowledge store items use the asset**, in any status: the error code is `asset_has_knowledge_store_items`. The request fails even when you set the `force` query parameter to `true`. First delete the items with the [`DELETE`](/v1.3/api-reference/knowledge-store-items/delete) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}` endpoint. Then delete the asset.
+- **If indexed assets reference the asset**: the error code is `asset_has_linked_resources`. To delete the asset and these indexed assets together, set the `force` query parameter to `true`. To list the indexed assets first, use the [`GET`](/v1.3/api-reference/index-content/list-indexed-assets-by-asset) method of the `/assets/{asset_id}/indexed-assets` endpoint.
+- **If both apply**: the error code is `asset_has_knowledge_store_items`.
+
+**If entities use the asset**, a successful delete removes the asset from the `asset_ids` array of each entity. To list these entities, use the [`GET`](/v1.3/api-reference/entities/list-entities-by-asset) method of the `/assets/{asset_id}/entities` endpoint.
 </dd>
 </dl>
 </dd>
@@ -1823,7 +1825,12 @@ client.assets.delete(
 
 **force:** `typing.Optional[bool]` 
 
-When set to `true`, the platform deletes the asset even if indexed assets reference it. When set to `false` or omitted, the request fails with `409 Conflict` if references exist.
+Use this parameter to choose how the delete handles indexed assets that reference the asset:
+
+- `true`: Deletes the asset and the indexed assets that reference it.
+- `false` or omitted: Fails with `409 Conflict` if indexed assets reference the asset.
+
+If knowledge store items use the asset, the request fails with `409 Conflict` for either value. Delete the items first.
 
 **Default**: `false`.
     
@@ -1957,8 +1964,7 @@ Send repeated values, such as the `?include=words&include=utterances` query stri
 
 This method replaces the entire user-defined metadata of the specified asset. Unlike the [`PATCH`](/v1.3/api-reference/upload-content/direct-uploads/update-user-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
 - A key with a value creates or replaces that key.
-- A key set to an empty string (`""`), an empty array (`[]`), or `null` is ignored.
-- A key you omit from the request body is removed.
+- A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
 
 To clear all metadata, send an empty object (`{}`) in the `user_metadata` field. This produces the same result as the [`DELETE`](/v1.3/api-reference/upload-content/direct-uploads/delete-user-metadata) method.
 </dd>
@@ -2196,6 +2202,98 @@ client.assets.update_user_metadata(
 </dl>
 </details>
 
+<details><summary><code>client.assets.<a href="src/twelvelabs/assets/client.py">enable_storage_accounting</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method enables storage accounting for the specified asset. Storage accounting makes an asset count toward your Managed Intelligence allowance.
+
+**When to use this method**: Call it once for each asset that you uploaded before your plan moved to the new billing (a pre-migration asset). Enable storage accounting before you do either of the following:
+- Add the asset to a knowledge store.
+- Index the asset in an index for which Marengo is enabled.
+
+An asset that you upload after your plan moves already counts toward your Managed Intelligence allowance. You do not need to call this method for it.
+
+**Before you call this method**: The asset must have the `ready` status and a recorded size. To check, use the [`GET`](/v1.3/api-reference/manage-assets/retrieve) method of the `/assets/{asset_id}` endpoint and read the `status` and `size` fields.
+
+**After you call this method**:
+- The asset counts toward your Managed Intelligence allowance from the moment of the call.
+- Enabling storage accounting is permanent. You cannot turn it off.
+- If storage accounting is already on, the method returns the same response and changes nothing.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.assets.enable_storage_accounting(
+    asset_id="6298d673f1090f1100476d4c",
+    enabled=True,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**asset_id:** `str` — The unique identifier of the asset for which to enable storage accounting.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enabled:** `bool` — Enables storage accounting for the asset. The only accepted value is `true`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## MultipartUpload
 <details><summary><code>client.multipart_upload.<a href="src/twelvelabs/multipart_upload/client.py">list_incomplete_uploads</a>(...)</code></summary>
 <dl>
@@ -2234,10 +2332,10 @@ response = client.multipart_upload.list_incomplete_uploads(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -2478,10 +2576,10 @@ response = client.multipart_upload.get_status(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -2765,10 +2863,10 @@ response = client.entity_collections.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -3200,10 +3298,10 @@ response = client.knowledge_stores.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -3628,7 +3726,7 @@ client.knowledge_stores.update(
 
 This method searches a knowledge store using natural language and returns matching video clips and images ranked by relevance.
 
-Provide your natural-language query in the `query.text` field. Use the `filter` parameter to choose which items to search: by type of item (the `asset_type` field) or by specific items (the `item_id` field). Use the optional `search_options` parameter to control how videos are matched (by visual content, audio, or both). If you omit it, videos are matched on their visual content. Images are always matched on their visual content.
+Use the `query.text` field to specify your natural-language query. Use the `filter` parameter to choose which items to search. Use the `search_options` parameter to choose how the platform matches videos.
 
 By default, each result is an individual match: a video clip or an image. Set the `group_by` parameter to `item` to group clips under their parent item.
 
@@ -3758,7 +3856,13 @@ If a token is malformed or unrecognized, the platform returns a `400` error. If 
 <dl>
 <dd>
 
-**include_metadata:** `typing.Optional[bool]` — Set to `true` to include metadata in each result. Each result includes a `metadata` object with a `system` field (platform-derived file properties such as duration and resolution) and a `user` field (metadata you attached to the item).
+**include_metadata:** `typing.Optional[bool]` 
+
+Set to `true` to include metadata in each result. Each result includes a `metadata` object with these fields:
+
+- `system`: System-generated metadata, such as duration and resolution.
+- `user`: The custom metadata of the source asset.
+- `item`: The custom metadata of the knowledge store item.
     
 </dd>
 </dl>
@@ -3792,6 +3896,8 @@ If a token is malformed or unrecognized, the platform returns a `400` error. If 
 <dd>
 
 This method returns a list of items in the specified knowledge store.
+
+Use the `status`, `metadata`, `enrichment`, `created_at_gte`, and `created_at_lte` parameters to choose which items to list. An item must match all of the parameters that you specify.
 </dd>
 </dl>
 </dd>
@@ -3806,6 +3912,8 @@ This method returns a list of items in the specified knowledge store.
 <dd>
 
 ```python
+import datetime
+
 from twelvelabs import TwelveLabs
 
 client = TwelveLabs(
@@ -3818,12 +3926,20 @@ response = client.knowledge_store_items.list(
     sort_by="created_at",
     sort_option="desc",
     status=["queued"],
+    metadata='{"hashtags":["summer","travel"],"verified":true}',
+    enrichment='{"detected_topic":"cooking"}',
+    created_at_gte=datetime.datetime.fromisoformat(
+        "2026-09-01 00:00:00+00:00",
+    ),
+    created_at_lte=datetime.datetime.fromisoformat(
+        "2026-09-30 23:59:59+00:00",
+    ),
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -3922,6 +4038,76 @@ status=queued&status=pending
 <dl>
 <dd>
 
+**metadata:** `typing.Optional[str]` 
+
+Filter by custom metadata. Provide a JSON object that maps each key to a value or to a list of values. A list matches any of its values. An item must match all of the keys that you specify.
+
+A key matches the custom metadata of the source asset (the `metadata` field of the knowledge store item) and the custom metadata of the knowledge store item (the `item_metadata` field). An item matches a key when the value matches in either field.
+
+A value is a string, a number, or a boolean. The value must have the same type as the value that the item has for the key. For example, the number `2026` does not match the string `"2026"`. If the item has a list for the key, the item matches when the list contains the value.
+
+The object must have at least one key. A list must have at least one value. If the parameter is not a valid JSON object, or a value is not a string, a number, or a boolean, the platform returns a `422` error.
+
+URL-encode the object:
+```
+metadata=%7B%22hashtags%22%3A%5B%22summer%22%2C%22travel%22%5D%2C%22verified%22%3Atrue%7D
+```
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enrichment:** `typing.Optional[str]` 
+
+Filter by enrichment values. The platform extracts these values as the enrichment configuration of the knowledge store defines (the `ingestion_config.enrichment_config` field).
+
+Provide a JSON object that maps each top-level property that the enrichment configuration defines to a value or to a list of values. Each value follows the rules for the `metadata` parameter. If you specify a key that the enrichment configuration does not define, the platform returns a `422` error.
+
+The `granularity` keyword of a property sets how often the platform extracts its value. The keyword also sets which items the key matches:
+
+- `video`: One value for each video. The key matches video items only.
+- `image`: One value for each image. The key matches image items only.
+- `shot`: One value for each shot of a video. A shot is a continuous part of a video between two scene changes. The key matches video items only. If you specify more than one `shot` key, one shot must have all of the values.
+
+An item must match all of the keys that you specify. An object with a `video` key and an `image` key matches no items, because an item is a video or an image.
+
+URL-encode the object:
+```
+enrichment=%7B%22detected_topic%22%3A%22cooking%22%7D
+```
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at_gte:** `typing.Optional[dt.datetime]` 
+
+Return only items created at or after this time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+
+The creation time is the time when you create the item with the [`POST`](/v1.3/api-reference/knowledge-store-items/create) method of the `/knowledge-stores/{knowledge_store_id}/items` endpoint. It is not the time when the item reaches the `ready` status. To list only items that are ready, also set the `status` parameter to `ready`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at_lte:** `typing.Optional[dt.datetime]` 
+
+Return only items created at or before this time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). When you use both `created_at_gte` and `created_at_lte`, the `created_at_gte` time must be equal to or earlier than the `created_at_lte` time. Otherwise, the platform returns a `422` error.
+
+The creation time is the time when you create the item with the [`POST`](/v1.3/api-reference/knowledge-store-items/create) method of the `/knowledge-stores/{knowledge_store_id}/items` endpoint. It is not the time when the item reaches the `ready` status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -3999,7 +4185,7 @@ client.knowledge_store_items.create(
 <dl>
 <dd>
 
-**asset_id:** `str` — The unique identifier of the asset to add to the knowledge store.
+**asset_id:** `str` — The unique identifier of the asset to add to the knowledge store. If you uploaded the asset before your plan moved to the new billing, enable storage accounting for it before you add it to a knowledge store. Use the [Enable storage accounting for an asset](/v1.3/api-reference/manage-assets/enable-storage-accounting) method.
     
 </dd>
 </dl>
@@ -4015,7 +4201,15 @@ client.knowledge_store_items.create(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+**item_metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Custom metadata for the item, as user-defined key-value pairs. Up to 50 pairs, keys up to 128 characters, string values up to 8192 characters. Keys are strings; values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string. To change it after you create the item, use the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) or [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, KnowledgeStoreMetadataValue]]` — Deprecated. Use `item_metadata` instead. The item stores the pairs in its `item_metadata` field and not in its `metadata` field. Send `item_metadata` or `metadata`, not both. A request that sets both returns a `400` error.
     
 </dd>
 </dl>
@@ -4193,6 +4387,710 @@ client.knowledge_store_items.delete(
 </dl>
 </details>
 
+<details><summary><code>client.knowledge_store_items.<a href="src/twelvelabs/knowledge_store_items/client.py">replace_knowledge_store_item_metadata</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method replaces the entire `item_metadata` of the specified knowledge store item and returns the item. Unlike the [`PATCH`](/v1.3/api-reference/knowledge-store-items/update-item-metadata) method, which merges your changes with the existing metadata, this method overwrites the stored value in full:
+- A key with a value creates or replaces that key.
+- A key you omit, or set to an empty string (`""`), an empty array (`[]`), or `null`, is removed.
+
+To clear all item metadata, send an empty object (`{}`) in the `item_metadata` field. The `metadata` field of the item does not change.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_items.replace_knowledge_store_item_metadata(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    item_metadata={"creator_handle": "@jane.doe", "view_count": 48210},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_metadata:** `typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]` — The complete `item_metadata` of the item after the request. Up to 50 pairs. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, or an array of strings. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_items.<a href="src/twelvelabs/knowledge_store_items/client.py">update_knowledge_store_item_metadata</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method updates the `item_metadata` of the specified knowledge store item and returns the item. The platform merges your changes with the existing metadata:
+- A key with a value creates or replaces that key.
+- A key set to `null` deletes that key.
+- A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
+- A key you omit from the request keeps its current value.
+
+The `metadata` field of the item does not change. If the merged result contains more than 50 pairs, the request fails.
+
+To replace all item metadata in a single call, use the [`PUT`](/v1.3/api-reference/knowledge-store-items/replace-item-metadata) method of the `/knowledge-stores/{knowledge_store_id}/items/{item_id}/item-metadata` endpoint instead.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_items.update_knowledge_store_item_metadata(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    item_metadata={"creator_handle": "@jane.doe", "view_count": 48210},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_metadata:** `typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]` — The keys to change. Send at least one key. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, an array of strings, or `null` to delete the key. A nested object and an array containing anything other than strings are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Knowledge store item tags
+<details><summary><code>client.knowledge_store_item_tags.<a href="src/twelvelabs/knowledge_store_item_tags/client.py">list</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method returns the tags of the specified knowledge store item. The platform sorts the tags by `start_sec`, earliest first. Tags with the same `start_sec` are sorted by `_id`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.knowledge_store_item_tags.list(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    page=1,
+    page_limit=10,
+)
+for item in response:
+    print(item)
+# alternatively, you can paginate page-by-page
+for page in response.iter_pages():
+    print(page)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of items to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_tags.<a href="src/twelvelabs/knowledge_store_item_tags/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method tags a moment or a range of a video item and returns the tag. Set `start_sec` to tag a moment. Set `start_sec` and `end_sec` to tag a range. A video item holds up to 100 tags. The method returns a 422 error for an item that is not a video item, and when the item already holds 100 tags.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_tags.create(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    start_sec=12.5,
+    end_sec=18.25,
+    tag_metadata={"event": "goal", "team": "home"},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start_sec:** `float` — The start of the tag, in seconds from the start of the video. It must be less than the duration of the video.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag_metadata:** `typing.Dict[str, KnowledgeStoreMetadataValue]` — The custom metadata of the tag, as key-value pairs. Send at least one key. Up to 50 pairs. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, or an array of strings. A nested object, an array containing anything other than strings, and a null value are rejected. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end_sec:** `typing.Optional[float]` — The end of the range, in seconds from the start of the video. It must be greater than `start_sec`. It must not exceed the duration of the video. Omit it, or send `null`, to tag a single moment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_tags.<a href="src/twelvelabs/knowledge_store_item_tags/client.py">retrieve</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method retrieves the details of a specific tag of a knowledge store item.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_tags.retrieve(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    tag_id="ksit_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag_id:** `str` — The unique identifier of the item tag.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_tags.<a href="src/twelvelabs/knowledge_store_item_tags/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method deletes the specified tag of a knowledge store item.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_tags.delete(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    tag_id="ksit_069e9870-3c4d-7abc-9012-3456789abcde",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag_id:** `str` — The unique identifier of the item tag.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.knowledge_store_item_tags.<a href="src/twelvelabs/knowledge_store_item_tags/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method updates the range or the `tag_metadata` of the specified tag and returns the tag. Send at least one field. A field you omit keeps its current value. To clear the end of the range, send `end_sec` as `null`. The tag becomes a single moment. The platform merges your changes to `tag_metadata` with the existing metadata:
+- A key with a value creates or replaces that key.
+- A key set to `null` deletes that key.
+- A key set to an empty string (`""`) or an empty array (`[]`) is ignored.
+- A key you omit from the request keeps its current value.
+
+The tag must keep at least one key in `tag_metadata`, and it holds up to 50 pairs. If the merged result breaks either limit, the request fails.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.knowledge_store_item_tags.update(
+    knowledge_store_id="ks_069e9869-1ea3-7481-8000-dae72bf6be6e",
+    item_id="ksi_069e9870-3c4d-7abc-9012-3456789abcde",
+    tag_id="ksit_069e9870-3c4d-7abc-9012-3456789abcde",
+    end_sec=18.25,
+    tag_metadata={},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**knowledge_store_id:** `str` — The unique identifier of the knowledge store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**item_id:** `str` — The unique identifier of the knowledge store item.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag_id:** `str` — The unique identifier of the item tag.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start_sec:** `typing.Optional[float]` — The new start of the tag, in seconds from the start of the video. It must be less than the duration of the video. The tag must still end after it starts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end_sec:** `typing.Optional[float]` — The new end of the range, in seconds from the start of the video. It must be greater than `start_sec`. It must not exceed the duration of the video. Send `null` to clear the end, which turns a range into a single moment. Omit the field to keep the current end.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag_metadata:** `typing.Optional[
+    typing.Dict[str, typing.Optional[KnowledgeStoreMetadataEditValue]]
+]` — The keys to change. Send at least one key. Keys are strings of up to 128 characters. String values can have up to 8192 characters. Values can be a string, a number, a boolean, an array of strings, or `null` to delete the key. A key you omit keeps its current value. A nested object and an array containing anything other than strings are rejected. The tag holds up to 50 pairs after the merge. An integer must fit in 53 bits (-9007199254740991 to 9007199254740991). Send a wider integer, or an identifier that must be preserved verbatim, as a string.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Knowledge store item collections
 <details><summary><code>client.knowledge_store_item_collections.<a href="src/twelvelabs/knowledge_store_item_collections/client.py">list</a>(...)</code></summary>
 <dl>
@@ -4234,10 +5132,10 @@ response = client.knowledge_store_item_collections.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -4722,10 +5620,10 @@ response = client.knowledge_store_item_collections.list_items(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -5011,7 +5909,7 @@ Parameters for embeddings:
 - The Marengo video understanding model generates embeddings for all modalities in the same latent space. This shared space enables any-to-any searches across different types of content.
 - You can create multiple types of embeddings in a single API call.
 - Audio embeddings combine generic sound and human speech in a single embedding. For videos with transcriptions, you can retrieve transcriptions and then [create text embeddings](/v1.3/api-reference/create-embeddings-v1/text-image-audio-embeddings/create-text-image-audio-embeddings) from these
-- This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
+- This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page. When a request exceeds the limit for one type of content, the platform can return `200` instead of `429`. The result for that type then contains the rate limit message in `error_message` and no embedding.
 </Note>
 </dd>
 </dl>
@@ -5514,6 +6412,8 @@ Before you use this method, you must create an asset, create a knowledge store, 
 
 **Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
 
+**Web sources**: Jockey can search public web sources while it generates a response. To allow this, include `{ "type": "jockey:web_search" }` in the `tools` array. The response can then cite these sources alongside content from the knowledge store, as `url_citation` annotations. Jockey decides whether to use an available tool, so enabling web search does not guarantee a search. To make a search more likely, explicitly tell Jockey what information to look up in `input` or `instructions`. A prompt that asks Jockey to search the web does not enable web search by itself. If you omit `tools` or pass `[]`, Jockey cannot search public web sources, even when the prompt requests it.
+
 <Accordion title="Example response">
 ```json
 {
@@ -5552,9 +6452,9 @@ Before you use this method, you must create an asset, create a knowledge store, 
       ]
     }
   ],
-  "usage": {
-    "input_tokens": 12625,
-    "output_tokens": 289
+  "billing": {
+    "amount": "0.008118",
+    "currency": "USD"
   },
   "created_at": "2026-07-11T03:13:57Z"
 }
@@ -5582,10 +6482,10 @@ event: response.output_text.done
 data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
 
 event: response.content_part.done
-data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
+data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
 event: response.completed
-data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"billing":{"amount":"0.020912","currency":"USD"},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
 data: [DONE]
 ```
@@ -5604,7 +6504,11 @@ data: [DONE]
 <dd>
 
 ```python
-from twelvelabs import ResponseInputItem, TwelveLabs
+from twelvelabs import (
+    ResponseInputItem,
+    ResponseToolInput_JockeyWebSearch,
+    TwelveLabs,
+)
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
@@ -5615,12 +6519,14 @@ response = client.responses.create_stream(
         ResponseInputItem(
             type="message",
             role="user",
-            content="Give me the highlight.",
+            content="Summarize this collection and verify one claim using an official web source.",
         )
     ],
+    include=["intermediate_outputs"],
+    tools=[ResponseToolInput_JockeyWebSearch()],
 )
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -5644,7 +6550,10 @@ for chunk in response.data:
 <dl>
 <dd>
 
-**input:** `typing.Sequence[ResponseInputItem]` — Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+**input:** `typing.Sequence[ResponseInputItem]` 
+
+User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+Output items cannot be submitted as input. Use `session_id` to continue a conversation.
     
 </dd>
 </dl>
@@ -5681,6 +6590,31 @@ Additional items to include in the response's `output` array. By default, the `o
 
 **Values**:
 - `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tools:** `typing.Optional[typing.Sequence[ResponseToolInput]]` 
+
+Tools that Jockey can use while it generates the response.
+Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+whether to use an available tool, so enabling web search does not guarantee
+a search. To make a search more likely, explicitly tell Jockey what
+information to look up in `input` or `instructions`.
+
+A prompt that asks Jockey to search the web does not enable web search by
+itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+public web sources, even when the prompt requests it. The `tools` setting
+applies to each request on its own, including requests that continue a
+session.
+
+This list does not control Jockey's built-in knowledge store operations.
+If a requested tool is unavailable for the request, the request fails
+with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+tool from the `tools` array and retry.
     
 </dd>
 </dl>
@@ -5742,6 +6676,8 @@ Before you use this method, you must create an asset, create a knowledge store, 
 
 **Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
 
+**Web sources**: Jockey can search public web sources while it generates a response. To allow this, include `{ "type": "jockey:web_search" }` in the `tools` array. The response can then cite these sources alongside content from the knowledge store, as `url_citation` annotations. Jockey decides whether to use an available tool, so enabling web search does not guarantee a search. To make a search more likely, explicitly tell Jockey what information to look up in `input` or `instructions`. A prompt that asks Jockey to search the web does not enable web search by itself. If you omit `tools` or pass `[]`, Jockey cannot search public web sources, even when the prompt requests it.
+
 <Accordion title="Example response">
 ```json
 {
@@ -5780,9 +6716,9 @@ Before you use this method, you must create an asset, create a knowledge store, 
       ]
     }
   ],
-  "usage": {
-    "input_tokens": 12625,
-    "output_tokens": 289
+  "billing": {
+    "amount": "0.008118",
+    "currency": "USD"
   },
   "created_at": "2026-07-11T03:13:57Z"
 }
@@ -5810,10 +6746,10 @@ event: response.output_text.done
 data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
 
 event: response.content_part.done
-data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
+data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
 event: response.completed
-data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"billing":{"amount":"0.020912","currency":"USD"},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
 data: [DONE]
 ```
@@ -5832,7 +6768,11 @@ data: [DONE]
 <dd>
 
 ```python
-from twelvelabs import ResponseInputItem, TwelveLabs
+from twelvelabs import (
+    ResponseInputItem,
+    ResponseToolInput_JockeyWebSearch,
+    TwelveLabs,
+)
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
@@ -5843,9 +6783,11 @@ client.responses.create(
         ResponseInputItem(
             type="message",
             role="user",
-            content="Give me the highlight.",
+            content="Summarize this collection and verify one claim using an official web source.",
         )
     ],
+    include=["intermediate_outputs"],
+    tools=[ResponseToolInput_JockeyWebSearch()],
 )
 
 ```
@@ -5870,7 +6812,10 @@ client.responses.create(
 <dl>
 <dd>
 
-**input:** `typing.Sequence[ResponseInputItem]` — Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+**input:** `typing.Sequence[ResponseInputItem]` 
+
+User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+Output items cannot be submitted as input. Use `session_id` to continue a conversation.
     
 </dd>
 </dl>
@@ -5907,6 +6852,31 @@ Additional items to include in the response's `output` array. By default, the `o
 
 **Values**:
 - `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tools:** `typing.Optional[typing.Sequence[ResponseToolInput]]` 
+
+Tools that Jockey can use while it generates the response.
+Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+whether to use an available tool, so enabling web search does not guarantee
+a search. To make a search more likely, explicitly tell Jockey what
+information to look up in `input` or `instructions`.
+
+A prompt that asks Jockey to search the web does not enable web search by
+itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+public web sources, even when the prompt requests it. The `tools` setting
+applies to each request on its own, including requests that continue a
+session.
+
+This list does not control Jockey's built-in knowledge store operations.
+If a requested tool is unavailable for the request, the request fails
+with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+tool from the `tools` array and retry.
     
 </dd>
 </dl>
@@ -7005,10 +7975,6 @@ Analyzing content asynchronously requires three steps:
 3. When the status is `ready`, retrieve the results using the [`GET`](/v1.3/api-reference/analyze-videos/retrieve-analysis-task-status-results) method of the `/analyze/tasks/{task_id}` endpoint.
 
 On the Free plan, you have a total of 600 minutes (10 hours) shared across indexing, analysis, and segmentation. For details, see the [Video hours and video count limits](/v1.3/docs/concepts/indexes#video-hours-and-video-count-limits) section.
-
-<Note title="Note">
-This endpoint is rate-limited. For details, see the [Rate limits](/v1.3/docs/get-started/rate-limits) page.
-</Note>
 </dd>
 </dl>
 </dd>
@@ -7550,10 +8516,10 @@ response = client.analyze_async.batches.list(
     analysis_mode=["general", "time_based_metadata"],
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -8009,8 +8975,8 @@ client = TwelveLabs(
 response = client.analyze_async.batches.results(
     batch_id="68f4ddaf8aaa60d33df0e800",
 )
-for chunk in response.data:
-    yield chunk
+for chunk in response:
+    print(chunk)
 
 ```
 </dd>
@@ -8171,10 +9137,10 @@ response = client.embed.tasks.list(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -8190,7 +9156,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**started_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+**started_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
     
 </dd>
 </dl>
@@ -8198,7 +9164,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**ended_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+**ended_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
     
 </dd>
 </dl>
@@ -8624,7 +9590,7 @@ Use this method to embed a query for retrieving matching content. With Marengo 3
 The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
 <Note title="Note">
-This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
 </Note>
 </dd>
 </dl>
@@ -8718,7 +9684,7 @@ Controls the behavior of the platform when the text in your request exceeds 2,00
 Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
 **Requirements**:
-- Set this parameter to `true` only for a text-only or media-only request. If you combine text with media sources, the platform returns a `400` error.
+- Uncertainty vectors are supported for text-only input or a single image. For `multi_input`, provide `input_text` without `media_sources`, or one image source without `input_text`. Combining text with media, supplying multiple media sources, or using an audio/video source in `multi_input` returns a `400` error.
 - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
     
 </dd>
@@ -8819,11 +9785,11 @@ Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the 
 <dl>
 <dd>
 
-This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+This method returns a list of the async embedding tasks in your account, including tasks created as part of a batch. The platform returns tasks sorted by creation date, with the newest at the top of the list. The `custom_id` field of a task created as part of a batch is unique only within one batch, identified by the `batch_id` field.
 
 <Note title="Notes">
-- Embeddings are stored for seven days.
-- When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+- Embeddings of a task that is not part of a batch are stored for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+- Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. With the `batch_id` query parameter, this method lists all retained tasks created as part of that batch. Explicit time filters still apply. No filter limits the list to tasks that are not part of a batch.
 </Note>
 </dd>
 </dl>
@@ -8847,15 +9813,17 @@ client = TwelveLabs(
 response = client.embed.v_2.tasks.list(
     started_at="2024-03-01T00:00:00Z",
     ended_at="2024-03-01T00:00:00Z",
-    status="processing",
+    status="queued",
+    client_task_id="video_001",
+    batch_id="68d3ae81c4a8d3697e15b2ef",
     page=1,
-    page_limit=10,
+    page_limit=1,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -8871,7 +9839,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**started_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+**started_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
     
 </dd>
 </dl>
@@ -8879,7 +9847,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**ended_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+**ended_at:** `typing.Optional[str]` — Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
     
 </dd>
 </dl>
@@ -8887,11 +9855,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**status:** `typing.Optional[str]` 
-
-Filter the embedding tasks by their current status.
-
-**Values**: `processing`, `ready`, or `failed`.
+**status:** `typing.Optional[TasksListRequestStatus]` — Filter async embedding tasks by their current status.
     
 </dd>
 </dl>
@@ -8899,11 +9863,7 @@ Filter the embedding tasks by their current status.
 <dl>
 <dd>
 
-**page:** `typing.Optional[int]` 
-
-A number that identifies the page to retrieve.
-
-**Default**: `1`.
+**client_task_id:** `typing.Optional[ClientEmbeddingTaskId]` — Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique among your tasks. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
     
 </dd>
 </dl>
@@ -8911,12 +9871,23 @@ A number that identifies the page to retrieve.
 <dl>
 <dd>
 
-**page_limit:** `typing.Optional[int]` 
+**batch_id:** `typing.Optional[str]` — Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+    
+</dd>
+</dl>
 
-The number of items to return on each page.
+<dl>
+<dd>
 
-**Default**: `10`.
-**Max**: `50`.
+**page:** `typing.Optional[int]` — A number that identifies the page to retrieve.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` — The number of items to return on each page.
     
 </dd>
 </dl>
@@ -8957,12 +9928,11 @@ The content this method accepts depends on the model. Both models embed audio an
 Creating embeddings asynchronously requires three steps:
 
 1. Create a task using this method. The platform returns a task identifier.
-2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
+2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Stop when the status is `ready`, `failed`, or `canceled`.
+3. When the status is `ready`, read the embeddings from that response. When the status is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
 
 <Note title="Notes">
-- Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-- This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+- This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
 - Embeddings are stored for seven days.
 </Note>
 </dd>
@@ -8979,33 +9949,18 @@ Creating embeddings asynchronously requires three steps:
 <dd>
 
 ```python
-from twelvelabs import (
-    AsyncVideoInputRequest,
-    MediaSource,
-    TwelveLabs,
-    VideoSegmentation_Dynamic,
-    VideoSegmentationDynamicDynamic,
-)
+from twelvelabs import AsyncAudioInputRequest, MediaSource, TwelveLabs
 
 client = TwelveLabs(
     api_key="YOUR_API_KEY",
 )
 client.embed.v_2.tasks.create(
-    input_type="video",
-    model_name="marengo3.0",
-    video=AsyncVideoInputRequest(
+    input_type="audio",
+    model_name="marengo3.5",
+    audio=AsyncAudioInputRequest(
         media_source=MediaSource(
-            url="https://user-bucket.com/video/long-video.mp4",
+            url="https://user-bucket.com/audio/long-audio.wav",
         ),
-        start_sec=0.0,
-        end_sec=7200.0,
-        segmentation=VideoSegmentation_Dynamic(
-            dynamic=VideoSegmentationDynamicDynamic(
-                min_duration_sec=1,
-            ),
-        ),
-        embedding_option=["visual", "audio", "transcription"],
-        embedding_scope=["clip", "asset"],
     ),
 )
 
@@ -9077,10 +10032,27 @@ Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the 
 **Requirements**:
 - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
 - Applies to the entire task: you cannot set it for a single input type or embedding.
+- For audio or video input, a fused embedding with the `asset` scope requires `512`. If the `embedding_type` field includes `fused_embedding` and the `embedding_scope` field includes `asset`, a task with `128` or `256` fails with the `UNSUPPORTED_COMBINATION` error code. The platform does not return the supported outputs alone.
 - Set it once, when you create the task. To use a different value, create a new task.
 - Use the same value across an index.
 
 **Default**: 512
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**service_tier:** `typing.Optional[EmbeddingServiceTier]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**client_task_id:** `typing.Optional[ClientEmbeddingTaskId]` 
     
 </dd>
 </dl>
@@ -9146,10 +10118,12 @@ Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the 
 
 This method retrieves the status and the results of an async embedding task.
 
-Invoke this method repeatedly until the `status` field is `ready` or `failed`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason.
+Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field.
 
 <Note title="Note">
-Embeddings are stored for seven days.
+Embeddings of a task that is not part of a batch are stored for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+
+A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
 </Note>
 </dd>
 </dl>
@@ -9208,6 +10182,662 @@ client.embed.v_2.tasks.retrieve(
 </dl>
 </details>
 
+<details><summary><code>client.embed.v_2.tasks.<a href="src/twelvelabs/embed/v_2/tasks/client.py">cancel</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+This method cancels a task that is not part of a batch while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.v_2.tasks.cancel(
+    task_id="64f8d2c7e4a1b37f8a9c5d12",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**task_id:** `str` — The unique identifier of the embedding task.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Embed V2 Batches
+<details><summary><code>client.embed.v_2.batches.<a href="src/twelvelabs/embed/v_2/batches/client.py">list</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to list your batches. The response sorts batches by creation date, with the newest batch first. Each batch includes its status and item counts.
+
+**Notes**:
+- Filters combine using AND.
+- To retrieve the status and the task identifier of each item in a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
+- To retrieve the embeddings of a batch, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.v_2.batches.list(
+    client_batch_id="reports_2026_10",
+    status="pending",
+    page=1,
+    page_limit=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**client_batch_id:** `typing.Optional[ClientEmbeddingBatchId]` — Filter batches by the identifier you set when you created the batch. The match is exact.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `typing.Optional[BatchesListRequestStatus]` — Filter batches by status. For the meaning of each value, see the [Batch statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#batch-statuses) section on the **The batch object** page. If you omit this parameter, the response includes batches in all statuses.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `typing.Optional[int]` 
+
+A number that identifies the page to retrieve, after the filters are applied.
+
+**Default**: `1`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_limit:** `typing.Optional[int]` 
+
+The number of batches to return on each page.
+
+**Default**: `10`.
+**Max**: `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.embed.v_2.batches.<a href="src/twelvelabs/embed/v_2/batches/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to submit many embedding requests in a single call. Each request creates an embedding task. The response contains one batch identifier and one task identifier per request. Use the batch identifier to check progress and retrieve results. Requires Marengo 3.5 and the Plus, Pro, or Enterprise plan.
+
+**When to use this method**:
+- Embed many items with the same settings.
+- Track one batch instead of many tasks.
+
+**Do not use this method for**:
+- Results you need in the same request. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint for synchronous embedding instead.
+- One item. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
+- Results you need by a set time. Batch items use the Flex service tier, which does not guarantee a start time or a completion time. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint with the `standard` or `priority` service tier instead.
+
+**Item failures**:
+- An item that fails a check has the `failed` status. The other items continue.
+- The `201` response shows the failures that the platform finds when it accepts the batch. It checks the file at each video or audio URL, the duration of the media, and the number of pages in each PDF later. To see these failures, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
+
+**Retention, retry, and billing**:
+- The processing window is 24 hours from creation. If it ends while items are unfinished, the batch has the `expired` status, and the platform cancels those items.
+- To process canceled items, submit them in a new batch.
+- You can retrieve the batch, its tasks, and its results for 30 days after creation.
+- Only `ready` items are billed.
+
+**Limits**:
+- Up to 1,000 requests per batch.
+- The [input requirements of Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) apply to each item.
+- The request body has a size limit that includes Base64 media. The `message` field of the `413` response includes the limit in bytes. For larger media, use a URL or an asset identifier.
+- Unfinished Flex tasks have a shared limit. Each item in a batch counts as one task, as does each task outside a batch. A request that exceeds the limit returns `429`.
+- A request to create a batch counts as one request toward a request-count limit, regardless of the number of items. The limit is shared with requests that create a task outside a batch.
+- Input-token limits count completed work. The platform does not reserve tokens when you create a batch, so accepted items can finish above a limit. A later create request can then return `429`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import (
+    EmbeddingBatchDefaultsRequest,
+    EmbeddingBatchVideoDefaultsRequest,
+    EmbeddingBatchVideoInputRequest,
+    EmbeddingBatchVideoItemRequest,
+    MediaSource,
+    TwelveLabs,
+)
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.v_2.batches.create(
+    model_name="marengo3.5",
+    service_tier="flex",
+    input_type="video",
+    defaults=EmbeddingBatchDefaultsRequest(
+        video=EmbeddingBatchVideoDefaultsRequest(
+            embedding_option=["visual", "audio"],
+        ),
+    ),
+    requests=[
+        EmbeddingBatchVideoItemRequest(
+            custom_id="clip_001",
+            video=EmbeddingBatchVideoInputRequest(
+                media_source=MediaSource(
+                    url="https://example.com/clip.mp4",
+                ),
+            ),
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**model_name:** `CreateEmbeddingBatchRequestModelName` — The embedding model to use for every item in this batch.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**service_tier:** `CreateEmbeddingBatchRequestServiceTier` — The [service tier](/v1.3/docs/advanced/service-tiers) for every item in this batch. The only valid value is `flex`, which uses capacity that other tasks do not use. Processing ends 24 hours after the batch is created. The platform cancels items that are not complete by then. Any other value returns `400`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**input_type:** `CreateEmbeddingBatchRequestInputType` — The input type for every item in this batch. To embed more than one input type, create one batch for each type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requests:** `typing.Sequence[EmbeddingBatchItemRequest]` — The embedding requests in the batch. Provide 1 to 1,000 requests.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**client_batch_id:** `typing.Optional[ClientEmbeddingBatchId]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**defaults:** `typing.Optional[EmbeddingBatchDefaultsRequest]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.embed.v_2.batches.<a href="src/twelvelabs/embed/v_2/batches/client.py">retrieve</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to monitor a batch. The response includes the batch status, the item counts, and one entry for each item with its `custom_id` value and task identifier.
+
+Poll this method until the batch reaches the `completed`, `canceled`, or `expired` status. To retrieve the embeddings, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-results) method of the `/embed-v2/batches/{batch_id}/results` endpoint.
+
+Do not treat the `completed` status as a success signal. It means that every item reached a final status, not that every embedding succeeded. To see how many items succeeded, failed, or were canceled, check the `ready_items`, `failed_items`, and `canceled_items` fields.
+
+The platform keeps a batch and its tasks readable for 30 days after batch creation, regardless of their statuses. After that period, reads of the batch, its results, and its tasks return `404`. Deletion ends access earlier.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.v_2.batches.retrieve(
+    batch_id="68d3ae81c4a8d3697e15b2ef",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `str` — The unique identifier of the batch.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.embed.v_2.batches.<a href="src/twelvelabs/embed/v_2/batches/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to delete a batch. After you delete a batch, you can no longer retrieve the batch, its tasks, or its results. You can only delete batches with the `completed`, `canceled`, or `expired` status.
+
+Deleting a batch does not affect billing. You are billed for every item that completed successfully, regardless of whether you delete the batch afterward.
+
+To stop a batch with the `pending` or `processing` status, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/batches/cancel-batch) method of the `/embed-v2/batches/{batch_id}/cancel` endpoint, and wait for the batch to reach a final status.
+
+Batches and their results are available for 30 days after creation.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.v_2.batches.delete(
+    batch_id="68d3ae81c4a8d3697e15b2ef",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `str` — The unique identifier of the batch.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.embed.v_2.batches.<a href="src/twelvelabs/embed/v_2/batches/client.py">results</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to retrieve the results for each item in a batch. You can call it while the batch has the `pending` or `processing` status.
+
+The response is a JSON Lines stream. Each line is a result entry, and there is one result entry for each item. Each result entry has a status. For details on each status, see the [Item statuses](/v1.3/api-reference/create-embeddings-v2/batches/the-batch-object#item-statuses) section on the **The batch object** page.
+
+You can retrieve results for 30 days after batch creation.
+
+**Notes**:
+- Result entries are not guaranteed to appear in submission order.
+- A `200` status does not confirm a complete stream. To verify it, count the distinct `custom_id` values and compare the count with the `total_items` field of the batch. If the connection ends early, retry and verify the count again.
+- If an error occurs after the stream starts, the response ends early and the platform sends the `X-Stream-Error` trailer. A trailer is an HTTP header that the platform sends after the response body. The trailer contains the `stream_error` code. Many HTTP clients do not show trailers, so always compare the number of result entries with the `total_items` field.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+response = client.embed.v_2.batches.results(
+    batch_id="68d3ae81c4a8d3697e15b2ef",
+)
+for chunk in response:
+    print(chunk)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `str` — The unique identifier of the batch.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.embed.v_2.batches.<a href="src/twelvelabs/embed/v_2/batches/client.py">cancel</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Use this method to request cancellation of a batch that has the `pending` or `processing` status.
+
+When you invoke this method, the platform performs the following steps:
+- Cancels the items in the `queued` status.
+- Finishes processing the items in the `processing` status. Each reaches its own final result.
+
+The batch has the `canceling` status until those items finish, then the `canceled` status. If a running item does not finish before the time in the `expires_at` field of the batch, the platform cancels it with the `deadline_exceeded` reason, and the batch has the `expired` status.
+
+**Billing and results**:
+- An item that is processing when you cancel can still become `ready`. You are billed for it, and its result is available with the results that were ready before the cancellation.
+- An item that finishes after the time in the `expires_at` field of the batch stays canceled and is not billed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from twelvelabs import TwelveLabs
+
+client = TwelveLabs(
+    api_key="YOUR_API_KEY",
+)
+client.embed.v_2.batches.cancel(
+    batch_id="68d3ae81c4a8d3697e15b2ef",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `str` — The unique identifier of the batch.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## EntityCollections Entities
 <details><summary><code>client.entity_collections.entities.<a href="src/twelvelabs/entity_collections/entities/client.py">list_by_asset</a>(...)</code></summary>
 <dl>
@@ -9247,10 +10877,10 @@ response = client.entity_collections.entities.list_by_asset(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -9353,10 +10983,10 @@ response = client.entity_collections.entities.list(
     sort_option="desc",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -10158,10 +11788,10 @@ response = client.indexes.indexed_assets.list(
     updated_at="2024-08-16T16:53:59Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -10450,7 +12080,7 @@ client.indexes.indexed_assets.create(
 <dl>
 <dd>
 
-**asset_id:** `str` — The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
+**asset_id:** `str` — The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status. If you uploaded the asset before your plan moved to the new billing, enable storage accounting for it before you index it in an index for which Marengo is enabled. Use the [Enable storage accounting for an asset](/v1.3/api-reference/manage-assets/enable-storage-accounting) method.
     
 </dd>
 </dl>
@@ -10823,10 +12453,10 @@ response = client.indexes.indexed_assets.list_by_asset(
     page_limit=10,
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>
@@ -10933,10 +12563,10 @@ response = client.indexes.videos.list(
     updated_at="2024-08-16T16:53:59Z",
 )
 for item in response:
-    yield item
+    print(item)
 # alternatively, you can paginate page-by-page
 for page in response.iter_pages():
-    yield page
+    print(page)
 
 ```
 </dd>

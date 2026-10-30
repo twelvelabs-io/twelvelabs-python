@@ -11,6 +11,7 @@ from ...types.multi_input_request import MultiInputRequest
 from ...types.text_image_input_request import TextImageInputRequest
 from ...types.text_input_request import TextInputRequest
 from ...types.video_input_request import VideoInputRequest
+from .batches.client import AsyncBatchesClient, BatchesClient
 from .raw_client import AsyncRawV2Client, RawV2Client
 from .tasks.client import AsyncTasksClient, TasksClient
 from .types.create_embeddings_request_input_type import CreateEmbeddingsRequestInputType
@@ -24,6 +25,8 @@ class V2Client:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawV2Client(client_wrapper=client_wrapper)
         self.tasks = TasksClient(client_wrapper=client_wrapper)
+
+        self.batches = BatchesClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawV2Client:
@@ -60,7 +63,7 @@ class V2Client:
         The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
-        This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         </Note>
 
         Parameters
@@ -94,7 +97,7 @@ class V2Client:
             Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
             **Requirements**:
-            - Set this parameter to `true` only for a text-only or media-only request. If you combine text with media sources, the platform returns a `400` error.
+            - Uncertainty vectors are supported for text-only input or a single image. For `multi_input`, provide `input_text` without `media_sources`, or one image source without `input_text`. Combining text with media, supplying multiple media sources, or using an audio/video source in `multi_input` returns a `400` error.
             - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
 
         embedding_dimension : typing.Optional[int]
@@ -166,6 +169,8 @@ class AsyncV2Client:
         self._raw_client = AsyncRawV2Client(client_wrapper=client_wrapper)
         self.tasks = AsyncTasksClient(client_wrapper=client_wrapper)
 
+        self.batches = AsyncBatchesClient(client_wrapper=client_wrapper)
+
     @property
     def with_raw_response(self) -> AsyncRawV2Client:
         """
@@ -201,7 +206,7 @@ class AsyncV2Client:
         The content this method accepts depends on the model. With Marengo 3.5, this method accepts only the `multi_input` input type; provide text, images, audio, video, or documents as media sources. With Marengo 3.0, use the individual input types. For the formats, resolutions, file sizes, and duration limits each model accepts, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) or [Marengo 3.0](/v1.3/docs/concepts/models/marengo/marengo-3-0#input-requirements).
 
         <Note title="Note">
-        This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A request can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         </Note>
 
         Parameters
@@ -235,7 +240,7 @@ class AsyncV2Client:
             Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
             **Requirements**:
-            - Set this parameter to `true` only for a text-only or media-only request. If you combine text with media sources, the platform returns a `400` error.
+            - Uncertainty vectors are supported for text-only input or a single image. For `multi_input`, provide `input_text` without `media_sources`, or one image source without `input_text`. Combining text with media, supplying multiple media sources, or using an audio/video source in `multi_input` returns a `400` error.
             - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
 
         embedding_dimension : typing.Optional[int]

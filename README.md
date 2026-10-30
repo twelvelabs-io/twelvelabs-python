@@ -32,6 +32,16 @@ Install the latest version of the `twelvelabs` package:
 pip install twelvelabs
 ```
 
+## Embed v2 upgrade notes
+
+The Embed v2 HTTP error payload is a flat object with `code` and `message`. Update custom error handling that expects nested fields. Marengo 3.5 tasks can return `queued` at creation, and response status values can expand over time. Keep a fallback for an unrecognized status.
+
+The task error model is `EmbeddingTaskError`, with `message` and optional `code` and `parameter` fields. Existing `EmbeddingTaskResponseError` imports remain available as an alias; use `EmbeddingTaskError` in new code.
+
+Embedding durations use floating-point seconds, including fractional values. Update code that assumes an integer duration.
+
+Use `client.embed.v_2.batches` for the Embed v2 Batch API and `client.embed.v_2.tasks.cancel` to cancel a standalone task. Both `TwelveLabs` and `AsyncTwelveLabs` propagate malformed JSONL records, invalid result models, and transport failures while reading batch results, including through `with_raw_response`. A clean end of the stream does not prove it is complete: compare distinct item identifiers with the batch's `total_items` before treating retrieval as successful.
+
 # Initialize the SDK
 
 1. Import the SDK into your application:
@@ -340,12 +350,45 @@ while True:
     if task.status == "ready":
         print(f"Embeddings: {len(task.data)}")
         break
-    if task.status == "failed":
-        raise RuntimeError(f"Embedding task failed: id={task.id}")
+    if task.status in ("failed", "canceled"):
+        raise RuntimeError(f"Embedding task {task.status}: id={task.id}")
     time.sleep(5)
 ```
 
 This example embeds a video. The method also accepts `"audio"`, `"image"`, and `"document"` for PDF files. For the request each type takes, and for segmentation and scope options, see the [Embed content at scale](https://docs.twelvelabs.io/docs/guides/create-embeddings/at-scale) guide.
+
+**Create a batch**
+
+For Marengo 3.5, use `client.embed.v_2.batches` to create and manage batches. Each request can include fractional `start_sec` and `end_sec` offsets:
+
+```py
+from twelvelabs import EmbeddingBatchVideoInputRequest, EmbeddingBatchVideoItemRequest, MediaSource
+
+batch = client.embed.v_2.batches.create(
+    model_name="marengo3.5",
+    service_tier="flex",
+    input_type="video",
+    requests=[
+        EmbeddingBatchVideoItemRequest(
+            custom_id="clip_001",
+            video=EmbeddingBatchVideoInputRequest(
+                media_source=MediaSource(url="<YOUR_VIDEO_URL>"),
+                start_sec=2.5,
+                end_sec=7.5,
+            ),
+        ),
+        EmbeddingBatchVideoItemRequest(
+            custom_id="clip_002",
+            video=EmbeddingBatchVideoInputRequest(
+                media_source=MediaSource(url="<YOUR_SECOND_VIDEO_URL>"),
+            ),
+        ),
+    ],
+)
+print(f"Created batch: {batch.batch_id}")
+```
+
+Use `client.embed.v_2.batches.retrieve`, `.list`, `.results`, `.cancel`, and `.delete` to manage batch status and JSONL results. Cancel an individual task with `client.embed.v_2.tasks.cancel(task_id)`. For batch limits and lifecycle details, see the [Embed v2 batch API reference](https://docs.twelvelabs.io/v1.3/api-reference/create-embeddings-v2/batches).
 
 ## Error Handling
 
@@ -392,3 +435,5 @@ To contribute, follow these steps:
 3. We will transfer any approved changes to the repository where the code generation tool operates.
 
 We welcome contributions to the README file. You can submit pull requests directly.
+
+After regenerating the Python SDK with Fern, normalize the generated reference examples with `poetry run python scripts/normalize_reference.py --write`. CI checks the committed reference with `poetry run python scripts/normalize_reference.py --check` through the custom test suite.

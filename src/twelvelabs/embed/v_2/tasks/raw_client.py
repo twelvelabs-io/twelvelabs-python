@@ -12,18 +12,29 @@ from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
 from ....core.serialization import convert_and_respect_annotation_metadata
 from ....errors.bad_request_error import BadRequestError
+from ....errors.conflict_error import ConflictError
+from ....errors.content_too_large_error import ContentTooLargeError
+from ....errors.forbidden_error import ForbiddenError
 from ....errors.internal_server_error import InternalServerError
 from ....errors.not_found_error import NotFoundError
+from ....errors.service_unavailable_error import ServiceUnavailableError
 from ....errors.too_many_requests_error import TooManyRequestsError
+from ....errors.unauthorized_error import UnauthorizedError
+from ....errors.unprocessable_entity_error import UnprocessableEntityError
 from ....types.async_audio_input_request import AsyncAudioInputRequest
 from ....types.async_document_input_request import AsyncDocumentInputRequest
 from ....types.async_image_input_request import AsyncImageInputRequest
 from ....types.async_video_input_request import AsyncVideoInputRequest
+from ....types.cancel_embedding_task_response import CancelEmbeddingTaskResponse
+from ....types.client_embedding_task_id import ClientEmbeddingTaskId
+from ....types.embedding_service_tier import EmbeddingServiceTier
 from ....types.embedding_task_response import EmbeddingTaskResponse
+from ....types.flat_error_response import FlatErrorResponse
 from ....types.media_embedding_task import MediaEmbeddingTask
 from .types.create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
 from .types.create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
 from .types.tasks_create_response import TasksCreateResponse
+from .types.tasks_list_request_status import TasksListRequestStatus
 from .types.tasks_list_response import TasksListResponse
 
 # this is used as the default value for optional parameters
@@ -39,42 +50,43 @@ class RawTasksClient:
         *,
         started_at: typing.Optional[str] = None,
         ended_at: typing.Optional[str] = None,
-        status: typing.Optional[str] = None,
+        status: typing.Optional[TasksListRequestStatus] = None,
+        client_task_id: typing.Optional[ClientEmbeddingTaskId] = None,
+        batch_id: typing.Optional[str] = None,
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[MediaEmbeddingTask]:
         """
-        This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the async embedding tasks in your account, including tasks created as part of a batch. The platform returns tasks sorted by creation date, with the newest at the top of the list. The `custom_id` field of a task created as part of a batch is unique only within one batch, identified by the `batch_id` field.
 
         <Note title="Notes">
-        - Embeddings are stored for seven days.
-        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        - Embeddings of a task that is not part of a batch are stored for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. With the `batch_id` query parameter, this method lists all retained tasks created as part of that batch. Explicit time filters still apply. No filter limits the list to tasks that are not part of a batch.
         </Note>
 
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
-        status : typing.Optional[str]
-            Filter the embedding tasks by their current status.
+        status : typing.Optional[TasksListRequestStatus]
+            Filter async embedding tasks by their current status.
 
-            **Values**: `processing`, `ready`, or `failed`.
+        client_task_id : typing.Optional[ClientEmbeddingTaskId]
+            Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique among your tasks. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
+
+        batch_id : typing.Optional[str]
+            Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
 
-            **Default**: `1`.
-
         page_limit : typing.Optional[int]
             The number of items to return on each page.
-
-            **Default**: `10`.
-            **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -93,6 +105,8 @@ class RawTasksClient:
                 "started_at": started_at,
                 "ended_at": ended_at,
                 "status": status,
+                "client_task_id": client_task_id,
+                "batch_id": batch_id,
                 "page": page,
                 "page_limit": page_limit,
             },
@@ -113,6 +127,8 @@ class RawTasksClient:
                     started_at=started_at,
                     ended_at=ended_at,
                     status=status,
+                    client_task_id=client_task_id,
+                    batch_id=batch_id,
                     page=page + 1,
                     page_limit=page_limit,
                     request_options=request_options,
@@ -122,6 +138,39 @@ class RawTasksClient:
                 )
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -143,6 +192,8 @@ class RawTasksClient:
         model_name: CreateAsyncEmbeddingRequestModelName,
         embedding_uncertainty: typing.Optional[bool] = OMIT,
         embedding_dimension: typing.Optional[int] = OMIT,
+        service_tier: typing.Optional[EmbeddingServiceTier] = OMIT,
+        client_task_id: typing.Optional[ClientEmbeddingTaskId] = OMIT,
         audio: typing.Optional[AsyncAudioInputRequest] = OMIT,
         video: typing.Optional[AsyncVideoInputRequest] = OMIT,
         document: typing.Optional[AsyncDocumentInputRequest] = OMIT,
@@ -159,12 +210,11 @@ class RawTasksClient:
         Creating embeddings asynchronously requires three steps:
 
         1. Create a task using this method. The platform returns a task identifier.
-        2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-        3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
+        2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Stop when the status is `ready`, `failed`, or `canceled`.
+        3. When the status is `ready`, read the embeddings from that response. When the status is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
 
         <Note title="Notes">
-        - Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         - Embeddings are stored for seven days.
         </Note>
 
@@ -202,10 +252,15 @@ class RawTasksClient:
             **Requirements**:
             - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
             - Applies to the entire task: you cannot set it for a single input type or embedding.
+            - For audio or video input, a fused embedding with the `asset` scope requires `512`. If the `embedding_type` field includes `fused_embedding` and the `embedding_scope` field includes `asset`, a task with `128` or `256` fails with the `UNSUPPORTED_COMBINATION` error code. The platform does not return the supported outputs alone.
             - Set it once, when you create the task. To use a different value, create a new task.
             - Use the same value across an index.
 
             **Default**: 512
+
+        service_tier : typing.Optional[EmbeddingServiceTier]
+
+        client_task_id : typing.Optional[ClientEmbeddingTaskId]
 
         audio : typing.Optional[AsyncAudioInputRequest]
 
@@ -231,6 +286,8 @@ class RawTasksClient:
                 "model_name": model_name,
                 "embedding_uncertainty": embedding_uncertainty,
                 "embedding_dimension": embedding_dimension,
+                "service_tier": service_tier,
+                "client_task_id": client_task_id,
                 "audio": convert_and_respect_annotation_metadata(
                     object_=audio, annotation=AsyncAudioInputRequest, direction="write"
                 ),
@@ -271,6 +328,72 @@ class RawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 413:
+                raise ContentTooLargeError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 429:
                 raise TooManyRequestsError(
                     headers=dict(_response.headers),
@@ -293,6 +416,17 @@ class RawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -304,10 +438,12 @@ class RawTasksClient:
         """
         This method retrieves the status and the results of an async embedding task.
 
-        Invoke this method repeatedly until the `status` field is `ready` or `failed`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason.
+        Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field.
 
         <Note title="Note">
-        Embeddings are stored for seven days.
+        Embeddings of a task that is not part of a batch are stored for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+
+        A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
         </Note>
 
         Parameters
@@ -338,8 +474,179 @@ class RawTasksClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[CancelEmbeddingTaskResponse]:
+        """
+        This method cancels a task that is not part of a batch while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the embedding task.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[CancelEmbeddingTaskResponse]
+            The task has been successfully canceled or was already canceled.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"embed-v2/tasks/{jsonable_encoder(task_id)}/cancel",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    CancelEmbeddingTaskResponse,
+                    parse_obj_as(
+                        type_=CancelEmbeddingTaskResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -364,42 +671,43 @@ class AsyncRawTasksClient:
         *,
         started_at: typing.Optional[str] = None,
         ended_at: typing.Optional[str] = None,
-        status: typing.Optional[str] = None,
+        status: typing.Optional[TasksListRequestStatus] = None,
+        client_task_id: typing.Optional[ClientEmbeddingTaskId] = None,
+        batch_id: typing.Optional[str] = None,
         page: typing.Optional[int] = None,
         page_limit: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[MediaEmbeddingTask]:
         """
-        This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the async embedding tasks in your account, including tasks created as part of a batch. The platform returns tasks sorted by creation date, with the newest at the top of the list. The `custom_id` field of a task created as part of a batch is unique only within one batch, identified by the `batch_id` field.
 
         <Note title="Notes">
-        - Embeddings are stored for seven days.
-        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        - Embeddings of a task that is not part of a batch are stored for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. With the `batch_id` query parameter, this method lists all retained tasks created as part of that batch. Explicit time filters still apply. No filter limits the list to tasks that are not part of a batch.
         </Note>
 
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
-        status : typing.Optional[str]
-            Filter the embedding tasks by their current status.
+        status : typing.Optional[TasksListRequestStatus]
+            Filter async embedding tasks by their current status.
 
-            **Values**: `processing`, `ready`, or `failed`.
+        client_task_id : typing.Optional[ClientEmbeddingTaskId]
+            Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique among your tasks. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
+
+        batch_id : typing.Optional[str]
+            Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
 
-            **Default**: `1`.
-
         page_limit : typing.Optional[int]
             The number of items to return on each page.
-
-            **Default**: `10`.
-            **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -418,6 +726,8 @@ class AsyncRawTasksClient:
                 "started_at": started_at,
                 "ended_at": ended_at,
                 "status": status,
+                "client_task_id": client_task_id,
+                "batch_id": batch_id,
                 "page": page,
                 "page_limit": page_limit,
             },
@@ -440,6 +750,8 @@ class AsyncRawTasksClient:
                         started_at=started_at,
                         ended_at=ended_at,
                         status=status,
+                        client_task_id=client_task_id,
+                        batch_id=batch_id,
                         page=page + 1,
                         page_limit=page_limit,
                         request_options=request_options,
@@ -450,6 +762,39 @@ class AsyncRawTasksClient:
                 )
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -471,6 +816,8 @@ class AsyncRawTasksClient:
         model_name: CreateAsyncEmbeddingRequestModelName,
         embedding_uncertainty: typing.Optional[bool] = OMIT,
         embedding_dimension: typing.Optional[int] = OMIT,
+        service_tier: typing.Optional[EmbeddingServiceTier] = OMIT,
+        client_task_id: typing.Optional[ClientEmbeddingTaskId] = OMIT,
         audio: typing.Optional[AsyncAudioInputRequest] = OMIT,
         video: typing.Optional[AsyncVideoInputRequest] = OMIT,
         document: typing.Optional[AsyncDocumentInputRequest] = OMIT,
@@ -487,12 +834,11 @@ class AsyncRawTasksClient:
         Creating embeddings asynchronously requires three steps:
 
         1. Create a task using this method. The platform returns a task identifier.
-        2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Wait until the status is `ready`.
-        3. Retrieve the embeddings from the response when the status is `ready` using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint.
+        2. Poll for the status of the task using the [`GET`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings) method of the `/embed-v2/tasks/{task_id}` endpoint. Stop when the status is `ready`, `failed`, or `canceled`.
+        3. When the status is `ready`, read the embeddings from that response. When the status is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
 
         <Note title="Notes">
-        - Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         - Embeddings are stored for seven days.
         </Note>
 
@@ -530,10 +876,15 @@ class AsyncRawTasksClient:
             **Requirements**:
             - Requires Marengo 3.5. Setting this parameter with `model_name: marengo3.0` returns a `400` error.
             - Applies to the entire task: you cannot set it for a single input type or embedding.
+            - For audio or video input, a fused embedding with the `asset` scope requires `512`. If the `embedding_type` field includes `fused_embedding` and the `embedding_scope` field includes `asset`, a task with `128` or `256` fails with the `UNSUPPORTED_COMBINATION` error code. The platform does not return the supported outputs alone.
             - Set it once, when you create the task. To use a different value, create a new task.
             - Use the same value across an index.
 
             **Default**: 512
+
+        service_tier : typing.Optional[EmbeddingServiceTier]
+
+        client_task_id : typing.Optional[ClientEmbeddingTaskId]
 
         audio : typing.Optional[AsyncAudioInputRequest]
 
@@ -559,6 +910,8 @@ class AsyncRawTasksClient:
                 "model_name": model_name,
                 "embedding_uncertainty": embedding_uncertainty,
                 "embedding_dimension": embedding_dimension,
+                "service_tier": service_tier,
+                "client_task_id": client_task_id,
                 "audio": convert_and_respect_annotation_metadata(
                     object_=audio, annotation=AsyncAudioInputRequest, direction="write"
                 ),
@@ -599,6 +952,72 @@ class AsyncRawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 413:
+                raise ContentTooLargeError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 429:
                 raise TooManyRequestsError(
                     headers=dict(_response.headers),
@@ -621,6 +1040,17 @@ class AsyncRawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -632,10 +1062,12 @@ class AsyncRawTasksClient:
         """
         This method retrieves the status and the results of an async embedding task.
 
-        Invoke this method repeatedly until the `status` field is `ready` or `failed`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason.
+        Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field.
 
         <Note title="Note">
-        Embeddings are stored for seven days.
+        Embeddings of a task that is not part of a batch are stored for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+
+        A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
         </Note>
 
         Parameters
@@ -666,8 +1098,179 @@ class AsyncRawTasksClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def cancel(
+        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[CancelEmbeddingTaskResponse]:
+        """
+        This method cancels a task that is not part of a batch while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+
+        Parameters
+        ----------
+        task_id : str
+            The unique identifier of the embedding task.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[CancelEmbeddingTaskResponse]
+            The task has been successfully canceled or was already canceled.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"embed-v2/tasks/{jsonable_encoder(task_id)}/cancel",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    CancelEmbeddingTaskResponse,
+                    parse_obj_as(
+                        type_=CancelEmbeddingTaskResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

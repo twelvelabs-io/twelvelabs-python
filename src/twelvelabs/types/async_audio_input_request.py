@@ -83,7 +83,7 @@ class AsyncAudioInputRequest(UniversalBaseModel):
 
     embedding_type: typing.Optional[typing.List[AsyncAudioInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
     """
-    Specifies how to structure the embedding. Include this parameter only when the `embedding_option` parameter contains at least two values.
+    Specifies how to structure the embeddings. `separate_embedding` accepts one or more embedding options and returns them separately; it does not require multiple options.
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.

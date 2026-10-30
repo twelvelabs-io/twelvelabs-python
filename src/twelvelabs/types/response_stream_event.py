@@ -26,9 +26,18 @@ class ResponseStreamEvent_ResponseCreated(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -66,9 +75,18 @@ class ResponseStreamEvent_ResponseInProgress(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -106,9 +124,18 @@ class ResponseStreamEvent_ResponseCompleted(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -146,9 +173,18 @@ class ResponseStreamEvent_ResponseFailed(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -186,9 +222,18 @@ class ResponseStreamEvent_ResponseOutputItemAdded(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -227,9 +272,18 @@ class ResponseStreamEvent_ResponseContentPartAdded(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -270,9 +324,18 @@ class ResponseStreamEvent_ResponseOutputTextDelta(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -313,9 +376,18 @@ class ResponseStreamEvent_ResponseOutputTextDone(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -356,9 +428,18 @@ class ResponseStreamEvent_ResponseContentPartDone(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -399,9 +480,18 @@ class ResponseStreamEvent_ResponseOutputItemDone(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -440,9 +530,18 @@ class ResponseStreamEvent_ResponseFunctionCallArgumentsDone(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -467,7 +566,7 @@ class ResponseStreamEvent_ResponseFunctionCallArgumentsDone(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-class ResponseStreamEvent_Keepalive(UniversalBaseModel):
+class ResponseStreamEvent_JockeyWebSearchInProgress(UniversalBaseModel):
     """
     A Server-Sent Event emitted during a streaming response.
     Events use [Open Responses streaming](https://www.openresponses.org/specification#streaming) conventions.
@@ -482,9 +581,18 @@ class ResponseStreamEvent_Keepalive(UniversalBaseModel):
     - `response.content_part.done` — A content part is finalized.
     - `response.function_call_arguments.done` — Function call arguments are complete.
     - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
     - `response.completed` — The response is complete.
     - `response.failed` — The response has failed.
-    - `keepalive` — Heartbeat sent periodically while no other events are being emitted (for example, during a long tool call). It contains no response data and can be ignored.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
 
     The stream ends with a `data: [DONE]` message.
 
@@ -493,7 +601,109 @@ class ResponseStreamEvent_Keepalive(UniversalBaseModel):
     of the values above, to stay forward-compatible with new event types.
     """
 
-    type: typing.Literal["keepalive"] = "keepalive"
+    type: typing.Literal["jockey:web_search.in_progress"] = "jockey:web_search.in_progress"
+    item_id: str
+    output_index: int
+    sequence_number: int
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
+class ResponseStreamEvent_JockeyWebSearchSearching(UniversalBaseModel):
+    """
+    A Server-Sent Event emitted during a streaming response.
+    Events use [Open Responses streaming](https://www.openresponses.org/specification#streaming) conventions.
+
+    The stream consists of events with a `type` field indicating the event kind:
+    - `response.created` — Initial event with the response object in `in_progress` state.
+    - `response.in_progress` — The response is being generated.
+    - `response.output_item.added` — A new output item has started.
+    - `response.content_part.added` — A new content part has started within a message.
+    - `response.output_text.delta` — An incremental text chunk.
+    - `response.output_text.done` — Text streaming for a content part is complete.
+    - `response.content_part.done` — A content part is finalized.
+    - `response.function_call_arguments.done` — Function call arguments are complete.
+    - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
+    - `response.completed` — The response is complete.
+    - `response.failed` — The response has failed.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
+
+    The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
+    """
+
+    type: typing.Literal["jockey:web_search.searching"] = "jockey:web_search.searching"
+    item_id: str
+    output_index: int
+    sequence_number: int
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
+class ResponseStreamEvent_JockeyWebSearchCompleted(UniversalBaseModel):
+    """
+    A Server-Sent Event emitted during a streaming response.
+    Events use [Open Responses streaming](https://www.openresponses.org/specification#streaming) conventions.
+
+    The stream consists of events with a `type` field indicating the event kind:
+    - `response.created` — Initial event with the response object in `in_progress` state.
+    - `response.in_progress` — The response is being generated.
+    - `response.output_item.added` — A new output item has started.
+    - `response.content_part.added` — A new content part has started within a message.
+    - `response.output_text.delta` — An incremental text chunk.
+    - `response.output_text.done` — Text streaming for a content part is complete.
+    - `response.content_part.done` — A content part is finalized.
+    - `response.function_call_arguments.done` — Function call arguments are complete.
+    - `response.output_item.done` — An output item is finalized.
+    - `jockey:web_search.in_progress` — A hosted search call is in progress.
+    - `jockey:web_search.searching` — A hosted search call is searching.
+    - `jockey:web_search.completed` — A hosted search call reports completion.
+    - `response.completed` — The response is complete.
+    - `response.failed` — The response has failed.
+
+    Hosted-search progress events are included only when the request sets
+    `include: ["intermediate_outputs"]`. Match `item_id` to the corresponding
+    `jockey:web_search` output item and read query text from that item's `action.queries`.
+    Not every search emits every phase. Some searches emit only item events.
+    Do not require a `searching` or `completed` progress event to process the response.
+    You can ignore progress events and reconstruct the output from standard item events and the final response.
+
+    The stream ends with a `data: [DONE]` message.
+
+    Events are identified by `type` alone and have no `object` field, unlike the
+    response object. Consumers must ignore frames whose `type` doesn't match one
+    of the values above, to stay forward-compatible with new event types.
+    """
+
+    type: typing.Literal["jockey:web_search.completed"] = "jockey:web_search.completed"
+    item_id: str
+    output_index: int
     sequence_number: int
 
     if IS_PYDANTIC_V2:
@@ -518,5 +728,7 @@ ResponseStreamEvent = typing.Union[
     ResponseStreamEvent_ResponseContentPartDone,
     ResponseStreamEvent_ResponseOutputItemDone,
     ResponseStreamEvent_ResponseFunctionCallArgumentsDone,
-    ResponseStreamEvent_Keepalive,
+    ResponseStreamEvent_JockeyWebSearchInProgress,
+    ResponseStreamEvent_JockeyWebSearchSearching,
+    ResponseStreamEvent_JockeyWebSearchCompleted,
 ]

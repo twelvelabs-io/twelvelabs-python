@@ -3,26 +3,41 @@
 # isort: skip_file
 
 from .types import CreateEmbeddingsRequestInputType, CreateEmbeddingsRequestModelName
-from . import tasks
+from . import batches, tasks
+from .batches import (
+    BatchesListRequestStatus,
+    CreateEmbeddingBatchRequestInputType,
+    CreateEmbeddingBatchRequestModelName,
+    CreateEmbeddingBatchRequestServiceTier,
+)
 from .tasks import (
     CreateAsyncEmbeddingRequestInputType,
     CreateAsyncEmbeddingRequestModelName,
     TasksCreateResponse,
     TasksCreateResponseMetadata,
     TasksCreateResponseStatus,
+    TasksCreateResponseStatusZero,
+    TasksListRequestStatus,
     TasksListResponse,
     TasksListResponsePageInfo,
 )
 
 __all__ = [
+    "BatchesListRequestStatus",
     "CreateAsyncEmbeddingRequestInputType",
     "CreateAsyncEmbeddingRequestModelName",
+    "CreateEmbeddingBatchRequestInputType",
+    "CreateEmbeddingBatchRequestModelName",
+    "CreateEmbeddingBatchRequestServiceTier",
     "CreateEmbeddingsRequestInputType",
     "CreateEmbeddingsRequestModelName",
     "TasksCreateResponse",
     "TasksCreateResponseMetadata",
     "TasksCreateResponseStatus",
+    "TasksCreateResponseStatusZero",
+    "TasksListRequestStatus",
     "TasksListResponse",
     "TasksListResponsePageInfo",
+    "batches",
     "tasks",
 ]

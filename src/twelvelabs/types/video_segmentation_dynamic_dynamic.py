@@ -11,7 +11,7 @@ class VideoSegmentationDynamicDynamic(UniversalBaseModel):
     Configuration for dynamic segmentation. This object is required when `strategy` is `dynamic`.
     """
 
-    min_duration_sec: int = pydantic.Field()
+    min_duration_sec: float = pydantic.Field()
     """
     The minimum duration in seconds for each segment.
     

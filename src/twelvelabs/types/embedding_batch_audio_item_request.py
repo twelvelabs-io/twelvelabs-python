@@ -4,22 +4,13 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .embedding_batch_audio_input_request import EmbeddingBatchAudioInputRequest
+from .embedding_batch_item_custom_id import EmbeddingBatchItemCustomId
 
 
-class ResponseUsage(UniversalBaseModel):
-    """
-    Token usage statistics.
-    """
-
-    input_tokens: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    The number of input tokens consumed.
-    """
-
-    output_tokens: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    The number of output tokens generated.
-    """
+class EmbeddingBatchAudioItemRequest(UniversalBaseModel):
+    custom_id: EmbeddingBatchItemCustomId
+    audio: EmbeddingBatchAudioInputRequest
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -6,75 +6,39 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .response_output_content_part import ResponseOutputContentPart
 from .response_output_item_role import ResponseOutputItemRole
-from .response_output_item_type import ResponseOutputItemType
-from .response_status import ResponseStatus
+from .web_search_action import WebSearchAction
 
 
 class ResponseOutputItem(UniversalBaseModel):
     """
-    An item in the response output. Items are polymorphic and discriminated by the `type` field.
+    An item in the response output. Use `type` to distinguish messages,
+    function calls, function results, and hosted web-search calls.
+    An item has the same `id` in streaming events and the final response.
     """
 
-    type: ResponseOutputItemType = pydantic.Field()
+    type: str = pydantic.Field()
     """
     The type of output item.
     """
 
     id: str = pydantic.Field()
     """
-    A unique identifier for this item.
+    The unique identifier of this output item within the response.
     """
 
-    status: ResponseStatus
-    role: typing.Optional[ResponseOutputItemRole] = pydantic.Field(default=None)
+    status: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The role of the message author. Present when `type` is `message`.
-    """
-
-    phase: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Which part of the turn this message contains: intermediate output or the
-    answer. Present when the `type` field is `message`.
-    
-    A turn can produce intermediate messages before the answer, such as a
-    message that describes the steps Jockey is taking. The `commentary` value
-    identifies an intermediate message, and the `final_answer` value
-    identifies the answer.
-    
-    The output contains intermediate output only when the request sets the
-    `include` parameter to `["intermediate_outputs"]`. By default, the output
-    contains the answer only.
-    
-    Treat a message without the `phase` field as the final answer.
-    
-    Treat an unrecognized `phase` value as intermediate output, not as the
-    answer.
+    The last reported lifecycle status of the output item.
     """
 
-    content: typing.Optional[typing.List[ResponseOutputContentPart]] = pydantic.Field(default=None)
-    """
-    The content parts of the message. Present when `type` is `message`.
-    """
-
-    name: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The name of the function. Present when `type` is `function_call`.
-    """
-
-    call_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The unique identifier for the function call. Present when `type` is `function_call`.
-    """
-
-    arguments: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The JSON-encoded arguments for the function call. Present when `type` is `function_call`.
-    """
-
-    output: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The function call output. Present when `type` is `function_call_output`.
-    """
+    role: typing.Optional[ResponseOutputItemRole] = None
+    phase: typing.Optional[str] = None
+    content: typing.Optional[typing.List[ResponseOutputContentPart]] = None
+    name: typing.Optional[str] = None
+    call_id: typing.Optional[str] = None
+    arguments: typing.Optional[str] = None
+    output: typing.Optional[str] = None
+    action: typing.Optional[WebSearchAction] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -13,7 +13,7 @@ class AudioSegmentationFixed(UniversalBaseModel):
     This object is required when the `strategy` field is `fixed`.
     """
 
-    duration_sec: int = pydantic.Field()
+    duration_sec: float = pydantic.Field()
     """
     The duration in seconds for each segment. The platform divides the audio into segments of this exact length. The final segment may be shorter if the audio duration is not evenly divisible.
     
