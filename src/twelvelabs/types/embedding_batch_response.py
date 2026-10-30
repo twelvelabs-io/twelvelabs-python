@@ -10,7 +10,7 @@ from .embedding_batch_summary import EmbeddingBatchSummary
 
 class EmbeddingBatchResponse(EmbeddingBatchSummary):
     """
-    The batch summary and its per-item task mapping.
+    A batch object that includes the status and task identifier of each item.
     """
 
     items: typing.List[EmbeddingBatchItem] = pydantic.Field()

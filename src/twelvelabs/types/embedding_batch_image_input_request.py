@@ -14,7 +14,7 @@ from .media_source import MediaSource
 
 class EmbeddingBatchImageInputRequest(UniversalBaseModel):
     """
-    Identifies the image file to embed. The file size limit is the same as for a task that is not part of a batch. See the [`image`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.image) field of the `POST` method of the `/embed-v2/tasks` endpoint.
+    Identifies the image file to embed. The file size limit is the same as for a task that is not part of a batch. See the [`image`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.image) field of the `POST` method of the `/embed-v2/tasks` endpoint. The size limit of the request body also applies to Base64 media. See the `413` response.
     """
 
     embedding_option: typing.Optional[typing.List[EmbeddingBatchImageInputRequestEmbeddingOptionItem]] = pydantic.Field(

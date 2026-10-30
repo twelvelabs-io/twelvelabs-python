@@ -13,7 +13,7 @@ class EmbeddingBatchValidationError(UniversalBaseModel):
 
     code: str = pydantic.Field()
     """
-    A machine-readable request error code. An example is `parameter_invalid`.
+    A machine-readable code that identifies the error. An example is `parameter_invalid`. For details, see the [Error codes](/v1.3/api-reference/error-codes) page.
     """
 
     message: str = pydantic.Field()
@@ -28,12 +28,12 @@ class EmbeddingBatchValidationError(UniversalBaseModel):
 
     item_index: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The zero-based index of the first invalid item.
+    The zero-based position, in the `requests` array, of the first invalid item. Present only when the error is in an item.
     """
 
     custom_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The string identifier supplied for the first invalid item, even when it fails the identifier format check. For malformed JSON or a non-string identifier, the platform cannot always return it.
+    The `custom_id` value of the first invalid item, as you sent it. The response includes it even if the format is invalid. The response can omit this field for malformed JSON or for a value that is not a string.
     """
 
     if IS_PYDANTIC_V2:

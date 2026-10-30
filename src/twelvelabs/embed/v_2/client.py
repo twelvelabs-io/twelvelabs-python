@@ -97,7 +97,7 @@ class V2Client:
             Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
             **Requirements**:
-            - Set this parameter to `true` only for a text-only request or a single image. Combining text with media, supplying multiple media sources, or supplying audio/video returns a `400` error.
+            - Uncertainty vectors are supported for text-only input or a single image. For `multi_input`, provide `input_text` without `media_sources`, or one image source without `input_text`. Combining text with media, supplying multiple media sources, or using an audio/video source in `multi_input` returns a `400` error.
             - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
 
         embedding_dimension : typing.Optional[int]
@@ -240,7 +240,7 @@ class AsyncV2Client:
             Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
             **Requirements**:
-            - Set this parameter to `true` only for a text-only request or a single image. Combining text with media, supplying multiple media sources, or supplying audio/video returns a `400` error.
+            - Uncertainty vectors are supported for text-only input or a single image. For `multi_input`, provide `input_text` without `media_sources`, or one image source without `input_text`. Combining text with media, supplying multiple media sources, or using an audio/video source in `multi_input` returns a `400` error.
             - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
 
         embedding_dimension : typing.Optional[int]

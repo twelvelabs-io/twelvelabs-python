@@ -13,7 +13,7 @@ class TemporalSegmentationFixedFixed(UniversalBaseModel):
 
     duration_sec: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The duration in seconds for each segment. The platform divides the file into segments of this exact length. The final segment may be shorter if the duration is not evenly divisible.
+    The duration in seconds for each segment. The platform divides the file into segments of this exact length. The final segment may be shorter if the file duration is not evenly divisible.
     
     **Default**: `6`.
     **Min**: `2`.

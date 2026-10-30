@@ -9684,7 +9684,7 @@ Controls the behavior of the platform when the text in your request exceeds 2,00
 Set this parameter to `true` to include a per-dimension uncertainty vector in the [`data[].embedding_uncertainty`](/v1.3/api-reference/create-embeddings-v2/create-embeddings#response.body.data.embedding-uncertainty) field of the response. The vector has the same length as the `embedding` array. A higher value indicates lower confidence in that dimension. Requires Marengo 3.5.
 
 **Requirements**:
-- Set this parameter to `true` only for a text-only request or a single image. Combining text with media, supplying multiple media sources, or supplying audio/video returns a `400` error.
+- Uncertainty vectors are supported for text-only input or a single image. For `multi_input`, provide `input_text` without `media_sources`, or one image source without `input_text`. Combining text with media, supplying multiple media sources, or using an audio/video source in `multi_input` returns a `400` error.
 - The platform returns a `400` error if your request includes a document, whether PDF, plain text, or Markdown.
     
 </dd>
@@ -9788,8 +9788,8 @@ Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the 
 This method returns a list of the async embedding tasks in your account, including tasks created as part of a batch. The platform returns tasks sorted by creation date, with the newest at the top of the list. The `custom_id` field of a task created as part of a batch is unique only within one batch, identified by the `batch_id` field.
 
 <Note title="Notes">
-- Embeddings of a task that is not part of a batch are available through the API for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier.
-- Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. Supplying the `batch_id` query parameter removes that default seven-day time window so all retained tasks created as part of that batch can be listed. Explicit time filters still apply. There is no filter that limits the list to tasks that are not part of a batch; without the `batch_id` query parameter, the list can include tasks created as part of a batch.
+- Embeddings of a task that is not part of a batch are stored for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+- Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. With the `batch_id` query parameter, this method lists all retained tasks created as part of that batch. Explicit time filters still apply. No filter limits the list to tasks that are not part of a batch.
 </Note>
 </dd>
 </dl>
@@ -9863,7 +9863,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**client_task_id:** `typing.Optional[ClientEmbeddingTaskId]` — Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique within your account. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
+**client_task_id:** `typing.Optional[ClientEmbeddingTaskId]` — Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique among your tasks. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
     
 </dd>
 </dl>
@@ -9871,7 +9871,7 @@ for page in response.iter_pages():
 <dl>
 <dd>
 
-**batch_id:** `typing.Optional[str]` — Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier.
+**batch_id:** `typing.Optional[str]` — Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
     
 </dd>
 </dl>
@@ -10118,10 +10118,10 @@ Marengo 3.5 produces Matryoshka embeddings: a shorter embedding consists of the 
 
 This method retrieves the status and the results of an async embedding task.
 
-Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field. For Marengo 3.5 Flex tasks, the `expires_at` field marks the end of the 24-hour processing window; a task still incomplete then becomes `canceled` with the `deadline_exceeded` value in the `cancellation_reason` field. Work already running can continue, but a late result does not replace the final status or produce successful-task billing.
+Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field.
 
 <Note title="Note">
-Embeddings of a task that is not part of a batch are available through the API for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier. A task created as part of a batch returns the `batch_id` field and a `custom_id` field that is unique only within the batch.
+Embeddings of a task that is not part of a batch are stored for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
 A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
 </Note>
@@ -10194,7 +10194,7 @@ client.embed.v_2.tasks.retrieve(
 <dl>
 <dd>
 
-This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+This method cancels a task that is not part of a batch while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
 </dd>
 </dl>
 </dd>
@@ -10376,34 +10376,34 @@ The number of batches to return on each page.
 <dl>
 <dd>
 
-Use this method to create multiple embeddings in a single call. Each item creates an embedding task. Requires Marengo 3.5.
+Use this method to submit many embedding requests in a single call. Each request creates an embedding task. The response contains one batch identifier and one task identifier per request. Use the batch identifier to check progress and retrieve results. Requires Marengo 3.5 and the Plus, Pro, or Enterprise plan.
 
 **When to use this method**:
-- Embed multiple items with the same settings. All items in a batch have the same input type: `audio`, `video`, `document`, or `image`. To embed more than one input type, create one batch for each type.
-- Track one batch instead of multiple tasks.
+- Embed many items with the same settings.
+- Track one batch instead of many tasks.
 
 **Do not use this method for**:
-- Results you need by a set time. Batch items use the Flex service tier. The platform starts them with capacity that other tasks do not use, and it does not guarantee a start time or a completion time. Create a separate task for each item with the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead. To use a tier other than Flex, set the `service_tier` field to the `standard` or `priority` value.
+- Results you need in the same request. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint for synchronous embedding instead.
 - One item. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint instead.
-- Results in the same request. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-embeddings) method of the `/embed-v2` endpoint for synchronous embedding instead.
+- Results you need by a set time. Batch items use the Flex service tier, which does not guarantee a start time or a completion time. Use the [`POST`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task) method of the `/embed-v2/tasks` endpoint with the `standard` or `priority` service tier instead.
 
-**Validation**:
-- An invalid request returns `400` and creates no batch or task.
-- A source failure found while the platform accepts the batch fails that item's task. The rest of the batch continues.
-- After the platform accepts the batch, it checks the file at each video or audio URL, the duration of the media, and the number of pages in each PDF. If an item fails one of these checks, its task has the `failed` status.
+**Item failures**:
+- An item that fails a check has the `failed` status. The other items continue.
+- The `201` response shows the failures that the platform finds when it accepts the batch. It checks the file at each video or audio URL, the duration of the media, and the number of pages in each PDF later. To see these failures, use the [`GET`](/v1.3/api-reference/create-embeddings-v2/batches/retrieve-batch-status) method of the `/embed-v2/batches/{batch_id}` endpoint.
 
-**Retention**:
+**Retention, retry, and billing**:
 - The processing window is 24 hours from creation. If it ends while items are unfinished, the batch has the `expired` status, and the platform cancels those items.
-- Batches, tasks, and results are available through the API for up to 30 days after creation. Deleting a batch with a final status ends access to its tasks and results earlier.
-- Only ready items are billed.
+- To process canceled items, submit them in a new batch.
+- You can retrieve the batch, its tasks, and its results for 30 days after creation.
+- Only `ready` items are billed.
 
 **Limits**:
-- A batch contains 1 to 1,000 items.
-- For the formats, resolutions, file sizes, and duration limits of each item, see the input requirements for [Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements).
-- The configured request body limit covers the entire JSON body, including base64 media. It is separate from the size limit of each media file. If the API rejects a body with `413`, its error message reports the configured limit in bytes. Use a URL or supported `asset_id` for media that does not fit.
-- A shared limit applies to unfinished Flex tasks in your account, including tasks that are not part of a batch. A canceled task can count until the platform records its final status. A request that exceeds this limit returns `429`.
-- When a request-count limit applies, each request to create a batch counts once, regardless of the number of items it contains. The limit is shared with requests that create a task that is not part of a batch. A request that fails before the platform accepts the batch does not count.
-- Input-token limits count the usage of completed work, and the platform does not reserve the tokens of a batch when you create it. Items already accepted can finish and take usage above a limit, and a later create request can then return `429`.
+- Up to 1,000 requests per batch.
+- The [input requirements of Marengo 3.5](/v1.3/docs/concepts/models/marengo/marengo-3-5#input-requirements) apply to each item.
+- The request body has a size limit that includes Base64 media. The `message` field of the `413` response includes the limit in bytes. For larger media, use a URL or an asset identifier.
+- Unfinished Flex tasks have a shared limit. Each item in a batch counts as one task, as does each task outside a batch. A request that exceeds the limit returns `429`.
+- A request to create a batch counts as one request toward a request-count limit, regardless of the number of items. The limit is shared with requests that create a task outside a batch.
+- Input-token limits count completed work. The platform does not reserve tokens when you create a batch, so accepted items can finish above a limit. A later create request can then return `429`.
 </dd>
 </dl>
 </dd>
@@ -10473,14 +10473,7 @@ client.embed.v_2.batches.create(
 <dl>
 <dd>
 
-**service_tier:** `CreateEmbeddingBatchRequestServiceTier` 
-
-The [service tier](/v1.3/docs/advanced/service-tiers) for every item in this batch.
-
-**Values**:
-- `flex`: Uses capacity that other tasks do not use. Processing ends 24 hours after the platform accepts the task. The platform cancels a task that is not complete by then.
-
-Use the `standard` and `priority` values only for a task that is not part of a batch.
+**service_tier:** `CreateEmbeddingBatchRequestServiceTier` — The [service tier](/v1.3/docs/advanced/service-tiers) for every item in this batch. The only valid value is `flex`, which uses capacity that other tasks do not use. Processing ends 24 hours after the batch is created. The platform cancels items that are not complete by then. Any other value returns `400`.
     
 </dd>
 </dl>
@@ -10488,7 +10481,7 @@ Use the `standard` and `priority` values only for a task that is not part of a b
 <dl>
 <dd>
 
-**input_type:** `CreateEmbeddingBatchRequestInputType` — The input type for every item in this batch.
+**input_type:** `CreateEmbeddingBatchRequestInputType` — The input type for every item in this batch. To embed more than one input type, create one batch for each type.
     
 </dd>
 </dl>
@@ -10496,7 +10489,7 @@ Use the `standard` and `priority` values only for a task that is not part of a b
 <dl>
 <dd>
 
-**requests:** `typing.Sequence[EmbeddingBatchItemRequest]` — The embedding requests in the batch. Provide 1 to 1,000 requests. In each request, set only the field that matches the `input_type` field: `audio`, `video`, `document`, or `image`.
+**requests:** `typing.Sequence[EmbeddingBatchItemRequest]` — The embedding requests in the batch. Provide 1 to 1,000 requests.
     
 </dd>
 </dl>
@@ -10626,7 +10619,7 @@ Deleting a batch does not affect billing. You are billed for every item that com
 
 To stop a batch with the `pending` or `processing` status, use the [`POST`](/v1.3/api-reference/create-embeddings-v2/batches/cancel-batch) method of the `/embed-v2/batches/{batch_id}/cancel` endpoint, and wait for the batch to reach a final status.
 
-Batches and their results are available through the API for 30 days after creation.
+Batches and their results are available for 30 days after creation.
 </dd>
 </dl>
 </dd>

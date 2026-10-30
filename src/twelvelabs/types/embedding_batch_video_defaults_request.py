@@ -37,14 +37,14 @@ class EmbeddingBatchVideoDefaultsRequest(UniversalBaseModel):
 
     segmentation: typing.Optional[AsyncTemporalSegmentation] = pydantic.Field(default=None)
     """
-    Specifies how the platform divides the video into segments for every item. For the structure and defaults, see the [`segmentation`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.video.segmentation) field of the `POST` method of the `/embed-v2/tasks` endpoint.
+    Specifies how the platform divides the video into segments for every item. Place the settings in the `temporal` object. For the strategies and defaults, see the [`segmentation`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.video.segmentation) field of the `POST` method of the `/embed-v2/tasks` endpoint. The structure for Marengo 3.0 on that page does not apply to a batch.
     """
 
     embedding_option: typing.Optional[typing.List[EmbeddingBatchVideoDefaultsRequestEmbeddingOptionItem]] = (
         pydantic.Field(default=None)
     )
     """
-    The types of embeddings to generate for every item. For the values and defaults, see the [`embedding_option`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.video.embedding_option) field of the `POST` method of the `/embed-v2/tasks` endpoint.
+    The types of embeddings to generate for every item. A batch accepts only the `visual` and `audio` values. For their meaning and the default, see the [`embedding_option`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.video.embedding_option) field of the `POST` method of the `/embed-v2/tasks` endpoint.
     """
 
     embedding_scope: typing.Optional[typing.List[EmbeddingBatchVideoDefaultsRequestEmbeddingScopeItem]] = (

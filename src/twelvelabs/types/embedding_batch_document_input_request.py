@@ -19,7 +19,7 @@ from .media_source import MediaSource
 
 class EmbeddingBatchDocumentInputRequest(UniversalBaseModel):
     """
-    Identifies the document to embed. The accepted file types, the file size limit, the page allowance for a PDF file, and the valid combinations of the `embedding_option` and `embedding_scope` fields are the same as for a task that is not part of a batch. See the [`document`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.document) field of the `POST` method of the `/embed-v2/tasks` endpoint. A PDF file that exceeds the page allowance fails the task of its item during processing.
+    Identifies the document to embed. The accepted file types, the file size limit, the page allowance for a PDF file, and the valid combinations of the `embedding_option` and `embedding_scope` fields are the same as for a task that is not part of a batch. See the [`document`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.document) field of the `POST` method of the `/embed-v2/tasks` endpoint. In a batch, a combination that does not fit the type of the file fails only that item. For example, a plain text file with `embedding_option: ["visual"]` fails with the `UNSUPPORTED_COMBINATION` code. The size limit of the request body also applies to Base64 media. See the `413` response. A PDF file that exceeds the page allowance fails the task of its item during processing. The `segmentation` field overrides the `defaults.document.segmentation` value for this item. The platform replaces the entire default object.
     """
 
     embedding_option: typing.Optional[typing.List[EmbeddingBatchDocumentInputRequestEmbeddingOptionItem]] = (

@@ -15,7 +15,7 @@ from .webhook_delivery_info import WebhookDeliveryInfo
 
 class EmbeddingBatchSummary(UniversalBaseModel):
     """
-    The batch status and item counts.
+    A batch object that includes the status and the item counts.
     """
 
     batch_id: str = pydantic.Field()
@@ -35,7 +35,7 @@ class EmbeddingBatchSummary(UniversalBaseModel):
 
     service_tier: EmbeddingBatchSummaryServiceTier = pydantic.Field()
     """
-    The service tier applied to every item in this batch.
+    The [service tier](/v1.3/docs/advanced/service-tiers) applied to every item in this batch.
     """
 
     input_type: EmbeddingBatchSummaryInputType = pydantic.Field()
@@ -46,7 +46,7 @@ class EmbeddingBatchSummary(UniversalBaseModel):
     status: EmbeddingBatchStatus
     total_items: int = pydantic.Field()
     """
-    The number of items submitted in the batch. The value equals the sum of the five status counts.
+    The number of items submitted in the batch. The value equals the sum of the five item counts.
     """
 
     queued_items: int = pydantic.Field()
@@ -66,12 +66,12 @@ class EmbeddingBatchSummary(UniversalBaseModel):
 
     failed_items: int = pydantic.Field()
     """
-    The number of items that failed.
+    The number of items in the `failed` status.
     """
 
     canceled_items: int = pydantic.Field()
     """
-    The number of items that were canceled, either because the batch was canceled before the item started, or because the batch expired before the item finished processing.
+    The number of items in the `canceled` status. An item is canceled if the batch is canceled before the item starts. An item is also canceled if the batch expires before the item finishes.
     """
 
     created_at: dt.datetime = pydantic.Field()
@@ -81,7 +81,7 @@ class EmbeddingBatchSummary(UniversalBaseModel):
 
     expires_at: dt.datetime = pydantic.Field()
     """
-    The date and time, in the RFC 3339 format, when the 24-hour processing window for the batch ends. Unfinished items at expiration do not complete. Items that finished before then remain retrievable for 30 days after creation.
+    The date and time, in the RFC 3339 format, when the 24-hour processing window for the batch ends. The platform cancels items that are unfinished when the window ends.
     """
 
     completed_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
@@ -101,7 +101,7 @@ class EmbeddingBatchSummary(UniversalBaseModel):
 
     webhooks: typing.Optional[typing.List[WebhookDeliveryInfo]] = pydantic.Field(default=None)
     """
-    The delivery status of each webhook endpoint for the batch notification. The notification is sent when the batch reaches the `completed`, `canceled`, or `expired` status. Present only after the platform sends the notification. To register webhooks, see the [Register a webhook](/v1.3/docs/advanced/webhooks/manage#register-a-webhook) section.
+    The delivery status of each webhook endpoint for the batch notification. The platform sends the notification when the batch reaches the `completed`, `canceled`, or `expired` status. Present only after the platform sends the notification. To register webhooks, see the [Register a webhook](/v1.3/docs/advanced/webhooks/manage#register-a-webhook) section.
     """
 
     if IS_PYDANTIC_V2:

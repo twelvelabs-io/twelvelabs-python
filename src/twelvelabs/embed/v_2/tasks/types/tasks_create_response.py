@@ -27,12 +27,12 @@ class TasksCreateResponse(UniversalBaseModel):
 
     service_tier: typing.Optional[EmbeddingServiceTier] = pydantic.Field(default=None)
     """
-    The tier applied to this Marengo 3.5 task. Defaults to `standard` when the request omits `service_tier`. Marengo 3.0 responses omit this field.
+    The service tier applied to the task. Only Marengo 3.5 returns this field.
     """
 
     expires_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
-    The date and time, in RFC 3339 format, when the 24-hour processing window for a Marengo 3.5 Flex task ends. Omitted for other tiers and Marengo 3.0.
+    The date and time, in RFC 3339 format, when the 24-hour processing window for the task ends. Only a Flex task returns this field.
     """
 
     status: TasksCreateResponseStatus = pydantic.Field()
@@ -48,7 +48,7 @@ class TasksCreateResponse(UniversalBaseModel):
 
     updated_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
-    The date and time, in RFC 3339 format, when the platform last updated the task. In the creation response, this equals the `created_at` field. Retrieve the task for its current update time. The creation response for a task without a `service_tier` field can omit both timestamps.
+    The date and time, in RFC 3339 format, when the platform last updated the task. In the creation response, this equals the `created_at` field. The creation response for a task without a `service_tier` field can omit it.
     """
 
     data: typing.Optional[typing.Optional[typing.Any]] = pydantic.Field(default=None)

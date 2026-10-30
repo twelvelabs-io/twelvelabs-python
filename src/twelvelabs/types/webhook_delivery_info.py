@@ -13,7 +13,7 @@ class WebhookDeliveryInfo(UniversalBaseModel):
 
     url: str = pydantic.Field()
     """
-    The URL of the webhook endpoint that received the delivery.
+    The URL of the webhook endpoint.
     """
 
     delivered: bool = pydantic.Field()

@@ -55,8 +55,8 @@ class TasksClient:
         This method returns a list of the async embedding tasks in your account, including tasks created as part of a batch. The platform returns tasks sorted by creation date, with the newest at the top of the list. The `custom_id` field of a task created as part of a batch is unique only within one batch, identified by the `batch_id` field.
 
         <Note title="Notes">
-        - Embeddings of a task that is not part of a batch are available through the API for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier.
-        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. Supplying the `batch_id` query parameter removes that default seven-day time window so all retained tasks created as part of that batch can be listed. Explicit time filters still apply. There is no filter that limits the list to tasks that are not part of a batch; without the `batch_id` query parameter, the list can include tasks created as part of a batch.
+        - Embeddings of a task that is not part of a batch are stored for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. With the `batch_id` query parameter, this method lists all retained tasks created as part of that batch. Explicit time filters still apply. No filter limits the list to tasks that are not part of a batch.
         </Note>
 
         Parameters
@@ -71,10 +71,10 @@ class TasksClient:
             Filter async embedding tasks by their current status.
 
         client_task_id : typing.Optional[ClientEmbeddingTaskId]
-            Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique within your account. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
+            Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique among your tasks. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
 
         batch_id : typing.Optional[str]
-            Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier.
+            Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
@@ -254,10 +254,10 @@ class TasksClient:
         """
         This method retrieves the status and the results of an async embedding task.
 
-        Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field. For Marengo 3.5 Flex tasks, the `expires_at` field marks the end of the 24-hour processing window; a task still incomplete then becomes `canceled` with the `deadline_exceeded` value in the `cancellation_reason` field. Work already running can continue, but a late result does not replace the final status or produce successful-task billing.
+        Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field.
 
         <Note title="Note">
-        Embeddings of a task that is not part of a batch are available through the API for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier. A task created as part of a batch returns the `batch_id` field and a `custom_id` field that is unique only within the batch.
+        Embeddings of a task that is not part of a batch are stored for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
         A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
         </Note>
@@ -293,7 +293,7 @@ class TasksClient:
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> CancelEmbeddingTaskResponse:
         """
-        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+        This method cancels a task that is not part of a batch while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
 
         Parameters
         ----------
@@ -354,8 +354,8 @@ class AsyncTasksClient:
         This method returns a list of the async embedding tasks in your account, including tasks created as part of a batch. The platform returns tasks sorted by creation date, with the newest at the top of the list. The `custom_id` field of a task created as part of a batch is unique only within one batch, identified by the `batch_id` field.
 
         <Note title="Notes">
-        - Embeddings of a task that is not part of a batch are available through the API for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier.
-        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. Supplying the `batch_id` query parameter removes that default seven-day time window so all retained tasks created as part of that batch can be listed. Explicit time filters still apply. There is no filter that limits the list to tasks that are not part of a batch; without the `batch_id` query parameter, the list can include tasks created as part of a batch.
+        - Embeddings of a task that is not part of a batch are stored for seven days. Tasks created as part of a batch, and their results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days. With the `batch_id` query parameter, this method lists all retained tasks created as part of that batch. Explicit time filters still apply. No filter limits the list to tasks that are not part of a batch.
         </Note>
 
         Parameters
@@ -370,10 +370,10 @@ class AsyncTasksClient:
             Filter async embedding tasks by their current status.
 
         client_task_id : typing.Optional[ClientEmbeddingTaskId]
-            Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique within your account. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
+            Filter tasks that are not part of a batch by the identifier you set when you created the task. The match is exact, and the identifier is unique among your tasks. A missing task returns an empty `data` array. This filter combines with other list filters using AND and is applied before pagination. The `page_info` counts describe the filtered result set.
 
         batch_id : typing.Optional[str]
-            Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier.
+            Filter tasks by the batch they were created in. This filter is applied before pagination and combines with other filters using AND. Without the `started_at` or `ended_at` query parameters, it lists all retained tasks created as part of the batch instead of applying the default seven-day list window. Tasks created as part of the batch are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
         page : typing.Optional[int]
             A number that identifies the page to retrieve.
@@ -570,10 +570,10 @@ class AsyncTasksClient:
         """
         This method retrieves the status and the results of an async embedding task.
 
-        Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field. For Marengo 3.5 Flex tasks, the `expires_at` field marks the end of the 24-hour processing window; a task still incomplete then becomes `canceled` with the `deadline_exceeded` value in the `cancellation_reason` field. Work already running can continue, but a late result does not replace the final status or produce successful-task billing.
+        Invoke this method repeatedly until the `status` field is `ready`, `failed`, or `canceled`. When the status is `ready`, use the embeddings from the response. When the status is `failed`, the `error.message` field contains the reason. A canceled task has the `data` field set to `null` and no `error` field.
 
         <Note title="Note">
-        Embeddings of a task that is not part of a batch are available through the API for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. Deleting a batch with a final status ends API access to its tasks and results earlier. A task created as part of a batch returns the `batch_id` field and a `custom_id` field that is unique only within the batch.
+        Embeddings of a task that is not part of a batch are stored for seven days. A task created as part of a batch, and its results, are available for up to 30 days from batch creation. After you delete a batch, you can no longer retrieve its tasks or results.
 
         A task that is not part of a batch can report the `ready` status and later report the `failed` status with the `RESULT_EXPIRED` code, even though the retention period has not ended. This applies to some tasks that have no `service_tier` field, and the later response can contain only the `message` field. After the retention period, retrieval returns `404`. To generate the embeddings again, submit the original input in a new request. Retrieving the same result again does not regenerate it.
         </Note>
@@ -617,7 +617,7 @@ class AsyncTasksClient:
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> CancelEmbeddingTaskResponse:
         """
-        This method cancels a task that is not part of a batch in your account while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. The platform returns `409` if the task is `ready` or `failed`, was created as part of a batch, or has no `service_tier` field. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
+        This method cancels a task that is not part of a batch while the task is `queued` or `processing`. The task then reports `canceled` with `cancellation_reason: user_requested` and has no embeddings. If you cancel a task that is already canceled, the platform returns `200` with the original cancellation reason. For a batch, use the `POST` method of the `/embed-v2/batches/{batch_id}/cancel` endpoint. If the platform returns `task_cancel_not_supported`, continue to poll the task. Work that is already running can continue after cancellation, but the platform does not return or bill its late result.
 
         Parameters
         ----------

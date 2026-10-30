@@ -16,7 +16,7 @@ from .time_based_metadata_entry import TimeBasedMetadataEntry
 
 class EmbeddingBatchAudioInputRequest(UniversalBaseModel):
     """
-    Identifies the audio file to embed. The Base64 size limit is the same as for a task that is not part of a batch. See the [`audio`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio) field of the `POST` method of the `/embed-v2/tasks` endpoint.
+    Identifies the audio file to embed. The Base64 size limit is the same as for a task that is not part of a batch. See the [`audio`](/v1.3/api-reference/create-embeddings-v2/create-async-embedding-task#request.body.audio) field of the `POST` method of the `/embed-v2/tasks` endpoint. The size limit of the request body also applies to Base64 media. See the `413` response. Set the `time_based_metadata` field on the item. The `defaults` object does not include it. The field requires the `fused_embedding` value in the `embedding_type` field of the item or in the `defaults.audio` object.
     """
 
     start_sec: typing.Optional[float] = pydantic.Field(default=None)

@@ -13,12 +13,12 @@ class TimeBasedMetadataEntry(UniversalBaseModel):
 
     start: float = pydantic.Field()
     """
-    The start time of the entry in seconds, measured from the beginning of the asset. Set the same value in the `end` field for an event that happens at a single point in time, such as one entry in a stats feed.
+    The start time of the entry in seconds, measured from the beginning of the media file. Set the same value in the `end` field for an event at a single point in time, such as one entry in a stats feed.
     """
 
     end: float = pydantic.Field()
     """
-    The end time of the entry in seconds, measured from the beginning of the asset. Must be greater than or equal to the value of the `start` field. Equal values represent a point event.
+    The end time of the entry in seconds, measured from the beginning of the media file. The value must be greater than or equal to the value of the `start` field.
     """
 
     text: str = pydantic.Field()

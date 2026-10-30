@@ -31,7 +31,7 @@ class EmbeddingBatchWebhookData(UniversalBaseModel):
 
     created_at: dt.datetime = pydantic.Field()
     """
-    The date and time, in RFC 3339 format, when the platform accepted the batch.
+    The date and time, in RFC 3339 format, when the batch was created.
     """
 
     expires_at: dt.datetime = pydantic.Field()
