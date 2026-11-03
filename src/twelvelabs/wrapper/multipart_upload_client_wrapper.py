@@ -495,6 +495,8 @@ class MultipartUploadClientWrapper(MultipartUploadClient):
                 raise
             except Exception as e:
                 logger.warning(f"Error checking upload status: {e}")
+                if max_wait_time and (time.time() - start_time) > max_wait_time:
+                    raise UploadError(f"Upload timed out after {max_wait_time} seconds", original_error=e)
                 time.sleep(sleep_interval)
 
 
@@ -955,4 +957,6 @@ class AsyncMultipartUploadClientWrapper(AsyncMultipartUploadClient):
                 raise
             except Exception as e:
                 logger.warning(f"Error checking upload status: {e}")
+                if max_wait_time and (time.time() - start_time) > max_wait_time:
+                    raise UploadError(f"Upload timed out after {max_wait_time} seconds", original_error=e)
                 await asyncio.sleep(sleep_interval)
