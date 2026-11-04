@@ -73,7 +73,7 @@ class AsyncAudioInputRequest(UniversalBaseModel):
     
     **Values**:
     - `clip`: Generates one embedding for each segment. Works with both Marengo 3.0 and Marengo 3.5.
-    - `local`: Generates one embedding for each segment. Equivalent to `clip` when using Marengo 3.5.
+    - `local`: Generates one embedding for each segment, the same as `clip`. Requires Marengo 3.5.
     - `asset`: Generates one embedding for the entire audio file
     
     You can specify multiple scopes to generate embeddings at different levels.
@@ -83,7 +83,7 @@ class AsyncAudioInputRequest(UniversalBaseModel):
 
     embedding_type: typing.Optional[typing.List[AsyncAudioInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
     """
-    Specifies how to structure the embedding. Include this parameter only when the `embedding_option` parameter contains at least two values.
+    Specifies how to structure the embeddings. `separate_embedding` accepts one or more embedding options and returns them separately; it does not require multiple options.
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.

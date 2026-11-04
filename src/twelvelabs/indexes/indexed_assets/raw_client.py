@@ -12,8 +12,11 @@ from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
+from ...errors.conflict_error import ConflictError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
+from ...errors.too_many_requests_error import TooManyRequestsError
+from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.indexed_asset import IndexedAsset
 from ...types.indexed_asset_detailed import IndexedAssetDetailed
 from ...types.indexed_asset_summary import IndexedAssetSummary
@@ -136,10 +139,10 @@ class RawIndexedAssetsClient:
             Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
 
         updated_at : typing.Optional[str]
-            This filter applies only to indexed assets updated using the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
+            This filter applies only to indexed assets updated using the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
 
         user_metadata : typing.Optional[typing.Dict[str, typing.Optional[IndexedAssetsListRequestUserMetadataValue]]]
-            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/indexed-assets/:indexed-asset-id` endpoint.
+            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint.
 
             Examples:
             - To filter on a string: `?category=recentlyAdded`
@@ -276,10 +279,10 @@ class RawIndexedAssetsClient:
             The unique identifier of the index to which the asset will be indexed.
 
         asset_id : str
-            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
+            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status. If you uploaded the asset before your plan moved to the new billing, enable storage accounting for it before you index it in an index for which Marengo is enabled. Use the [Enable storage accounting for an asset](/v1.3/api-reference/manage-assets/enable-storage-accounting) method.
 
         enable_video_stream : typing.Optional[bool]
-            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
+            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[UserMetadata]
             Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
@@ -331,6 +334,39 @@ class RawIndexedAssetsClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -646,6 +682,17 @@ class RawIndexedAssetsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -754,10 +801,10 @@ class AsyncRawIndexedAssetsClient:
             Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
 
         updated_at : typing.Optional[str]
-            This filter applies only to indexed assets updated using the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
+            This filter applies only to indexed assets updated using the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
 
         user_metadata : typing.Optional[typing.Dict[str, typing.Optional[IndexedAssetsListRequestUserMetadataValue]]]
-            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/indexed-assets/:indexed-asset-id` endpoint.
+            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint.
 
             Examples:
             - To filter on a string: `?category=recentlyAdded`
@@ -897,10 +944,10 @@ class AsyncRawIndexedAssetsClient:
             The unique identifier of the index to which the asset will be indexed.
 
         asset_id : str
-            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
+            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status. If you uploaded the asset before your plan moved to the new billing, enable storage accounting for it before you index it in an index for which Marengo is enabled. Use the [Enable storage accounting for an asset](/v1.3/api-reference/manage-assets/enable-storage-accounting) method.
 
         enable_video_stream : typing.Optional[bool]
-            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
+            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[UserMetadata]
             Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
@@ -952,6 +999,39 @@ class AsyncRawIndexedAssetsClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -1261,6 +1341,17 @@ class AsyncRawIndexedAssetsClient:
                 )
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

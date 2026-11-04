@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class VideoMetadata(UniversalBaseModel):
     """
-    System-generated media metadata for a video item.
+    System-generated metadata for a video item.
     """
 
     filename: typing.Optional[str] = pydantic.Field(default=None)

@@ -15,7 +15,6 @@ from ..errors.not_found_error import NotFoundError
 from ..errors.unprocessable_entity_error import UnprocessableEntityError
 from ..types.connection import Connection
 from ..types.redirect_uri import RedirectUri
-from ..types.unprocessable_entity_error_body import UnprocessableEntityErrorBody
 from .types.authorize_connection_request_provider import AuthorizeConnectionRequestProvider
 from .types.authorize_connection_response import AuthorizeConnectionResponse
 from .types.create_connection_picker_token_response import CreateConnectionPickerTokenResponse
@@ -492,9 +491,9 @@ class RawDataConnectorsClient:
                 raise UnprocessableEntityError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        UnprocessableEntityErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=UnprocessableEntityErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1024,9 +1023,9 @@ class AsyncRawDataConnectorsClient:
                 raise UnprocessableEntityError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        UnprocessableEntityErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=UnprocessableEntityErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

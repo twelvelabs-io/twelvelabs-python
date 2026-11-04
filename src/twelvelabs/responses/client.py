@@ -8,6 +8,7 @@ from ..types.response_input_item import ResponseInputItem
 from ..types.response_object import ResponseObject
 from ..types.response_selection import ResponseSelection
 from ..types.response_stream_event import ResponseStreamEvent
+from ..types.response_tool_input import ResponseToolInput
 from ..types.text_param import TextParam
 from .raw_client import AsyncRawResponsesClient, RawResponsesClient
 from .types.responses_create_request_include_item import ResponsesCreateRequestIncludeItem
@@ -40,6 +41,7 @@ class ResponsesClient:
         session_id: typing.Optional[str] = OMIT,
         instructions: typing.Optional[str] = OMIT,
         include: typing.Optional[typing.Sequence[ResponsesCreateStreamRequestIncludeItem]] = OMIT,
+        tools: typing.Optional[typing.Sequence[ResponseToolInput]] = OMIT,
         selections: typing.Optional[typing.Sequence[ResponseSelection]] = OMIT,
         text: typing.Optional[TextParam] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -54,6 +56,8 @@ class ResponsesClient:
         **Selections**: By default, Jockey reasons over every item in the knowledge store. To narrow the scope, set the optional `selections` parameter to specific items or item collections, then reference each one with a `{{sel:N}}` token in the `content` field of an `input` item (`N` is the zero-based position in the `selections` array). The narrowing is applied at the prompt level; the knowledge store does not block access to other items.
 
         **Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
+
+        **Web sources**: Jockey can search public web sources while it generates a response. To allow this, include `{ "type": "jockey:web_search" }` in the `tools` array. The response can then cite these sources alongside content from the knowledge store, as `url_citation` annotations. Jockey decides whether to use an available tool, so enabling web search does not guarantee a search. To make a search more likely, explicitly tell Jockey what information to look up in `input` or `instructions`. A prompt that asks Jockey to search the web does not enable web search by itself. If you omit `tools` or pass `[]`, Jockey cannot search public web sources, even when the prompt requests it.
 
         <Accordion title="Example response">
         ```json
@@ -93,9 +97,9 @@ class ResponsesClient:
               ]
             }
           ],
-          "usage": {
-            "input_tokens": 12625,
-            "output_tokens": 289
+          "billing": {
+            "amount": "0.008118",
+            "currency": "USD"
           },
           "created_at": "2026-07-11T03:13:57Z"
         }
@@ -123,10 +127,10 @@ class ResponsesClient:
         data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
 
         event: response.content_part.done
-        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
+        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
         event: response.completed
-        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"billing":{"amount":"0.020912","currency":"USD"},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
         data: [DONE]
         ```
@@ -138,7 +142,8 @@ class ResponsesClient:
             The unique identifier of the knowledge store to reason over.
 
         input : typing.Sequence[ResponseInputItem]
-            Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            Output items cannot be submitted as input. Use `session_id` to continue a conversation.
 
         session_id : typing.Optional[str]
             The session identifier for a multi-turn conversation. Pass the session identifier
@@ -157,6 +162,24 @@ class ResponsesClient:
             **Values**:
             - `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
 
+        tools : typing.Optional[typing.Sequence[ResponseToolInput]]
+            Tools that Jockey can use while it generates the response.
+            Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+            whether to use an available tool, so enabling web search does not guarantee
+            a search. To make a search more likely, explicitly tell Jockey what
+            information to look up in `input` or `instructions`.
+
+            A prompt that asks Jockey to search the web does not enable web search by
+            itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+            public web sources, even when the prompt requests it. The `tools` setting
+            applies to each request on its own, including requests that continue a
+            session.
+
+            This list does not control Jockey's built-in knowledge store operations.
+            If a requested tool is unavailable for the request, the request fails
+            with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+            tool from the `tools` array and retry.
+
         selections : typing.Optional[typing.Sequence[ResponseSelection]]
             Restricts the request to specific knowledge store items or item collections. The restriction is applied at the prompt level; the knowledge store does not block access to other items. Treat it as a strong preference, not a hard access boundary. Omit to run against every item.
 
@@ -174,7 +197,11 @@ class ResponsesClient:
 
         Examples
         --------
-        from twelvelabs import ResponseInputItem, TwelveLabs
+        from twelvelabs import (
+            ResponseInputItem,
+            ResponseToolInput_JockeyWebSearch,
+            TwelveLabs,
+        )
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
@@ -185,9 +212,11 @@ class ResponsesClient:
                 ResponseInputItem(
                     type="message",
                     role="user",
-                    content="Give me the highlight.",
+                    content="Summarize this collection and verify one claim using an official web source.",
                 )
             ],
+            include=["intermediate_outputs"],
+            tools=[ResponseToolInput_JockeyWebSearch()],
         )
         for chunk in response:
             yield chunk
@@ -198,6 +227,7 @@ class ResponsesClient:
             session_id=session_id,
             instructions=instructions,
             include=include,
+            tools=tools,
             selections=selections,
             text=text,
             request_options=request_options,
@@ -212,6 +242,7 @@ class ResponsesClient:
         session_id: typing.Optional[str] = OMIT,
         instructions: typing.Optional[str] = OMIT,
         include: typing.Optional[typing.Sequence[ResponsesCreateRequestIncludeItem]] = OMIT,
+        tools: typing.Optional[typing.Sequence[ResponseToolInput]] = OMIT,
         selections: typing.Optional[typing.Sequence[ResponseSelection]] = OMIT,
         text: typing.Optional[TextParam] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -226,6 +257,8 @@ class ResponsesClient:
         **Selections**: By default, Jockey reasons over every item in the knowledge store. To narrow the scope, set the optional `selections` parameter to specific items or item collections, then reference each one with a `{{sel:N}}` token in the `content` field of an `input` item (`N` is the zero-based position in the `selections` array). The narrowing is applied at the prompt level; the knowledge store does not block access to other items.
 
         **Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
+
+        **Web sources**: Jockey can search public web sources while it generates a response. To allow this, include `{ "type": "jockey:web_search" }` in the `tools` array. The response can then cite these sources alongside content from the knowledge store, as `url_citation` annotations. Jockey decides whether to use an available tool, so enabling web search does not guarantee a search. To make a search more likely, explicitly tell Jockey what information to look up in `input` or `instructions`. A prompt that asks Jockey to search the web does not enable web search by itself. If you omit `tools` or pass `[]`, Jockey cannot search public web sources, even when the prompt requests it.
 
         <Accordion title="Example response">
         ```json
@@ -265,9 +298,9 @@ class ResponsesClient:
               ]
             }
           ],
-          "usage": {
-            "input_tokens": 12625,
-            "output_tokens": 289
+          "billing": {
+            "amount": "0.008118",
+            "currency": "USD"
           },
           "created_at": "2026-07-11T03:13:57Z"
         }
@@ -295,10 +328,10 @@ class ResponsesClient:
         data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
 
         event: response.content_part.done
-        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
+        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
         event: response.completed
-        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"billing":{"amount":"0.020912","currency":"USD"},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
         data: [DONE]
         ```
@@ -310,7 +343,8 @@ class ResponsesClient:
             The unique identifier of the knowledge store to reason over.
 
         input : typing.Sequence[ResponseInputItem]
-            Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            Output items cannot be submitted as input. Use `session_id` to continue a conversation.
 
         session_id : typing.Optional[str]
             The session identifier for a multi-turn conversation. Pass the session identifier
@@ -329,6 +363,24 @@ class ResponsesClient:
             **Values**:
             - `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
 
+        tools : typing.Optional[typing.Sequence[ResponseToolInput]]
+            Tools that Jockey can use while it generates the response.
+            Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+            whether to use an available tool, so enabling web search does not guarantee
+            a search. To make a search more likely, explicitly tell Jockey what
+            information to look up in `input` or `instructions`.
+
+            A prompt that asks Jockey to search the web does not enable web search by
+            itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+            public web sources, even when the prompt requests it. The `tools` setting
+            applies to each request on its own, including requests that continue a
+            session.
+
+            This list does not control Jockey's built-in knowledge store operations.
+            If a requested tool is unavailable for the request, the request fails
+            with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+            tool from the `tools` array and retry.
+
         selections : typing.Optional[typing.Sequence[ResponseSelection]]
             Restricts the request to specific knowledge store items or item collections. The restriction is applied at the prompt level; the knowledge store does not block access to other items. Treat it as a strong preference, not a hard access boundary. Omit to run against every item.
 
@@ -346,7 +398,11 @@ class ResponsesClient:
 
         Examples
         --------
-        from twelvelabs import ResponseInputItem, TwelveLabs
+        from twelvelabs import (
+            ResponseInputItem,
+            ResponseToolInput_JockeyWebSearch,
+            TwelveLabs,
+        )
 
         client = TwelveLabs(
             api_key="YOUR_API_KEY",
@@ -357,9 +413,11 @@ class ResponsesClient:
                 ResponseInputItem(
                     type="message",
                     role="user",
-                    content="Give me the highlight.",
+                    content="Summarize this collection and verify one claim using an official web source.",
                 )
             ],
+            include=["intermediate_outputs"],
+            tools=[ResponseToolInput_JockeyWebSearch()],
         )
         """
         _response = self._raw_client.create(
@@ -368,6 +426,7 @@ class ResponsesClient:
             session_id=session_id,
             instructions=instructions,
             include=include,
+            tools=tools,
             selections=selections,
             text=text,
             request_options=request_options,
@@ -398,6 +457,7 @@ class AsyncResponsesClient:
         session_id: typing.Optional[str] = OMIT,
         instructions: typing.Optional[str] = OMIT,
         include: typing.Optional[typing.Sequence[ResponsesCreateStreamRequestIncludeItem]] = OMIT,
+        tools: typing.Optional[typing.Sequence[ResponseToolInput]] = OMIT,
         selections: typing.Optional[typing.Sequence[ResponseSelection]] = OMIT,
         text: typing.Optional[TextParam] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -412,6 +472,8 @@ class AsyncResponsesClient:
         **Selections**: By default, Jockey reasons over every item in the knowledge store. To narrow the scope, set the optional `selections` parameter to specific items or item collections, then reference each one with a `{{sel:N}}` token in the `content` field of an `input` item (`N` is the zero-based position in the `selections` array). The narrowing is applied at the prompt level; the knowledge store does not block access to other items.
 
         **Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
+
+        **Web sources**: Jockey can search public web sources while it generates a response. To allow this, include `{ "type": "jockey:web_search" }` in the `tools` array. The response can then cite these sources alongside content from the knowledge store, as `url_citation` annotations. Jockey decides whether to use an available tool, so enabling web search does not guarantee a search. To make a search more likely, explicitly tell Jockey what information to look up in `input` or `instructions`. A prompt that asks Jockey to search the web does not enable web search by itself. If you omit `tools` or pass `[]`, Jockey cannot search public web sources, even when the prompt requests it.
 
         <Accordion title="Example response">
         ```json
@@ -451,9 +513,9 @@ class AsyncResponsesClient:
               ]
             }
           ],
-          "usage": {
-            "input_tokens": 12625,
-            "output_tokens": 289
+          "billing": {
+            "amount": "0.008118",
+            "currency": "USD"
           },
           "created_at": "2026-07-11T03:13:57Z"
         }
@@ -481,10 +543,10 @@ class AsyncResponsesClient:
         data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
 
         event: response.content_part.done
-        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
+        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
         event: response.completed
-        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"billing":{"amount":"0.020912","currency":"USD"},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
         data: [DONE]
         ```
@@ -496,7 +558,8 @@ class AsyncResponsesClient:
             The unique identifier of the knowledge store to reason over.
 
         input : typing.Sequence[ResponseInputItem]
-            Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            Output items cannot be submitted as input. Use `session_id` to continue a conversation.
 
         session_id : typing.Optional[str]
             The session identifier for a multi-turn conversation. Pass the session identifier
@@ -514,6 +577,24 @@ class AsyncResponsesClient:
 
             **Values**:
             - `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
+
+        tools : typing.Optional[typing.Sequence[ResponseToolInput]]
+            Tools that Jockey can use while it generates the response.
+            Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+            whether to use an available tool, so enabling web search does not guarantee
+            a search. To make a search more likely, explicitly tell Jockey what
+            information to look up in `input` or `instructions`.
+
+            A prompt that asks Jockey to search the web does not enable web search by
+            itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+            public web sources, even when the prompt requests it. The `tools` setting
+            applies to each request on its own, including requests that continue a
+            session.
+
+            This list does not control Jockey's built-in knowledge store operations.
+            If a requested tool is unavailable for the request, the request fails
+            with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+            tool from the `tools` array and retry.
 
         selections : typing.Optional[typing.Sequence[ResponseSelection]]
             Restricts the request to specific knowledge store items or item collections. The restriction is applied at the prompt level; the knowledge store does not block access to other items. Treat it as a strong preference, not a hard access boundary. Omit to run against every item.
@@ -534,7 +615,11 @@ class AsyncResponsesClient:
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, ResponseInputItem
+        from twelvelabs import (
+            AsyncTwelveLabs,
+            ResponseInputItem,
+            ResponseToolInput_JockeyWebSearch,
+        )
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -548,9 +633,11 @@ class AsyncResponsesClient:
                     ResponseInputItem(
                         type="message",
                         role="user",
-                        content="Give me the highlight.",
+                        content="Summarize this collection and verify one claim using an official web source.",
                     )
                 ],
+                include=["intermediate_outputs"],
+                tools=[ResponseToolInput_JockeyWebSearch()],
             )
             async for chunk in response:
                 yield chunk
@@ -564,6 +651,7 @@ class AsyncResponsesClient:
             session_id=session_id,
             instructions=instructions,
             include=include,
+            tools=tools,
             selections=selections,
             text=text,
             request_options=request_options,
@@ -579,6 +667,7 @@ class AsyncResponsesClient:
         session_id: typing.Optional[str] = OMIT,
         instructions: typing.Optional[str] = OMIT,
         include: typing.Optional[typing.Sequence[ResponsesCreateRequestIncludeItem]] = OMIT,
+        tools: typing.Optional[typing.Sequence[ResponseToolInput]] = OMIT,
         selections: typing.Optional[typing.Sequence[ResponseSelection]] = OMIT,
         text: typing.Optional[TextParam] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -593,6 +682,8 @@ class AsyncResponsesClient:
         **Selections**: By default, Jockey reasons over every item in the knowledge store. To narrow the scope, set the optional `selections` parameter to specific items or item collections, then reference each one with a `{{sel:N}}` token in the `content` field of an `input` item (`N` is the zero-based position in the `selections` array). The narrowing is applied at the prompt level; the knowledge store does not block access to other items.
 
         **Streaming**: Set the `stream` parameter to `true` to receive the response as [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE). The reply streams in as a sequence of typed events and ends with a `data: [DONE]` message.
+
+        **Web sources**: Jockey can search public web sources while it generates a response. To allow this, include `{ "type": "jockey:web_search" }` in the `tools` array. The response can then cite these sources alongside content from the knowledge store, as `url_citation` annotations. Jockey decides whether to use an available tool, so enabling web search does not guarantee a search. To make a search more likely, explicitly tell Jockey what information to look up in `input` or `instructions`. A prompt that asks Jockey to search the web does not enable web search by itself. If you omit `tools` or pass `[]`, Jockey cannot search public web sources, even when the prompt requests it.
 
         <Accordion title="Example response">
         ```json
@@ -632,9 +723,9 @@ class AsyncResponsesClient:
               ]
             }
           ],
-          "usage": {
-            "input_tokens": 12625,
-            "output_tokens": 289
+          "billing": {
+            "amount": "0.008118",
+            "currency": "USD"
           },
           "created_at": "2026-07-11T03:13:57Z"
         }
@@ -662,10 +753,10 @@ class AsyncResponsesClient:
         data: {"type":"response.output_text.done","sequence_number":124,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1]."}
 
         event: response.content_part.done
-        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
+        data: {"type":"response.content_part.done","sequence_number":125,"item_id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","output_index":0,"content_index":0,"part":{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}}
 
         event: response.completed
-        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"usage":{"input_tokens":12625,"output_tokens":289},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
+        data: {"type":"response.completed","sequence_number":127,"response":{"id":"resp_019f4f2a-b69e-7812-b20f-6ea6d644ceff","type":"response","object":"response","status":"completed","incomplete_details":null,"output":[{"type":"message","id":"msg_sess_019f4f2a-b69b-7a01-9018-cc51681121ea_0","status":"completed","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The video captures a heated sideline moment during Super Bowl LVIII: after a fumble, Travis Kelce approaches head coach Andy Reid, visibly frustrated, and briefly bumps him before being restrained by a teammate [1].","annotations":[{"type":"url_citation","start_index":51,"end_index":66,"url":"https://example.com/news/super-bowl-lviii","title":"Super Bowl LVIII recap"},{"type":"video_citation","start_index":211,"end_index":213,"item_id":"ksi_069e9870-3c4d-7abc-9012-3456789abcde","start_sec":0.0,"end_sec":9.0,"title":"Super Bowl LVIII sideline","thumbnail_url":"https://example.com/thumbnail.jpg","hls_url":"https://example.com/stream.m3u8"}]}]}],"billing":{"amount":"0.020912","currency":"USD"},"session_id":"sess_019f4f2a-b69b-7a01-9018-cc51681121ea","knowledge_store_id":"ks_019ebcf4-7e08-7201-b69c-69e0c1e6ae56","created_at":"2026-07-11T03:13:57Z"}}
 
         data: [DONE]
         ```
@@ -677,7 +768,8 @@ class AsyncResponsesClient:
             The unique identifier of the knowledge store to reason over.
 
         input : typing.Sequence[ResponseInputItem]
-            Provides context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            User messages that provide context to Jockey for this request. Uses [Open Responses input item](https://www.openresponses.org/reference#input-items) conventions.
+            Output items cannot be submitted as input. Use `session_id` to continue a conversation.
 
         session_id : typing.Optional[str]
             The session identifier for a multi-turn conversation. Pass the session identifier
@@ -695,6 +787,24 @@ class AsyncResponsesClient:
 
             **Values**:
             - `intermediate_outputs`: Also includes the steps Jockey took to produce the reply.
+
+        tools : typing.Optional[typing.Sequence[ResponseToolInput]]
+            Tools that Jockey can use while it generates the response.
+            Include `{ "type": "jockey:web_search" }` to allow web search. Jockey decides
+            whether to use an available tool, so enabling web search does not guarantee
+            a search. To make a search more likely, explicitly tell Jockey what
+            information to look up in `input` or `instructions`.
+
+            A prompt that asks Jockey to search the web does not enable web search by
+            itself. If you omit `tools` or pass `null` or `[]`, Jockey cannot search
+            public web sources, even when the prompt requests it. The `tools` setting
+            applies to each request on its own, including requests that continue a
+            session.
+
+            This list does not control Jockey's built-in knowledge store operations.
+            If a requested tool is unavailable for the request, the request fails
+            with HTTP `422` and code `parameter_invalid`. Remove the unavailable
+            tool from the `tools` array and retry.
 
         selections : typing.Optional[typing.Sequence[ResponseSelection]]
             Restricts the request to specific knowledge store items or item collections. The restriction is applied at the prompt level; the knowledge store does not block access to other items. Treat it as a strong preference, not a hard access boundary. Omit to run against every item.
@@ -715,7 +825,11 @@ class AsyncResponsesClient:
         --------
         import asyncio
 
-        from twelvelabs import AsyncTwelveLabs, ResponseInputItem
+        from twelvelabs import (
+            AsyncTwelveLabs,
+            ResponseInputItem,
+            ResponseToolInput_JockeyWebSearch,
+        )
 
         client = AsyncTwelveLabs(
             api_key="YOUR_API_KEY",
@@ -729,9 +843,11 @@ class AsyncResponsesClient:
                     ResponseInputItem(
                         type="message",
                         role="user",
-                        content="Give me the highlight.",
+                        content="Summarize this collection and verify one claim using an official web source.",
                     )
                 ],
+                include=["intermediate_outputs"],
+                tools=[ResponseToolInput_JockeyWebSearch()],
             )
 
 
@@ -743,6 +859,7 @@ class AsyncResponsesClient:
             session_id=session_id,
             instructions=instructions,
             include=include,
+            tools=tools,
             selections=selections,
             text=text,
             request_options=request_options,

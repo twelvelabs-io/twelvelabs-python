@@ -40,7 +40,7 @@ class EmbeddingTaskResponse(UniversalBaseModel):
     updated_at: typing.Optional[UpdatedAt] = None
     data: typing.Optional[typing.List[EmbeddingData]] = pydantic.Field(default=None)
     """
-    An object containing the embedding results, or `null` otherwise.
+    An array of embedding results when `status` is `ready`, or `null` when `status` is `processing` or `failed`.
     """
 
     usage: typing.Optional[EmbeddingUsage] = pydantic.Field(default=None)

@@ -74,7 +74,7 @@ class AsyncVideoInputRequest(UniversalBaseModel):
     
     **Values**:
     - `clip`: Generates one embedding for each segment. Works with both Marengo 3.0 and Marengo 3.5.
-    - `local`: Generates one embedding for each segment. Equivalent to `clip` when using Marengo 3.5.
+    - `local`: Generates one embedding for each segment, the same as `clip`. Requires Marengo 3.5.
     - `asset`: Generates one embedding for the entire video file. Use this scope for videos up to 10-30 seconds to maintain optimal performance.
     
     You can specify multiple scopes to generate embeddings at different levels.
@@ -84,11 +84,11 @@ class AsyncVideoInputRequest(UniversalBaseModel):
 
     embedding_type: typing.Optional[typing.List[AsyncVideoInputRequestEmbeddingTypeItem]] = pydantic.Field(default=None)
     """
-    Specifies how to structure the embedding. Include this parameter only when the `embedding_option` parameter contains at least two values.
+    Specifies how to structure the embeddings. `separate_embedding` accepts one or more embedding options and returns them separately; it does not require multiple options.
     
     **Values**:
     - `separate_embedding`: Returns separate embeddings for each modality specified in the `embedding_option` parameter.
-    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. With Marengo 3.5, this value requires the `time_based_metadata` field.
+    - `fused_embedding`: Returns a single combined embedding that integrates all modalities into one vector. Requires at least two distinct `embedding_option` values. With Marengo 3.5, one `embedding_option` value is enough when the request also sets the `time_based_metadata` field.
     
     Specify both values to receive separate and fused embeddings in the same response.
     

@@ -12,14 +12,18 @@ from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
 from ....core.serialization import convert_and_respect_annotation_metadata
 from ....errors.bad_request_error import BadRequestError
+from ....errors.forbidden_error import ForbiddenError
 from ....errors.internal_server_error import InternalServerError
 from ....errors.not_found_error import NotFoundError
 from ....errors.too_many_requests_error import TooManyRequestsError
+from ....errors.unauthorized_error import UnauthorizedError
+from ....errors.unprocessable_entity_error import UnprocessableEntityError
 from ....types.async_audio_input_request import AsyncAudioInputRequest
 from ....types.async_document_input_request import AsyncDocumentInputRequest
 from ....types.async_image_input_request import AsyncImageInputRequest
 from ....types.async_video_input_request import AsyncVideoInputRequest
 from ....types.embedding_task_response import EmbeddingTaskResponse
+from ....types.flat_error_response import FlatErrorResponse
 from ....types.media_embedding_task import MediaEmbeddingTask
 from .types.create_async_embedding_request_input_type import CreateAsyncEmbeddingRequestInputType
 from .types.create_async_embedding_request_model_name import CreateAsyncEmbeddingRequestModelName
@@ -45,23 +49,23 @@ class RawTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[MediaEmbeddingTask]:
         """
-        This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the async embedding tasks in your account. The platform returns tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
         - Embeddings are stored for seven days.
-        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days.
         </Note>
 
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
-            Filter the embedding tasks by their current status.
+            Filter async embedding tasks by their current status.
 
             **Values**: `processing`, `ready`, or `failed`.
 
@@ -69,11 +73,13 @@ class RawTasksClient:
             A number that identifies the page to retrieve.
 
             **Default**: `1`.
+            **Min**: `1`.
 
         page_limit : typing.Optional[int]
             The number of items to return on each page.
 
             **Default**: `10`.
+            **Min**: `1`.
             **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
@@ -131,6 +137,28 @@ class RawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -164,7 +192,7 @@ class RawTasksClient:
 
         <Note title="Notes">
         - Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         - Embeddings are stored for seven days.
         </Note>
 
@@ -271,6 +299,39 @@ class RawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 429:
                 raise TooManyRequestsError(
                     headers=dict(_response.headers),
@@ -338,8 +399,52 @@ class RawTasksClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -370,23 +475,23 @@ class AsyncRawTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[MediaEmbeddingTask]:
         """
-        This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the async embedding tasks in your account. The platform returns tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
         - Embeddings are stored for seven days.
-        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days.
         </Note>
 
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
-            Filter the embedding tasks by their current status.
+            Filter async embedding tasks by their current status.
 
             **Values**: `processing`, `ready`, or `failed`.
 
@@ -394,11 +499,13 @@ class AsyncRawTasksClient:
             A number that identifies the page to retrieve.
 
             **Default**: `1`.
+            **Min**: `1`.
 
         page_limit : typing.Optional[int]
             The number of items to return on each page.
 
             **Default**: `10`.
+            **Min**: `1`.
             **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
@@ -459,6 +566,28 @@ class AsyncRawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -492,7 +621,7 @@ class AsyncRawTasksClient:
 
         <Note title="Notes">
         - Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         - Embeddings are stored for seven days.
         </Note>
 
@@ -599,6 +728,39 @@ class AsyncRawTasksClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 429:
                 raise TooManyRequestsError(
                     headers=dict(_response.headers),
@@ -666,8 +828,52 @@ class AsyncRawTasksClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        FlatErrorResponse,
+                        parse_obj_as(
+                            type_=FlatErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

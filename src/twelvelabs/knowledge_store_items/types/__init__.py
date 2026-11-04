@@ -2,12 +2,7 @@
 
 # isort: skip_file
 
-from .knowledge_store_items_list_request_sort_by import KnowledgeStoreItemsListRequestSortBy
 from .knowledge_store_items_list_request_status_item import KnowledgeStoreItemsListRequestStatusItem
 from .knowledge_store_items_list_response import KnowledgeStoreItemsListResponse
 
-__all__ = [
-    "KnowledgeStoreItemsListRequestSortBy",
-    "KnowledgeStoreItemsListRequestStatusItem",
-    "KnowledgeStoreItemsListResponse",
-]
+__all__ = ["KnowledgeStoreItemsListRequestStatusItem", "KnowledgeStoreItemsListResponse"]
