@@ -289,7 +289,7 @@ class KnowledgeStoresClient:
         """
         This method searches a knowledge store using natural language and returns matching video clips and images ranked by relevance.
 
-        Provide your natural-language query in the `query.text` field. Use the `filter` parameter to choose which items to search: by type of item (the `asset_type` field) or by specific items (the `item_id` field). Use the optional `search_options` parameter to control how videos are matched (by visual content, audio, or both). If you omit it, videos are matched on their visual content. Images are always matched on their visual content.
+        Use the `query.text` field to specify your natural-language query. Use the `filter` parameter to choose which items to search. Use the `search_options` parameter to choose how the platform matches videos.
 
         By default, each result is an individual match: a video clip or an image. Set the `group_by` parameter to `item` to group clips under their parent item.
 
@@ -327,7 +327,11 @@ class KnowledgeStoresClient:
             If a token is malformed or unrecognized, the platform returns a `400` error. If a token has expired, the platform returns a `410` error (make a new search request to obtain a fresh page token).
 
         include_metadata : typing.Optional[bool]
-            Set to `true` to include metadata in each result. Each result includes a `metadata` object with a `system` field (platform-derived file properties such as duration and resolution) and a `user` field (metadata you attached to the item).
+            Set to `true` to include metadata in each result. Each result includes a `metadata` object with these fields:
+
+            - `system`: System-generated metadata, such as duration and resolution.
+            - `user`: The custom metadata of the source asset.
+            - `item`: The custom metadata of the knowledge store item.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -687,7 +691,7 @@ class AsyncKnowledgeStoresClient:
         """
         This method searches a knowledge store using natural language and returns matching video clips and images ranked by relevance.
 
-        Provide your natural-language query in the `query.text` field. Use the `filter` parameter to choose which items to search: by type of item (the `asset_type` field) or by specific items (the `item_id` field). Use the optional `search_options` parameter to control how videos are matched (by visual content, audio, or both). If you omit it, videos are matched on their visual content. Images are always matched on their visual content.
+        Use the `query.text` field to specify your natural-language query. Use the `filter` parameter to choose which items to search. Use the `search_options` parameter to choose how the platform matches videos.
 
         By default, each result is an individual match: a video clip or an image. Set the `group_by` parameter to `item` to group clips under their parent item.
 
@@ -725,7 +729,11 @@ class AsyncKnowledgeStoresClient:
             If a token is malformed or unrecognized, the platform returns a `400` error. If a token has expired, the platform returns a `410` error (make a new search request to obtain a fresh page token).
 
         include_metadata : typing.Optional[bool]
-            Set to `true` to include metadata in each result. Each result includes a `metadata` object with a `system` field (platform-derived file properties such as duration and resolution) and a `user` field (metadata you attached to the item).
+            Set to `true` to include metadata in each result. Each result includes a `metadata` object with these fields:
+
+            - `system`: System-generated metadata, such as duration and resolution.
+            - `user`: The custom metadata of the source asset.
+            - `item`: The custom metadata of the knowledge store item.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

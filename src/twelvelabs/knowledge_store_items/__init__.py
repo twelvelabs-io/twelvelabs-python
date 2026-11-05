@@ -2,14 +2,6 @@
 
 # isort: skip_file
 
-from .types import (
-    KnowledgeStoreItemsListRequestSortBy,
-    KnowledgeStoreItemsListRequestStatusItem,
-    KnowledgeStoreItemsListResponse,
-)
+from .types import KnowledgeStoreItemsListRequestStatusItem, KnowledgeStoreItemsListResponse
 
-__all__ = [
-    "KnowledgeStoreItemsListRequestSortBy",
-    "KnowledgeStoreItemsListRequestStatusItem",
-    "KnowledgeStoreItemsListResponse",
-]
+__all__ = ["KnowledgeStoreItemsListRequestStatusItem", "KnowledgeStoreItemsListResponse"]

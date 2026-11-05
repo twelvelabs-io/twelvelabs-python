@@ -137,10 +137,10 @@ class IndexedAssetsClient:
             Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
 
         updated_at : typing.Optional[str]
-            This filter applies only to indexed assets updated using the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
+            This filter applies only to indexed assets updated using the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
 
         user_metadata : typing.Optional[typing.Dict[str, typing.Optional[IndexedAssetsListRequestUserMetadataValue]]]
-            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/indexed-assets/:indexed-asset-id` endpoint.
+            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint.
 
             Examples:
             - To filter on a string: `?category=recentlyAdded`
@@ -235,10 +235,10 @@ class IndexedAssetsClient:
             The unique identifier of the index to which the asset will be indexed.
 
         asset_id : str
-            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
+            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status. If you uploaded the asset before your plan moved to the new billing, enable storage accounting for it before you index it in an index for which Marengo is enabled. Use the [Enable storage accounting for an asset](/v1.3/api-reference/manage-assets/enable-storage-accounting) method.
 
         enable_video_stream : typing.Optional[bool]
-            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
+            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[UserMetadata]
             Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.
@@ -615,10 +615,10 @@ class AsyncIndexedAssetsClient:
             Filter indexed assets by the creation date and time of their associated indexing tasks, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns indexed assets created on or after the specified date and time.
 
         updated_at : typing.Optional[str]
-            This filter applies only to indexed assets updated using the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
+            This filter applies only to indexed assets updated using the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. It filters indexed assets by the last update date and time, in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ"). The platform returns the indexed assets that were last updated on the specified date at or after the given time.
 
         user_metadata : typing.Optional[typing.Dict[str, typing.Optional[IndexedAssetsListRequestUserMetadataValue]]]
-            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/indexed-assets/:indexed-asset-id` endpoint.
+            To enable filtering by custom fields, you must first add user-defined metadata to your video by calling the [`PATCH`](/v1.3/api-reference/index-content/update) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint.
 
             Examples:
             - To filter on a string: `?category=recentlyAdded`
@@ -722,10 +722,10 @@ class AsyncIndexedAssetsClient:
             The unique identifier of the index to which the asset will be indexed.
 
         asset_id : str
-            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status.
+            The unique identifier of the asset to index. The asset status must be `ready`. Use the [Retrieve an asset](/v1.3/api-reference/upload-content/direct-uploads/retrieve) method to check the status. If you uploaded the asset before your plan moved to the new billing, enable storage accounting for it before you index it in an index for which Marengo is enabled. Use the [Enable storage accounting for an asset](/v1.3/api-reference/manage-assets/enable-storage-accounting) method.
 
         enable_video_stream : typing.Optional[bool]
-            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index-id}/indexed-assets/{indexed-asset-id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
+            This parameter indicates if the platform stores the video for streaming. When set to `true`, the platform stores the video, and you can retrieve its URL by calling the [`GET`](/v1.3/api-reference/videos/retrieve) method of the `/indexes/{index_id}/indexed-assets/{indexed_asset_id}` endpoint. You can then use this URL to access the stream over the <a href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming" target="_blank">HLS</a> protocol.
 
         user_metadata : typing.Optional[UserMetadata]
             Metadata that helps you categorize your assets. You can specify a list of keys and values. Keys are strings, and values can be a string, a number, a boolean, or an array of strings. A key set to an empty string (`""`), an empty array (`[]`), or `null` is omitted. Send an integer wider than 53 bits (-9007199254740991 to 9007199254740991), and any identifier you want preserved verbatim, as a string.

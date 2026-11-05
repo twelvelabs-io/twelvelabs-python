@@ -16,14 +16,14 @@ class AssetTypeFilter(UniversalBaseModel):
 
     eq: typing.Optional[KnowledgeStoreItemAssetType] = pydantic.Field(default=None)
     """
-    Match items whose `asset_type` equals this value.
+    Match items that have this value for `asset_type`.
     """
 
     in_: typing_extensions.Annotated[
         typing.Optional[typing.List[KnowledgeStoreItemAssetType]], FieldMetadata(alias="in")
     ] = pydantic.Field(default=None)
     """
-    Match items whose `asset_type` is one of these values.
+    Match items that have any of these values for `asset_type`.
     """
 
     if IS_PYDANTIC_V2:

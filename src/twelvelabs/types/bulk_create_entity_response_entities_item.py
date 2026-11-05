@@ -25,7 +25,7 @@ class BulkCreateEntityResponseEntitiesItem(UniversalBaseModel):
     
     **Values**:
     - `processing`: The entity is being processed and is not yet ready for use in searches.
-    - `ready``: The entity is fully processed and can be used in search queries.
+    - `ready`: The entity is fully processed and can be used in search queries.
     """
 
     if IS_PYDANTIC_V2:

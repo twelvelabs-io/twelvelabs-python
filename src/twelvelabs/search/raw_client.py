@@ -176,7 +176,7 @@ class RawSearchClient:
             **User-defined metadata**
             
             To filter by user-defined metadata:
-            1. Add metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/videos/:video-id` endpoint
+            1. Add metadata to your video by calling the [`PATCH`](/v1.3/api-reference/videos/update) method of the `/indexes/{index_id}/videos/{video_id}` endpoint
             2. Reference the custom field in your filter object. For example, to filter videos where a custom field named `needsReview` of type boolean is `true`, use `{"needs_review": true}`.
             
             For more details and examples, see the [Filter search results](/v1.3/docs/guides/search/filtering) page.
@@ -469,7 +469,7 @@ class AsyncRawSearchClient:
             **User-defined metadata**
             
             To filter by user-defined metadata:
-            1. Add metadata to your video by calling the [`PUT`](/v1.3/api-reference/videos/update) method of the `/indexes/:index-id/videos/:video-id` endpoint
+            1. Add metadata to your video by calling the [`PATCH`](/v1.3/api-reference/videos/update) method of the `/indexes/{index_id}/videos/{video_id}` endpoint
             2. Reference the custom field in your filter object. For example, to filter videos where a custom field named `needsReview` of type boolean is `true`, use `{"needs_review": true}`.
             
             For more details and examples, see the [Filter search results](/v1.3/docs/guides/search/filtering) page.

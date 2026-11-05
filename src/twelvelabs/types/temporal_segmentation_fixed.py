@@ -12,9 +12,9 @@ class TemporalSegmentationFixed(UniversalBaseModel):
     Divides the file into equal-length segments. Use this for consistent timing.
     """
 
-    fixed: TemporalSegmentationFixedFixed = pydantic.Field()
+    fixed: typing.Optional[TemporalSegmentationFixedFixed] = pydantic.Field(default=None)
     """
-    Configuration for fixed segmentation. This object is required when `strategy` is `fixed`.
+    Configuration for fixed segmentation. If you omit this object or the `duration_sec` field, the duration defaults to 6 seconds.
     """
 
     if IS_PYDANTIC_V2:

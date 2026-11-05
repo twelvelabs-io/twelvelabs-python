@@ -6,19 +6,24 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ResponseUsage(UniversalBaseModel):
+class AssetStorageAccounting(UniversalBaseModel):
     """
-    Token usage statistics.
-    """
-
-    input_tokens: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    The number of input tokens consumed.
+    The storage accounting setting of an asset.
     """
 
-    output_tokens: typing.Optional[int] = pydantic.Field(default=None)
+    asset_id: str = pydantic.Field()
     """
-    The number of output tokens generated.
+    The unique identifier of the asset.
+    """
+
+    storage_accounting: bool = pydantic.Field()
+    """
+    Indicates whether the platform counts the asset toward your Managed Intelligence allowance.
+    """
+
+    bytes: int = pydantic.Field()
+    """
+    The number of stored bytes that the platform counts for the asset.
     """
 
     if IS_PYDANTIC_V2:

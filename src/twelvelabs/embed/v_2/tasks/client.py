@@ -46,23 +46,23 @@ class TasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[MediaEmbeddingTask]:
         """
-        This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the async embedding tasks in your account. The platform returns tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
         - Embeddings are stored for seven days.
-        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days.
         </Note>
 
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
-            Filter the embedding tasks by their current status.
+            Filter async embedding tasks by their current status.
 
             **Values**: `processing`, `ready`, or `failed`.
 
@@ -70,11 +70,13 @@ class TasksClient:
             A number that identifies the page to retrieve.
 
             **Default**: `1`.
+            **Min**: `1`.
 
         page_limit : typing.Optional[int]
             The number of items to return on each page.
 
             **Default**: `10`.
+            **Min**: `1`.
             **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
@@ -97,7 +99,7 @@ class TasksClient:
             ended_at="2024-03-01T00:00:00Z",
             status="processing",
             page=1,
-            page_limit=10,
+            page_limit=1,
         )
         for item in response:
             yield item
@@ -142,7 +144,7 @@ class TasksClient:
 
         <Note title="Notes">
         - Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         - Embeddings are stored for seven days.
         </Note>
 
@@ -208,7 +210,6 @@ class TasksClient:
             AsyncTemporalSegmentation,
             MediaSource,
             TemporalSegmentation_Fixed,
-            TemporalSegmentationFixedFixed,
             TwelveLabs,
         )
 
@@ -225,11 +226,7 @@ class TasksClient:
                 start_sec=0.0,
                 end_sec=3600.0,
                 segmentation=AsyncTemporalSegmentation(
-                    temporal=TemporalSegmentation_Fixed(
-                        fixed=TemporalSegmentationFixedFixed(
-                            duration_sec=1,
-                        ),
-                    ),
+                    temporal=TemporalSegmentation_Fixed(),
                 ),
                 embedding_option=["audio"],
                 embedding_scope=["clip", "asset"],
@@ -315,23 +312,23 @@ class AsyncTasksClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[MediaEmbeddingTask]:
         """
-        This method returns a list of the async embedding tasks in your account. The platform returns your async embedding tasks sorted by creation date, with the newest at the top of the list.
+        This method returns a list of the async embedding tasks in your account. The platform returns tasks sorted by creation date, with the newest at the top of the list.
 
         <Note title="Notes">
         - Embeddings are stored for seven days.
-        - When you invoke this method without specifying the `started_at` and `ended_at` parameters, the platform returns all the async embedding tasks created within the last seven days.
+        - Without the `started_at` or `ended_at` query parameters, this method lists tasks created in the last seven days.
         </Note>
 
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
-            Filter the embedding tasks by their current status.
+            Filter async embedding tasks by their current status.
 
             **Values**: `processing`, `ready`, or `failed`.
 
@@ -339,11 +336,13 @@ class AsyncTasksClient:
             A number that identifies the page to retrieve.
 
             **Default**: `1`.
+            **Min**: `1`.
 
         page_limit : typing.Optional[int]
             The number of items to return on each page.
 
             **Default**: `10`.
+            **Min**: `1`.
             **Max**: `50`.
 
         request_options : typing.Optional[RequestOptions]
@@ -371,7 +370,7 @@ class AsyncTasksClient:
                 ended_at="2024-03-01T00:00:00Z",
                 status="processing",
                 page=1,
-                page_limit=10,
+                page_limit=1,
             )
             async for item in response:
                 yield item
@@ -420,7 +419,7 @@ class AsyncTasksClient:
 
         <Note title="Notes">
         - Creating a task validates only basic metadata and, for audio and video sources, playability, not the full file. A file can pass this check but still fail later during embedding. When you retrieve the results, check the [`status`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.status) field. If it is `failed`, the [`error.message`](/v1.3/api-reference/create-embeddings-v2/retrieve-embeddings#response.body.error.message) field contains the reason.
-        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/rate-limits#input-token-limits-for-embedding).
+        - This method is rate-limited. With Marengo 3.5, the platform counts input tokens for each type of content. A task can exceed a limit before you see an error. For details, see [Input token limits for embedding](/v1.3/docs/get-started/plans-and-billing/rate-limits/new-billing#input-token-limits-for-embedding).
         - Embeddings are stored for seven days.
         </Note>
 
@@ -489,7 +488,6 @@ class AsyncTasksClient:
             AsyncTwelveLabs,
             MediaSource,
             TemporalSegmentation_Fixed,
-            TemporalSegmentationFixedFixed,
         )
 
         client = AsyncTwelveLabs(
@@ -508,11 +506,7 @@ class AsyncTasksClient:
                     start_sec=0.0,
                     end_sec=3600.0,
                     segmentation=AsyncTemporalSegmentation(
-                        temporal=TemporalSegmentation_Fixed(
-                            fixed=TemporalSegmentationFixedFixed(
-                                duration_sec=1,
-                            ),
-                        ),
+                        temporal=TemporalSegmentation_Fixed(),
                     ),
                     embedding_option=["audio"],
                     embedding_scope=["clip", "asset"],

@@ -57,10 +57,10 @@ class TasksClient:
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
             Filter the embedding tasks by their current status.
@@ -365,10 +365,10 @@ class AsyncTasksClient:
         Parameters
         ----------
         started_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or after the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         ended_at : typing.Optional[str]
-            Retrieve the embedding tasks that were created before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
+            Retrieve the embedding tasks that were created at or before the given date and time, expressed in the RFC 3339 format ("YYYY-MM-DDTHH:mm:ssZ").
 
         status : typing.Optional[str]
             Filter the embedding tasks by their current status.

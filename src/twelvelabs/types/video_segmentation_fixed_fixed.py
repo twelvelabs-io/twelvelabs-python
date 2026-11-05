@@ -11,11 +11,13 @@ class VideoSegmentationFixedFixed(UniversalBaseModel):
     Configuration for fixed segmentation. This object is required when `strategy` is `fixed`.
     """
 
-    duration_sec: int = pydantic.Field()
+    duration_sec: float = pydantic.Field()
     """
     The duration in seconds for each segment.
     
     The platform divides the video into segments of this exact length. The final segment may be shorter if the video duration is not evenly divisible.
+    
+    Marengo 3.0 ignores the fractional part of this value. For example, it treats `2.5` as `2`.
     
     **Min**: `2`.
     **Max**: `10`.

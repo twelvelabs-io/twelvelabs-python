@@ -10,7 +10,7 @@ from .document_spatial_segmentation import DocumentSpatialSegmentation
 
 class DocumentSegmentation(UniversalBaseModel):
     """
-    Specifies how the platform divides your document before it generates embeddings. Requires Marengo 3.5.
+    Specifies how the platform divides the document before it generates embeddings.
 
     Use the `spatial` field to divide each rendered page of a PDF file. Use the `sequential` field to divide a plain text or Markdown file into chunks.
 

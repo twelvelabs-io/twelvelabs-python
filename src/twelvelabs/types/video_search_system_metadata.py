@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class VideoSearchSystemMetadata(UniversalBaseModel):
     """
-    System-generated media metadata for a video item in search results.
+    System-generated metadata for a video item in search results.
     """
 
     duration: typing.Optional[float] = pydantic.Field(default=None)

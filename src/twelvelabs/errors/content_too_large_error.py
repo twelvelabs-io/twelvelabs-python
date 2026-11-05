@@ -3,9 +3,9 @@
 import typing
 
 from ..core.api_error import ApiError
-from ..types.error_response import ErrorResponse
+from ..types.flat_error_response import FlatErrorResponse
 
 
 class ContentTooLargeError(ApiError):
-    def __init__(self, body: ErrorResponse, headers: typing.Optional[typing.Dict[str, str]] = None):
+    def __init__(self, body: FlatErrorResponse, headers: typing.Optional[typing.Dict[str, str]] = None):
         super().__init__(status_code=413, headers=headers, body=body)
