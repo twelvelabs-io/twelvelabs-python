@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .response_web_search_output_item_type import ResponseWebSearchOutputItemType
 from .web_search_action import WebSearchAction
 
 
@@ -19,6 +20,7 @@ class ResponseWebSearchOutputItem(UniversalBaseModel):
     Use `session_id` to continue a conversation; this output item is not accepted in `input`.
     """
 
+    type: ResponseWebSearchOutputItemType
     id: str = pydantic.Field()
     """
     A `ws_`-prefixed identifier for this call within the response.
